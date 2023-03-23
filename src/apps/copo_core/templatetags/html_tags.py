@@ -19,7 +19,7 @@ from common.dal.copo_da import ProfileInfo, Description, Profile, Source, Person
     Submission, \
     DataFile, DAComponent, CGCore, MetadataTemplate
 from allauth.socialaccount import providers
-from hurry.filesize import size as hurrysize
+#from hurry.filesize import size as hurrysize
 from django_tools.middlewares import ThreadLocal
 from common.utils.logger import Logger
 from common.utils import helpers
@@ -1210,7 +1210,7 @@ def generate_submission_accessions_data(submission_id=str()):
                                 data_set.append([v["accession"], v["alias"], str(), key])
                             except:
                                 pass
-
+        """
         elif repository == "figshare":
             # -----------COLLATE ACCESSIONS FOR FIGSHARE REPO----------
             columns = [{"title": "Accession"}, {"title": "Alias"}, {"title": "Comment"}, {"title": "Type"}]
@@ -1251,7 +1251,7 @@ def generate_submission_accessions_data(submission_id=str()):
             data_set.append(
                 [accessions["dataset_title"], meta_link, retrieve_link, accessions["dataset_name"]]
             )
-
+        """
     return_dict = dict(dataSet=data_set,
                        columns=columns,
                        repository=repository

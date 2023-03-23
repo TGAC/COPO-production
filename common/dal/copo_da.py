@@ -1488,6 +1488,7 @@ class Submission(DAComponent):
 
         return result
 
+    '''
     def get_submission_metadata(self, submission_id=str()):
         """
         function returns the metadata associated with this submission
@@ -1531,6 +1532,8 @@ class Submission(DAComponent):
             pass  # todo: if required for other repo, can use metadata from linked bundle
 
         return result
+    '''
+        
 
     """   need to move to copo_read_submission
     def lift_embargo(self, submission_id=str()):
@@ -1822,9 +1825,11 @@ class Submission(DAComponent):
                     filenames.append(f['name'])
         return {'accessions': doc['accessions'], 'filenames': filenames, 'repo': doc['repository']}
 
+    """
     def get_file_accession_for_dataverse_entry(self, mongo_file_id):
         return self.get_collection_handle().find_one({'accessions.mongo_file_id': mongo_file_id},
-                                                     {'_id': 0, 'accessions.$': 1})
+                                              {'_id': 0, 'accessions.$': 1})
+    """
 
     def get_complete(self):
         complete_subs = self.get_collection_handle().find({'complete': True})
@@ -1857,6 +1862,7 @@ class Submission(DAComponent):
             {'_id': ObjectId(submission_id)}, {'$set': {'meta': json_util.loads(meta)}}
         )
 
+    """
     def get_dataverse_details(self, submission_id):
         doc = self.get_collection_handle().find_one(
             {'_id': ObjectId(submission_id)}, {'destination_repo': 1}
@@ -1870,6 +1876,7 @@ class Submission(DAComponent):
                 return doc['destination_repo']
         else:
             return default_dataverse
+    """
 
     def mark_as_published(self, submission_id):
         return self.get_collection_handle().update(
@@ -2146,6 +2153,7 @@ class Profile(DAComponent):
             Person(profile_id=str(rec["_id"])).create_sra_person()
         return rec
 
+    """
     def add_dataverse_details(self, profile_id, dataverse):
         handle_dict['profile'].update_one({'_id': ObjectId(profile_id)}, {'$set': {'dataverse': dataverse}})
 
@@ -2164,7 +2172,8 @@ class Profile(DAComponent):
         if 'dataverse' in p:
             if 'datasets' in p['dataverse']:
                 return p['dataverse']['datasets']
-
+    """
+                
     def get_dtol_profiles(self):
         p = self.get_collection_handle().find(
             {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]}}).sort(
