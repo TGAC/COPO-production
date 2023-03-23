@@ -1,0 +1,12 @@
+{
+  "description": "Settings for submission to ENA using the ISA SRA converters.",
+  "title": "SRA Settings",
+  "properties": {
+    "sra_center": "EI",
+    "sra_broker": "COPO",
+    "sra_action": "ADD",
+    "sra_broker_contact_name": "COPO support",
+    "sra_broker_inform_on_status": "support@copo.org",
+    "sra_broker_inform_on_error": "support@copo.org"
+  }
+}

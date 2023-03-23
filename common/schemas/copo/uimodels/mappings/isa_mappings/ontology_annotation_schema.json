@@ -1,0 +1,71 @@
+{
+  "configuration": {
+    "type": "json",
+    "provider": "isa",
+    "ref": "ontology_annotation_schema"
+  },
+  "properties": [
+    {
+      "deprecated": false,
+      "id": "copo.ontology_annotation.annotationValue",
+      "label": "Annotation Value",
+      "control_meta": {},
+      "show_in_form": true,
+      "versions": [
+        "annotationValue"
+      ],
+      "type": "string",
+      "ref": "",
+      "show_in_table": true,
+      "hidden": "false",
+      "control": "text"
+    },
+    {
+      "deprecated": false,
+      "id": "copo.ontology_annotation.termSource",
+      "label": "Term Source",
+      "control_meta": {},
+      "show_in_form": true,
+      "versions": [
+        "termSource"
+      ],
+      "type": "string",
+      "ref": "",
+      "show_in_table": false,
+      "hidden": "true",
+      "control": "text"
+    },
+    {
+      "deprecated": false,
+      "id": "copo.ontology_annotation.termAccession",
+      "label": "Term Accession",
+      "control_meta": {},
+      "show_in_form": true,
+      "versions": [
+        "termAccession"
+      ],
+      "type": "string",
+      "ref": "",
+      "show_in_table": false,
+      "hidden": "true",
+      "control": "text"
+    },
+    {
+      "deprecated": false,
+      "id": "copo.ontology_annotation.comments",
+      "label": "Comments",
+      "control_meta": {},
+      "show_in_form": true,
+      "versions": [
+        "comments"
+      ],
+      "type": "string",
+      "ref": "",
+      "show_in_table": false,
+      "hidden": "true",
+      "control": "text"
+    }
+  ],
+  "description": "Mappings of attribute in the ontology annotation schema to COPO UI configuration.",
+  "title": "Ontology annotation mappings"
+}

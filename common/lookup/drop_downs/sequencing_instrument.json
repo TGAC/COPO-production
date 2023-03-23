@@ -1,0 +1,212 @@
+[
+  {
+    "value": "454 GS",
+    "label": "454 GS",
+    "platform": "LS454"
+  },
+  {
+    "value": "454 GS 20",
+    "label": "454 GS 20",
+    "platform": "LS454"
+  },
+  {
+    "value": "454 GS FLX",
+    "label": "454 GS FLX",
+    "platform": "LS454"
+  },
+  {
+    "value": "454 GS FLX+",
+    "label": "454 GS FLX+",
+    "platform": "LS454"
+  },
+  {
+    "value": "454 GS FLX Titanium",
+    "label": "454 GS FLX Titanium",
+    "platform": "LS454"
+  },
+  {
+    "value": "454 GS Junior",
+    "label": "454 GS Junior",
+    "platform": "LS454"
+  },
+  {
+    "value": "HiSeq X Five",
+    "label": "HiSeq X Five",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "HiSeq X Ten",
+    "label": "HiSeq X Ten",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina Genome Analyzer",
+    "label": "Illumina Genome Analyzer",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina Genome Analyzer II",
+    "label": "Illumina Genome Analyzer II",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina Genome Analyzer IIx",
+    "label": "Illumina Genome Analyzer IIx",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiScanSQ",
+    "label": "Illumina HiScanSQ",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiSeq 1000",
+    "label": "Illumina HiSeq 1000",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiSeq 1500",
+    "label": "Illumina HiSeq 1500",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiSeq 2000",
+    "label": "Illumina HiSeq 2000",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiSeq 2500",
+    "label": "Illumina HiSeq 2500",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiSeq 3000",
+    "label": "Illumina HiSeq 3000",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina HiSeq 4000",
+    "label": "Illumina HiSeq 4000",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina MiSeq",
+    "label": "Illumina MiSeq",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina MiniSeq",
+    "label": "Illumina MiniSeq",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "Illumina NovaSeq 6000",
+    "label": "Illumina NovaSeq 6000",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "NextSeq 500",
+    "label": "NextSeq 500",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "NextSeq 550",
+    "label": "NextSeq 550",
+    "platform": "ILLUMINA"
+  },
+  {
+    "value": "PacBio RS",
+    "label": "PacBio RS",
+    "platform": "PACBIO_SMRT"
+  },
+  {
+    "value": "PacBio RS II",
+    "label": "PacBio RS II",
+    "platform": "PACBIO_SMRT"
+  },
+  {
+    "value": "Sequel",
+    "label": "Sequel",
+    "platform": "PACBIO_SMRT"
+  },
+  {
+    "value": "Ion Torrent PGM",
+    "label": "Ion Torrent PGM",
+    "platform": "ION_TORRENT"
+  },
+  {
+    "value": "Ion Torrent Proton",
+    "label": "Ion Torrent Proton",
+    "platform": "ION_TORRENT"
+  },
+  {
+    "value": "Ion Torrent S5",
+    "label": "Ion Torrent S5",
+    "platform": "ION_TORRENT"
+  },
+  {
+    "value": "Ion Torrent S5 XL",
+    "label": "Ion Torrent S5 XL",
+    "platform": "ION_TORRENT"
+  },
+  {
+    "value": "AB 3730xL Genetic Analyzer",
+    "label": "AB 3730xL Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "AB 3730 Genetic Analyzer",
+    "label": "AB 3730 Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "AB 3500xL Genetic Analyzer",
+    "label": "AB 3500xL Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "AB 3500 Genetic Analyzer",
+    "label": "AB 3500 Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "AB 3130xL Genetic Analyzer",
+    "label": "AB 3130xL Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "AB 3130 Genetic Analyzer",
+    "label": "AB 3130 Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "AB 310 Genetic Analyzer",
+    "label": "AB 310 Genetic Analyzer",
+    "platform": "CAPILLARY"
+  },
+  {
+    "value": "MinION",
+    "label": "MinION",
+    "platform": "OXFORD_NANOPORE"
+  },
+  {
+    "value": "GridION",
+    "label": "GridION",
+    "platform": "OXFORD_NANOPORE"
+  },
+  {
+    "value": "PromethION",
+    "label": "PromethION",
+    "platform": "OXFORD_NANOPORE"
+  },
+  {
+    "value": "BGISEQ-500",
+    "label": "BGISEQ-500",
+    "platform": "BGISEQ"
+  },
+  {
+    "value": "unspecified",
+    "label": "unspecified",
+    "platform": ""
+  }
+]

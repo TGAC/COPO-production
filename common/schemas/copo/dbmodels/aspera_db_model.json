@@ -1,0 +1,17 @@
+{
+  "file_path": "",
+  "request_user": "",
+  "commenced_on": "",
+  "current_time": "",
+  "transfer_rate": "",
+  "pct_completed": 0,
+  "transfer_status": "transferring",
+  "elapsed_time": "",
+  "file_size_bytes": "",
+  "bytes_lost": "",
+  "bytes_transferred": "",
+  "estimated_completion": "",
+  "deleted": "0",
+  "datafile_id":"",
+  "error":""
+}

@@ -1,0 +1,367 @@
+{
+  "configuration": {
+    "type": "json",
+    "provider": "isa",
+    "ref": "source_schema"
+  },
+  "properties": [
+    {
+      "help_tip": "A Source is considered as the starting biological material used in a study.",
+      "unique": true,
+      "default_value": "",
+      "show_as_attribute": true,
+      "control_meta": {},
+      "versions": [
+        "name"
+      ],
+      "unique_items": [],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.source.name",
+      "label": "Source Name",
+      "show_in_form": true,
+      "ref": "Source Name",
+      "type": "string",
+      "required": "true",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "A taxonomic information associated to the Source Biological material (e.g., species, genus, strain).",
+      "required": "true",
+      "default_value": "",
+      "show_as_attribute": true,
+      "control_meta": {},
+      "control": "ontology term",
+      "versions": [
+        "organism"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Organism",
+      "show_in_form": true,
+      "id": "copo.source.organism",
+      "type": "string",
+      "show_in_table": true,
+      "validate_ontology": true,
+      "ontology_names": [
+        "ncbitaxon"
+      ]
+    },
+    {
+      "help_tip": "Characteristics of the source e.g., height, sex",
+      "required": "false",
+      "default_value": "",
+      "show_as_attribute": true,
+      "control_meta": {},
+      "versions": [
+        "characteristics"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.source.characteristics",
+      "label": "Source Characteristics",
+      "show_in_form": true,
+      "ref": "",
+      "type": "array",
+      "show_in_table": false,
+      "control": "copo-characteristics"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_created"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Created",
+      "show_in_form": false,
+      "id": "copo.source.date_created",
+      "type": "string",
+      "show_in_table": false,
+      "control": "datetime"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "profile_id"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Profile ID",
+      "show_in_form": false,
+      "id": "copo.source.profile_id",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "deleted"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Delete",
+      "show_in_form": false,
+      "id": "copo.source.deleted",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "show_as_attribute": true,
+      "control_meta": {},
+      "control": "text",
+      "versions": [
+        "species_list"
+      ],
+      "ref": "",
+      "specifications": [
+        "dtol"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "type": "string",
+      "show_in_form": false,
+      "id": "copo.source.species_list",
+      "label": "species_list",
+      "show_in_table": true,
+      "dwc": ""
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_modified"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Modified",
+      "show_in_form": false,
+      "id": "copo.source.date_modified",
+      "type": "string",
+      "show_in_table": true,
+      "control": "datetime"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "show_as_attribute": false,
+      "control_meta": {},
+      "control": "text",
+      "versions": [
+        "SPECIMEN_ID"
+      ],
+      "ref": "",
+      "specifications": [
+        "dtol"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "type": "string",
+      "show_in_form": false,
+      "id": "copo.source.SPECIMEN_ID",
+      "label": "Specimen Id",
+      "show_in_table": false,
+      "dwc": "http://rs.tdwg.org/dwc/terms/recordNumber"
+    },
+    {
+      "help_tip": "A taxonomic determination (e.g., the assignment to a taxon).",
+      "required": "false",
+      "default_value": "",
+      "show_as_attribute": false,
+      "control_meta": {},
+      "control": "text",
+      "versions": [
+        "TAXON_ID"
+      ],
+      "ref": "",
+      "specifications": [
+        "dtol"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "type": "string",
+      "show_in_form": false,
+      "id": "copo.source.TAXON_ID",
+      "label": "Taxon ID",
+      "show_in_table": false,
+      "ontology_names": [
+        "ncbitaxon"
+      ],
+      "dwc": "http://rs.tdwg.org/dwc/terms/taxonID"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "sample_type"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.source.sample_type",
+      "label": "Sample Type",
+      "show_in_form": false,
+      "ref": "",
+      "type": "string",
+      "show_in_table": false,
+      "show_as_attribute": false,
+      "option_values": {
+        "callback": {
+          "parameter": "",
+          "function": "get_sample_type_options"
+        }
+      }
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "control_meta": {},
+      "dwc": "",
+      "versions": [
+        "status"
+      ],
+      "specifications": [
+        "dtol"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Status",
+      "show_in_form": false,
+      "id": "copo.source.status",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text",
+      "default_value": "pending"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "control_meta": {},
+      "dwc": "",
+      "versions": [
+        "biosampleAccession"
+      ],
+      "specifications": [
+        "dtol"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Biosample Accession",
+      "show_in_form": false,
+      "id": "copo.source.biosampleAccession",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text",
+      "default_value": ""
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "control_meta": {},
+      "dwc": "",
+      "versions": [
+        "sraAccession"
+      ],
+      "specifications": [
+        "dtol"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "SRA Accession",
+      "show_in_form": false,
+      "id": "copo.source.sraAccession",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text",
+      "default_value": ""
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "control_meta": {},
+      "dwc": "",
+      "versions": [
+        "submissionAccession"
+      ],
+      "specifications": [
+        "dtol"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Submission Accession",
+      "show_in_form": false,
+      "id": "copo.source.submissionAccession",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text",
+      "default_value": ""
+    },
+   {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "bioimage_archive_seq_no"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Bioimage Archive Seq No",
+      "show_in_form": false,
+      "id": "copo.source.bioimage_archive_seq_no",
+      "type": "number",
+      "show_in_table": false,
+      "control": "number"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "last_bioimage_submitted"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Last Bioimage Archive Submitted",
+      "show_in_form": false,
+      "id": "copo.source.last_bioimage_submitted",
+      "type": "string",
+      "show_in_table": false,
+      "control": "datetime"
+    }
+  ],
+  "description": "Mappings of attribute in the Source schema to a UI configuration source.",
+  "title": "Source schema mappings"
+}

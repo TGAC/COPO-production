@@ -1,0 +1,277 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-attachment: fixed !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    font-family: "Roboto", sans-serif !important;
+    font-weight: bold;
+}
+
+.container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.nav {
+    padding-right: 15px;
+}
+
+.nav li a {
+    background-color: transparent !important;
+    color: white !important;
+    font-size: 2em;
+    font-weight: bolder;
+    margin: 10px 5px 0 5px;
+}
+
+#copo-icon {
+    margin-top: 50px;
+    width: 800px;
+    margin: 0 auto;
+}
+
+#copo-icon img {
+    margin-top: 40px !important;
+}
+
+.green-subtitle {
+    text-align: center;
+    font-size: 2.4em;
+    font-weight: bold;
+    padding: 10px;
+    width: 700px;
+    margin-top: 20px !important;
+    margin: 0 auto;
+    background-color: #93d242;
+    color: #414141
+}
+
+
+.left-panel {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+    min-height: 100vh !important;
+}
+
+.green-theme {
+    background-color: #93d242;
+    color: rgba(65, 65, 65, 1) !important;
+}
+
+.gray-theme {
+    background-color: rgba(65, 65, 65, 1);
+    color: #eaf0f0;
+}
+
+.red-theme {
+    background-color: #c74b2c;
+    color: #eaf0f0;
+}
+
+.blue-theme {
+    background-color: #5174c7;
+    color: #eaf0f0;
+}
+
+.topbanner-light {
+    background-color: #eaf0f0 !important;
+    color: #414141 !important;
+    font-size: 4em;
+    font-weight: bold;
+    padding: 20px 7px 7px 50px;
+}
+
+.topbanner-dark {
+    background-color: rgba(65, 65, 65, 1) !important;
+    color: #eaf0f0 !important;
+    font-size: 4em;
+    font-weight: bold;
+    padding: 20px 7px 7px 50px;
+}
+
+.zero-padding {
+    padding-left: 0;
+    height: 100%;
+}
+
+.full-length {
+    height: 100%;
+}
+
+
+.secondary-top-right {
+
+    position: relative;
+    padding-left: 0 !important;
+    height: 107px;
+}
+
+.secondary-top-right img {
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.button_bar {
+    padding-left: 15px;
+    margin-top: 20px !important;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+.big_button {
+    margin-top: 75px !important;
+    font-size: 2em !important;
+    background-color: rgba(65, 65, 65, 0.5) !important;
+    width: 500px
+}
+
+.big_button:hover {
+    color: #93d242 !important;
+}
+
+section {
+    /*height: 100vh*/
+}
+
+.secondary-container {
+    padding: 50px 25px 0 50px;
+}
+
+.secondary-title-image img {
+    padding: 0;
+    height: 60px;
+    margin-left: 100px;
+    vertical-align: bottom;
+}
+
+p {
+    font-size: 2em;
+    margin: 60px 0 15px 0;
+    padding: 0 40px 0 40px;
+}
+
+.ArticleCopy {
+    font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+    width: 80%;
+    padding: 3rem;
+}
+
+.ArticleCopy p {
+    text-rendering: optimizeLegibility;
+}
+
+.ArticleCopy blockquote {
+    font-size: 1.8em !important;
+    border-radius: 3px;
+    position: relative; /*  <--- */
+    font-style: italic;
+    text-align: center;
+    padding: 1rem 1.2rem;
+    width: 60%; /* create space for the quotes */
+    color: rgba(65, 65, 65, 1);
+    margin: 1rem auto 2rem;
+    background: #eaf0f0;
+}
+
+.author {
+    position: relative;
+    display: block;
+    text-align: right;
+    margin-top: 5px;
+    color: #93d242;
+    font-size: 0.8em !important;
+}
+
+.author.i {
+    position: relative;
+    background: #eee;
+    padding-left: 5px;
+    font-style: italic;
+    z-index: 5;
+}
+
+
+/* -- create the quotation marks -- */
+.ArticleCopy blockquote:before,
+.ArticleCopy blockquote:after {
+    font-family: FontAwesome;
+    position: absolute;
+    /* -- inside the relative position of blockquote -- */
+    top: 13px;
+    color: #eaf0f0;
+    font-size: 34px;
+
+}
+
+.ArticleCopy blockquote:before {
+    content: "\f10d";
+    margin-right: 13px;
+    right: 100%;
+    top: -20px
+}
+
+.ArticleCopy blockquote:after {
+    content: "\f10e";
+    margin-left: 13px;
+    left: 100%;
+    top: auto;
+    bottom: -20px;
+}
+
+.margin-30 {
+    margin: 30px
+}
+
+.item {
+    font-size: 1.4em !important;
+}
+
+.item a {
+    color: rgba(65, 65, 65, 1);
+    text-decoration: none;
+}
+
+#stats_bar {
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+.shade {
+    background-color: rgba(65, 65, 65, 0.5);
+}
+
+.statistic {
+    color: rgba(65, 65, 65, 1);
+    padding: 20px !important
+}
+
+#contact-sec {
+    padding-top: 60px !important;
+    color: white;
+}
+
+.warning_banner {
+    background-color: white !important;
+}
+
+.warning_banner h1 {
+    margin: 0 40px 40px 40px;
+    text-decoration: underline;
+}
+
+.warning_banner p {
+    margin-top: 0
+}

@@ -1,0 +1,896 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  description: Swagger documentation of COPO/DTOL sample API.
+  version: 1.1.8
+servers:
+  - url: http://127.0.0.1:8000/api
+    description: Local Server
+  - url: http://demo.copo-project.org/api
+    description: Demo Server
+  - url: https://copo-project.org/api
+    description: Live Server
+
+
+
+paths:
+
+  /apiKey/:
+    post:
+      tags:
+        - API Key
+      summary: Obtain API Token
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema: # Request body contents
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        200:
+          description: Username and Password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthBody'
+
+  /manifest:
+    get:
+
+      tags:
+        - Manifest
+      summary:
+        Get all manifests
+      description: >
+        If no manifest ID is provided, COPO simply returns a list of all manifest ids
+      responses:
+        200:
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManifestList'
+
+
+  /manifest/{manifest_id}:
+    get:
+      tags:
+        - Manifest
+      summary:
+        Get samples in manifest
+      description: >
+        Get full sample information for each sample contained in the given {manifest_id}
+      parameters:
+        - name: manifest_id
+          in: path
+          required: true
+          description: uuid of the manifest in question
+          schema:
+            type: string
+            minimum: 1
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleList'
+        "400":
+          description: invalid manifest_id
+
+  /manifest/{from}/{to}:
+    get:
+      tags:
+        - Manifest
+      summary:
+        Get manifest ids between dates
+      description: >
+        Returns an array of manifest ids for samples submitted between dates {from} / {to}
+      parameters:
+        - name: from
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, manifests greater than or equal to this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, manifests less than this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          schema:
+            type: string
+            format: date-time
+
+      responses:
+        "200": # status code
+          description: A JSON array of sample manifest uuid objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManifestList'
+        "400":
+          description: \'from\' must be earlier than \'to\'
+
+  /manifest/{project}/{from}/{to}:
+    get:
+      tags:
+        - Manifest
+      summary:
+        Get manifest ids of a project between dates
+      description: >
+        Returns an array of manifest ids for samples submitted between dates {from} / {to} in project {project}
+      parameters:
+        - name: project
+          in: path
+          required: true
+          description: a comma separate list of supported EBP projects in lower case (dtol|asg|dtol_env|erga)
+          schema:
+            type: string
+        - name: from
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, manifests greater than or equal to this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, manifests less than this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          schema:
+            type: string
+            format: date-time
+
+      responses:
+        "200": # status code
+          description: A JSON array of sample manifest uuid objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManifestList'
+        "400":
+          description: \'from\' must be earlier than \'to\ and project must be in the list of supported projects'
+
+
+  /manifest/{manifest_id}/sample_statuses:
+    get:
+      tags:
+        - Manifest
+      summary:
+        Get sample statuses in manifest
+      description: >
+        Get minimal sample status information for each sample contained in the given {manifest_id}
+      parameters:
+        - name: manifest_id
+          in: path
+          required: true
+          description: uuid of the manifest in question
+          schema:
+            type: string
+            minimum: 1
+
+      responses:
+        "200": # status code
+          description: A JSON array of sample status objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleStatus'
+        "400":
+          description: invalid manifest_id
+
+  /sample/{project}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get all Samples in a project
+      description: >
+        Get a list of all the samples of a project in COPO
+      parameters:
+        - name: project
+          in: path
+          required: true
+          description: comma separated list of supported projects
+          schema:
+            type: string
+            minimum: 1
+
+      responses:
+        "200": # status code
+          description: A JSON array sample copo_ids
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleListShort'
+        "400":
+          description: InvalidId found in request
+
+  /sample/associated_tol_project/{values}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get all Samples in a project by associated project type(s)
+      description: >
+        Get a list of all the samples of a project in COPO by associated project type
+      parameters:
+        - name: values
+          in: path
+          required: true
+          description: ampersand (&) separated list of supported associated project types
+          schema:
+            type: string
+            minimum: 1
+
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleList'
+        "400":
+          description: Invalid associated profile type found in request
+
+  /sample/copo_id/{copo_ids}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get Sample
+      description: >
+        Get full sample information for the samples returned from the given {copo_ids}
+      parameters:
+        - name: copo_ids
+          in: path
+          required: true
+          description: hexadecimal sample ids, separated by commas
+          schema:
+            type: string
+            minimum: 1
+
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleList'
+        "400":
+          description: InvalidId found in request
+
+  /sample/biosample_id/{biosample_ids}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get Sample
+      description: >
+        Get full sample information for the samples returned from the given {biosample_ids}
+      parameters:
+        - name: biosample_ids
+          in: path
+          required: true
+          description: biosample accessions created by ENA, separated by commas
+          schema:
+            type: string
+            minimum: 1
+
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleList'
+
+  /sample/sample_field/{field}/{values}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get Sample
+      description: >
+        Get full sample information for the samples returned from the given {field} / {values}
+      parameters:
+        - name: field
+          in: path
+          required: true
+          description: a known sample field to search for
+          schema:
+            type: string
+            minimum: 1
+            maximum: 1
+        - name: values
+          in: path
+          required: true
+          description: a comma separated list of values to look for
+          schema:
+            type: string
+            minimum: 1
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleList'
+
+  /sample/StudyFromSampleAccession/{sample_ids}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get Sample
+      description: >
+        Get full sample information for the samples returned from the given {field} / {values}
+      parameters:
+        - name: sample_ids
+          in: path
+          required: true
+          description: a comma separated list of biosample accessions or ENA/SRA accessions
+          schema:
+            type: string
+            minimum: 1
+            maximum: 1
+
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessionListShort'
+
+  /sample/SampleFromStudyAccession/{biostudyAccessions}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get Sample
+      description: >
+        Get full sample information for the samples returned from the given {field} / {values}
+      parameters:
+        - name: biostudyAccessions
+          in: path
+          required: true
+          description: a comma separated list of biostudy accessions
+          schema:
+            type: string
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleAccessionList'
+
+
+  /stats/number_of_users/:
+    get:
+      tags:
+        - Stats
+      summary:
+        Get number of registered COPO users
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsNumber'
+
+  /stats/number_of_dtol_samples/:
+    get:
+      tags:
+        - Stats
+      summary:
+        Get number of registered DTOL samples
+      responses:
+        "200": # status code
+          description: A JSON array sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsNumber'
+
+
+
+  /profile/make_profile/:
+    post:
+      tags:
+        - Profile
+      security:
+        - app_id: [ ]
+      consumes:
+        - application/x-www-form-urlencoded
+      summary:
+        Make a profile for authenticated user
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - profile_type
+              properties:
+                title: # <!--- form field name
+                  type: string
+                  required: true
+                description:
+                  type: string
+                  required: true
+                profile_type:
+                  type: string
+                  enum: [ "Stand-alone", "Darwin Tree of Life (DTOL)", "Darwin Tree of Life Environmental Samples (DTOL_ENV)", "Aquatic Symbiosis Genomics (ASG)", "European Reference Genome Atlas (ERGA)" ]
+                  required: true
+      responses:
+        "200":
+          description: representation of the created profile
+
+  /profile/get_for_user/:
+    post:
+      tags:
+        - Profile
+      security:
+        - app_id: [ ]
+      consumes:
+        - application/x-www-form-urlencoded
+      summary:
+        Get profiles for authenticated user
+      responses:
+        "200":
+          description: representation of the created profile
+
+  /manifest/validate/:
+    post:
+      tags:
+        - Manifest
+      security:
+        - app_id: [ ]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - profile_id
+                - manifest
+              type: object
+              properties:
+                profile_id:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: id of queued validation report to be queried
+
+  /manifest/validate/report/:
+    post:
+      tags:
+        - Manifest
+      security:
+        - app_id: [ ]
+      consumes:
+        - application/x-www-form-urlencoded
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - validation_report_id
+              properties:
+                validation_report_id:
+                  type: string
+      responses:
+        "200":
+          description: status and/or validation errors for given manifest validation
+
+  /manifest/validations/:
+    post:
+      tags:
+        - Manifest
+      security:
+        - app_id: [ ]
+      responses:
+        "200":
+          description: validations for authorised user
+
+components:
+
+  securitySchemes:
+    app_id:
+      type: apiKey
+      description: API key to authorize requests.
+      name: "Authorization"
+      in: header
+
+  schemas:
+
+    Profile:
+      type: object
+      properties:
+        profile_id:
+          type: string
+        title:
+          type: string
+        tol_type:
+          type: string
+        associated_tol_type:
+          type: string
+
+    StatsNumber:
+      type: object
+      properties:
+        number_found:
+          type: integer
+
+    AuthBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    SampleStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sample_short'
+    ManifestList:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManifestId'
+    SampleList:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sample_long'
+
+    SampleListShort:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sample_very_short'
+
+    AccessionListShort:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/StudyAccession'
+
+    SampleAccessionList:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SampleAccession'
+
+    SampleAccession:
+      properties:
+        accessions:
+          type: object
+          properties:
+            study_accessions:
+              type: object
+              properties:
+                bioProjectAccession:
+                  type: string
+                sraStudyAccession:
+                  type: string
+                submissionAccession:
+                  type: string
+                status:
+                  type: string
+            sample_accessions:
+              type: array
+              items:
+                $ref: '#/components/schemas/SimpleSampleAccession'
+
+    SimpleSampleAccession:
+      type: object
+      properties:
+        biosampleAccession:
+          type: string
+        sraAccession:
+          type: string
+        submissionAccession:
+          type: string
+        status:
+          type: string
+        copo_sample_id:
+          type: string
+
+    StudyAccession:
+      type: object
+      properties:
+        bioProjectAccession:
+          type: string
+          description: Bioproject identifier
+        sraStudyAccession:
+          type: string
+          description: SRA identifier for Study
+        submissionAccession:
+          type: string
+          description: Submission identifier for Study
+        status:
+          type: string
+          description: accepted / rejected status
+        sample_biosampleId:
+          type: string
+          description: Queried for sample biosample id
+
+
+    Sample_short:
+      type: object
+      properties:
+        copo_id:
+          type: string
+          description: unique COPO identifier for this sample
+        manifest_id:
+          type: string
+          format: uuid
+          description: unique identifier for manifest in which this sample appears
+        status:
+          type: string
+          description: status of this sample. "pending" means waiting for supervisor approval, "accepted" means supervisor approval gained, "rejected" means supervisor rejected
+        time_created:
+          type: string
+          format: date-time
+          description: when was this sample uploaded to COPO
+        time_updated:
+          type: string
+          format: date-time
+          description: when was this sample uploaded to COPO
+
+    Sample_very_short:
+      type: object
+      properties:
+        copo_id:
+          type: string
+          description: unique COPO identifier for this sample
+
+
+    ManifestId:
+      type: string
+      format: uuid
+
+    SpeciesList:
+      type: object
+      properties:
+        SYMBIONT:
+          type: string
+        TAXON_ID:
+          type: string
+        ORDER_OR_GROUP:
+          type: string
+        FAMILY:
+          type: string
+        GENUS:
+          type: string
+        SCIENTIFIC_NAME:
+          type: string
+        INFRASPECIFIC_EPITHET:
+          type: string
+        CULTURE_OR_STRAIN_ID:
+          type: string
+        COMMON_NAME:
+          type: string
+        TAXON_REMARKS:
+          type: string
+
+
+    Sample_long:
+      type: object
+      properties:
+        SERIES:
+          type: string
+        RACK_OR_PLATE_ID:
+          type: string
+        TUBE_OR_WELL_ID:
+          type: string
+        SPECIMEN_ID:
+          type: string
+        LIFESTAGE:
+          type: string
+        SEX:
+          type: string
+        ORGANISM_PART:
+          type: string
+        GAL:
+          type: string
+        GAL_SAMPLE_ID:
+          type: string
+        COLLECTOR_SAMPLE_ID:
+          type: string
+        COLLECTED_BY:
+          type: string
+        COLLECTOR_AFFILIATION:
+          type: string
+        DATE_OF_COLLECTION:
+          type: string
+        COLLECTION_LOCATION:
+          type: string
+        DECIMAL_LATITUDE:
+          type: string
+        HABITAT:
+          type: string
+        DESCRIPTION_OF_COLLECTION_METHOD:
+          type: string
+        EASE_OF_SPECIMEN_COLLECTION:
+          type: string
+        IDENTIFIED_BY:
+          type: string
+        IDENTIFIER_AFFILIATION:
+          type: string
+        IDENTIFIED_HOW:
+          type: string
+        SPECIMEN_ID_RISK:
+          type: string
+        PRESERVED_BY:
+          type: string
+        PRESERVER_AFFILIATION:
+          type: string
+        PRESERVATION_APPROACH:
+          type: string
+        TIME_ELAPSED_FROM_COLLECTION_TO_PRESERVATION:
+          type: string
+        DATE_OF_PRESERVATION:
+          type: string
+          format: date
+        SIZE_OF_TISSUES_IN_TUBE:
+          type: string
+        TISSUE_REMOVED_FROM_BARCODING:
+          type: string
+        PLATE_ID_FOR_BARCODING:
+          type: string
+        TUBE_OR_WELL_ID_FOR_BARCODING:
+          type: string
+        TISSUE_FOR_BARCODING:
+          type: string
+        BARCODE_PLATE_PRESERVATIVE:
+          type: string
+        PURPOSE_OF_SPECIMEN:
+          type: string
+        HAZARD_GROUP:
+          type: string
+        REGULATORY_COMPLIANCE:
+          type: string
+        VOUCHER_ID:
+          type: string
+        RELATIONSHIP:
+          type: string
+        GRID_REFERENCE:
+          type: string
+        DEPTH:
+          type: string
+        ELEVATION:
+          type: string
+        TIME_OF_COLLECTION:
+          type: string
+        PRESERVATIVE_SOLUTION:
+          type: string
+        SIZE_OF_TISSUE_IN_TUBE:
+          type: string
+        TISSUE_REMOVED_FOR_BARCODING:
+          type: string
+        OTHER_INFORMATION:
+          type: string
+        BARCODE_HUB:
+          type: string
+        ORIGINAL_GEOGRAPHIC_LOCATION:
+          type: string
+        ORIGINAL_COLLECTION_DATE:
+          type: string
+        boldAccession:
+          type: string
+        public_name:
+          type: string
+        biosampleAccession:
+          type: string
+        created_by:
+          type: string
+          format: email
+        time_created:
+          type: string
+          format: date-time
+        submissionAccession:
+          type: string
+        sraAccession:
+          type: string
+        manifest_id:
+          type: string
+          format: uuid
+        time_updated:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+          format: email
+        copo_id:
+          type: string
+        sampleDerivedFrom:
+          type: string
+        status:
+          type: string
+        copo_profile_title:
+          type: string
+        associated_tol_project:
+          type: string
+        SYMBIONT:
+          type: string
+        TAXON_ID:
+          type: string
+        ORDER_OR_GROUP:
+          type: string
+        FAMILY:
+          type: string
+        GENUS:
+          type: string
+        SCIENTIFIC_NAME:
+          type: string
+        INFRASPECIFIC_EPITHET:
+          type: string
+        CULTURE_OR_STRAIN_ID:
+          type: string
+        COMMON_NAME:
+          type: string
+        TAXON_REMARKS:
+          type: string
+        latest_update:
+          type: string
+          format: date-time

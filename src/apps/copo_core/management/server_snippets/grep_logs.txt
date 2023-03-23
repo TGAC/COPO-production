@@ -1,0 +1,1 @@
+docker logs --since 2021-02-10T00:00 <container_id> 2>&1 | grep -v "You may" | grep -v "GET" | grep -v "WARNING"

@@ -1,0 +1,14 @@
+dataverse_id,typeClass,multiple,value,parent,copo_id
+title,primitive,FALSE,,,title
+authorName,primitive,FALSE,,author,creator
+authorAffiliation,primitive,FALSE,,author,creator_affiliation
+authorIdentifier,primitive,FALSE,,author,creator_id
+dsDescriptionValue,primitive,FALSE,,dsDescription,description
+datasetContactName,primitive,FALSE,,datasetContact,contact
+datasetContactEmail,primitive,FALSE,,datasetContact,contact_email
+otherReferences,primitive,TRUE,,,submission_id
+language,controlledVocabulary,TRUE,,,language
+subject,controlledVocabulary,TRUE,Agricultural Sciences,,
+dsDescription,compound,TRUE,,,
+author,compound,TRUE,,,
+datasetContact,compound,TRUE,,,

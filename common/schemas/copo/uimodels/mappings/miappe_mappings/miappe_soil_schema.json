@@ -1,0 +1,62 @@
+{
+  "properties": [
+    {
+      "type": "string",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.miappe.nutrients.soil.extractable_N_content_per_unit_ground_area_before_fertiliser_added",
+      "show_in_table": true,
+      "control": "text",
+      "versions": [
+        "extractable_N_content_per_unit_ground_area_before_fertiliser_added"
+      ],
+      "help_tip": "",
+      "label": "Extractable N content per unit ground area before fertiliser added"
+    },
+    {
+      "type": "string",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.miappe.nutrients.soil.type_of_fertiliser_added",
+      "show_in_table": true,
+      "control": "text",
+      "versions": [
+        "type_of_fertiliser_added"
+      ],
+      "help_tip": "",
+      "label": "Type of fertiliser added"
+    },
+    {
+      "type": "string",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.miappe.nutrients.soil.amount_of_fertiliser_added_per_container_or_m2",
+      "show_in_table": true,
+      "control": "text",
+      "versions": [
+        "amount_of_fertiliser_added_per_container_or_m2"
+      ],
+      "help_tip": "",
+      "label": "Amount of fertiliser added per container or m2"
+    }
+  ],
+  "description": "Schema representing soil object",
+  "configuration": {
+    "type": "json",
+    "provider": "copo",
+    "ref": ""
+  },
+  "title": "Soil mappings"
+}

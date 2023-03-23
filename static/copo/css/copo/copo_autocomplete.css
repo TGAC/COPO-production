@@ -1,0 +1,16 @@
+
+#annotation_content {
+    margin: 0 auto;
+    width: 80%;
+    min-height: 800px;
+    text-align: left;
+}
+
+.autocomplete ul li{
+    background-color: #6CB2CE;
+    color: #ffc200;
+}
+.autocomplete ul li:hover{
+    background-color: #2c9cce;
+    color: #ffc200;
+}

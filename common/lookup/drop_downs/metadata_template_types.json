@@ -1,0 +1,32 @@
+[
+  {
+    "value": "cg_core",
+    "label": "CG Core",
+    "description": "This template is based on the CG Core 2.0 schema, and can support the description of objects to be submitted to instances of Dataverse, CKAN, dSPACE"
+  },
+  {
+    "value": "ena",
+    "label": "ENA - Sequence Reads",
+    "description": "This template supports the submission of <strong>raw sequence reads</strong> to the European Nucleotide Archive (ENA)"
+  },
+  {
+    "value": "ena-asm",
+    "label": "ENA - Sequence Assemblies",
+    "description": "This template supports submission of <strong>sequence assemblies</strong> to the European Nucleotide Archive (ENA)"
+  },
+  {
+    "value": "figshare",
+    "label": "Figshare",
+    "description": "This template supports the submission of object to Figshare, which accepts many file formats including PDFs, image, audio, and video files"
+  },
+  {
+    "value": "miappe",
+    "label": "MIAPPE Compliant",
+    "description": "MIAPPE is a Minimum Information (MI) standard for plant phenotyping. This template option defines a list of attributes for describing a phenotyping experiment"
+  },
+  {
+    "value": "dcterms",
+    "label": "Dublin Core",
+    "description": "Dublin Core is a generic community stardard metadata set for describing digital objects (such as images, video, pdfs, webpages) and physical objects (such as books or CDs). Items described with this schema can be submitted to repositories such as Dataverse or dSPACE instances"
+  }
+]

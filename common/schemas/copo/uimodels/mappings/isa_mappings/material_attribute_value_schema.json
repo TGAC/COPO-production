@@ -1,0 +1,61 @@
+{
+  "configuration": {
+    "type": "json",
+    "provider": "isa",
+    "ref": "material_attribute_value_schema"
+  },
+  "properties": [
+    {
+      "control_meta": {},
+      "ontology_names": [],
+      "versions": [
+        "category"
+      ],
+      "deprecated": false,
+      "id": "copo.material_attribute_value.category",
+      "label": "Category",
+      "show_in_form": true,
+      "ref": "",
+      "type": "object",
+      "show_in_table": true,
+      "hidden": "false",
+      "control": "ontology term"
+    },
+    {
+      "control_meta": {},
+      "ontology_names": [],
+      "versions": [
+        "value"
+      ],
+      "deprecated": false,
+      "id": "copo.material_attribute_value.value",
+      "label": "Value",
+      "show_in_form": true,
+      "ref": "",
+      "type": "object",
+      "show_in_table": true,
+      "hidden": "false",
+      "control": "ontology term",
+      "validation_source": true
+    },
+    {
+      "control_meta": {},
+      "ontology_names": [],
+      "versions": [
+        "unit"
+      ],
+      "deprecated": false,
+      "id": "copo.material_attribute_value.unit",
+      "type": "object",
+      "show_in_form": true,
+      "ref": "",
+      "label": "Unit",
+      "show_in_table": true,
+      "hidden": "false",
+      "control": "ontology term",
+      "validation_target": true
+    }
+  ],
+  "description": "Mappings of attribute in the material attribute value schema to COPO UI configuration.",
+  "title": "Material attribute value mappings"
+}

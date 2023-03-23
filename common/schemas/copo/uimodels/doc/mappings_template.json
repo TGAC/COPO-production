@@ -1,0 +1,30 @@
+{
+  "title": "Provides a heading or short description of the overall schema object",
+  "description": "Provides a more detailed information of the schema object. Some things to note: 1. The mapping function should be re-run to recapture any changes made to a mapping schema, which need to be propagated through the whole system. 2. '#description' is used in the context of this document in a way that doesn't form part of the entries, but serves to provide a description or explanation for an aspect of this template",
+  "configuration": {
+    "#description": "'configuration' is a sub-document, that provides control information needed for a mapping and/or conversion to be performed",
+    "type": "Specifies the document format to be mapped to. Valid entries include 'json', 'xml'",
+    "ref": "Is a reference to the resource to be mapped to. For example, a local file reference, such as 'target_json_schema', may be provided. Alternatively, a remote resource may be specified. Be sure, however, that the 'mapping' routine can easily locate this resource. A number of lookups may be referenced to locate the resource. Confirm a potential lookup dictionary or location to determine what makes a valid entry. ",
+    "provider": "The provider of the schema to be mapped to. Examples include, 'isa', 'copo', etc."
+  },
+  "properties": [
+    {
+      "#description": "'properties' is a list of sub-documents that constitute the actual mapping targets. Each property defined here may have a corresponding property in the referenced schema. In addition, 'unmapped' properties or controls may also be included to enrich the eventual 'output schema'. Each sub-document may be defined in a way that overrides the properties of the referenced control. In fact, any property (e.g., 'hidden') that appears within each sub-document will potentially be overridden with the value provided.",
+      "id": "Is a 'persistence' unique identifier for this property. This should be kept fixed for the lifetime of the property. This makes it safe to use it in different parts of an application consuming this property without worrying about it changing.",
+      "ref": "Is a reference to the property in the target schema",
+      "control": "The control that will be rendered in an UI that corresponds to the 'type' defined for this property. Example include 'text', 'select'.",
+      "versions": [
+        {
+          "#description": "'versions' is a list of keys defined for the referenced property. Append an entry to the list (e.g., 'name') to reflect an update in the referenced key. This helps maintain consistency in an application consuming the control even when the referenced property is updated with time."
+        }
+      ],
+      "deprecated": "This is a boolean, true or false, entry that is used to flag a control to be or not in use. That is, if true, the control will not be rendered anymore throughout the host application.",
+      "label": "The 'label' provides a UI title for a rendered control",
+      "help_tip": "Used to provide UI help tip for this property or control",
+      "default_value": "Provides a default value the this property or control",
+      "unique": "A boolean true enforces the UI control to be validated as unique within the context of a profile",
+      "email": "A boolean true enforces the UI control to be validated as an email",
+      "option_component": "Applies to multi-search controls, to inform the UI quick view event what component to base the quick view on"
+    }
+  ]
+}

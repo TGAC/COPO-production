@@ -1,0 +1,66 @@
+#repo_modal{
+    z-index: 1041;;
+}
+
+.row {
+    margin-left: 0 !important
+}
+
+.steps li span {
+    margin-left: 10px !important;
+}
+
+.persistentUrl_cell {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.copo_popover {
+    z-index: 1050;
+    position: absolute;
+    display: none;
+    background: #fff;
+    border: 1px solid #999;
+    padding: 10px;
+    min-width: 500px;
+    height: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    overflow-y: scroll
+}
+
+.copo_popover:after, .copo_popover:before {
+    right: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.copo_popover:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-right-color: #ffffff;
+    border-width: 10px;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.copo_popover:before {
+    border-color: rgba(201, 201, 201, 0);
+    border-right-color: #c9c9c9;
+    border-width: 11px;
+    top: 50%;
+    margin-top: -11px;
+}
+
+table{
+    vertical-align: top;
+}
+
+.ui-sortable-placeholder{
+    width: 500px;
+    height: 200px;
+    background-color: red;
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}COPO - Collaborative Open Plant Omics{% endblock %}</title>
+
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static 'copo/css/bootstrap/bootstrap.css' %}">
+    <!--<link rel="stylesheet" href="{% static 'copo/css/bootstrap/bootstrap-theme.css' %}">-->
+    <link rel="stylesheet" href="{% static 'copo/css/copo/style.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/menu.css' %}">
+
+    <link rel="shortcut icon" href="{% static 'copo/img/dna_orange.png' %}"/>
+
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+
+    <!-- Additional stylesheets -->
+    <link rel="stylesheet" href="{% static 'copo/css/copo/smart_table.css' %}">
+
+
+    {% block stylesheet_block %}{% endblock %}
+
+    <script src="{% static 'copo/js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static 'copo/js/jquery.cookie.js' %}"></script>
+    <script src="{% static 'copo/js/serialize_form_json.js' %}"></script>
+    <script src="{% static 'copo/js/bootstrap.js' %}"></script>
+    <!-- Additional javascripts -->
+    {% block js_block %}{% endblock %}
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        body {
+            background-image: url('{% static 'copo/img/wheat.jpg' %}');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+
+<div  class="text-center" style="padding:50px">
+    <img src="{% static 'copo/img/copo_white_800.png' %}" height="200px">
+</div>
+
+{% block content %}If you see this there is something wrong with the templates - you probably didn't overwrite the content block{% endblock %}
+
+</body>
+</html>

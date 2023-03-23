@@ -1,0 +1,41 @@
+{% extends 'copo/base_1col.html' %}
+
+{% load static %}
+{% load web_tags_orcid %}
+
+{% block stylesheet_block %}
+    <link rel="stylesheet" href="{% static 'copo/css/copo/browse_style.css' %}" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/orcid_profile.css' %}"
+          xmlns="http://www.w3.org/1999/html">
+{% endblock %}
+
+
+{% block title_block %} Index {% endblock %}
+
+{% block tagline_block %}
+
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="orcid-div">
+        <h4 class="h4">ORCiD Profile</h4>
+             <img src="{% static 'copo/img/orcid.png' %}" style="height:50px">
+            {{ orcid.orcid_identifier.path }}
+
+            </a>
+
+    </div>
+    <div class="repositories-div">
+        {% for r in repos %}
+            {{ r.name }}
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+
+{% block js_block %}
+{% endblock %}

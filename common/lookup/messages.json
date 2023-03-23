@@ -1,0 +1,12 @@
+{
+  "title": "General messages",
+  "description": "Defines messages that could be used system-wide.",
+  "properties": {
+    "doi_metadata_crosscheck": {
+      "text": "Please cross-check the resolved metadata for correctness before saving."
+    },
+    "doi_metadata_error": {
+      "text": " You may want to enter the metadata manually."
+    }
+  }
+}

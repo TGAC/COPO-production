@@ -1,0 +1,286 @@
+{
+  "configuration": {
+    "type": "xml",
+    "provider": "isa",
+    "description": "rNASeq also uses the same config as transcription. Source: Oxford.",
+    "ref": "transcription_seq.xml"
+  },
+  "properties": [
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "sample_name"
+      ],
+      "ref": "Sample Name",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Sample Name",
+      "show_in_form": true,
+      "id": "copo.rNASeq.sample_name",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "extract_name"
+      ],
+      "ref": "Extract Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Extract Name",
+      "show_in_form": false,
+      "id": "copo.rNASeq.extract_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_layout"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.rNASeq.library_layout",
+      "label": "Parameter Value[library layout]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library layout]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "SINGLE",
+        "PAIRED"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "mid"
+      ],
+      "ref": "Parameter Value[mid]",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Parameter Value[mid]",
+      "show_in_form": false,
+      "id": "copo.rNASeq.mid",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "sequencing_instrument"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.rNASeq.sequencing_instrument",
+      "label": "Parameter Value[sequencing instrument]",
+      "show_in_form": true,
+      "ref": "Parameter Value[sequencing instrument]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "454 GS",
+        "454 GS 20",
+        "454 GS FLX",
+        "454 GS FLX Plus",
+        "454 GS FLX Titanium",
+        "454 GS Junior",
+        "AB SOLiD\n                System",
+        "AB SOLiD System 2.0",
+        "AB SOLiD System 3.0",
+        "AB SOLiD 4 System",
+        "AB SOLiD 4hq System",
+        "AB SOLiD PI\n                System",
+        "AB SOLiD 5500",
+        "AB SOLiD 5500xl",
+        "AB 5500 Genetic Analyzer",
+        "AB 5500xl Genetic analyzer",
+        "Illumina Genome\n                Analyzer",
+        "Illumina Genome Analyzer II",
+        "Illumina Genome Analyzer IIx",
+        "Illumina HiSeq 1000",
+        "Illumina HiSeq\n                2000",
+        "Illumina HiSeq 2500",
+        "Illumina HiScanSQ",
+        "Illumina MiSeq",
+        "Ion Torrent PGM",
+        "Ion Torrent Proton",
+        "Sanger\n                sequencing instrument",
+        "unspecified\n            "
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "ontology term",
+      "versions": [
+        "base_caller"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.rNASeq.base_caller",
+      "label": "Parameter Value[base caller]",
+      "show_in_form": true,
+      "ref": "Parameter Value[base caller]",
+      "type": "string",
+      "show_in_table": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "ontology term",
+      "versions": [
+        "quality_scorer"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.rNASeq.quality_score",
+      "label": "Parameter Value[quality score]",
+      "show_in_form": true,
+      "ref": "Parameter Value[quality score]",
+      "type": "string",
+      "show_in_table": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "assay_name"
+      ],
+      "ref": "Assay Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Assay Name",
+      "show_in_form": false,
+      "id": "copo.rNASeq.assay_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "export"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.rNASeq.export",
+      "label": "Comment[Export]",
+      "show_in_form": false,
+      "ref": "Comment[Export]",
+      "type": "string",
+      "show_in_table": false,
+      "option_values": [
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "raw_data_file"
+      ],
+      "ref": "Raw Data File",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Raw Data File",
+      "show_in_form": false,
+      "id": "copo.rNASeq.raw_data_file",
+      "type": "string",
+      "show_in_table": false,
+      "control": "file"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "normalization_name"
+      ],
+      "ref": "Normalization Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Normalization Name",
+      "show_in_form": false,
+      "id": "copo.rNASeq.normalization_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "data_transformation_name"
+      ],
+      "ref": "Data Transformation Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Data Transformation Name",
+      "show_in_form": false,
+      "id": "copo.rNASeq.data_transformation_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "derived_data_file"
+      ],
+      "ref": "Derived Data File",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Derived Data File",
+      "show_in_form": false,
+      "id": "copo.rNASeq.derived_data_file",
+      "type": "string",
+      "show_in_table": false,
+      "control": "file"
+    }
+  ],
+  "description": "Mappings of attribute in the Assay schema to a UI configuration source. Configuration ref is points to the actual file to map to, defined in schemas",
+  "title": "RNASeq Assay schema mappings"
+}

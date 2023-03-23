@@ -1,0 +1,117 @@
+{% extends "base1.html" %}
+{% load static %}
+
+{% block javascript_block %}
+
+
+
+{% endblock %}
+
+
+{% block css_block %}
+
+
+
+{% endblock %}
+
+
+{% block baseblock %}
+
+    <div class="container-fluid">
+        {% if banner and banner.active %}
+
+            <div class="warning_banner">
+
+                <h1>{{ banner.header_txt }}</h1>
+                <p style="color:red">{{ banner.body_txt }}</p>
+            </div>
+
+        {% endif %}
+        <section>
+
+
+            <!-- include navbar html -->
+            <div style="padding:30px" class="pull-right">
+                {% include "nav_dropdown.html" %}
+            </div>
+
+            <div id="copo-icon">
+                <img src="{% static "assets/img/copo_white_800.png" %}">
+            </div>
+
+            <div class="green-subtitle">
+                share your data with fellow researchers
+            </div>
+
+            <div class="button_bar big">
+                <a href="https://copo-project.org/copo">
+                    <button class="ui big_button inverted button">Submit Data</button>
+                </a>
+                <a href="http://demo.copo-project.org/copo">
+                    <button class="ui big_button inverted button">Try Demo</button>
+                </a>
+            </div>
+
+            <div id="stats_bar">
+                {% include "statistics.html" %}
+            </div>
+
+        </section>
+        <section class="shade">
+            <!-- main content block -->
+            {% block content %}
+            {% endblock %}
+            <div class="col-md-3"></div>
+            <div class="col-md-6" id="contact-sec">
+                <div>
+                    <h2>Contact Us</h2>
+
+                </div>
+                <div>
+
+                    <form id="email_form" action="mailto:copo@earlham.ac.uk?subject=I'm intetested in COPO!"
+                          method="post"
+                          enctype="text/plain">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" required="required" placeholder="Name">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" required="required"
+                                           placeholder="Email address">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <div class="form-group">
+                                    <textarea name="message" id="message" required="required" class="form-control"
+                                              rows="3"
+                                              placeholder="Message"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <button id="email_submit" type="submit" class="btn btn-default">Submit Request
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <br/>
+                    <div id="social-icon">
+
+
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+
+        </section>
+
+
+    </div>
+
+
+{% endblock %}

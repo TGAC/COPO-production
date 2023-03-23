@@ -1,0 +1,56 @@
+{
+  "properties": [
+    {
+      "hidden": "false",
+      "deprecated": false,
+      "type": "string",
+      "ref": "",
+      "id": "copo.duration.years",
+      "show_in_table": true,
+      "show_in_form": true,
+      "control": "text",
+      "versions": [
+        "years"
+      ],
+      "label": "Years",
+      "placeholder": "Years"
+    },
+    {
+      "hidden": "false",
+      "deprecated": false,
+      "type": "string",
+      "ref": "",
+      "id": "copo.duration.months",
+      "show_in_table": true,
+      "show_in_form": true,
+      "control": "text",
+      "versions": [
+        "months"
+      ],
+      "label": "Months",
+      "placeholder": "Months"
+    },
+    {
+      "hidden": "false",
+      "deprecated": false,
+      "type": "string",
+      "ref": "",
+      "id": "copo.duration.days",
+      "show_in_table": true,
+      "show_in_form": true,
+      "control": "text",
+      "versions": [
+        "days"
+      ],
+      "label": "Days",
+      "placeholder": "Days"
+    }
+  ],
+  "description": "Schema to create a duration object",
+  "configuration": {
+    "type": "json",
+    "provider": "copo",
+    "ref": ""
+  },
+  "title": "Duration mappings"
+}

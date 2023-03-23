@@ -1,0 +1,182 @@
+[
+  {
+    "value": "WGS",
+    "label": "WGS",
+    "description": "Whole Genome Sequencing - random sequencing of the whole genome (see pubmed 10731132 for details)"
+  },
+  {
+    "value": "WGA",
+    "label": "WGA",
+    "description": "Whole Genome Amplification followed by random sequencing. (see pubmed 1631067,8962113 for details)"
+  },
+  {
+    "value": "WXS",
+    "label": "WXS",
+    "description": "Random sequencing of exonic regions selected from the genome. (see pubmed 20111037 for details)"
+  },
+  {
+    "value": "RNA-Seq",
+    "label": "RNA-Seq",
+    "description": "Random sequencing of whole transcriptome, also known as Whole Transcriptome Shotgun Sequencing, or WTSS). (see pubmed 18611170 for details)"
+  },
+  {
+    "value": "ssRNA-seq",
+    "label": "ssRNA-seq",
+    "description": "Strand-specific RNA sequencing."
+  },
+  {
+    "value": "miRNA-Seq",
+    "label": "miRNA-Seq",
+    "description": "Micro RNA sequencing strategy designed to capture post-transcriptional RNA elements and include non-coding functional elements. (see pubmed 21787409 for details)"
+  },
+  {
+    "value": "ncRNA-Seq",
+    "label": "ncRNA-Seq",
+    "description": "Capture of other non-coding RNA types, including post-translation modification types such as snRNA (small nuclear RNA) or snoRNA (small nucleolar RNA), or expression regulation types such as siRNA (small interfering RNA) or piRNA/piwi/RNA (piwi-interacting RNA)."
+  },
+  {
+    "value": "FL-cDNA",
+    "label": "FL-cDNA",
+    "description": "Full-length sequencing of cDNA templates"
+  },
+  {
+    "value": "EST",
+    "label": "EST",
+    "description": "Single pass sequencing of cDNA templates"
+  },
+  {
+    "value": "Hi-C",
+    "label": "Hi-C",
+    "description": "Chromosome Conformation Capture technique where a biotin-labeled nucleotide is incorporated at the ligation junction, enabling selective purification of chimeric DNA ligation junctions followed by deep sequencing."
+  },
+  {
+    "value": "ATAC-seq",
+    "label": "ATAC-seq",
+    "description": "Assay for Transposase-Accessible Chromatin (ATAC) strategy is used to study genome-wide chromatin accessibility. alternative method to DNase-seq that uses an engineered Tn5 transposase to cleave DNA and to integrate primer DNA sequences into the cleaved genomic DNA."
+  },
+  {
+    "value": "WCS",
+    "label": "WCS",
+    "description": "Random sequencing of a whole chromosome or other replicon isolated from a genome."
+  },
+  {
+    "value": "RAD-Seq",
+    "label": "RAD-Seq",
+    "description": "N/A"
+  },
+  {
+    "value": "CLONE",
+    "label": "CLONE",
+    "description": "Genomic clone based (hierarchical) sequencing."
+  },
+  {
+    "value": "POOLCLONE",
+    "label": "POOLCLONE",
+    "description": "Shotgun of pooled clones (usually BACs and Fosmids)."
+  },
+  {
+    "value": "AMPLICON",
+    "label": "AMPLICON",
+    "description": "Sequencing of overlapping or distinct PCR or RT-PCR products. For example, metagenomic community profiling using SSU rRNA."
+  },
+  {
+    "value": "CLONEEND",
+    "label": "CLONEEND",
+    "description": "Clone end (5\u2019, 3\u2019, or both) sequencing."
+  },
+  {
+    "value": "FINISHING",
+    "label": "FINISHING",
+    "description": "Sequencing intended to finish (close) gaps in existing coverage."
+  },
+  {
+    "value": "ChIP-Seq",
+    "label": "ChIP-Seq",
+    "description": "ChIP-seq, Chromatin ImmunoPrecipitation, reveals binding sites of specific proteins, typically transcription factors (TFs) using antibodies to extract DNA fragments bound to the target protein."
+  },
+  {
+    "value": "MNase-Seq",
+    "label": "MNase-Seq",
+    "description": "Identifies well-positioned nucleosomes. uses Micrococcal Nuclease (MNase) is an endo-exonuclease that processively digests DNA until an obstruction, such as a nucleosome, is reached."
+  },
+  {
+    "value": "DNase-Hypersensitivity",
+    "label": "DNase-Hypersensitivity",
+    "description": "Sequencing of hypersensitive sites, or segments of open chromatin that are more readily cleaved by DNaseI."
+  },
+  {
+    "value": "Bisulfite-Seq",
+    "label": "Bisulfite-Seq",
+    "description": "MethylC-seq. Sequencing following treatment of DNA with bisulfite to convert cytosine residues to uracil depending on methylation status."
+  },
+  {
+    "value": "CTS",
+    "label": "CTS",
+    "description": "Concatenated Tag Sequencing"
+  },
+  {
+    "value": "MRE-Seq",
+    "label": "MRE-Seq",
+    "description": "Methylation-Sensitive Restriction Enzyme Sequencing."
+  },
+  {
+    "value": "MeDIP-Seq",
+    "label": "MeDIP-Seq",
+    "description": "Methylated DNA Immunoprecipitation Sequencing."
+  },
+  {
+    "value": "MBD-Seq",
+    "label": "MBD-Seq",
+    "description": "Methyl CpG Binding Domain Sequencing."
+  },
+  {
+    "value": "Tn-Seq",
+    "label": "Tn-Seq",
+    "description": "Quantitatively determine fitness of bacterial genes based on how many times a purposely seeded transposon gets inserted into each gene of a colony after some time."
+  },
+  {
+    "value": "VALIDATION",
+    "label": "VALIDATION",
+    "description": "CGHub special request"
+  },
+  {
+    "value": "FAIRE-seq",
+    "label": "FAIRE-seq",
+    "description": "Formaldehyde Assisted Isolation of Regulatory Elements. Reveals regions of open chromatin."
+  },
+  {
+    "value": "SELEX",
+    "label": "SELEX",
+    "description": "Systematic Evolution of Ligands by Exponential enrichment"
+  },
+  {
+    "value": "RIP-Seq",
+    "label": "RIP-Seq",
+    "description": "Direct sequencing of RNA immunoprecipitates (includes CLIP-Seq, HITS-CLIP and PAR-CLIP)."
+  },
+  {
+    "value": "ChIA-PET",
+    "label": "ChIA-PET",
+    "description": "Direct sequencing of proximity-ligated chromatin immunoprecipitates."
+  },
+  {
+    "value": "Synthetic-Long-Read",
+    "label": "Synthetic-Long-Read",
+    "description": "binning and barcoding of large DNA fragments to facilitate assembly of the fragment"
+  },
+  {
+    "value": "Targeted-Capture",
+    "label": "Targeted-Capture",
+    "description": "Enrichment of a targeted subset of loci."
+  },
+  {
+    "value": "Tethered Chromatin Conformation Capture",
+    "label": "Tethered Chromatin Conformation Capture",
+    "description": "N/A"
+  },
+  {
+    "value": "OTHER",
+    "label": "OTHER",
+    "description": "Library strategy not listed."
+  }
+]

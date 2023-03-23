@@ -1,0 +1,73 @@
+{
+  "title": "Metadata Rating Template",
+  "description": "schema defines rules for rating metadata for descriptions that target different repositories. Basically, the rating template is a set of mutually exclusive/canonical rules used in matching user description to some rating level",
+  "properties": [
+    {
+      "rating_level": "good",
+      "rating_level_description": "There is sufficient metadata for submission to {repo_name!s}",
+      "matching_rules": {
+        "ena": {
+          "allOf": [
+            "study_type",
+            "attach_samples",
+            "library_construction",
+            "nucleic_acid_sequencing"
+          ],
+          "anyOf": []
+        },
+        "ena-asm": {},
+        "ena-ant": {},
+        "_figshare": {
+        },
+        "miappe": {
+        },
+        "dataverse": {
+        }
+      }
+    },
+    {
+      "rating_level": "fair",
+      "rating_level_description": "Insufficient metadata for submission to {repo_name!s}",
+      "matching_rules": {
+        "ena": {
+          "anyOf": [
+            "study_type",
+            "attach_samples",
+            "library_construction",
+            "nucleic_acid_sequencing"
+          ]
+        },
+        "ena-asm": {},
+        "ena-ant": {},
+        "_figshare": {
+        },
+        "miappe": {
+        },
+        "dataverse": {
+        }
+      }
+    },
+    {
+      "rating_level": "poor",
+      "rating_level_description": "No metadata for submission to a repository",
+      "matching_rules": {
+        "ena": {
+          "not": [
+            "study_type",
+            "attach_samples",
+            "library_construction",
+            "nucleic_acid_sequencing"
+          ]
+        },
+        "ena-asm": {},
+        "ena-ant": {},
+        "_figshare": {
+        },
+        "miappe": {
+        },
+        "dataverse": {
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{% extends 'copo/base_1col.html' %}
+
+{% load static %}
+{% load web_tags %}
+{% load html_tags %}
+
+{% block content %}
+    <input type="hidden" id="template_id" value="{{ template_id }}"/>
+    <input type="hidden" id="annotation_type" value="metadata_template"/>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="field_primer_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="pull-right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <a type="button" id="add_fields_button" class="btn btn-primary">Go</a>
+                    </span>
+                    <h4 class="modal-title">Fields</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="field_primer_form">
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <a type="button" id="add_fields_button" class="btn btn-primary">Go</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="export_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Export</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <a type="button" id="export_save_btn" class="btn btn-primary">Export</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="row">
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <form class="form-inline" style="margin-left:15px">
+                <div class="form-group row">
+                    <label for="new_title">Update Title</label><br/>
+                    <div class="new_title_div ui icon input">
+                        <input type="email" class="form-control" id="new_title" aria-describedby="new_name_note"
+                               placeholder="{{ template_name }}">
+                        <i class="pencil alternate icon"></i>
+                    </div>
+                    <button type="button" id="" class="btn btn-primary update_title_button">Update</button>
+                </div>
+            </form>
+
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <div id="title_block">
+                <div class="loading_div" style="display: none">
+                    <div class="ui active inverted dimmer">
+                        <div class="ui text loader">Updating</div>
+                    </div>
+                    <p></p>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3" id=""
+             style="">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-3 col-md-3 col-lg-3" style="background-color: #f9f9f9; padding: 20px">
+            <hr/>
+            <p class="h4">
+                Search Term
+                <small class="small">Query the Ontology Lookup Service</small>
+            </p>
+            <br/>
+            <p>
+                <small id="term_help" class="form-text text-muted">Start typing to find matching ontology
+                    terms
+                </small>
+            </p>
+            <div class="search-term-div ui icon input ">
+                <input type="text" id="search_term_text_box"
+                       aria-describedby="term_help" placeholder="Search">
+                <i class="search icon"></i>
+            </div>
+            <form>
+                <div class="form-group">
+
+                    <div class="dropdown ontology_dropdown pull-right">
+                        <div class="medium ui basic button dropdown-toggle"
+                             id="ontology_filter_button"
+                             data-toggle="dropdown"
+                             aria-haspopup="true" aria-expanded="true">
+                            <span class="ontology_label">All Ontologies</span>
+                            <span class="caret"></span>
+                        </div>
+
+                        <ul class="dropdown-menu" id="ontology_dropdown_filter"
+                            aria-labelledby="dropdownMenu1">
+                            <a>
+                                <li class="ontology_dd_item" data-name="All Ontologies" data-id="">
+                                <span class="h5">
+                                    <span class="ontology_dd_name">All Ontologies</span>
+                                    <br/>
+                                    <small class="ontology_dd_description">Search all ontologies for terms.</small>
+                                </span>
+                                </li>
+                            </a>
+                        </ul>
+                    </div>
+
+
+                </div>
+            </form>
+
+
+            <p class="h4" style="margin-top:60px">Search Results
+                <small class="text-muted">Drag Term to Column</small>
+            </p>
+            <!-- search results go here -->
+            <div id="search_results" style="overflow-y: scroll">
+
+            </div>
+        </div>
+
+
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <div id="template_content"></div>
+
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3" id="filters"
+             style="background-color: #f9f9f9; padding: 20px">
+            <form>
+                <div class="form-group">
+                    <button class="ui green button" id="export_button">
+                        <i class="table icon"></i>
+                        Export as Spreadsheet
+                    </button>
+                </div>
+                <div class="form-group" style="margin-top: 20px">
+                    <label for="template_dd">Choose Starting Template</label>
+                    <select class="form-control" id="template_dd">
+
+                    </select>
+                    <small id="" class="form-text text-muted">
+                        Here you can choose to add fields from an existing schema or template. You can still add other
+                        fields later.
+                    </small>
+                    <button type="button" id="template_dd_button" style="margin-top: 10px"
+                            class="btn btn-primary pull-right">Add Fields
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block stylesheet_block %}
+    <link rel="stylesheet" href="{% static 'copo/css/copo/browse_style.css' %}" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/handsontable7.0.3/handsontable.full.css' %}"
+          xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/datafile.css' %}" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/copo_annotations.css' %}" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/copo_ontology_styles.css' %}"
+          xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/copo_annotations.css' %}" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/author_metadata_template.css' %}"
+          xmlns="http://www.w3.org/1999/html">
+
+    <style>
+
+    </style>
+{% endblock %}
+
+
+{% block js_block %}
+    <script src="{% static 'copo/js/generic_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/generic_handlers_ext2.js' %}"></script>
+    <script src="{% static 'copo/js/copo_form_handlers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'copo/js/copo_metadata_template.js' %}"></script>
+    <script type="text/javascript" src="{% static 'copo/js/copo_file_level_annotations.js' %}"></script>
+    <script type="text/javascript" src="{% static 'copo/js/copo_ontology_functions.js' %}"></script>
+{% endblock %}

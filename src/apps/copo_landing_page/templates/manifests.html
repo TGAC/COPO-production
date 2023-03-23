@@ -1,0 +1,245 @@
+{% extends "secondary.html" %}
+{% load static %}
+
+{% block topbanner %}
+    Manifests
+    <span id="spinner_div" class="pull-right" style="font-size:12px; font-weight:normal">
+            <h4 class="h4" style="font-weight:bold">Status</h4>
+            <div class="alert alert-info" style="min-width: 400px; min-height: 55px;" role="alert">
+                <span id="spinner" style="margin-top:10px" class="pull-right ui tiny active inline loader"></span>
+                <div id="sub_spinner" style="margin-top:10px"
+                     class="pull-right ui tiny indeterminate inline loader"></div>
+                <p id="" style="color:#3a87ad !important; font-size:20px !important;">Manifest is generating...</p>
+            </div>
+    </span>
+{% endblock %}
+
+{% block content %}
+    <p style="  display: inline-block;vertical-align: middle;margin: 10px 0;">
+        Current Tree of Life Manifests </p>
+
+    <div style="margin-left: 40px">
+        <table class="ui padded table" style="text-align: center">
+            <thead>
+            <tr>
+                <th>Manifest Type</th>
+                <th>Version</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+                <td>DTOL - (Darwin Tree of Life)</td>
+                <td>2.4.1</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Download
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="{% static 'assets/manifests/DTOL_EXAMPLE_SAMPLE_MANIFEST_v2.4.1.xlsx' %}">
+                                Blank template</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a class="wizard-link" href="javascript:" title='Launch DTOL_MANIFEST_v2.4.1 wizard'
+                                   onclick="showWizardBasedOnManifestType('dtol')"
+                                   aria-hidden="true">Prefilled template</a></li>
+
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>ASG - (Aquatic Symbiosis Genomics)</td>
+                <td>2.4.1</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Download
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <li><a href="{% static 'assets/manifests/ASG_EXAMPLE_SAMPLE_MANIFEST_v2.4.1.xlsx' %}">
+                                Blank template</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a class="wizard-link" href="javascript:" title='Launch ASG_MANIFEST_v2.4.1 wizard'
+                                   onclick="showWizardBasedOnManifestType('asg')"
+                                   aria-hidden="true">Prefilled template</a></li>
+
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>ERGA - (European Reference Genome Atlas)</td>
+                <td>2.4</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Download
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                            <li><a href="{% static 'assets/manifests/ERGA_SAMPLE_MANIFEST_V2.4.xlsx' %}">
+                                Blank template</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a class="wizard-link" href="javascript:" title='Launch ERGA_MANIFEST_v2.4 wizard'
+                                   onclick="showWizardBasedOnManifestType('erga')"
+                                   aria-hidden="true">Prefilled template</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Barcoding</td>
+                <td>1.0</td>
+                <td><a href="{% static 'assets/manifests/TOL_BARCODE_MANIFEST_TEMPLATE.xlsx' %}">ToL_BARCODING_MANIFEST.xlsx</a>
+                </td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+    {#  Modal wizard starts #}
+    <div class="modal fade fuelux" id="modal-placeholder" data-backdrop="static" data-keyboard="false" tabindex="-1"
+         role="dialog"
+         aria-labelledby="modalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button id="closeModalIcon" type="button" class="close"
+                            aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 id=modalLabel class="modal-title" style="text-align:center;"><b>Tree of Life Manifest Wizard</b>
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="wizard" id="manifest-wizard">
+                        <div class="steps-container">
+                            <ul class="steps">
+                                {#                                <li data-step="1" class="active">#}
+                                {#                                    <span class="badge badge-info">1</span>Type<span class="chevron"></span>#}
+                                {#                                </li>#}
+                                <li data-step="2" class="active">
+                                    <span class="badge">1</span>Samples<span class="chevron"></span>
+                                </li>
+                                <li data-step="3">
+                                    <span class="badge">2</span>Download<span class="chevron"></span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="step-content">
+                            {#                            <div class="step-pane" data-step="1">#}
+                            {#                                <div class="well">#}
+                            {#                                    <label>Which manifest do you want to create?</label>#}
+                            {#                                    <select id="manifestType" class="form-control">#}
+                            {#                                        <option value="asg">ASG</option>#}
+                            {#                                        <option value="dtol">DTOL</option>#}
+                            {#                                        <option value="erga">ERGA</option>#}
+                            {#                                        <option value="env">ENV</option>#}
+                            {#                                    </select>#}
+                            {##}
+                            {#                                </div>#}
+                            {#                            </div>#}
+                            <div class="step-pane" data-step="2">
+                                <div class="well">
+                                    <label>How many samples would you like to describe?</label>
+                                    <br>
+                                    <input class="form-control" id="numberOfSamples"
+                                           type="number" value="1" min="1"
+                                           max="10000" required
+                                           onkeypress="return event.keyCode === 8 || event.charCode > 48
+                                               && event.charCode <= 57"/>
+                                </div>
+
+                                <div class="well">
+                                    <label>Are there common values for these fields?&nbsp;
+                                        <i id="info" class="fa fa-info-circle" aria-hidden="true"></i>
+
+                                    </label>
+                                    <br>
+                                    <div id="commonfieldsDropdownlistDiv" class="form-group">
+                                        <span style="display:none;" id="commonFieldErrorMessageID"
+                                              class="help-block"></span>
+                                        <select class="form-control" id="commonfields"
+                                                onchange="insertFormDiv(this)"
+                                                aria-describedby="commonFieldErrorMessageID">
+                                        </select>
+                                    </div>
+
+                                </div>
+
+
+                                <div id="formDiv">
+                                    <form id="formID"></form>
+                                    {% csrf_token %}
+                                </div>
+
+
+                            </div>
+
+                            <div class="step-pane" data-step="3">
+                                <p style="text-align:center; font-size: medium">The manifest template is ready to be
+                                    generated. Click the finish button to generate it.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="actions">
+                            <button type="button" class="btn btn-sm btn-primary btn-prev">
+                                <i class="fa fa-arrow-left"></i> Prev
+                            </button>
+
+                            <button id='resetBtn' type="button" class="btn btn-sm btn-primary btn-reset">
+                                <i class="fa fa-refresh"></i> Reset
+                            </button>
+
+                            <button id='nextBtn' type="button" class="btn btn-sm btn-success btn-next"
+                                    data-last="Finish ">
+                                Next<i id="rightIcon" class="fa fa-arrow-right" style="padding-left: 5px"></i>
+                            </button>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {#  Modal wizard ends #}
+{% endblock %}
+
+{% block headblock %}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://www.fuelcdn.com/fuelux/3.17.1/css/fuelux.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/manifests.css' %}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script src="{% static 'assets/js/manifests.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuelux/3.17.2/js/fuelux.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.3/bootbox.min.js"></script>
+{% endblock %}

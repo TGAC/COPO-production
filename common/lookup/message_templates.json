@@ -1,0 +1,26 @@
+{
+  "title": "Message templates",
+  "description": "Provides templates for which messages can be channeled through to UI components e.g., UI forms",
+  "templates": {
+    "danger": {
+      "type": "danger",
+      "text": "",
+      "icon_class": "fa fa-times-circle copo-icon-danger"
+    },
+    "info": {
+      "type": "info",
+      "text": "",
+      "icon_class": "fa fa-exclamation-circle copo-icon-info"
+    },
+    "success": {
+      "type": "success",
+      "text": "",
+      "icon_class": "fa fa-check-circle copo-icon-success"
+    },
+    "default": {
+      "type": "default",
+      "text": "",
+      "icon_class": "fa fa-exclamation-circle copo-icon-default"
+    }
+  }
+}

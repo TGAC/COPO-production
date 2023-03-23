@@ -1,0 +1,68 @@
+#ss_sheets {
+    margin-bottom: 10px;
+    overflow-x: auto;
+}
+
+#ss_data {
+    min-height: 160px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#search_results {
+    height: 451px;
+    padding: 5px;
+
+}
+
+#filters {
+    min-height: 451px;
+}
+
+.annotation_term {
+    min-height: 50px;
+    margin-top: 10px;
+    padding: 5px;
+    width: 90%;
+    z-index: 999;
+}
+
+.highlight {
+    margin-bottom: 20px
+}
+
+.annotation_term .ontology_name {
+
+}
+
+.dropHover {
+    color: red;
+}
+
+
+
+.annotatedColumn{
+    background-color: #fff6e6 !important;
+}
+
+.selectedColumn {
+    background-color: #fff4a8 !important;
+}
+
+.selectedAnnotation {
+    background-color: #fafafa !important;
+    -webkit-box-shadow: 3px 3px 3px -2px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 3px 3px 3px -2px rgba(0, 0, 0, 0.75);
+    box-shadow: 3px 3px 3px -2px rgba(0, 0, 0, 0.75);
+}
+
+#annotations_for_cell{
+    margin-bottom: 20px !important;
+    min-height: 20px;
+}
+
+.annotation_for_cell{
+    margin-left: 10px;
+    margin-bottom: 10px;
+    padding:10px
+}

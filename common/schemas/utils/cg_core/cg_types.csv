@@ -1,0 +1,112 @@
+Information product type,Cgcore_field,Indexvalue,,Type,Subtype
+KOS,dc.type,required,,Data file,Spreadsheet
+Data file,dc.type,required,,Data file,Table
+Database,dc.type,required,,Data file,Authority file
+Dataset As A Collection Of Data,dc.type,required,,geospatial vector file,Table
+geospatial raster file,dc.type,required,,Dataset as a collection of data,Spreadsheet
+geospatial vector file,dc.type,required,,Dataset as a collection of data,Table
+Manual,dc.type,required,,Dataset as a collection of data,Authority file
+Website,dc.type,required,,Database,Catalog
+Software,dc.type,required,,Database,Bibliographic database
+Image,dc.type,required,,Database,Ontology
+Audio,dc.type,required,,Database,Dictionary entry
+Brochure,dc.type,required,,Database,Encyclopedia entry
+directive document,dc.type,required,,Database,Authority file
+Legal Document,dc.type,required,,Database,Table
+Technical Report,dc.type,required,,Collection,Book series
+Source Code,dc.type,required,,Collection,Blog
+Standard,dc.type,required,,Manual,training manual
+News Item,dc.type,required,,Manual,Handbook
+Post,dc.type,required,,Conference paper,Conference Abstract
+Press Item,dc.type,required,,Conference paper,Conference Paper not in proceedings
+Working Paper,dc.type,required,,Thesis,Master thesis
+Map,dc.type,required,,Thesis,Dissertation
+Journal,dc.type,required,,Thesis,Bachelor thesis
+Journal Article,dc.type,required,,Presentation,Speech
+Poster,dc.type,required,,Financial report,Project report
+Other,dc.type,required,,Financial report,Donor report
+Video,dc.type,required,,Financial report,Annual report
+Video Recording,dc.type,required,,Research report,Case study
+Newsletter,dc.type,required,,Research report,Annual report
+Infographic,dc.type,required,,Research report,Project report
+Newspaper,dc.type,required,,Technical report,Annual report
+Research Report,dc.type,required,,Technical report,Meeting report
+Book,dc.type,required,,Technical report,Case study
+Book Chapter,dc.type,required,,Technical report,donor report
+Conference Paper,dc.type,required,,Technical report,Project report
+Conference Proceedings,dc.type,required,,Newsletter,Newsletter article
+Magazine Article,dc.type,required,,Newspaper,Newspaper article
+Personal Communication,dc.type,required,,News Item,Press release
+Financial Report,dc.type,required,,Directive document,Policy
+Presentation,dc.type,required,,Directive document,Standard operating procedure
+Thesis,dc.type,required,,Directive document,Textbook
+spreadsheet,dc.subtype,recommended,,Directive document,Handbook
+Taxonomy,dc.subtype,recommended,,Directive document,Good Practice Note
+bibliographic database,dc.subtype,recommended,,Directive document,experimental protocol
+Policy,dc.subtype,recommended,,Directive document,internal document
+Photograph,dc.subtype,recommended,,Directive document,Briefing paper
+Table,dc.subtype,recommended,,Personal Communication,Letter
+Speech,dc.subtype,recommended,,Personal Communication,Note
+module,dc.subtype,recommended,,Personal Communication,E-mail
+TV Broadcast,dc.subtype,recommended,,Personal Communication,Mobile Message
+graphic,dc.subtype,recommended,,Legal document,Government document
+Logo,dc.subtype,recommended,,Legal document,Contract
+graphic-Animated/interactive,dc.subtype,recommended,,Legal document,Memorandum
+Radio Broadcast,dc.subtype,recommended,,KOS,Vocabulary
+book series,dc.subtype,recommended,,KOS,Taxonomy
+Vocabulary,dc.subtype,recommended,,KOS,ontology
+Catalog,dc.subtype,recommended,,KOS,authority file
+webpage,dc.subtype,recommended,,Website,Webpage
+Wiki,dc.subtype,recommended,,Website,Wiki
+Model,dc.subtype,recommended,,Source code,script
+Abstract,dc.subtype,recommended,,Source code,algorithm
+Blog,dc.subtype,recommended,,Source code,Model
+Book Chapter-Peer-Reviewed,dc.subtype,recommended,,Source code,Equation
+Case Study,dc.subtype,recommended,,Audio,Radio broadcast
+Contract,dc.subtype,recommended,,Video,graphic-Animated/interactive
+Concept Note,dc.subtype,recommended,,Video recording,TV broadcast
+Government Document,dc.subtype,recommended,,Image,graphic
+Memorandum,dc.subtype,recommended,,Image,cartographic
+Notebook,dc.subtype,recommended,,Image,Photograph
+Dictionary Entry,dc.subtype,recommended,,Image,Logo
+Encyclopedia Entry,dc.subtype,recommended,,Map,graphic-Animated/interactive
+Equation,dc.subtype,recommended,,Other,Project plan
+Factsheet,dc.subtype,recommended,,Other,briefing paper
+Good Practice Note,dc.subtype,recommended,,Other,Policy brief
+Handbook,dc.subtype,recommended,,Other,Factsheet
+Internal Document,dc.subtype,recommended,,Other,Poster paper
+Standard operating procedure,dc.subtype,recommended,,Other,Workshop paper
+Letter,dc.subtype,recommended,,Other,Seminar paper
+Mobile Message,dc.subtype,recommended,,Other,Internal document
+Newsletter Article,dc.subtype,recommended,,Other,Interactive resource
+Newspaper Article,dc.subtype,recommended,,Other,Notebook
+Note,dc.subtype,recommended,,Other,Questionnaire
+Pamphlet,dc.subtype,recommended,,Other,Concept Note
+briefing paper,dc.subtype,recommended,,Other,Pamphlet
+poster paper,dc.subtype,recommended,,Other,Memorandum
+Project plan,dc.subtype,recommended,,Other,Exercise
+Policy Brief,dc.subtype,recommended,,Other,Test
+Press Release,dc.subtype,recommended,,Other,Lesson
+experimental protocol,dc.subtype,recommended,,Other,Template
+Questionnaire,dc.subtype,recommended,,Other,Equation
+Annual Report,dc.subtype,recommended,,Other,Model
+Donor Report,dc.subtype,recommended,,Other,graphic-Animated/interactive
+Meeting report,dc.subtype,recommended,,Other,cartographic
+Project Report,dc.subtype,recommended,,Other,Table
+algorithm,dc.subtype,recommended,,Other,Authority file
+script,dc.subtype,recommended,,Other,Abstract
+Test,dc.subtype,recommended,,Other,template
+exercise,dc.subtype,recommended,,Other,workshop paper
+lesson,dc.subtype,recommended,,Other,Seminar paper
+training manual,dc.subtype,recommended,,Other,Equation
+Ontology,dc.subtype,recommended,,Other,Model
+authority file,dc.subtype,recommended,,Other,animated/interactive graphic
+interactive resource,dc.subtype,recommended,,Other,cartographic ressources
+Template,dc.subtype,recommended,,,
+Book-Peer-reviewed,dc.subtype,recommended,,,
+Textbook,dc.subtype,recommended,,,
+Conference Abstract,dc.subtype,recommended,,,
+Conference Paper not in proceedings,dc.subtype,recommended,,,
+E-Mail,dc.subtype,recommended,,,
+Bachelor thesis,dc.subtype,recommended,,,
+Dissertation,dc.subtype,recommended,,,

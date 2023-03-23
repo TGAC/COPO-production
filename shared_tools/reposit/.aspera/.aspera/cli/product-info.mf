@@ -1,0 +1,6 @@
+<product>
+  <name>IBM Aspera CLI</name>
+  <version>3.9.1.1401.be67d47</version>
+  <components>
+  </components>
+</product>

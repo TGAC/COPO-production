@@ -1,0 +1,111 @@
+{% extends 'copo/base_2col.html' %}
+
+
+{% load static %}
+{% load web_tags %}
+{% load html_tags %}
+
+{% block stylesheet_block %}
+    <link rel="stylesheet" href="{% static 'copo/css/copo/copo_submission.css' %}" xmlns="http://www.w3.org/1999/html">
+{% endblock %}
+
+
+{% block title_block %} COPO People {% endblock %}
+
+{% block tagline_block %}
+
+
+{% endblock %}
+
+
+{% block browse_header_block %}
+    {% csrf_token %}
+    <div hidden id="hidden_attrs">
+        <!-- hidden attributes  -->
+        <input type="hidden" id="profile_id" value="{{ profile_id }}"/>
+        <input type="hidden" id="nav_component_name" value="submission"/>
+    </div>
+{% endblock %}
+
+{% block page_tile %}
+    {% include "component_navbar.html" %}
+{% endblock page_tile %}
+
+{% block content %}
+
+    {#    test#}
+    {#    test ends#}
+
+    <!-- getting started section -->
+    <div class="row">
+        <div class="col-sm-5 col-md-5 col-lg-5 col-xs-offset-0 page-welcome-message"
+             style="display: none;">
+            <div class="copo-webui-popover">
+                <div class="webui-popover-inner">
+                    <h3 class="copo-webui-popover-title">Submissions - Getting started</h3>
+                    <div class="copo-webui-popover-content">
+                        <div class="webpop-content-div">
+                            <p>The submission component of a profile displays submission records (completed or pending)
+                                within a profile.</p>
+                            <p>Submission entries are created following through from datafile
+                                description process (under the datafile component). Each submission entry provides menu
+                                items for managing the record such as submitting, lifting of embargo, viewing
+                                submission accessions.</p>
+
+                            <br/>
+                            <div><strong>Quick Tour: </strong>To explore the various
+                                controls available on this page, click the
+                                <button class="circular tiny ui icon orange button">
+                                    <i class="icon lightbulb"></i>
+                                </button>
+                                icon.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h4 class="h4" id="manifest_submissions_label">Manifest Submissions</h4>
+
+
+    <div class="table-parent-div">
+        <table id="manifest_table" class="ui table"
+               cellspacing="0" width="100%">
+
+        </table>
+    </div>
+
+    <hr/>
+    <!-- submission table -->
+    <!-- deprecated
+    <h4 class="h4" id="wizard_submissions_label">Wizard Submissions</h4>
+    <div id="component_table_loader" class="col-sm-5 col-md-5 col-lg-5 col-xs-offset-5"
+         data-copo-tour-id="submission_table"></div> 
+    <div id="cover-spin-bundle"></div>
+
+    <div class="table-parent-div">
+        <table id="submission_table" class="ui table"
+               cellspacing="0" width="100%">
+        </table>
+    </div>
+    -->
+
+{% endblock %}
+
+{% block help_section %}
+
+
+{% endblock %}
+
+
+{% block js_block %}
+    <script src="{% static 'copo/js/generic_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/generic_handlers_ext2.js' %}"></script>
+    <script src="{% static 'copo/js/copo_form_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/copo_submission.js' %}"></script>
+    <script src="{% static 'copo/js/repository_inspection.js' %}"></script>
+    <script src="{% static 'copo/js/copo_submissions_manifest_functions.js' %}"></script>
+{% endblock %}

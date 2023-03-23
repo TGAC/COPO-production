@@ -1,0 +1,14 @@
+{
+    "id" : "",
+    "roles" : {
+        "name" : ""
+    },
+    "email" : "",
+    "firstName" : "",
+    "phone" : "",
+    "lastName" : "",
+    "affiliations" : "",
+    "address" : "",
+    "midInitials" : "",
+    "fax" : ""
+}

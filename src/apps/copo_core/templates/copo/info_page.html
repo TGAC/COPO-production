@@ -1,0 +1,29 @@
+{% extends 'copo/base_simple.html' %}
+
+{% load static %}
+{% load web_tags %}
+
+{% block stylesheet_block %}
+	<link rel="stylesheet" href="{% static 'copo/css/copo/browse_style.css' %}" xmlns="http://www.w3.org/1999/html">
+
+{% endblock %}
+
+
+{% block title_block %} Info {% endblock %}
+
+
+
+{% block content %}
+
+
+	<div class="text-center">
+		<div class="lead">{{ message|safe }}</div>
+		<div>{{ control|safe }}</div>
+	</div>
+
+
+{% endblock %}
+
+
+{% block js_block %}
+{% endblock %}

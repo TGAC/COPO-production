@@ -1,0 +1,268 @@
+{
+  "configuration": {
+    "type": "xml",
+    "provider": "isa",
+    "ref": "INVESTIGATION_FILE_XML"
+  },
+  "properties": [
+    {
+      "help_tip": "Enter person first name",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "firstName"
+      ],
+      "ref": "Investigation Person First Name",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "First Name",
+      "show_in_form": true,
+      "id": "copo.person.firstName",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "lastName"
+      ],
+      "ref": "Investigation Person Last Name",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Last Name",
+      "show_in_form": true,
+      "id": "copo.person.lastName",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "midInitials"
+      ],
+      "ref": "Investigation Person Mid Initials",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Mid Initials",
+      "show_in_form": true,
+      "id": "copo.person.midInitials",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "email"
+      ],
+      "deprecated": false,
+      "email": true,
+      "hidden": "false",
+      "id": "copo.person.email",
+      "label": "Email Address",
+      "show_in_form": true,
+      "ref": "Investigation Person Email",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "Ontology term",
+      "versions": [
+        "roles"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.person.roles",
+      "label": "Roles",
+      "show_in_form": true,
+      "ref": "Investigation Person Roles",
+      "type": "array",
+      "show_in_table": false,
+      "show_as_attribute": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "phone"
+      ],
+      "ref": "Investigation Person Phone",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Phone",
+      "phone": true,
+      "show_in_form": true,
+      "id": "copo.person.phone",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "fax"
+      ],
+      "ref": "Investigation Person Fax",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Fax",
+      "show_in_form": true,
+      "id": "copo.person.fax",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "address"
+      ],
+      "ref": "Investigation Person Address",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Address",
+      "show_in_form": true,
+      "id": "copo.person.address",
+      "type": "string",
+      "show_in_table": true,
+      "control": "textarea"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "affiliation"
+      ],
+      "ref": "Investigation Person Affiliation",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Affiliation",
+      "show_in_form": true,
+      "id": "copo.person.affiliation",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "comments"
+      ],
+      "ref": "Comment[Investigation Person REF]",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Comment",
+      "show_in_form": true,
+      "id": "copo.person.comments",
+      "type": "array",
+      "show_in_table": false,
+      "show_as_attribute": true,
+      "control": "copo-comment"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_created"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Created",
+      "show_in_form": false,
+      "id": "copo.person.date_created",
+      "type": "string",
+      "show_in_table": false,
+      "control": "datetime"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "profile_id"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Profile ID",
+      "show_in_form": false,
+      "id": "copo.person.profile_id",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "deleted"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Delete",
+      "show_in_form": false,
+      "id": "copo.person.deleted",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_modified"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Modified",
+      "show_in_form": false,
+      "id": "copo.person.date_modified",
+      "type": "string",
+      "show_in_table": true,
+      "control": "datetime"
+    }
+  ],
+  "description": "Mappings of attribute in the Person schema to a UI configuration source. Configuration ref is defined in UI_CONFIG_SOURCES in services.py",
+  "title": "Person schema mappings"
+}

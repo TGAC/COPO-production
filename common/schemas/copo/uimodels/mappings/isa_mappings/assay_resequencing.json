@@ -1,0 +1,346 @@
+{
+  "configuration": {
+    "type": "xml",
+    "provider": "isa",
+    "ref": "STUDY_ASSAY_GENOME_SEQ_FILE_XML"
+  },
+  "properties": [
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "extract_name"
+      ],
+      "ref": "Extract Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Extract Name",
+      "show_in_form": true,
+      "id": "copo.resequencing.extract_name",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "Enter the name and version of the quality scoring software",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "ontology term",
+      "versions": [
+        "quality_scorer"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.resequencing.quality_scorer",
+      "label": "Parameter Value[quality scorer]",
+      "show_in_form": true,
+      "ref": "Parameter Value[quality scorer]",
+      "type": "string",
+      "show_in_table": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "Enter the name and version of the base or color calling software",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "Ontology term",
+      "versions": [
+        "base_caller"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.resequencing.base_caller",
+      "label": "Parameter Value[base caller]",
+      "show_in_form": false,
+      "ref": "Parameter Value[base caller]",
+      "type": "string",
+      "show_in_table": false,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "raw_data_file"
+      ],
+      "ref": "Raw Data File",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Raw Data File",
+      "show_in_form": false,
+      "id": "copo.resequencing.raw_data_file",
+      "type": "string",
+      "show_in_table": false,
+      "control": "file"
+    },
+    {
+      "help_tip": "Specify whether to expect single, paired, or other configuration of reads",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_layout"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.resequencing.library_layout",
+      "label": "Parameter Value[library layout]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library layout]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "SINGLE",
+        "PAIRED"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "data_transformation_name"
+      ],
+      "ref": "Data Transformation Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Data Transformation Name",
+      "show_in_form": false,
+      "id": "copo.resequencing.data_transformation_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "derived_data_file"
+      ],
+      "ref": "Derived Data File",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Derived Data File",
+      "show_in_form": false,
+      "id": "copo.resequencing.derived_data_file",
+      "type": "string",
+      "show_in_table": false,
+      "control": "file"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "normalization_name"
+      ],
+      "ref": "Normalization Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Normalization Name",
+      "show_in_form": false,
+      "id": "copo.resequencing.normalization_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "Select the sequencing technique intended for this library",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_strategy"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.resequencing.library_strategy",
+      "label": "Parameter Value[library strategy]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library strategy]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "AMPLICON",
+        "CLONE",
+        "WGS",
+        "OTHER"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "assay_name"
+      ],
+      "ref": "Assay Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Assay Name",
+      "show_in_form": false,
+      "id": "copo.resequencing.assay_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "Select the sequencing technique intended for this library",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_source"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.resequencing.library_source",
+      "label": "Parameter Value[library source]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library source]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "GENOMIC",
+        "GENOMIC SINGLE CELL",
+        "TRANSCRIPTOMIC",
+        "TRANSCRIPTOMIC SINGLE CELL",
+        "METAGENOMIC",
+        "METATRANSCRIPTOMIC",
+        "SYNTHETIC",
+        "VIRAL RNA",
+        "OTHER"
+      ]
+    },
+    {
+      "help_tip": "Select the method that was used to select for or against, enrich, or screen the material being sequenced",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_selection"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.resequencing.library_selection",
+      "label": "Parameter Value[library selection]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library selection]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "PCR",
+        "RANDOM PCR",
+        "HMPR",
+        "MF",
+        "repeat fractionation",
+        "size fractionation",
+        "MSLL",
+        "cDNA",
+        "cDNA_randomPriming",
+        "cDNA_oligo_dT",
+        "PolyA",
+        "Oligo-dT",
+        "Inverse rRNA",
+        "Inverse rRNA selection",
+        "ChIP",
+        "MNase",
+        "DNase",
+        "Hybrid Selection",
+        "Reduced Representation",
+        "Restriction Digest",
+        "5-methylcytidine antibody",
+        "MBD2 protein methyl-CpG binding domain",
+        "CAGE",
+        "RACE",
+        "MDA",
+        "padlock probes capture method",
+        "other",
+        "unspecified"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "sample_name"
+      ],
+      "ref": "Sample Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Sample Name",
+      "show_in_form": true,
+      "id": "copo.resequencing.sample_name",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "Specify the sequencing instrument model and make",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "sequencing_instrument"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.resequencing.sequencing_instrument",
+      "label": "Sequencing Instrument",
+      "show_in_form": true,
+      "ref": "Parameter Value[sequencing instrument]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "454 GS",
+        "454 GS 20",
+        "454 GS FLX",
+        "454 GS FLX Plus",
+        "454 GS FLX Titanium",
+        "454 GS Junior",
+        "AB SOLiD System",
+        "AB SOLiD System 2.0",
+        "AB SOLiD System 3.0",
+        "AB SOLiD 4 System",
+        "AB SOLiD 4hq System",
+        "AB SOLiD PI System",
+        "AB SOLiD 5500",
+        "AB SOLiD 5500xl",
+        "AB 5500 Genetic Analyzer",
+        "AB 5500xl Genetic analyzer",
+        "Illumina Genome Analyzer",
+        "Illumina Genome Analyzer II",
+        "Illumina Genome Analyzer IIx",
+        "Illumina HiSeq 1000",
+        "Illumina HiSeq 2000",
+        "Illumina HiSeq 2500",
+        "Illumina HiScanSQ",
+        "Illumina MiSeq",
+        "Ion Torrent PGM",
+        "Ion Torrent Proton",
+        "Sanger sequencing instrument",
+        "unspecified"
+      ]
+    }
+  ],
+  "description": "Mappings of attribute in the Assay schema to a UI configuration source. Configuration ref is defined in UI_CONFIG_SOURCES in services.py",
+  "title": "Genome Sequencing Assay schema mappings"
+}

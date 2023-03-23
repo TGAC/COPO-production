@@ -1,0 +1,14 @@
+[
+  {
+    "value": "Start",
+    "label": "Start"
+  },
+  {
+    "value": "End",
+    "label": "End"
+  },
+  {
+    "value": "Single",
+    "label": "Single"
+  }
+]

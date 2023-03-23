@@ -1,0 +1,45 @@
+{
+  "properties": [
+    {
+      "type": "string",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.miappe.rooting.field.plot_size",
+      "show_in_table": true,
+      "control": "text",
+      "versions": [
+        "plot_size"
+      ],
+      "help_tip": "",
+      "label": "Plot Size"
+    },
+    {
+      "type": "string",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.miappe.rooting.field.sowing_density",
+      "show_in_table": true,
+      "control": "text",
+      "versions": [
+        "sowing_density"
+      ],
+      "help_tip": "",
+      "label": "Sewing Density"
+    }
+  ],
+  "title": "Field Rooting MIAPPE mappings",
+  "description": "Attributes for COPO Profile schema.",
+  "configuration": {
+    "type": "json",
+    "provider": "copo",
+    "ref": ""
+  }
+}

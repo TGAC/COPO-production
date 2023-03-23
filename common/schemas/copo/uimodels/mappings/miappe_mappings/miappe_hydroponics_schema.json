@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "type": "string",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.miappe.nutrients.hydroponics.composition",
+      "show_in_table": true,
+      "control": "text",
+      "versions": [
+        "composition"
+      ],
+      "help_tip": "",
+      "label": "Composition"
+    }
+  ],
+  "description": "Schema to create a hydroponics object",
+  "configuration": {
+    "type": "json",
+    "provider": "copo",
+    "ref": ""
+  },
+  "title": "hydroponics mappings"
+}

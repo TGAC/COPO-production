@@ -1,0 +1,26 @@
+<div hidden>
+    <!-- hidden attributes  -->
+    <!--input type="hidden" id="view_copo_profile_url" value="  url 'copo:view_copo_profile' profile_id=profile_id  "/-->
+
+    <!--input type="hidden" value="  url 'copo:copo_publications' profile_id=profile_id  " name="publication_url"
+           id="publication_url"/-->
+    <!--input type="hidden" value="  url 'copo:copo_data' profile_id=profile_id  " name="datafile_url"
+           id="datafile_url"/-->
+    <input type="hidden" value="{% url 'copo_sample:copo_samples' profile_id=profile_id %}" name="sample_url"
+           id="sample_url"/>
+    <input type="hidden" value="{% url 'copo:copo_submissions' profile_id=profile_id %}" name="submission_url"
+           id="submission_url"/>
+    <!--input type="hidden" value="  url 'copo:copo_people' profile_id=profile_id  " name="person_url" id="person_url"/-->
+
+    <!--input type="hidden" value="  url 'copo:copo_repository' profile_id=profile_id  " name="repository_url"
+           id="repository_url"/-->
+    <input type="hidden" value="{% url 'copo:groups' %}" name="group_url"
+           id="group_url"/>
+</div>
+
+<div class="row" style="margin-bottom:40px;">
+    <div class="col-sm-6 col-md-6 col-lg-6 copo-page-headers"></div>
+    <div class="col-sm-6 col-md-6 col-lg-6 copo-page-icons"></div>
+</div>
+<div class="tdt"></div>
+

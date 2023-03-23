@@ -1,0 +1,17 @@
+[
+  {
+    "value": "isasample",
+    "label": "COPO Standard",
+    "description": "COPO samples are based on the <a href='http://isa-tools.org/' target='_blank'>Investigation, Study and Assay </a> (ISA) specifications, and are better tailored for describing samples that will subsequently become part of data submissions to repositories such as <strong>ENA</strong> and <strong>Metabolights</strong>."
+  },
+  {
+    "value": "dtol",
+    "label": "Darwin Core Standard",
+    "description": "This sample type is based on the  Darwin Core standard. For more details of this specification, see: <a href='https://dwc.tdwg.org/terms/' target='_blank'>Darwin Core quick reference guide</a>."
+  },
+  {
+    "value": "biosample",
+    "label": "Biosample Standard",
+    "description": "Biosmaple samples are based on <a href='https://www.ebi.ac.uk/biosamples/' target='_blank'>BioSamples</a>. They are <strong>repository agnostic</strong>, and are better suited for describing samples in a generic manner or in contexts where the target repository isn't known in advance."
+  }
+]

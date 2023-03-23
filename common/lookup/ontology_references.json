@@ -1,0 +1,74 @@
+{
+  "title": {
+    "key": "http://purl.obolibrary.org/obo/NCIT_C19067",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "creator": {
+    "key": "http://purl.org/dc/terms/creator",
+    "type": "http://purl.obolibrary.org/obo/IAO_0000429"
+  },
+  "contributor": {
+    "key": "http://purl.org/dc/terms/contributor",
+    "type": "http://purl.obolibrary.org/obo/IAO_0000429"
+  },
+  "description": {
+    "key": "http://purl.org/dc/elements/1.1/description",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "subject": {
+    "key": "http://purl.org/dc/elements/1.1/subject",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "identifier": {
+    "key": "http://purl.org/dc/terms/identifier",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "publisher": {
+    "key": "http://purl.org/dc/elements/1.1/publisher",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "date": {
+    "key": "http://purl.org/dc/elements/1.1/date",
+    "type": "ToDo"
+  },
+  "type": {
+    "key": "http://purl.obolibrary.org/obo/NCIT_C25284",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "datasource": {
+    "key": "http://purl.org/dc/terms/source",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "relation": {
+    "key": "http://purl.org/dc/elements/1.1/relation",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "rights": {
+    "key": "http://purl.org/dc/terms/rights",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "license": {
+    "key": "http://purl.org/dc/terms/license",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "termsofuse": {
+    "key": "http://purl.org/dc/terms/accessRights",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "isReferencedBy": {
+    "key": "http://purl.org/dc/elements/1.1/isReferencedBy",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "coverage": {
+    "key": "http://purl.org/dc/elements/1.1/coverage",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "format": {
+    "key": "http://purl.org/dc/terms/format",
+    "type": "http://purl.obolibrary.org/obo/NCIT_C45253"
+  },
+  "language": {
+    "key": "http://purl.org/dc/elements/1.1/language"
+  }
+
+}

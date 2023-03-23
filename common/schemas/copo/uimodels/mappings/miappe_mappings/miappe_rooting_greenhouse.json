@@ -1,0 +1,56 @@
+{
+  "properties": [
+    {
+      "hidden": "false",
+      "deprecated": false,
+      "type": "string",
+      "ref": "",
+      "id": "copo.miappe.rooting.greenhouse.greenhouse_container_type",
+      "show_in_table": true,
+      "show_in_form": true,
+      "control": "text",
+      "versions": [
+        "container_type"
+      ],
+      "label": "Container Type",
+      "placeholder": ""
+    },
+    {
+      "hidden": "false",
+      "deprecated": false,
+      "type": "string",
+      "ref": "",
+      "id": "copo.miappe.rooting.greenhouse.greenhouse_container_volume",
+      "show_in_table": true,
+      "show_in_form": true,
+      "control": "text",
+      "versions": [
+        "container_volume"
+      ],
+      "label": "Container Volume",
+      "placeholder": ""
+    },
+    {
+      "hidden": "false",
+      "deprecated": false,
+      "type": "string",
+      "ref": "",
+      "id": "copo.miappe.rooting.greenhouse.other_dimensions",
+      "show_in_table": true,
+      "show_in_form": true,
+      "control": "text",
+      "versions": [
+        "other_dimensions"
+      ],
+      "label": "Other Dimensions",
+      "placeholder": ""
+    }
+  ],
+  "description": "Schema to describe greenhouse rooting conditions in MIAPPE spec",
+  "title": "Greenhouse Rooting MIAPPE mappings",
+  "configuration": {
+    "type": "json",
+    "provider": "copo",
+    "ref": ""
+  }
+}

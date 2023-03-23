@@ -1,0 +1,142 @@
+
+
+/*progress circle used in file upload to dropbox*/
+.progress-circularum {
+    height: 50px;
+}
+
+.progress-circularum > svg {
+    height: 100%;
+    display: block;
+    background-color: inherit;
+}
+
+.progress-circularum-label {
+    font-size: 12px;
+    font-weight: lighter;
+    font-family: "Times New Roman", Georgia, Serif;
+}
+
+.remote-row {
+    margin-bottom: 6px;
+    background-color: #f2f2f2;
+}
+
+/*end of progress circle styling used in file upload to dropbox*/
+
+#data_queue_data {
+    font-size: 13px;
+    width: inherit;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 900;
+    position: absolute;
+    border-bottom: 2px solid #e8e8e8;
+    border-left: 2px solid #e8e8e8;
+    border-right: 2px solid #e8e8e8;
+    border-radius: 4px;
+}
+
+.described-file-inactive {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.described-file-active {
+    background-image: linear-gradient(to bottom, #d9edf7 0%, #b9def0 100%);
+    background-repeat: repeat-x;
+    border-color: #9acfea;
+}
+
+.swap-queue-item:hover {
+    color: red;
+}
+
+
+/*remote side bar*/
+
+.info-side-bar {
+    border: 2px solid #ddd;
+    background-color: #fff;
+    height: 500px;
+    overflow: auto;
+    position: absolute !important;
+    width: 500px;
+    display: none;
+    /*z-index: 1;*/
+}
+
+/*end loading*/
+
+/*begin panels*/
+.data-file-panels {
+    background-image: none;
+    background: rgba(230, 235, 234, 0.8) !important;
+    color: rgba(0, 0, 0, 1) !important;
+}
+
+.copo-data-panel-title {
+    font-size: 14px;
+}
+
+.panel-copo-data > .panel-heading {
+    color: rgba(0, 0, 0, 1);
+    background-color: rgba(104, 105, 104, 0.1);
+    border-color: rgba(104, 105, 104, 0.1);
+}
+
+/*end panels*/
+
+/*tab nav*/
+#copo-datafile-tabs.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #fff;
+    border-color: #ddd #ddd transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 1px;
+    color: rgba(38, 77, 115, 0.99);
+    cursor: default;
+}
+
+#copo-datafile-tabs.nav-tabs > li > a {
+    color: rgba(0, 0, 0, 0.7);
+    text-decoration: none;
+}
+
+/*tab nav ends*/
+
+/*help centre*/
+.help-centre-content {
+    padding: 10px;
+    line-height: 1.7;
+    font-size: 13px;
+}
+
+#copoDataHelp.sticky {
+    position: fixed;
+    top: 50px;
+}
+
+#helpCentreMenu.btn,
+#helpCentreMenu.btn-default {
+    border-radius: 0;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
+    text-shadow: none;
+    box-shadow: none;
+}
+.width100{
+    width: 100px
+}
+
+/*end help centre*/

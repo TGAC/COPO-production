@@ -1,0 +1,43 @@
+{% load socialaccount %}
+{% load html_tags %}
+{% load static %}
+
+{% get_providers_orcid_first as socialaccount_providers %}
+
+{% for provider in socialaccount_providers %}
+    {% if provider.id == "openid" %}
+        {% for brand in provider.get_brands %}
+            <li>
+                <a title="{{ brand.name }}"
+                   class="socialaccount_provider {{ provider.id }} {{ brand.id }}"
+                   href="{% provider_login_url provider.id openid=brand.openid_url process=process %}"
+                >{{ brand.name }}</a>
+            </li>
+        {% endfor %}
+    {% endif %}
+    {% autoescape on %}
+
+
+        <li class="login-li">
+            {% with ''|add:provider.id|add:'.png' as image_static %}
+
+                {% if provider.id == 'orcid' %}
+
+                    <a style="margin-left: -20px"  title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }}"
+                       href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"><img
+                            height="75px" src="{% static 'copo/img/'|add:image_static %}"/>
+                        <span style="font-size: large" class="login-button">Sign in with {{ provider.name }}</span></a>
+
+                {% else %}
+
+                    <a title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }}"
+                       href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"><img
+                            height="64px" src="{% static 'copo/img/'|add:image_static %}"/><span
+                            class="login-button">Sign in with {{ provider.name }}</span></a>
+                {% endif %}
+
+            {% endwith %}
+        </li>
+    {% endautoescape %}
+{% endfor %}
+

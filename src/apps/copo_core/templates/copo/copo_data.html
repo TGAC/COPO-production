@@ -1,0 +1,242 @@
+{% extends 'copo/base_2col.html' %}
+
+{% load static %}
+{% load web_tags %}
+{% load html_tags %}
+
+{% block stylesheet_block %}
+    <!-- blueimp Gallery styles -->
+    <link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link rel="stylesheet" href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui.css' %}">
+    <!-- CSS adjustments for browsers with JavaScript disabled -->
+    <noscript>
+        <link rel="stylesheet" href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-noscript.css' %}">
+    </noscript>
+    <noscript>
+        <link rel="stylesheet"
+              href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui-noscript.css' %}">
+    </noscript>
+    <link rel="stylesheet" href="{% static 'copo/treeview/bootstrap-treeview.min.css' %}">
+
+    <style>
+        .check-icon {
+            margin-right: 20px !important;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/css/copo/datafile.css' %}">
+
+{% endblock %}
+
+
+{% block browse_header_block %}
+    {% csrf_token %}
+    <div hidden id="hidden_attrs">
+        <!-- hidden attributes  -->
+        <input type="hidden" id="nav_component_name" value="datafile"/>
+
+        <input type="hidden" id="figshare_check_creds_url" value="{% url 'rest:check_figshare_credentials' %}"/>
+        <input type="hidden" id="zipping_image" size="24px" value="{% static 'copo/img/ajax.gif' %}"/>
+        <input type="hidden" id="hashing_image" size="24px" value="{% static 'copo/img/ajax.gif' %}"/>
+        <input type="hidden" id="profile_id" value="{{ profile_id }}"/>
+        <input type="hidden" id="profile_title" value="{{ profile.title }}"/>
+        <input type="hidden" id="table_columns" value="{{ table_columns }}"/>
+        <input type="hidden" value="{% url 'copo:copo_submissions' profile_id=profile_id %}" name="submission_url"
+               id="submission_url"/>
+        <input type="hidden" value="{% url 'copo:annotate_meta' file_id=999 %}" name="file_annotate_url"
+               id="file_annotate_url"/>
+        <input type="hidden" value="{{ cyverse_files }}" name="cyverse_file_data"
+               id="cyverse_file_data"/>
+        <input type="hidden" id="selected_datafile" value="{{ selected_file }}"/>
+    </div>
+{% endblock browse_header_block %}
+
+{% block page_tile %}
+    {% include "component_navbar.html" %}
+{% endblock page_tile %}
+
+
+{% block content %}
+
+    <!--test ends -->
+    <!--test ends -->
+
+
+    <!-- datafile wizard section -->
+
+    <div id="wizard_toggle" class="collapse" style="margin-bottom: 20px;">
+
+        <div class="ui attached blue message" style="background-color: rgba(17, 70, 110, 1.0); color: #fff;">
+            <div class="header" style="color: #fff;">
+                Adding Metadata for<span
+                    id="datafile_description_panel_title"></span>
+            </div>
+        </div>
+        <div class="ui attached fluid segment" style="font-size: inherit;">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="pull-right" style="margin-bottom: 15px;">
+                    <!-- exit description button -->
+                    <div id="exit_wizard" class="big ui basic orange button"
+                         tabindex="0">
+                        <span style="padding-left: 3px;">Exit description</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="fuelux" style="margin-bottom: 5px;">
+                        <div class="wizard" data-initialize="wizard" id="dataFileWizard">
+                            <div class="steps-container">
+                                <ul class="steps">
+                                    <li data-step="1" data-name="review">
+                                        <span class="badge">1</span>End
+                                        <span class="chevron"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="actions">
+                                <div class="large ui buttons">
+                                    <button class="ui button btn-prev">Prev</button>
+                                    <div class="or"></div>
+                                    <button class="ui primary button btn-next" data-last="Finish">Next
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="step-content"
+                                 style="margin-bottom: 45px; border: 0.1em solid rgba(229, 239, 255, 1.0); border-radius: 4px;">
+                                <div class="step-pane" data-step="1">
+                                    <h4>Wrap up!</h4>
+                                    <p>
+                                    <div class="webpop-content-div">You have reached the final stage of the wizard.<br/>
+                                        If you are satisfied with the entries you have made, click
+                                        <strong>Finish</strong>
+                                        button to finalise your description and terminate the wizard.<br/> You can still
+                                        use
+                                        the <strong>Prev</strong> button to go back and make changes.
+                                    </div>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-md-6 col-lg-6" id="datafile_col_table_div">
+            <!-- datafile table section -->
+
+            <div class="panel panel-default">
+                <div class="panel-heading" style="background-image: none; border: none;">
+                    <h4>Datafiles</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="webpop-content-div">
+                        Use the upload button to add one or more datafiles.
+                    </div>
+                    <hr/>
+                    <div style="display: inline-block; text-indent: 0.5em;">
+                        <form enctype="multipart/form-data" id="upload_0" method="POST"
+                              action="/rest/receive_data_file_chunked/"
+                              style="margin-right:40px">
+                            {% csrf_token %}
+                            <span data-copo-tour-id="copo_data_upload_file_button"
+                                  id="upload_files_button"
+                                  class="ui large primary button fileinput-button"
+                                  style="background-image: none; border-color:transparent;">
+                                                                                <span>Upload datafiles</span>
+                                                                                <input id="main_file_upload" type="file"
+                                                                                       name="file"
+                                                                                       onchange="get_chunk_size(event)"
+                                                                                       multiple/>
+                                                                                <input type="hidden" name="upload_id"
+                                                                                       value=""/>
+                                                                                <input type="hidden"
+                                                                                       name="panel_ordering"
+                                                                                       value="0"/>
+                                                                                <input type="hidden" name="exp_id"
+                                                                                       value=""/>
+                                                                        </span>
+                        </form>
+
+                        <div id="file_tree" style="visibility:hidden"></div>
+
+                        <div class="file_status_label" style="margin-top: 8px;"></div>
+                    </div>
+                    <hr/>
+                    <!-- datafile table -->
+                    <div id="component_table_loader"
+                         data-copo-tour-id="datafile_table"></div> <!-- div used by the quick tour agent -->
+                    <div style="display: block; margin-top: 25px;">
+                        <table id="datafile_table"
+                               class="ui celled table hover draggable-table copo-noborders-table"
+                               cellspacing="0" border="0">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <!-- description bundle section -->
+            <div class="panel panel-default">
+                <div class="panel-heading" style="background-image: none; border: none;">
+                    <h4>Bundles</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="webpop-content-div">
+                        Use the create button to add a new bundle. Drag and drop datafiles to a bundle, and select
+                        <strong>Add/Edit metadata</strong> action from the bundle actions menu to describe.
+                    </div>
+                    <hr/>
+                    <div class="ui large primary button create-bundle-btn" tabindex="0">Create a bundle</div>
+                    <hr/>
+                    <div id="cover-spin-bundle"></div>
+
+                    <div class="desc-bundle-display-div" style="display: block; margin-top: 25px;">
+                        <div class="desc-bundle-display-div-2">
+                            <table id="copo_datafiles_bundle_table"
+                                   class="ui celled table copo-noselect-table copo-noborders-table"
+                                   cellspacing="0" width="100%">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br/><br/>
+
+
+{% endblock %}
+
+{% block help_section %}
+
+{% endblock %}
+
+
+{% block js_block %}
+    <script src="{% static 'copo/js/generic_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/generic_handlers_ext2.js' %}"></script>
+    <script src="{% static 'copo/js/copo_form_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/copo_data.js' %}"></script>
+    <script src="{% static 'copo/js/copo_data_bundle.js' %}"></script>
+    <script src="{% static 'copo/js/jquery.form.js' %}"></script>
+    <script src="{% static 'copo/js/bootstrapValidator.js' %}"></script>
+    <script src="{% static 'copo/jQuery-File-Upload-master/js/vendor/jquery.ui.widget.js' %}"></script>
+    <script src="{% static 'copo/jQuery-File-Upload-master/js/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static 'copo/jQuery-File-Upload-master/js/jquery.fileupload.js' %}"></script>
+    <script src="{% static 'copo/jQuery-File-Upload-master/js/jquery.fileupload-process.js' %}"></script>
+    <script src="{% static 'copo/jQuery-File-Upload-master/js/jquery.fileupload-ui.js' %}"></script>
+    <script src="{% static 'copo/js/uploader_old/ena_upload_wrapper.js' %}"></script>
+    <script src="{% static 'copo/js/uploader_old/bootstrap_panel.js' %}"></script>
+    <script src="{% static 'copo/js/uploader_old/upload_util.js' %}"></script>
+    <script src="{% static 'copo/js/progressbar.js' %}"></script>
+    <script src="{% static 'copo/treeview/bootstrap-treeview.min.js' %}"></script>
+
+{% endblock %}

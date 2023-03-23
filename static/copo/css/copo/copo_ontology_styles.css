@@ -1,0 +1,9 @@
+.ontology_dd_item{
+    margin: 10px !important;
+    cursor: pointer;
+}
+
+.ontology_dropdown{
+    margin-top: 3px;
+    margin-bottom: 25px
+}

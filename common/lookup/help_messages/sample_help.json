@@ -1,0 +1,48 @@
+{
+  "generalHelpTips": {
+    "title": "General Information",
+    "description": "Provides help topics on how to use the description wizard. Each entry (under properties) consists of a 'title' for the information title, 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "Purpose",
+        "content": "The description wizard is an user interface (UI) component that eases the task of metadata attribution of samples. The wizard provides the following key features:<ol><li> Sequence of steps/stages, with intuitive UI forms/controls, to guide the user through the description task</li> <li> Support for single sample and multiple ('bundle') samples descriptions</li><li>Cloning/inheriting of metadata from existing samples</li></ol>"
+      },
+      {
+        "title": "Describing Samples",
+        "content": "Click the 'Describe' button on the 'Inspect' pane. The context will be switched to 'Describe', displaying the sample description wizard. Go ahead and follow the steps in the wizard, supplying requested metadata in each step presented. Relevant tips to sample description can be found under 'Description Tips' on the 'Information Panel'."
+      }
+    ]
+  },
+  "fileListComponent": {
+    "title": "Inspect Help",
+    "description": "Provides help topics on how to use the description wizard. Each entry (under properties) consists of a 'title' for the information title, 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "Overview",
+        "content": "The 'Inspect' pane displays a list of files, uploaded to COPO, with corresponding metadata (e.g., size, type, description). <p>Actions buttons are available to facilitate interactions with datafiles uploaded to COPO. Buttons are categorised, depending on the impact context, as follows: <ol><li>The 'global' action buttons, positioned at the top of the table (e.g., Describe), perform specified tasks on one or many selected datafiles.</li> <li>The 'local' action buttons, displayed as smaller icons (e.g., <span class='btn btn-info btn-xs'><i class='fa fa-info-circle'> </i></span>) beside individual records, perform tasks that would potentially impact a single (target) record.</li></ol> The following action buttons are available:<ol><li><strong>Describe:</strong> Initiates the metadata attribution (description) wizard for the selected datafiles or bundle</li><li><strong>[Un]Describe:</strong> Deletes all previously assigned metadata (via the wizard) to the target datafiles</li><li><strong>Select all:</strong> Selects or highlights all datafiles displayed (presumably to be acted upon)</li><li><strong>Deselect all:</strong> Will undo the selection of selected or highlighted datafiles.</li></ol>"
+      },
+      {
+        "title": "Sample Types",
+        "content": "COPO currently supports and provides configurations for describing the following sample types:<ol><li><label>Simple:</label> Simple samples are based on <a href='https://www.ebi.ac.uk/biosamples/' target='_blank'>BioSamples</a>. They are <strong>repository agnostic</strong>, and are better suited for describing samples in a generic manner or in contexts where the target repository isn't known <i>a priori</i>. </li><li><label>Extended:</label> Extended samples are based on the <a href='http://isa-tools.org/' target='_blank'>Investigation, Study and Assay </a> (ISA) specifications, and are better tailored for describing samples that will subsequently become part of data submissions to repositories such as <strong>ENA</strong> and <strong>Metabolights</strong>.</li><li><label>MIAPPE:</label> MIAPPE samples are based on the <a href='http://cropnet.pl/phenotypes/' target='_blank'> Minimum Information about Plant Phenotyping Experiment </a> configuration.</li></ol>"
+      }
+    ]
+  },
+  "descriptionWizardComponent": {
+    "title": "Description Help",
+    "description": "Provides help topics on how to use the description wizard. Each entry (under properties) consists of a 'title' for the information title, 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "General Info",
+        "content": "The description wizard is an user interface (UI) component that eases the task of metadata attribution of datafiles. The wizard provides the following key features:<ol><li> Sequence of steps/stages, with intuitive UI forms/controls, to guide the user through the description task</li> <li> Support for individual and, more interestingly, batch ('bundle') descriptions of datafiles</li><li>Cloning/inheriting of metadata</li></ol>"
+      },
+      {
+        "title": "Describing Samples",
+        "content": "To describe samples..."
+      },
+      {
+        "title": "Exiting a Description",
+        "content": "You can select to exit a description at any stage. Simply click on the 'Exit Description' button at the bottom of the wizard pane. You will be prompted to confirm the requested action. "
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+Platform_no,Operating_name,Official_name,Standard_reference,Lead_center,Class
+11,FISH,CGIAR Research Program on Fish Agri-Food System,CGIAR Research Program on Fish,WorldFish,Agri-food
+12,FTA,"CGIAR Research Program on Forests, Trees and Agroforestry Agri-Food System","CGIAR Research Program on Forests, Trees and Agroforestry",CIFOR,Agri-food
+13,LIVESTOCK,CGIAR Research Program on Livestock Agri-Food System,CGIAR Research Program on Livestock,ILRI,Agri-food
+14,MAIZE,CGIAR Research Program on Maize Agri-Food Systems,CGIAR Research Program on Maize,CIMMYT,Agri-food
+15,RICE,CGIAR Research Program on Rice Agri-Food Systems,CGIAR Research Program on Rice,IRRI,Agri-food
+16,RTB,"CGIAR Research Program on Roots, Tubers and Bananas Agri-Food Systems","CGIAR Research Program on Roots, Tubers and Bananas",CIP,Agri-food
+17,WHEAT,CGIAR Research Program on Wheat Agri-Food Systems,CGIAR Research Program on Wheat,CIMMYT,Agri-food
+18,GLDC,CGIAR Research Program on Grain Legumes and Dryland Cereals Agri-food Systems,CGIAR Research Program onGrain Legume and Dryland Cereals,ICRISAT,Agri-food
+21,A4NH,"CGIAR Research Program on Agriculture for Nutrition and Health
+Global Integrating Program",CGIAR Research Program on Agriculture for Health and Nutrition,IFPRI,Integrating
+22,CCAFS,"CGIAR Research Program on Climate Change, Agriculture and Food Security
+Global Integrating Program","CGIAR Research Program on Climate Change, Agriculture and Food Security",CIAT,Integrating
+23,PIM,"CGIAR Research Program on Policies, Institutions, and Markets
+Global Integrating Program","CGIAR Research Program on Policies, Institutions, and Markets",IFPRI,Integrating
+24,WLE,"CGIAR Research Program on Water, Land and Ecosystems
+Global Integrating Program","CGIAR Research Program on Water, Land and Ecosystems",IWMI,Integrating
+31,EiB,CGIAR Excellence in Breeding Platform,CGIAR Excellence in Breeding Platform,CIMMYT,Platforms
+32,BIG DATA,CGIAR Platform for Big Data in Agriculture,CGIAR Platform for Big Data in Agriculture,CIAT,Platforms
+33,GENEBANK,CGIAR Genebank Platform,CGIAR Genebank Platform,GCDT,Platforms

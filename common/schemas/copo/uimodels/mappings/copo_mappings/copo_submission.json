@@ -1,0 +1,507 @@
+{
+    "configuration": {
+        "type": "json",
+        "provider": "copo",
+        "ref": ""
+    },
+    "properties": [
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "accessions"
+            ],
+            "description": "Accessions obtained from the remote repository for a submission",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.accessions",
+            "label": "Accessions",
+            "show_in_form": true,
+            "ref": "",
+            "type": "object",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "repository"
+            ],
+            "description": "The target repository for the submission",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.repository",
+            "label": "Repository",
+            "show_in_form": true,
+            "ref": "",
+            "type": "string",
+            "show_in_table": true,
+            "control": "select",
+            "option_values": {
+                "callback": {
+                    "function": "get_repository_options",
+                    "parameter": ""
+                }
+            }
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "bundle"
+            ],
+            "description": "A list of datafiles making up a submission.",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.bundle",
+            "label": "Bundle Items",
+            "show_in_form": true,
+            "ref": "",
+            "type": "array",
+            "show_in_table": false,
+            "control": "copo-datafile-id"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "bundle_meta"
+            ],
+            "description": "A list of datafiles making up a submission - richer context alternative.",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.bundle_meta",
+            "label": "Bundle Items",
+            "show_in_form": true,
+            "ref": "",
+            "type": "array",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "dtol_samples"
+            ],
+            "description": "A list of samples which should be submitted to ENA",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.dtol_samples",
+            "label": "DTOL Samples",
+            "show_in_form": false,
+            "ref": "",
+            "type": "array",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "dtol_specimen"
+            ],
+            "description": "A list of specimen of the samples which should be submitted to ENA",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.dtol_specimen",
+            "label": "DTOL Specimen",
+            "show_in_form": false,
+            "ref": "",
+            "type": "array",
+            "show_in_table": false,
+            "control": "text"
+        },
+	
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "type"
+            ],
+            "description": "Can be used to specify a particular submission type, e.g. DTOL.",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.type",
+            "label": "Type",
+            "show_in_form": false,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "dtol_status"
+            ],
+            "description": "status flag for dtol submission operations...[pending, complete, error]",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.dtol_status",
+            "label": "Type",
+            "show_in_form": false,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "profile_id"
+            ],
+            "description": "The profile id of the host profile",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.profile_id",
+            "label": "Profile ID",
+            "show_in_form": true,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "description_token"
+            ],
+            "description": "The description ID that led to this submission record",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.description_token",
+            "label": "Description token",
+            "show_in_form": false,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "article_id"
+            ],
+            "description": "The article ID, applies to figshare submission",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.article_id",
+            "label": "Article ID",
+            "show_in_form": true,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "show_as_attribute": true,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "date_created"
+            ],
+            "description": "The time the submission was initiated",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.date_created",
+            "label": "Created",
+            "show_in_form": true,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "control": "datetime"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "date_modified"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "Modified",
+            "show_in_form": false,
+            "id": "copo.submission.date_modified",
+            "type": "string",
+            "show_in_table": true,
+            "control": "datetime"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "status"
+            ],
+            "description": "Submission status: True if successfully submitted, False otherwise.",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.status",
+            "label": "Status",
+            "show_in_form": true,
+            "ref": "",
+            "type": "boolean",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "message"
+            ],
+            "description": "Message providing context to the submission status",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.message",
+            "label": "Message",
+            "show_in_form": true,
+            "ref": "",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "transcript"
+            ],
+            "description": "metadata of the actual submission",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.transcript",
+            "label": "Transcript",
+            "show_in_form": true,
+            "ref": "",
+            "type": "object",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "complete"
+            ],
+            "description": "Indicator of whether submission is complete",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.complete",
+            "label": "Completed",
+            "show_in_form": true,
+            "ref": "",
+            "type": "boolean",
+            "show_in_table": true,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "transcript"
+            ],
+            "description": "Indicator of whether token has been obtained",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.token_obtained",
+            "label": "Token Obtained",
+            "show_in_form": true,
+            "ref": "",
+            "type": "boolean",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "completed_on"
+            ],
+            "description": "Completed On",
+            "deprecated": false,
+            "hidden": "true",
+            "id": "copo.submission.completed_on",
+            "label": "Completed On",
+            "show_in_form": true,
+            "ref": "",
+            "type": "string",
+            "show_in_table": true,
+            "control": "datetime"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "user_id"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "User ID",
+            "show_in_form": false,
+            "id": "copo.submission.user_id",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "deleted"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "Delete",
+            "show_in_form": false,
+            "id": "copo.submission.deleted",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "false",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "meta"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "meta",
+            "show_in_form": false,
+            "id": "copo.submission.meta",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "false",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "destination_repo"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "destination_repo",
+            "show_in_form": false,
+            "id": "copo.submission.destination_repo",
+            "type": "string",
+            "show_in_table": true,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "false",
+            "default_value": "false",
+            "control_meta": {},
+            "versions": [
+                "published"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "Published",
+            "show_in_form": false,
+            "id": "copo.submission.published",
+            "type": "string",
+            "show_in_table": false,
+            "show_as_attribute": true,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "false",
+            "default_value": "false",
+            "control_meta": {},
+            "versions": [
+                "is_cg"
+            ],
+            "ref": "",
+            "deprecated": false,
+            "hidden": "true",
+            "label": "published",
+            "show_in_form": false,
+            "id": "copo.submission.is_cg",
+            "type": "string",
+            "show_in_table": false,
+            "control": "text"
+        },
+        {
+            "help_tip": "",
+            "required": "true",
+            "default_value": "",
+            "control_meta": {},
+            "versions": [
+                "submission"
+            ],
+            "description": "A list of async submission of the samples to ENA",
+            "deprecated": false,
+            "hidden": "false",
+            "id": "copo.submission.submission",
+            "label": "DTOL Sample Submission",
+            "show_in_form": false,
+            "ref": "",
+            "type": "array",
+            "show_in_table": false,
+            "control": "text"
+        }        
+    ],
+    "description": "Attributes for COPO Submission schema.",
+    "title": "Submission mappings"
+}

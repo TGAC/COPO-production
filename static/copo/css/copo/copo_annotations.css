@@ -1,0 +1,124 @@
+#annotation_content {
+    overflow-x: scroll;
+    width: 98%
+}
+
+#annotation_list {
+    margin-top: 25px;
+    padding-top: 15px
+}
+
+td.column-highlighted {
+    background-color: #e7eef3;
+}
+
+td.table-header-highlighted {
+    background-color: #dfeffc;
+}
+
+td.table-header-labeled {
+    background-color: #a4e9c1;
+}
+
+#annotation_list {
+    margin-top: 30px
+}
+
+#annotations_table {
+    background-color: white;
+}
+
+#annotations_table tr {
+
+}
+
+#annotations_table th {
+    text-align: left;
+    border-bottom: 1px solid lightgrey;
+    padding: 15px 5px 2px 5px;
+    background-color: white;
+}
+
+#annotations_table td {
+    padding: 7px 5px 7px 8px;
+}
+
+.annotation_mouseover {
+    background-color: #8cd98c !important;
+    color: white;
+}
+
+.currentColClass {
+    background-color: #f2f2f2 !important;
+}
+
+.labelledColumnClass {
+    background-color: #ecf9ec !important;
+    color: dimgrey !important;
+    font-weight: bolder;
+}
+
+.highlightedColumnClass {
+    background-color: #8cd98c !important;
+    color: white !important;
+}
+
+.currentHeaderClass {
+    background-color: #4478ba !important;
+    color: white !important;
+}
+
+#save_ss_annotation {
+    margin: 5px 10px 5px 0;
+}
+
+.delete_annotation {
+    cursor: pointer
+}
+
+.panel-body {
+    padding: 10px !important;
+}
+
+.ajax_loading_div {
+    width: 150px;
+
+}
+
+.ajax_loading_img {
+    width: 44px;
+    margin-right: 20px
+}
+
+
+.flex-container {
+    display: flex;
+    overflow-x: scroll
+}
+
+.flex-container > div {
+    background-color: #f1f1f1;
+    margin: 10px;
+    padding: 10px;
+    min-width: 50px;
+}
+
+@media (min-width: 768px) {
+  .modal-xl {
+    width: 90%;
+   max-width:1200px;
+  }
+}
+
+.automation_table{
+    border-collapse: collapse;
+    cell-padding: 10px;
+    cell-spacing: 10px
+}
+.automation_table td{
+
+    padding: 10px;
+    margin: 10px;
+    border:5px solid white;
+    background-color: #f1f1f1;
+}

@@ -1,0 +1,8 @@
+stage_id,stage_label,stage_message
+1,Type,Select a type for your information product
+2,Subtype,"You can (optionally) refine your type with a subtype. In such case, the metadata requirements of the subtype will apply. What is called subtype can have the character of an attribute such as internal, template or interactive, which tells the user more about the kind of usage."
+3,General information,Provide generic information about the information product
+4,Creator information,"Provide creator, contributor and contact information"
+5,Publication and event details,"If applicable, provide publication details and related events"
+6,Coverage information,Temporal and spatial information
+7,Dates and link to external resources,Provide date of embargo if applicable and link your information product to related resources

@@ -1,0 +1,59 @@
+Column Headings,Darwin Core Field (DWC),Mandatory (DTOL),Mandatory (NHM),Comments
+SANGER TUBE ID (FluidX BARCODE),http://rs.tdwg.org/dwc/terms/measurementID,Y,N,"Sequencing is the closest thing to a measurement
+"
+SUPPLIER SAMPLE NAME,"http://rs.tdwg.org/dwc/terms/materialSampleID
+",Y,N,Dataset ID could also be a sensible option here
+COLLECTED BY,"http://rs.tdwg.org/dwc/terms/recordedBy
+",Y,"Y
+",
+DATE OF SAMPLE COLLECTION,http://rs.tdwg.org/dwc/terms/verbatimEventDate,Y,Y,YYYY-MM-DD
+DATE OF SAMPLE IDENTIFICATION,http://rs.tdwg.org/dwc/terms/eventDate,Y,Y,YYYY-MM-DD
+SEX ,http://rs.tdwg.org/dwc/terms/sex,Y,N,
+LIFESTAGE,http://rs.tdwg.org/dwc/terms/lifeStage,Y,N,"e.g. ""Adult (18 yrs)"""
+IDENTIFIED BY,http://rs.tdwg.org/dwc/terms/identifiedBy,Y,Y,Names of identifier(s) - separated by '|' if multiple.
+TAXON ID,http://rs.tdwg.org/dwc/terms/taxonID,Y,Y,
+ORDER,http://rs.tdwg.org/dwc/terms/order,Y,Y,
+FAMILY,"http://rs.tdwg.org/dwc/terms/family
+",Y,Y,
+GENUS,"http://rs.tdwg.org/dwc/terms/genus
+",Y,Y,Split genus and species to separate columns for clean import
+SPECIES,http://rs.tdwg.org/dwc/terms/scientificName,Y,Y,Split genus and species to separate columns for clean import
+COMMON NAME,http://rs.tdwg.org/dwc/terms/vernacularName,N,N,e.g. Silver Birch
+DONOR ID,http://rs.tdwg.org/dwc/terms/recordNumber,N,N,"Typically the collector/recorder's own unique identifier, linking the field record with the sample identifier. If single genetically identical specimen spread across multiple tubes, give same DONOR ID"
+AFFILIATED ORGANISATION,http://rs.tdwg.org/dwc/terms/institutionCode,Y,N,"E.g. NHM, WTSI, EI, etc"
+COLLECTION EVENT,http://rs.tdwg.org/dwc/terms/occurrenceRemarks,N,N,Not sure what this relates to - description of collection environment/situation?
+COLLECTION CODE,http://rs.tdwg.org/dwc/terms/collectionCode,N,N,"If sample is from a collection or other repository of samples, then specify the collection code"
+COLLECTION LOCATION,http://rs.tdwg.org/dwc/terms/higherGeography,N,N,Less specific location information (e.g. South China Sea)
+COLLECTION SITE,http://rs.tdwg.org/dwc/terms/locality,Y,Y,More specific location information (e.g. 2 miles east off the coast of Felixtowe)
+LAT,"http://rs.tdwg.org/dwc/terms/decimalLatitude
+",Y,Y,"(in decimal degrees, -90 to 90)"
+LONG,http://rs.tdwg.org/dwc/terms/decimalLongitude,Y,Y,"(in decimal degrees, -180 to 180)
+"
+GRID REFERENCE ,http://rs.tdwg.org/dwc/terms/georeferenceSources,N,N,"List of evidence for location, e.g. specific map editions, scales, and grid references "
+HABITAT,http://rs.tdwg.org/dwc/terms/locationRemarks,N,"Y
+",Will be useful for retrospective habitat mapping of cryptic species (free text field)
+DEPTH,"http://rs.tdwg.org/dwc/terms/verbatimDepth
+",Y,"Y
+",In metres
+ELEVATION,http://rs.tdwg.org/dwc/terms/verbatimElevation,Y,"Y
+",In metres
+DESCRIPTION OF COLLECTION METHOD,http://rs.tdwg.org/dwc/terms/samplingProtocol,Y,Y,"Mixed data field of time and method, this will not map cleanly to NHM database. Add time as a new column"
+TIME OF COLLECTION,http://rs.tdwg.org/dwc/terms/eventTime,N,N,"Either specific time of day, or general period (""noon"", ""dusk"", ""2 hours after sunrise"")"
+SAMPLE AVAILABILITY,http://rs.tdwg.org/dwc/terms/samplingEffort,Y,N,"Difficulty of sample re-collection. Quantify ie. ""guaranteed same day""; ""several days searching""; ""requires considerable effort"" (offshore boat/Caving/remote location travel)"
+DATE OF PRESERVATION,http://rs.tdwg.org/dwc/terms/eventDate,Y,N,YYYY-MM-DD
+TIME ELAPSED FROM COLLECTION TO PRESERVATION,http://rs.tdwg.org/dwc/terms/eventTime,Y,N,In hours
+PRESERVED BY,http://rs.tdwg.org/dwc/terms/preparations,Y,N,"Who preserved, or how preserved?"
+TISSUE REMOVED FOR BARCODING,http://rs.tdwg.org/dwc/terms/preparations,Y,N,"""Leg removed from complete organism"""
+METHOD OF PRESERVATION IN TUBE,http://rs.tdwg.org/dwc/terms/preparations,N,N,"Add example text (RNA later, 80% Ethanol, Flash Frozen)"
+SPECIES DETERMINATION METHOD,http://rs.tdwg.org/dwc/terms/identificationReferences,N,N,"Comment if chance of misidentification, reference text used to identify, etc"
+IDENTIFICATION CONFIDENCE,"http://rs.tdwg.org/dwc/terms/identificationRemarks
+",N,N,Expressed as a percentage
+OTHER INFORMATION,http://rs.tdwg.org/dwc/terms/dynamicProperties,N,N,"JSON key:value pairs of extra information ""{'dtol_specific_field':'dtol_value'}"". See below for fields that need to be recorded outside of the DWC terms"
+SPECIES RARITY,,N,N,Species rarity in UK (common; occasional; rare; precious)
+GENOME SIZE,,N,N,In gigabases
+EVIDENCE FOR GENOME SIZE,,N,N,
+ORGANISM PART,,Y,Y,"What's in the tube in terms of body parts/tissues, i.e. descriptive body part, e.g. ""left leg"", ""whole organism"", ""leaf tip"""
+"ORGANISM SIZE (S=<50ul, M = 50-200ul, L= > 200ul)",Measurement Remarks,Y,N,"??? - could be confused with ""genome size"""
+"Estimated size of tissue in tube  (S=<50ul, M = 50-200ul, L= > 200ul)",,Y,N,"??? - same as ""organism size""?"
+PLANS FOR SAMPLE,,N,N,Add example text (? Direct to Sanger or NHM or Both)
+TUBE TYPE,,Y,N,Add example text (size or type of tube as example)

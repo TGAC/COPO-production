@@ -1,0 +1,324 @@
+{
+  "configuration": {
+    "type": "xml",
+    "provider": "isa",
+    "ref": "transcription_seq.xml"
+  },
+  "properties": [
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "sample_name"
+      ],
+      "ref": "Sample Name",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Sample Name",
+      "show_in_form": true,
+      "id": "copo.transcriptomeAnalysis.sample_name",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "extract_name"
+      ],
+      "ref": "Extract Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Extract Name",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.extract_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "Select the sequencing technique intended for this library",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_source"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.transcriptomeAnalysis.library_source",
+      "label": "Parameter Value[library source]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library source]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "TRANSCRIPTOMIC",
+        "TRANSCRIPTOMIC SINGLE CELL",
+        "METATRANSCRIPTOMIC",
+        "OTHER"
+      ]
+    },
+    {
+      "help_tip": "Select the sequencing technique intended for this library",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_strategy"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.transcriptomeAnalysis.library_strategy",
+      "label": "Parameter Value[library strategy]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library strategy]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "RNA-Seq",
+        "ssRNA-seq",
+        "miRNA-Seq",
+        "ncRNA-Seq",
+        "FL-cDNA",
+        "EST",
+        "OTHER"
+      ]
+    },
+    {
+      "help_tip": "Select the method that was used to select for or against, enrich, or screen the material being sequenced",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_selection"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.transcriptomeAnalysis.library_selection",
+      "label": "Parameter Value[library selection]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library selection]",
+      "type": "string",
+      "show_in_table": true
+    },
+    {
+      "help_tip": "Specify whether to expect single, paired, or other configuration of reads",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "library_layout"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.transcriptomeAnalysis.library_layout",
+      "label": "Parameter Value[library layout]",
+      "show_in_form": true,
+      "ref": "Parameter Value[library layout]",
+      "type": "string",
+      "show_in_table": true,
+      "option_values": [
+        "SINGLE",
+        "PAIRED"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "mid"
+      ],
+      "ref": "Parameter Value[mid]",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Parameter Value[mid]",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.mid",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "Specify the sequencing instrument model and make",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "sequencing_instrument"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.transcriptomeAnalysis.sequencing_instrument",
+      "label": "Parameter Value[sequencing instrument]",
+      "show_in_form": true,
+      "ref": "Parameter Value[sequencing instrument]",
+      "type": "string",
+      "show_in_table": true
+    },
+    {
+      "help_tip": "Enter the name and version of the base or color calling software",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "ontology term",
+      "versions": [
+        "base_caller"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.transcriptomeAnalysis.base_caller",
+      "label": "Parameter Value[base caller]",
+      "show_in_form": true,
+      "ref": "Parameter Value[base caller]",
+      "type": "string",
+      "show_in_table": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "Enter the name and version of the quality scoring software",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "ontology term",
+      "versions": [
+        "quality_scorer"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.transcriptomeAnalysis.quality_score",
+      "label": "Parameter Value[quality score]",
+      "show_in_form": true,
+      "ref": "Parameter Value[quality score]",
+      "type": "string",
+      "show_in_table": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "assay_name"
+      ],
+      "ref": "Assay Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Assay Name",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.assay_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "control": "select",
+      "versions": [
+        "export"
+      ],
+      "deprecated": false,
+      "hidden": "true",
+      "id": "copo.transcriptomeAnalysis.export",
+      "label": "Comment[Export]",
+      "show_in_form": false,
+      "ref": "Comment[Export]",
+      "type": "string",
+      "show_in_table": false,
+      "option_values": [
+        "yes",
+        "no"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "raw_data_file"
+      ],
+      "ref": "Raw Data File",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Raw Data File",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.raw_data_file",
+      "type": "string",
+      "show_in_table": false,
+      "control": "file"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "normalization_name"
+      ],
+      "ref": "Normalization Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Normalization Name",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.normalization_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "data_transformation_name"
+      ],
+      "ref": "Data Transformation Name",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Data Transformation Name",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.data_transformation_name",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "derived_data_file"
+      ],
+      "ref": "Derived Data File",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Derived Data File",
+      "show_in_form": false,
+      "id": "copo.transcriptomeAnalysis.derived_data_file",
+      "type": "string",
+      "show_in_table": false,
+      "control": "file"
+    }
+  ],
+  "description": "Mappings of attribute in the Assay schema to a UI configuration source. Configuration ref is points to the actual file to map to, defined in schemas",
+  "title": "Transcriptome Analysis Assay schema mappings"
+}

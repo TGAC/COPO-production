@@ -1,0 +1,121 @@
+{
+  "title": "System FAQ",
+  "description": "Provides help on different components and their usage. Each entry (under properties) consists of a 'title' for the help title, 'content' for the body of the help, and the display 'context' for the help. Entries in 'context' can be deserialised into a tree structure, with the parent component being the first entry in the list and so on. Alternatively, the context list can capture a collection of different display contexts where the help might be relevant. It is left to the implementation to decide the best fit. ",
+  "properties": [
+    {
+      "title": "What is a COPO profile?",
+      "content": "A COPO profile is a collection of 'research objects' or components that form part of a research project or study. COPO currently provides templates for creating/describing the following components: <ul><li>Datafiles</li><li>Samples</li><li>Submission</li><li>Publications</li><li>People</li> <li>Annotations</li></ul>",
+      "context": [
+        "profile"
+      ]
+    },
+    {
+      "title": "How do I create a profile?",
+      "content": "Click on the <span class='fa-stack text-primary'><i class='fa fa-circle fa-stack-2x'></i><i class='fa fa-plus fa-stack-1x fa-inverse'></i></span> button, and fill out and save the presented form. <p><div><a href='https://youtu.be/7xiVTNw6pPc' target='_blank'>Video demo</a></div></p>",
+      "context": [
+        "profile",
+        "create"
+      ]
+    },
+    {
+      "title": "How many profiles can I have in COPO?",
+      "content": "You can have as many profiles as needed to represent your research projects. For instance, you can create a profile to represent work done as part of a grant, a sub project within a project, or a PhD project.",
+      "context": [
+        "profile"
+      ]
+    },
+    {
+      "title": "What is a profile component?",
+      "content": "A profile component is a research object that forms part of a research project or study. Each profile in COPO comes with templates for creating/describing instances of the  associated components (e.g., Datafiles wizards, Publications form).",
+      "context": [
+        "profile",
+        "component"
+      ]
+    },
+    {
+      "title": "How do I create components within a profile?",
+      "content": "To create a profile component:<ol><li>Navigate to the component page</li><li>Use relevant controls to either trigger a component form or initiate a component wizard.</li></ol>",
+      "context": [
+        "profile",
+        "create"
+      ]
+    },
+    {
+      "title": "How do I describe datafiles?",
+      "content": "<ol><li>Select the datafiles to be described under the <strong>Inspect</strong> pane</li><li>Click the <strong>Describe</strong> button</li><li>The description wizard will be launched with the target files available for description</li></ol>",
+      "context": [
+        "datafile",
+        "describe"
+      ]
+    },
+    {
+      "title": "What is a description bundle?",
+      "content": "A description bundle is a collection of datafiles with similar attributes, which can potentially be described together.",
+      "context": [
+        "datafile",
+        "describe"
+      ]
+    },
+    {
+      "title": "How do I exit a description?",
+      "content": "You can select to exit a description at any stage <ol><li>Click on the <strong>Exit Description</strong> button at the bottom of the wizard pane</li><li> You will be prompted to confirm the requested action</li><li> All previously entered description metadata will be saved for the future</li></ol>",
+      "context": [
+        "datafile",
+        "describe"
+      ]
+    },
+    {
+      "title": "How do I discard a description metadata?",
+      "content": "<ol><li>Select the target datafiles under the <strong>Inspect</strong> pane</li><li>Click the <strong>[Un]Describe</strong> button</li><li>Any associated description metadata with the target datafiles will be deleted, and the status flag beside the affected files should change to red.</li></ol>",
+      "context": [
+        "datafile",
+        "describe"
+      ]
+    },
+    {
+      "title": "What file types can I upload to COPO?",
+      "content": "Datafiles uploaded to COPO should potentially be suitable (conforming to formats) for submission to the supported repositories. Some of the popular file types/formats supported in COPO include:<ol><li>FASTQ to FASTA format (e.g., .fastq, .fastq.gz, .fasta)</li><li>PDFs (i.e., .pdf)</li><li>Image file formats (e.g., JPEG, PNG, GIF, BMP)</li></ol>",
+      "context": [
+        "datafile",
+        "upload"
+      ]
+    },
+    {
+      "title": "How long can I keep my file in COPO?",
+      "content": "COPO only brokers the submission of data to remote repositories, and is not equipped to act as a 'silo' for datafiles. <p>Datafiles uploaded to the system are held only for short periods of time (apprx. two weeks), pending deposition of same to remote repositories. <p>However, given that individual project needs or circumstances may differ considerably, we are more than happy to discuss ways to better support your specific data workflow.",
+      "context": [
+        "datafile",
+        "upload"
+      ]
+    },
+    {
+      "title": "Describing samples",
+      "content": "To start descrbing your samples, click on the <button class='circular mini ui icon primary button'><i class='icon add sign'></i></button> icon, and follow the steps presented by the wizard.",
+      "context": [
+        "sample",
+        "describe"
+      ]
+    },
+    {
+      "title": "Sample types",
+      "content": "COPO currently supports and provides configurations for describing the following sample types:<ol><li><label>Simple:</label> Simple samples are based on <a href='https://www.ebi.ac.uk/biosamples/' target='_blank'>BioSamples</a>. They are <strong>repository agnostic</strong>, and are better suited for describing samples in a generic manner or in contexts where the target repository isn't known <i>a priori</i>. </li><li><label>Extended:</label> Extended samples are based on the <a href='http://isa-tools.org/' target='_blank'>Investigation, Study and Assay </a> (ISA) specifications, and are better tailored for describing samples that will subsequently become part of data submissions to repositories such as <strong>ENA</strong> and <strong>Metabolights</strong>.</li></ol>",
+      "context": [
+        "sample"
+      ]
+    },
+    {
+      "title": "COPO submission",
+      "content": "A COPO submission component is an integral part of a COPO profile. The page provides information about all submissions created (conclusive or pending) within a profile.",
+      "context": [
+        "submission"
+      ]
+    },
+    {
+      "title": "How do I create a submission entry?",
+      "content": "To create a submission entry, you have to first go through the process of datafile description (under the datafile component). A submission entry is created when the user completes the task of metadata attribution (within the description wizard), and selects to initiate a submission.",
+      "context": [
+        "submission"
+      ]
+    }
+  ]
+}

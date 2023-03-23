@@ -1,0 +1,38 @@
+[
+  {
+    "value": "dataverse",
+    "label": "Dataverse",
+    "supported_templates": ["cg_core", "dcterms"],
+    "description": "An instance of the Dataverse repository. For more information about this repository type, visit: https://dataverse.org/"
+  },
+  {
+    "value": "dspace",
+    "label": "DSpace",
+    "supported_templates": ["cg_core", "dcterms"],
+    "description": "An instance of the dSPACE repository. For more information about this repository type, visit: https://duraspace.org/dspace/"
+  },
+  {
+    "value": "ckan",
+    "label": "CKAN",
+    "supported_templates": ["cg_core", "dcterms"],
+    "description": "An instance of the CKAN repository. For more information about this repository type, visit: https://ckan.org/"
+  },
+  {
+    "value": "ena",
+    "label": "ENA - Sequence Reads",
+    "supported_templates": ["ena"],
+    "description": "An instance of the ENA repository for raw sequence reads submissions. For more information about this repository type, visit: https://www.ebi.ac.uk/ena/"
+  },
+  {
+    "value": "ena-asm",
+    "label": "ENA - Sequence Assemblies",
+    "supported_templates": ["ena-asm"],
+    "description": "An instance of the ENA repository for genome or transcriptome assemblies submissions. For more information about this repository type, visit: https://www.ebi.ac.uk/ena/"
+  },
+  {
+    "value": "figshare",
+    "label": "Figshare",
+    "supported_templates": ["figshare"],
+    "description": "An instance of the Figshare repository for submission of diverse data types including PDFs, image, audio, and video files. For more information about this repository type, visit: https://figshare.com/"
+  }
+]

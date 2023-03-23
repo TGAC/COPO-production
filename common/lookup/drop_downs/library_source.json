@@ -1,0 +1,47 @@
+[
+  {
+    "value": "GENOMIC",
+    "label": "GENOMIC",
+    "description": "Genomic DNA (includes PCR products from genomic DNA)."
+  },
+  {
+    "value": "GENOMIC SINGLE CELL",
+    "label": "GENOMIC SINGLE CELL",
+    "description": "N/A"
+  },
+  {
+    "value": "TRANSCRIPTOMIC",
+    "label": "TRANSCRIPTOMIC",
+    "description": "Transcription products or non genomic DNA (EST, cDNA, RT-PCR, screened libraries)."
+  },
+  {
+    "value": "TRANSCRIPTOMIC SINGLE CELL",
+    "label": "TRANSCRIPTOMIC SINGLE CELL",
+    "description": "N/A"
+  },
+  {
+    "value": "METAGENOMIC",
+    "label": "METAGENOMIC",
+    "description": "Mixed material from metagenome."
+  },
+  {
+    "value": "METATRANSCRIPTOMIC",
+    "label": "METATRANSCRIPTOMIC",
+    "description": "Transcription products from community targets"
+  },
+  {
+    "value": "SYNTHETIC",
+    "label": "SYNTHETIC",
+    "description": "Synthetic DNA."
+  },
+  {
+    "value": "VIRAL RNA",
+    "label": "VIRAL RNA",
+    "description": "Viral RNA."
+  },
+  {
+    "value": "OTHER",
+    "label": "OTHER",
+    "description": "Other, unspecified, or unknown library source material."
+  }
+]

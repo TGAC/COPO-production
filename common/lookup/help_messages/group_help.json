@@ -1,0 +1,20 @@
+{
+  "groupTips": {
+    "title": "General",
+    "description": "This is a group help. ",
+    "properties": [
+      {
+        "title": "Purpose",
+        "content": "The description wizard is an user interface (UI) component that eases the task of metadata attribution of datafiles. The wizard provides the following key features:<ol><li> Sequence of steps/stages, with intuitive UI forms/controls, to guide the user through the description task</li> <li> Support for individual and, more interestingly, batch ('bundle') descriptions of datafiles</li><li>Cloning/inheriting of metadata</li></ol>"
+      },
+      {
+        "title": "Describing Datafiles",
+        "content": "Select the files to be described in the 'Files in COPO' pane, and click on the 'Describe' button. The target files will be added to the 'Description Wizard' pane. Go ahead and follow the steps in the wizard, supplying requested metadata in each step presented."
+      },
+      {
+        "title": "Generating a rank",
+        "content": "Select the files to be described in the 'Files in COPO' pane, and click on the 'Describe' button. The target files will be added to the 'Description Wizard' pane. Go ahead and follow the steps in the wizard, supplying requested metadata in each step presented."
+      }
+    ]
+  }
+}

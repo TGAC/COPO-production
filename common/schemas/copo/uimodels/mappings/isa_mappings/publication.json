@@ -1,0 +1,194 @@
+{
+  "configuration": {
+    "type": "xml",
+    "provider": "isa",
+    "ref": "INVESTIGATION_FILE_XML"
+  },
+  "properties": [
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "title"
+      ],
+      "ref": "Investigation Publication Title",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Title",
+      "show_in_form": true,
+      "id": "copo.publication.title",
+      "type": "string",
+      "show_in_table": true,
+      "show_as_attribute": true,
+      "control": "textarea"
+    },
+    {
+      "help_tip": "Enter authors for the publication. Press the enter key to add to the list. ",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "authorList"
+      ],
+      "ref": "Investigation Publication Author List",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Author List",
+      "show_in_form": true,
+      "id": "copo.publication.authorList",
+      "type": "string",
+      "show_in_table": true,
+      "control": "copo-select2"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "doi"
+      ],
+      "ref": "Investigation Publication DOI",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "DOI",
+      "show_in_form": true,
+      "id": "copo.publication.doi",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "pubMedID"
+      ],
+      "ref": "Investigation PubMed ID",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "PubMed ID",
+      "show_in_form": true,
+      "id": "copo.publication.pubMedID",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "control": "Ontology term",
+      "versions": [
+        "status"
+      ],
+      "deprecated": false,
+      "hidden": "false",
+      "id": "copo.publication.status",
+      "label": "Status",
+      "show_in_form": true,
+      "ref": "Investigation Publication Status",
+      "type": "object",
+      "show_in_table": true,
+      "ontology_names": []
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "comments"
+      ],
+      "ref": "Comment[Investigation Person REF]",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Comment",
+      "show_in_form": true,
+      "id": "copo.publication.comments",
+      "type": "array",
+      "show_in_table": false,
+      "show_as_attribute": true,
+      "control": "copo-comment"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_created"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Created",
+      "show_in_form": false,
+      "id": "copo.publication.date_created",
+      "type": "string",
+      "show_in_table": false,
+      "control": "datetime"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "profile_id"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Profile ID",
+      "show_in_form": false,
+      "id": "copo.publication.profile_id",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "deleted"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Delete",
+      "show_in_form": false,
+      "id": "copo.publication.deleted",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_modified"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Modified",
+      "show_in_form": false,
+      "id": "copo.publication.date_modified",
+      "type": "string",
+      "show_in_table": true,
+      "control": "datetime"
+    }
+  ],
+  "description": "Mappings of attribute in the Publication schema to a UI configuration source. Configuration ref is defined in UI_CONFIG_SOURCES in services.py",
+  "title": "Publication schema mappings"
+}

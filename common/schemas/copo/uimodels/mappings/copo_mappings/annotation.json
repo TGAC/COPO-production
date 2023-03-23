@@ -1,0 +1,169 @@
+{
+  "properties": [
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.document_name",
+      "show_in_table": true,
+      "unique": true,
+      "control": "text",
+      "versions": [
+        "document_name"
+      ],
+      "help_tip": "The current url of the page intialising this request.",
+      "label": "Document Name"
+    },
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.profile_id",
+      "show_in_table": false,
+      "unique": true,
+      "control": "text",
+      "versions": [
+        "profile_id"
+      ],
+      "help_tip": "",
+      "label": ""
+    },
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.raw",
+      "show_in_table": false,
+      "unique": true,
+      "control": "text",
+      "versions": [
+        "raw"
+      ],
+      "help_tip": "",
+      "label": ""
+    },
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.type",
+      "show_in_table": true,
+      "unique": true,
+      "control": "text",
+      "versions": [
+        "type"
+      ],
+      "help_tip": "",
+      "label": "Document Type"
+    },
+    {
+      "type": "array",
+      "required": "false",
+      "ref": "",
+      "hidden": "false",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": true,
+      "id": "copo.annotation.annotation",
+      "show_in_table": false,
+      "control": "copo-characteristics",
+      "versions": [
+        "annotation"
+      ],
+      "help_tip": "",
+      "label": ""
+    },
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "true",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.deleted",
+      "show_in_table": false,
+      "control": "text",
+      "versions": [
+        "deleted"
+      ],
+      "help_tip": "",
+      "label": "Delete"
+    },
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "true",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.file_location",
+      "show_in_table": false,
+      "control": "text",
+      "versions": [
+        "deleted"
+      ],
+      "help_tip": "",
+      "label": "Delete"
+    },
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "true",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.date_created",
+      "show_in_table": true,
+      "control": "datetime",
+      "versions": [
+        "date_created"
+      ],
+      "help_tip": "",
+      "label": "Created"
+    }
+    ,
+    {
+      "type": "string",
+      "required": "true",
+      "ref": "",
+      "hidden": "true",
+      "deprecated": false,
+      "default_value": "",
+      "show_in_form": false,
+      "id": "copo.annotation.uid",
+      "show_in_table": false,
+      "control": "uid",
+      "versions": [
+        "uid"
+      ],
+      "help_tip": "",
+      "label": "uid"
+    }
+  ],
+  "description": "",
+  "configuration": {
+    "type": "json",
+    "provider": "copo",
+    "ref": ""
+  },
+  "title": "Annotation schema mappings"
+}

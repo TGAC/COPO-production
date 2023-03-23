@@ -1,0 +1,109 @@
+{
+  "profile": {
+    "title": "Profile FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. If you need to filter or give more weight to items being display, define this using context ",
+    "properties": [
+      {
+        "title": "What is a COPO Profile?",
+        "content": "A COPO Profile is a collection of 'research objects' or components that form part of a research project or study. COPO currently provides templates for creating/describing the following components: <ul><li>Datafiles</li><li>Samples</li><li>Submission</li><li>Publications</li><li>People</li> <li>Annotations</li></ul>",
+        "context": ["profile"]
+      }
+    ]
+  },
+  "datafile": {
+    "title": "Datafile FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "How do I describe datafiles?",
+        "content": "<ol><li>Select the datafiles to be described under the <strong>Inspect</strong> pane</li><li>Click the <strong>Describe</strong> button</li><li>The description wizard will be launched with the target files available for description</li></ol>",
+        "context": ["datafile","describe"]
+      },
+       {
+        "title": "What is a description bundle?",
+        "content": "A description bundle is a collection of datafiles with similar attributes, which can potentially be described together.",
+        "context": ["datafile","describe"]
+      },
+      {
+        "title": "How do I exit a description?",
+        "content": "You can select to exit a description at any stage <ol><li>Click on the <strong>Exit Wizard</strong> button at the bottom of the wizard pane</li><li> You will be prompted to confirm the requested action</li><li> All previously entered description metadata will be saved for the future</li></ol>",
+        "context": ["datafile","describe"]
+      },
+      {
+        "title": "How do I discard a description metadata?",
+        "content": "<ol><li>Select the target datafiles under the <strong>Inspect</strong> pane</li><li>Click the <strong>[Un]Describe</strong> button</li><li>Any associated description metadata with the target datafiles will be deleted, and the status flag beside the affected files should change to red.</li></ol>",
+        "context": ["datafile","describe"]
+      },{
+        "title": "What file types can I upload to COPO?",
+        "content": "Our aim is not to provide a list of file formats and/or extensions COPO would necessarily support. However, datafiles uploaded to COPO should potentially be suitable (conforming to formats) for submission to the supported repositories. The following file types/formats should loosely be supported in COPO:<ol><li>FASTQ to FASTA format (e.g., .fastq, .fastq.gz, .fasta)</li><li>PDFs (i.e., .pdf)</li><li>Image file formats (e.g., JPEG, PNG, GIF, BMP)</li></ol>",
+        "context": ["datafile","upload"]
+      },
+      {
+        "title": "How long can I keep my file in COPO?",
+        "content": "COPO only brokers the submission of data to remote repositories, and is not equipped to act as a 'silo' for datafiles. <p>Datafiles uploaded to the system are held only for short periods of time (apprx. two weeks), pending deposition of same to remote repositories. <p>However, given that individual project needs or circumstances may differ considerably, we are more than happy to discuss ways to better support your specific data workflow.",
+        "context": ["datafile","upload"]
+      }
+    ]
+  },
+  "sample": {
+    "title": "Sample FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "What is a Sample",
+        "content": "..."
+      }
+    ]
+  },
+  "publication": {
+    "title": "Publication FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "What is a Publication",
+        "content": "..."
+      }
+    ]
+  },
+  "person": {
+    "title": "Person FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "What is a Person",
+        "content": "..."
+      }
+    ]
+  },
+  "submission": {
+    "title": "Submission FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "What is a Submission",
+        "content": "..."
+      }
+    ]
+  },
+  "annotation": {
+    "title": "Annotation FAQs",
+    "description": "Provides help frequently asked questions (FAQs) on different components. Each entry (under properties) consists of a 'title' for the information title and 'content' for the body of the message. ",
+    "properties": [
+      {
+        "title": "What is a Annotation",
+        "content": "..."
+      }
+    ]
+  },
+  "group":{
+    "title": "Group Help",
+    "description": "",
+    "properties": [
+      {
+        "title": "main help",
+        "content": "..."
+      }
+    ]
+
+  }
+}
