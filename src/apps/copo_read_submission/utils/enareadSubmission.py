@@ -367,8 +367,8 @@ class EnaReads:
         result = dict(status=True, value='')
 
         # register project to the ENA service
-        curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                   + ' -F "SUBMISSION=@' \
+        curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                   + '" -F "SUBMISSION=@' \
                    + submission_xml_path \
                    + '" -F "PROJECT=@' \
                    + project_xml_path \
@@ -382,11 +382,13 @@ class EnaReads:
         try:
             receipt = subprocess.check_output(curl_cmd, shell=True)
         except Exception as e:
+            
             message = 'API call error ' + "Submitting project xml to ENA via CURL. CURL command is: " + \
                       curl_cmd.replace(
                           self.pass_word, "xxxxxx")
             
             ghlper.logging_error(message, self.submission_id)
+            ghlper.logging_exception(e)
             result['message'] = message
             result['status'] = False
 
@@ -528,8 +530,8 @@ class EnaReads:
         result = dict(status=True, value='')
 
         # register samples to the ENA service
-        curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                   + ' -F "SUBMISSION=@' \
+        curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                   + '" -F "SUBMISSION=@' \
                    + submission_xml_path \
                    + '" -F "SAMPLE=@' \
                    + sample_xml_path \
@@ -545,6 +547,7 @@ class EnaReads:
         except Exception as e:
             message = 'API call error ' + str(e)
             ghlper.logging_error(message, self.submission_id)
+            ghlper.logging_exception(e)
             result['message'] = message
             result['status'] = False
 
@@ -696,8 +699,8 @@ class EnaReads:
             result = dict(status=True, value='')
 
             # compose curl command for study release
-            curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                       + ' -F "SUBMISSION=@' \
+            curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                       + '" -F "SUBMISSION=@' \
                        + submission_xml_path \
                        + '" "' + self.ena_service \
                        + '"'
@@ -711,6 +714,7 @@ class EnaReads:
             except Exception as e:
                 message = 'API call error ' + str(e)
                 ghlper.logging_error(message, self.submission_id)
+                ghlper.logging_exception(e)
                 result['message'] = message
                 result['status'] = False
 
@@ -1067,8 +1071,8 @@ class EnaReads:
                 final_submission_xml_path = result['value']
 
             # submit xmls to ENA service
-            curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                       + ' -F "SUBMISSION=@' \
+            curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                       + '" -F "SUBMISSION=@' \
                        + final_submission_xml_path \
                        + '" -F "EXPERIMENT=@' \
                        + experiement_xml_path \
@@ -1088,6 +1092,7 @@ class EnaReads:
             except Exception as e:
                 message = 'API call error ' + str(e).replace(self.pass_word,"xxxxxx"),
                 ghlper.logging_error(message, self.submission_id)
+                ghlper.logging_exception(e)
                 submission_errors.append(message)
                 continue
 
@@ -1496,6 +1501,7 @@ class EnaReads:
             except Exception as e:
                 message = 'API call error ' + str(e)
                 ghlper.logging_error(message, self.submission_id)
+                ghlper.logging_exception(e)
                 submission_errors.append(message)
 
         if submission_errors:
@@ -1674,8 +1680,8 @@ class EnaReads:
         result = dict(status=True, value='')
 
         # compose curl command for study release
-        curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                   + ' -F "SUBMISSION=@' \
+        curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                   + '" -F "SUBMISSION=@' \
                    + submission_xml_path \
                    + '" "' + self.ena_service \
                    + '"'
@@ -1689,6 +1695,7 @@ class EnaReads:
         except Exception as e:
             message = 'API call error ' + str(e)
             ghlper.logging_error(message, self.submission_id)
+            ghlper.logging_exception(e)
             result['message'] = message
             result['status'] = False
 

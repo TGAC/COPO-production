@@ -200,6 +200,6 @@ xlrd==2.0.1
 xmljson==0.2.1
 XlsxWriter==3.0.9
 zipp==0.6.0
-zope.interface==5.5.2
+zope.interface==6.0
 Pillow==9.4.0
 tzdata==2022.7

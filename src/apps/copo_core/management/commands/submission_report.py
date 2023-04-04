@@ -2,7 +2,7 @@ from bson import ObjectId
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
-from dal.copo_da import Profile, Submission
+from common.dal.copo_da import Profile, Submission
 
 
 class Command(BaseCommand):

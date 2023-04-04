@@ -1,7 +1,5 @@
 from django.core.management import BaseCommand
-
-
-from dal.copo_da import Source, Sample
+from common.dal.copo_da import  Sample
 
 
 

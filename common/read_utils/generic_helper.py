@@ -13,8 +13,8 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from common.lookup.copo_enums import Loglvl, Logtype
 from common.utils import helpers
-
-lg = settings.LOGGER
+from common.utils.logger import Logger
+lg = Logger()
 BASE_DIR = settings.BASE_DIR
 #REPOSITORIES = settings.REPOSITORIES
 
@@ -103,6 +103,8 @@ def logging_error(message=str(), submission_id=str()):
 
     return True
 
+def logging_exception(exception):
+    lg.exception(exception)
 
 def log_general_info(message):
     """

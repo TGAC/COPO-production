@@ -117,8 +117,8 @@ class Command(BaseCommand):
 
     def modify_sample(self, id):
         fileis = "bundle_"+ str(id)+ ".xml"
-        curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                   + ' -F "SUBMISSION=@modifysubmission.xml' \
+        curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                   + '" -F "SUBMISSION=@modifysubmission.xml' \
                    + '" -F "SAMPLE=@' \
                    + fileis \
                    + '" "' + self.ena_service \

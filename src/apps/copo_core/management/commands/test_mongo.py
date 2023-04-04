@@ -1,8 +1,5 @@
 from django.core.management import BaseCommand
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
-from web.apps.web_copo.models import Repository
-from dal.copo_da import TestObjectType
+from common.dal.copo_da import TestObjectType
 from datetime import datetime
 import random
 

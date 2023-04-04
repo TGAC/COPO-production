@@ -1,14 +1,11 @@
 from django.core.management import BaseCommand
 from Bio import Entrez
-from web.apps.web_copo.utils.dtol.Dtol_Submission import populate_source_fields, \
-    build_specimen_sample_xml, build_submission_xml, submit_biosample
 import xml.etree.ElementTree as ET
 import subprocess
-from tools import resolve_env
+from common.utils.helpers import get_env
 import os
-
-
-import dal.copo_da as da
+import common.dal.copo_da as da
+from common.utils.logger import Logger
 
 
 
@@ -27,9 +24,9 @@ class Command(BaseCommand):
             "family" : "FAMILY",
             "genus" :  "GENUS"
         }
-        self.pass_word = resolve_env.get_env('WEBIN_USER_PASSWORD')
-        self.user_token = resolve_env.get_env('WEBIN_USER').split("@")[0]
-        self.ena_service = resolve_env.get_env('ENA_SERVICE')  # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        self.pass_word = get_env('WEBIN_USER_PASSWORD')
+        self.user_token = get_env('WEBIN_USER').split("@")[0]
+        self.ena_service = get_env('ENA_SERVICE')  # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
         self.ena_sample_retrieval = self.ena_service[:-len(
             'submit/')] + "samples/"  # https://devwww.ebi.ac.uk/ena/submit/drop-box/samples/" \
 
@@ -158,7 +155,7 @@ class Command(BaseCommand):
         except Exception as e:
             message = 'API call error ' + "Submitting xml to ENA via CURL. CURL command is: " + curl_cmd.replace(
                 self.pass_word, "xxxxxx")
-            print(message)
+            Logger().exception(e)
             return False
 
         os.remove(accession + ".xml")

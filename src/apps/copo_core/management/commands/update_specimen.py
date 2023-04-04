@@ -6,21 +6,19 @@ import xml.etree.ElementTree as ET
 
 import datetime
 
-from dal.copo_da import Source, Sample
-from dal import cursor_to_list, cursor_to_list_str, cursor_to_list_no_ids
-from tools import resolve_env
-from web.apps.web_copo.lookup.dtol_lookups import DTOL_ENA_MAPPINGS, DTOL_UNITS, \
-    API_KEY
-
+from common.dal.copo_da import Source, Sample
+from common.utils.helpers import get_env
+from common.lookup.dtol_lookups import DTOL_ENA_MAPPINGS, DTOL_UNITS
+from common.utils.logger import Logger
 
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
     # Show this when the user types help
     help = "change the cutoff date"
     def __init__(self):
-        self.pass_word = resolve_env.get_env('WEBIN_USER_PASSWORD')
-        self.user_token = resolve_env.get_env('WEBIN_USER').split("@")[0]
-        self.ena_service = resolve_env.get_env('ENA_SERVICE') #'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        self.pass_word = get_env('WEBIN_USER_PASSWORD')
+        self.user_token = get_env('WEBIN_USER').split("@")[0]
+        self.ena_service = get_env('ENA_SERVICE') #'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
         self.ena_sample_retrieval = self.ena_service[:-len('submit/')]+"samples/" #https://devwww.ebi.ac.uk/ena/submit/drop-box/samples/" \
 
     # A command must define handle()
@@ -221,6 +219,7 @@ class Command(BaseCommand):
         except Exception as e:
             message = 'API call error ' + "Submitting project xml to ENA via CURL. CURL command is: " + curl_cmd.replace(
                 self.pass_word, "xxxxxx")
+            Logger().exception(e)
             return False
 
         os.remove(accession + ".xml")

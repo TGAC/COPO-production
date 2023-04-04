@@ -103,9 +103,9 @@ def save_ena_records(request):
     existing_bundle = list()
     existing_bundle_meta = list()
     sub = Submission().get_collection_handle().find_one({"profile_id": profile_id, "deleted": helpers.get_not_deleted_flag()})
-    if sub:
-        existing_bundle = sub["bundle"]
-        existing_bundle_meta = sub["bundle_meta"]
+    #if sub:
+    #    existing_bundle = sub["bundle"]
+    #    existing_bundle_meta = sub["bundle_meta"]
 
     for p in range(1, len(sample_data)):
         # for each row in the manifest

@@ -1,13 +1,5 @@
 from django.core.management import BaseCommand
-from web.apps.web_copo.utils.dtol.Dtol_Submission import build_specimen_sample_xml,\
-    build_bundle_sample_xml, update_bundle_sample_xml
-import xml.etree.ElementTree as ET
-import subprocess
-from tools import resolve_env
-import os
-from web.apps.web_copo.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
-
-import dal.copo_da as da
+import common.dal.copo_da as da
 
 
 

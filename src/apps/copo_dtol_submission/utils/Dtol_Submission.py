@@ -772,7 +772,7 @@ def submit_biosample_v2(subfix, sampleobj, collection_id, sample_ids, type="samp
                 tree = ET.fromstring(receipt)
                 return handle_submit_receipt(sampleobj,collection_id, tree, type)
         else:
-            l.log("General Error " + str(e), type=Logtype.FILE)
+            l.log("General Error " + receipt, type=Logtype.FILE)
             message = 'API call error ' + "Submitting project xml to ENA via CURL. CURL command is: " + cmd
             notify_frontend(data={"profile_id": profile_id}, msg=message, action="error",
                             html_id="dtol_sample_info")
@@ -786,7 +786,8 @@ def submit_biosample_v2(subfix, sampleobj, collection_id, sample_ids, type="samp
         reset_submission_status(collection_id)
         return False
     except Exception as e:
-        l.log("General Error " + str(e), type=Logtype.FILE)
+        #l.log("General Error " + str(e), type=Logtype.FILE)
+        l.exception(e)
         message = 'API call error ' + "Submitting project xml to ENA via CURL. href is: " + cmd
         notify_frontend(data={"profile_id": profile_id}, msg=message, action="error",
                         html_id="dtol_sample_info")
@@ -827,7 +828,8 @@ def poll_asyn_ena_submission():
                                     html_id="dtol_sample_info")
                     continue
                 except Exception as e:
-                    l.log("General Error " + str(e), type=Logtype.FILE)
+                    #l.log("General Error " + str(e), type=Logtype.FILE)
+                    l.exception(e)
                     message = 'API call error ' + "Submitting project xml to ENA via CURL. href is: " + sub["href"]
                     notify_frontend(data={"profile_id": submission["profile_id"]}, msg=message, action="error",
                                     html_id="dtol_sample_info")
@@ -890,8 +892,8 @@ def submit_biosample(subfix, sampleobj, collection_id, type="sample"):
 
     submissionfile = "submission_" + str(subfix) + ".xml"
     samplefile = "bundle_" + str(subfix) + ".xml"
-    curl_cmd = 'curl -m 300 -u ' + user_token + ':' + pass_word \
-               + ' -F "SUBMISSION=@' \
+    curl_cmd = 'curl -m 300 -u "' + user_token + ':' + pass_word \
+               + '" -F "SUBMISSION=@' \
                + submissionfile \
                + '" -F "SAMPLE=@' \
                + samplefile \
@@ -904,7 +906,8 @@ def submit_biosample(subfix, sampleobj, collection_id, type="sample"):
         l.log("ENA RECEIPT " + str(receipt), type=Logtype.FILE)
         print(receipt)
     except Exception as e:
-        l.log("General Error " + str(e), type=Logtype.FILE)
+        #l.log("General Error " + str(e), type=Logtype.FILE)
+        l.exception(e)
         message = 'API call error ' + "Submitting project xml to ENA via CURL. CURL command is: " + curl_cmd.replace(
             pass_word, "xxxxxx")
         notify_frontend(data={"profile_id": profile_id}, msg=message, action="error",
@@ -1027,8 +1030,8 @@ def create_study(profile_id, collection_id):
     submissionfile = "submission_" + profile_id + ".xml"
     build_submission_xml(profile_id, hold=date.today().strftime("%Y-%m-%d"))
 
-    curl_cmd = 'curl -u -m 300' + user_token + ':' + pass_word \
-               + ' -F "SUBMISSION=@' \
+    curl_cmd = 'curl -u -m 300 "' + user_token + ':' + pass_word \
+               + '" -F "SUBMISSION=@' \
                + submissionfile \
                + '" -F "PROJECT=@' \
                + studyfile \
@@ -1038,6 +1041,7 @@ def create_study(profile_id, collection_id):
         receipt = subprocess.check_output(curl_cmd, shell=True)
         # print(receipt)
     except Exception as e:
+        l.exception(e)
         message = 'API call error ' + "Submitting project xml to ENA via CURL. CURL command is: " + curl_cmd.replace(
             pass_word, "xxxxxx")
         notify_frontend(data={"profile_id": profile_id}, msg=message, action="error",
@@ -1119,8 +1123,8 @@ def handle_common_ENA_error(error_to_parse, source_id):
     '''build_submission_xml(alias, actionxml="RECEIPT", alias=alias)
 
     submissionfile = "submission_" + str(alias) + ".xml"
-    curl_cmd = 'curl -m 300 -u ' + user_token + ':' + pass_word \
-               + ' -F "SUBMISSION=@' \
+    curl_cmd = 'curl -m 300 -u "' + user_token + ':' + pass_word \
+               + '" -F "SUBMISSION=@' \
                + submissionfile \
                + '" "' + ena_service \
                + '"'

@@ -4,7 +4,7 @@ __author__ = 'etuka'
 from django.core.management.base import BaseCommand
 
 import psycopg2
-from utils import helpers
+from common.utils import helpers
 
 
 class Command(BaseCommand):

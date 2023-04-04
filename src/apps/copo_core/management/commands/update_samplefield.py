@@ -1,16 +1,12 @@
 from django.core.management import BaseCommand
 from Bio import Entrez
-from web.apps.web_copo.utils.dtol.Dtol_Submission import build_specimen_sample_xml,\
+from src.apps.copo_dtol_submission.utils.Dtol_Submission import build_specimen_sample_xml,\
     build_bundle_sample_xml, update_bundle_sample_xml
-import xml.etree.ElementTree as ET
 import subprocess
-from tools import resolve_env
+from common.utils import helpers
 import os
-from web.apps.web_copo.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
-
-
-
-import dal.copo_da as da
+from common.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
+import common.dal.copo_da as da
 
 
 
@@ -29,9 +25,9 @@ class Command(BaseCommand):
             "family" : "FAMILY",
             "genus" :  "GENUS"
         }
-        self.pass_word = resolve_env.get_env('WEBIN_USER_PASSWORD')
-        self.user_token = resolve_env.get_env('WEBIN_USER').split("@")[0]
-        self.ena_service = resolve_env.get_env('ENA_SERVICE')  # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        self.pass_word = helpers.get_env('WEBIN_USER_PASSWORD')
+        self.user_token = helpers.get_env('WEBIN_USER').split("@")[0]
+        self.ena_service = helpers.get_env('ENA_SERVICE')  # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
         self.ena_sample_retrieval = self.ena_service[:-len(
             'submit/')] + "samples/"  # https://devwww.ebi.ac.uk/ena/submit/drop-box/samples/" \
 

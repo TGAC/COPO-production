@@ -66,8 +66,8 @@ class Command(BaseCommand):
 
 
     def modify_run(self, run):
-        curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
-                   + ' -F "SUBMISSION=@modifysubmission.xml' \
+        curl_cmd = 'curl -u "' + self.user_token + ':' + self.pass_word \
+                   + '" -F "SUBMISSION=@modifysubmission.xml' \
                    + '" -F "RUN=@' \
                    + run + ".xml" \
                    + '" "' + self.ena_service \

@@ -10,11 +10,11 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from django.core.management.base import BaseCommand
 
-import schemas.utils.data_utils as d_utils
-from dal.copo_base_da import DataSchemas
-from dal.mongo_util import get_collection_ref
-from lookup.resolver import RESOLVER
-from schemas.utils.data_formats import DataFormats
+import common.schemas.utils.data_utils as d_utils
+from common.dal.copo_base_da import DataSchemas
+from common.dal.mongo_util import get_collection_ref
+from common.lookup.resolver import RESOLVER
+from common.schemas.utils.data_formats import DataFormats
 
 Schemas = get_collection_ref("Schemas")
 Lookups = get_collection_ref("Lookups")

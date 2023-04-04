@@ -13,6 +13,7 @@ from common.schemas.utils.data_utils import json_to_pytype
 from common.lookup import lookup as lk
 import jsonpath_rw_ext as jp
 from common.utils.helpers import map_to_dict
+from common.utils.logger import Logger
 
 class ProcessValidationQueue:
 
@@ -148,6 +149,7 @@ class ProcessValidationQueue:
                                 action="error",
                                 html_id="sample_info")
                 ValidationQueue().set_taxon_validation_error(qm["_id"], err=msg)
+                Logger().log(error_message)
                 return False
             except Exception as e:
                 error_message = str(e).replace("<", "").replace(">", "")
