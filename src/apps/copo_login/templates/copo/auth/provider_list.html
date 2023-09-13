@@ -22,11 +22,13 @@
             {% with provider.id|add:'.png' as image_static %}
 
                 {% if provider.id == 'orcid' %}
-
+                <form id="login_orcid" method="post" action="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+                    {% csrf_token %}
                     <a style="margin-left: -20px"  title="{{ provider.name }}" class="socialaccount_provider {{ provider.id }}"
-                       href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"><img
+                       href="javascript:login_orcid()"><img
                             height="75px" src="{% static 'copo/img/'|add:image_static %}"/>
                         <span style="font-size: large" class="login-button">Sign in with {{ provider.name }}</span></a>
+                </form>
 
                 {% else %}
 
@@ -41,3 +43,9 @@
     {% endautoescape %}
 {% endfor %}
 
+<script>
+    function login_orcid() {
+        let form = document.getElementById("login_orcid");
+        form.submit();
+    }
+</script>
