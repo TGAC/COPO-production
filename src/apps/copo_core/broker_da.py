@@ -546,7 +546,7 @@ class BrokerDA:
         report_metadata["message"] = result.get("message", "success")
         self.context["action_feedback"] = report_metadata
         if result.get("status","success") == "success":
-            self.context["table_data"] = htags.generate_taggedseq_record(profile_id=self.profile_id, checklist_id=tagged_seq_checklist_id)
+            self.context["table_data"] = EnaTaggedSequence().generate_taggedseq_record(profile_id=self.profile_id, checklist_id=tagged_seq_checklist_id)
             self.context["component"] = "taggedseq"
         return self.context
     
@@ -581,7 +581,7 @@ class BrokerVisuals:
             assembly=(htags.generate_table_records, dict(profile_id=self.profile_id, component=self.component)),
             read = (ena_read.generate_read_record, dict(profile_id=self.profile_id,checklist_id=self.request_dict.get("sample_checklist_id", str()))),
             files = (copo_file.generate_files_record, dict(user_id=self.user_id)),
-            taggedseq = (htags.generate_taggedseq_record, dict(profile_id=self.profile_id,checklist_id=self.request_dict.get("tagged_seq_checklist_id", str()))),
+            taggedseq = (EnaTaggedSequence().generate_taggedseq_record, dict(profile_id=self.profile_id,checklist_id=self.request_dict.get("tagged_seq_checklist_id", str()))),
         )
 
         # NB: in table_data_dict, use an empty dictionary as a parameter for listed functions that define zero arguments

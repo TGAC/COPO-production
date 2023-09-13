@@ -36,6 +36,7 @@ pass_word = get_env('WEBIN_USER_PASSWORD')
 user_token = get_env('WEBIN_USER').split("@")[0]
 ena_service = get_env('ENA_SERVICE')
 
+"""
 def upload_assembly_files(files):
     assembly_path = Path(settings.MEDIA_ROOT) / "ena_assembly_files"
     request = ThreadLocal.get_current_request()
@@ -50,7 +51,6 @@ def upload_assembly_files(files):
     for f in files:
         file = files[f]
 
-        file_path = write_path / file.name
         file_path = Path(settings.MEDIA_ROOT) / "ena_assembly_files" / profile_id / file.name
         with default_storage.open(file_path, 'wb+') as destination:
             for chunk in file.chunks():
@@ -62,7 +62,7 @@ def upload_assembly_files(files):
     request = ThreadLocal.get_current_request()
     output = "done"
     return output
-
+"""
 def validate_assembly(form, profile_id, assembly_id):
     #check assemblyname unique
     form["assemblyname"] = '_'.join(form["assemblyname"].split())
@@ -80,6 +80,7 @@ def validate_assembly(form, profile_id, assembly_id):
     request = ThreadLocal.get_current_request()
     bucket_name = str(request.user.id) + "_" + request.user.username
     these_assemblies = join(settings.MEDIA_ROOT, "ena_assembly_files", profile_id)
+    Path(these_assemblies).mkdir(parents=True,exist_ok=True)
     #these_assemblies_url_path = f"{settings.MEDIA_URL}ena_assembly_files/{profile_id}"
     #manifest_content =""
     file_fields = ["fasta", "flatfile", "agp", "chromosome_list", "unlocalised_list"]

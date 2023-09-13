@@ -23,7 +23,6 @@ from common.utils import helpers
 from django.conf import settings
 from common.s3.s3Connection import S3Connection as s3
 import numpy as np
-from hurry.filesize import size as hurrysize
 
 # dictionary of components table id, gotten from the UI
 table_id_dict = dict(#publication="publication_table",
@@ -516,7 +515,6 @@ def generate_read_record(profile_id=str(), checklist_id=str()):
                     )
 
     return return_dict
-"""
 
 #@register.filter("generate_files_record")
 def generate_files_record(user_id=str()):
@@ -558,6 +556,7 @@ def generate_files_record(user_id=str()):
                        )
 
     return return_dict
+
 
 #@register.filter("generate_taggedseq_record")
 def generate_taggedseq_record(profile_id=str(), checklist_id=str()):
@@ -609,6 +608,7 @@ def generate_taggedseq_record(profile_id=str(), checklist_id=str()):
                     )
 
     return return_dict
+"""
 
 #@register.filter("generate_table_records")
 def generate_table_records(profile_id=str(), component=str(), record_id=str()):
@@ -1431,75 +1431,7 @@ def generate_submission_accessions_data(submission_id=str()):
                             data_set.append(
                                 [v["accession"], v["alias"], str(), key])
 
-        elif repository == "ena-ant":
-            # -----------COLLATE ACCESSIONS FOR ENA ANNOTATIONS----------
-            columns = [{"title": "Accession"}, {"title": "Alias"},
-                       {"title": "Comment"}, {"title": "Type"}]
 
-            for key, value in accessions.items():
-                if isinstance(value, dict):  # single accession instance expected
-                    data_set.append(
-                        [value["accession"], value["alias"], str(), key])
-                elif isinstance(value, list):  # multiple accession instances expected
-                    for v in value:
-                        if key == "sample":
-                            try:
-                                data_set.append(
-                                    [v["sample_accession"], v["sample_alias"], v["biosample_accession"], key])
-                            except:
-                                pass
-                        else:
-                            try:
-                                data_set.append(
-                                    [v["accession"], v["alias"], str(), key])
-                            except:
-                                pass
-
-        elif repository == "figshare":
-            # -----------COLLATE ACCESSIONS FOR FIGSHARE REPO----------
-            columns = [{"title": "Accession"}, {"title": "Alias"},
-                       {"title": "Comment"}, {"title": "Type"}]
-
-            for idx, value in enumerate(accessions):
-                data_set.append([value, "Figshare File: " +
-                                 str(idx + 1), str(), str()])
-
-        elif repository == "dataverse":
-            # -----------COLLATE ACCESSIONS FOR DATAVERSE REPO----------
-            columns = [{"title": "DOI"}, {"title": "Dataverse"}, {"title": "Dataverse Alias"},
-                       {"title": "Dataset Title"}]
-
-            data_set.append(
-                [accessions.get("dataset_doi", str()), accessions.get("dataverse_title", str()),
-                 accessions.get("dataverse_alias", str()),
-                 accessions.get("dataset_title", str())]
-            )
-
-        elif repository == "dspace":
-            columns = [{"title": "Description"}, {"title": "Format"}, {"title": "Filesize"}, {"title": "Retrieve Link"},
-                       {"title": "Metadata Link"}]
-            for a in accessions:
-                link_ref = a["dspace_instance"] + a["link"]
-                meta_link = '<a target="_blank" href="' + \
-                            a["meta_url"] + '">' + a["meta_url"] + '</a>'
-                retrieve_link = '<a href="' + link_ref + '/retrieve">' + link_ref + '</a>'
-                data_set.append(
-                    [a["description"], a["format"], (hurrysize(a["sizeBytes"])),
-                     retrieve_link,
-                     meta_link]
-                )
-
-        elif repository == "ckan":
-            columns = [{"title": "Title"}, {"title": "Metadata Link"}, {
-                "title": "Resource Link"}, {"title": "Name"}]
-            retrieve_link = '<a target="_blank" href="' + accessions["url"] + '/dataset/' + accessions[
-                "dataset_name"] + '">' + accessions["url"] + '/dataset/' + accessions["dataset_name"] + '</a>'
-            meta_link = '<a target="_blank" href="' + accessions["repo_url"] + 'package_show?id=' + accessions[
-                'dataset_id'] + '">' + 'Show Metadata' + '</a>'
-            data_set.append(
-                [accessions["dataset_title"], meta_link,
-                 retrieve_link, accessions["dataset_name"]]
-            )
 
     return_dict = dict(dataSet=data_set,
                        columns=columns,

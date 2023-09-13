@@ -1,15 +1,13 @@
 from django.conf import settings
 from django_tools.middlewares import ThreadLocal
-from common.utils.helpers import get_env, get_datetime, get_not_deleted_flag, json_to_pytype,notify_tagged_seq_status
+from common.utils.helpers import get_env, get_datetime, get_not_deleted_flag, json_to_pytype,notify_tagged_seq_status, map_to_dict
 from common.schemas.utils.data_utils import simple_utc
 from common.dal.copo_da import Submission, TaggedSequence, EnaChecklist
 from common.utils.logger import Logger
 from bson import ObjectId
-from common.utils import html_tags_utils as htags
 from django_tools.middlewares import ThreadLocal
 from lxml import etree as ET
 from django.http import HttpResponse, JsonResponse
-from common.utils.helpers import map_to_dict
 from common.ena_utils.ena_helper import SubmissionHelper
 from datetime import datetime
 import os
@@ -24,6 +22,8 @@ import glob
 from common.ena_utils.EnaChecklistHandler import EnaCheckListSpreedsheet
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+import numpy as np
+
 
 l = Logger()
 
@@ -218,7 +218,7 @@ class EnaTaggedSequence:
                                                                             {"$set": record, "$setOnInsert": insert_record},
                                                                             upsert=True)
         
-        table_data = htags.generate_taggedseq_record(profile_id=profile_id, checklist_id=request.session["checklist_id"])
+        table_data = self.generate_taggedseq_record(profile_id=profile_id, checklist_id=request.session["checklist_id"])
         result = {"table_data": table_data, "component": "taggedseq"}
         return JsonResponse(status=200, data=result)
 
@@ -423,7 +423,7 @@ class EnaTaggedSequence:
                         # validate tagged seqs                    
                         notify_tagged_seq_status(data={"profile_id": sub["profile_id"]}, msg="Validating barcoding sequence......" , action="info", html_id="tagged_seq_info")
                         context = self._validate_tagged_seq(sub["profile_id"], str(sub["_id"]), project_accession["accession"], checklist_id, [tagged_seq])
-                        table_data = htags.generate_taggedseq_record(profile_id=sub["profile_id"], checklist_id=checklist_id)
+                        table_data = self.generate_taggedseq_record(profile_id=sub["profile_id"], checklist_id=checklist_id)
                         action="info"
                         message=context.get("success", str())
                         if context.get('error',str()) :
@@ -674,7 +674,7 @@ class EnaTaggedSequence:
     
             accession = re.search( "ERZ\d*\w" , output).group(0).strip()
             self._add_tagged_seq_accession(ObjectId(submission_id), accession, "webin-sequence-" + manifest_name, tagged_seqs)        
-            table_data = htags.generate_taggedseq_record(profile_id, checklist_id)
+            table_data = self.generate_taggedseq_record(profile_id, checklist_id)
             return {"success": f"Barcoding sequence has been submitted with accession {accession}", "table_data": table_data, "component": "taggedseq" }
         else:
             if return_code == 2:
@@ -721,3 +721,54 @@ class EnaTaggedSequence:
         #todo delete files after successfull submission
         #todo decide if keeping manifest.txt and store accession in assembly objec too
         return output
+
+
+    def generate_taggedseq_record(self, profile_id=str(), checklist_id=str()):
+        checklist = EnaChecklist().execute_query({"primary_id" : checklist_id})
+        if not checklist:
+            return dict(dataSet=[],
+                        columns=[],
+                        )
+
+        fields = checklist[0]["fields"]
+        label = [ x for x in fields.keys() if fields[x]["type"] != "TEXT_AREA_FIELD"]
+        data_set = []
+        columns = []
+
+        detail_dict = dict(className='summary-details-control detail-hover-message', orderable=False, data=None,
+                            title='', defaultContent='', width="5%")
+        columns.insert(0, detail_dict)
+        columns.append(dict(data="record_id", visible=False))
+        columns.append(dict(data="DT_RowId", visible=False))
+
+        columns.extend([dict(data=x, title=fields[x]["name"], defaultContent='') for x in label  ])
+        columns.append(dict(data="status", title="STATUS", defaultContent=''))
+        columns.append(dict(data="accession", title="ACCESSION", defaultContent=''))
+        columns.append(dict(data="error", title="ERROR", defaultContent=''))
+
+
+        tag_sequences = TaggedSequence(profile_id=profile_id).execute_query({"checklist_id" : checklist_id, "profile_id": profile_id, 'deleted': get_not_deleted_flag()})
+
+        if len(tag_sequences):
+            df = pd.DataFrame(tag_sequences)
+            #df['s_n'] = df.index
+
+            df['record_id'] = df._id.astype(str)
+            df["DT_RowId"] = df.record_id
+            df.DT_RowId = 'row_' + df.DT_RowId
+            df = df.drop('_id', axis='columns')
+            df.replace(np.nan, '', regex=True, inplace=True)
+
+            for name in df.columns:
+                if name in ["record_id", "DT_RowId", "status", "accession", "error"]:
+                    continue
+                if name not in label:
+                    df.drop(name, axis='columns', inplace=True)
+
+            data_set = df.to_dict('records')
+
+        return_dict = dict(dataSet=data_set,
+                        columns=columns,
+                        )
+
+        return return_dict

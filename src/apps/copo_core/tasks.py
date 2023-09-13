@@ -25,13 +25,13 @@ def only_one(fun=None, key="", timeout=None):
                 if have_lock:
                     return fun(self, *args, **kwargs)
                 else:
-                    Logger().log("quit the task " + fun.__name__ + "as the previous one is still running" ) 
+                    Logger().log("quit the task " + fun.__name__ + " as the previous one is still running" ) 
             finally:
                 if have_lock:
                     try:
                         lock.release()
                     except Exception as e:
-                        Logger().error(f"{fun.__name__} : {e}")
+                        Logger().info(f"{fun.__name__} : {e}")
         return inner_func
     return actual_only_one    
 
