@@ -65,6 +65,54 @@ def notify_assembly_status(action="message", msg=str(), data={}, html_id="", pro
     )
     return True
 
+def notify_annotation_status(action="message", msg=str(), data={}, html_id="", profile_id=""):
+    # type points to the object type which will be passed to the socket and is a method defined in consumer.py
+    event = {"type": "msg", "action": action, "message": msg, "data": data, "html_id": html_id}
+    channel_layer = get_channel_layer()
+    group_name = 'annotation_status_%s' % data["profile_id"]
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        event
+    )
+    return True
+
+def notify_read_status(action="message", msg=str(), data={}, html_id="", profile_id=""):
+    # type points to the object type which will be passed to the socket and is a method defined in consumer.py
+    event = {"type": "msg", "action": action, "message": msg, "data": data, "html_id": html_id}
+    channel_layer = get_channel_layer()
+    group_name = 'read_status_%s' % data["profile_id"]
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        event
+    )
+    return True
+
+def notify_tagged_seq_status(action="message", msg=str(), data={}, html_id="", profile_id=""):
+    # type points to the object type which will be passed to the socket and is a method defined in consumer.py
+    event = {"type": "msg", "action": action, "message": msg, "data": data, "html_id": html_id}
+    channel_layer = get_channel_layer()
+    group_name = 'tagged_seq_status_%s' % data["profile_id"]
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        event
+    )
+    return True
+
+
+def notify_ena_object_status(action="message", msg=str(), data={}, html_id="", profile_id="", checklist_id=str()):
+    # type points to the object type which will be passed to the socket and is a method defined in consumer.py
+    if checklist_id.startswith("ERC"):
+        group_name = 'read_status_%s' % data["profile_id"]
+    else:
+        group_name = 'tagged_seq_status_%s' % data["profile_id"]
+    event = {"type": "msg", "action": action, "message": msg, "data": data, "html_id": html_id}
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        event
+    )
+    return True
+
 def json_to_pytype(path_to_json, compatibility_mode=True):
     # use compatability mode if jsonref is causing problems
     with open(path_to_json, encoding='utf-8') as data_file:
@@ -72,9 +120,7 @@ def json_to_pytype(path_to_json, compatibility_mode=True):
         if compatibility_mode:
             data = json.loads(f)
         else:
-            data = jsonref.loads(f,
-                                 base_uri="file:" + settings.SCHEMA_VERSIONS_DIR + "/" + settings.CURRENT_SCHEMA_VERSION
-                                          + "/", jsonschema=True)
+            data = jsonref.loads(f, base_uri="file:" + settings.SCHEMA_VERSIONS_DIR + "/", jsonschema=True)
         if "properties" in data and isinstance(data["properties"], list):
             cp = list(data["properties"])
             idxes = list()
@@ -89,6 +135,7 @@ def json_to_pytype(path_to_json, compatibility_mode=True):
             data["properties"] = tmp
 
     return data
+
 
 def get_datetime():
     """

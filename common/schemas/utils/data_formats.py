@@ -5,9 +5,9 @@ import os
 import re
 
 import common.lookup.lookup as lkup
+from common.utils import helpers
 from django.conf import settings
 from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
-from common.utils import helpers
 
 
 class DataFormats:
@@ -82,14 +82,12 @@ class DataFormats:
         return out_dict
 
     def isa_xml_mapping(self, arg_dict):
-        import schemas.utils.data_utils as d_utils
-
         # get reference to the configuration resource
 
         new_list = arg_dict['properties']
         current_list = arg_dict['properties']
 
-        output_dict = d_utils.get_isa_schema_xml(arg_dict['configuration']['ref'])
+        output_dict = helpers.get_isa_schema_xml(arg_dict['configuration']['ref'])
 
         if output_dict.get("status", str()) == "error":
             self.error_messages.append(output_dict.get("content"))

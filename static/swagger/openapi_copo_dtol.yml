@@ -11,8 +11,6 @@ servers:
   - url: https://copo-project.org/api
     description: Live Server
 
-
-
 paths:
 
   /apiKey/:
@@ -48,6 +46,13 @@ paths:
         Get all manifests
       description: >
         If no manifest ID is provided, COPO simply returns a list of all manifest ids
+      parameters:
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         200:
           description: A JSON array sample objects
@@ -56,6 +61,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/ManifestList'
 
+  /manifest/current_version:
+    get:
+      tags:
+        - Manifest
+      summary:
+        Get current manifest version
+      description: >
+        If no manifest type is provided, COPO will return a list of projects brokered with their latest manifest versions
+      parameters:
+        - in: query
+          name: manifest_type
+          schema:
+            $ref: '#/components/schemas/ManifestTypes'
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
+      responses:
+        200:
+          description: A JSON array of the latest manifest version for a given project type
 
   /manifest/{manifest_id}:
     get:
@@ -73,6 +100,11 @@ paths:
           schema:
             type: string
             minimum: 1
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -106,7 +138,11 @@ paths:
           schema:
             type: string
             format: date-time
-
+        - in: query
+          name: return_type
+          schema:
+            type: string
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array of sample manifest uuid objects
@@ -146,7 +182,11 @@ paths:
           schema:
             type: string
             format: date-time
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array of sample manifest uuid objects
@@ -157,13 +197,12 @@ paths:
         "400":
           description: \'from\' must be earlier than \'to\ and project must be in the list of supported projects'
 
-
   /manifest/{manifest_id}/sample_statuses:
     get:
       tags:
         - Manifest
       summary:
-        Get sample statuses in manifest
+        Get status of samples in manifest
       description: >
         Get minimal sample status information for each sample contained in the given {manifest_id}
       parameters:
@@ -174,7 +213,11 @@ paths:
           schema:
             type: string
             minimum: 1
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array of sample status objects
@@ -190,18 +233,22 @@ paths:
       tags:
         - Sample
       summary:
-        Get all Samples in a project
+        Get sample records in a project
       description: >
         Get a list of all the samples of a project in COPO
       parameters:
         - name: project
           in: path
           required: true
-          description: comma separated list of supported projects
+          description: Format - a comma separated list of supported projects. Supported projects - ASG, DTOL, ERGA
           schema:
             type: string
             minimum: 1
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample copo_ids
@@ -212,12 +259,15 @@ paths:
         "400":
           description: InvalidId found in request
 
+        "404":
+          description: Invalid project found in request. No sample records exist for the given project.
+
   /sample/associated_tol_project/{values}:
     get:
       tags:
         - Sample
       summary:
-        Get all Samples in a project by associated project type(s)
+        Get sample records in a project by associated project type(s)
       description: >
         Get a list of all the samples of a project in COPO by associated project type
       parameters:
@@ -228,7 +278,11 @@ paths:
           schema:
             type: string
             minimum: 1
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -238,15 +292,131 @@ paths:
                 $ref: '#/components/schemas/SampleList'
         "400":
           description: Invalid associated profile type found in request
+        
+        "404":
+          description: Invalid associated project type found in request. No sample records exist for the given associated project.
+    
+  /sample/project/manifest_version/fields:
+    get:
+      tags:
+        - Sample
+      summary:
+        Fetch project fields by manifest version
+      description: >
+        Get a list of fields of a project for a given manifest version.</br></br>
+        If project type is provided and no manifest version is provided, COPO will return a list of fields for the given project type according to the latest manifest version for that project.</br></br>
+        If no project type is provided and manifest version is provided, COPO will return a list of fields for the given project type that matches the given manifest version.</br></br>
+        If no project type and no manifest version are provided, COPO will return a list of fields for all projects according to the latest manifest version for that project.
+      parameters:
+        - name: project
+          in: query
+          schema:
+            $ref: '#/components/schemas/ManifestTypes'
+        - name: manifest_version
+          in: query
+          schema:
+            $ref: '#/components/schemas/ManifestVersions'
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
+      responses:
+        "200": # status code
+          description: A JSON array of fields for a given manifest version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleListByManifestVersion'
 
+        "400":
+          description: Invalid manifest version found in request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleListByManifestVersionError'
+
+  /sample/{from}/{to}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get sample records between dates
+      description: >
+        Returns an array of sample objects submitted between dates {from} / {to}
+      parameters:
+        - name: from
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, samples created greater than or equal to this date will be matched, e.g. 2020-09-24T17:00:22+00:00
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, samples created less than this date will be matched, e.g. 2020-09-24T17:00:22+00:00
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
+      responses:
+        "200": # status code
+          description: A JSON array of sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleList'
+        "400":
+          description: \'from\' must be earlier than \'to\'
+    
+  /sample/updatable_fields/{project}:
+    get:
+      tags:
+        - Sample
+      summary:
+        Get fields that can be updated by resubmitting a manifest in a project
+      description: >
+        Get a list of all the fields of a project that can be updated in COPO
+      parameters:
+        - name: project
+          in: path
+          required: true
+          description: Available projects - ASG, DTOL, ERGA
+          schema:
+            type: string
+            minimum: 1
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into csv format
+      responses:
+        "200": # status code
+          description: A JSON array of updatable sample fields
+
+        "400":
+          description: Invalid project found in request
+        
+        "401":
+          description: No updatable fields found for given project
+
+        "500":
+          description: No samples exist for given project(s)
+  
   /sample/copo_id/{copo_ids}:
     get:
       tags:
         - Sample
       summary:
-        Get Sample
+        Get sample records by copo_id
       description: >
-        Get full sample information for the samples returned from the given {copo_ids}
+        Get full sample information for the samples returned from the given {copo_ids}. In public repositories, "copo_id" is referred to as "alias".
       parameters:
         - name: copo_ids
           in: path
@@ -255,7 +425,11 @@ paths:
           schema:
             type: string
             minimum: 1
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -271,7 +445,7 @@ paths:
       tags:
         - Sample
       summary:
-        Get Sample
+        Get sample records by biosampleAccession
       description: >
         Get full sample information for the samples returned from the given {biosample_ids}
       parameters:
@@ -282,7 +456,11 @@ paths:
           schema:
             type: string
             minimum: 1
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -296,7 +474,7 @@ paths:
       tags:
         - Sample
       summary:
-        Get Sample
+        Get sample records by field and value(s)
       description: >
         Get full sample information for the samples returned from the given {field} / {values}
       parameters:
@@ -311,10 +489,15 @@ paths:
         - name: values
           in: path
           required: true
-          description: a comma separated list of values to look for
+          description: Format - a comma separated list of values to look for
           schema:
             type: string
             minimum: 1
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -328,19 +511,23 @@ paths:
       tags:
         - Sample
       summary:
-        Get Sample
+        Get study records by sample accessions
       description: >
-        Get full sample information for the samples returned from the given {field} / {values}
+        Get study information for the samples returned from the given {sample_ids}
       parameters:
         - name: sample_ids
           in: path
           required: true
-          description: a comma separated list of biosample accessions or ENA/SRA accessions
+          description: Format - a comma separated list of biosample accessions or ENA/SRA accessions
           schema:
             type: string
             minimum: 1
             maximum: 1
-
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -354,16 +541,21 @@ paths:
       tags:
         - Sample
       summary:
-        Get Sample
+        Get samples by biostudyAccessions
       description: >
-        Get full sample information for the samples returned from the given {field} / {values}
+        Get accession information for the samples returned from the given {biostudyAccessions}
       parameters:
         - name: biostudyAccessions
           in: path
           required: true
-          description: a comma separated list of biostudy accessions
+          description: Format - a comma separated list of biostudy accessions
           schema:
             type: string
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv, rocrate]
+          description: Export data into selected format
       responses:
         "200": # status code
           description: A JSON array sample objects
@@ -400,7 +592,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StatsNumber'
+  
+  /stats/tol_projects/:
+    get:
+      tags:
+        - Stats
+      summary:
+        Get all Tree of Life (ToL) projects or main projects brokered through COPO
+      responses:
+        "200": # status code
+          description: A JSON array of projects brokered through COPO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TOLProjectList'
 
+  /stats/associated_tol_projects/:
+    get:
+      tags:
+        - Stats
+      summary:
+        Get all associated Tree of Life (ToL) projects or subprojects brokered through COPO
+      responses:
+        "200": # status code
+          description: A JSON array of all subprojects brokered through COPO. One or more of the subprojects listed are a part of a larger project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TOLProjectList'
+        "400":
+          description: Invalid project found in request
+
+        "500":
+          description: No samples exist for given project(s)
 
 
   /profile/make_profile/:
@@ -446,7 +670,7 @@ paths:
       consumes:
         - application/x-www-form-urlencoded
       summary:
-        Get profiles for authenticated user
+        Get profile records for authenticated user
       responses:
         "200":
           description: representation of the created profile
@@ -556,6 +780,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sample_short'
+    
     ManifestList:
       type: object
       properties:
@@ -568,6 +793,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ManifestId'
+    
     SampleList:
       type: object
       properties:
@@ -580,6 +806,35 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sample_long'
+
+    SampleListByManifestVersion:
+      type: object
+      properties:
+        project_type:
+          type: string
+        manifest_version:
+          type: string
+        number_of_fields:
+          type: string
+        fields:
+          type: array
+          items:
+            type: string
+
+    SampleListByManifestVersionError:
+      type: object
+      properties:
+        project_type:
+          type: string
+        manifest_version:
+          type: string
+        status:
+          type: object
+          properties:
+            error: 
+              type: string
+            error_details:
+              type: string
 
     SampleListShort:
       type: object
@@ -674,7 +929,6 @@ components:
           type: string
           description: Queried for sample biosample id
 
-
     Sample_short:
       type: object
       properties:
@@ -685,6 +939,9 @@ components:
           type: string
           format: uuid
           description: unique identifier for manifest in which this sample appears
+        manifest_version:
+          type: string
+          description: version number of the manifest used
         status:
           type: string
           description: status of this sample. "pending" means waiting for supervisor approval, "accepted" means supervisor approval gained, "rejected" means supervisor rejected
@@ -704,10 +961,18 @@ components:
           type: string
           description: unique COPO identifier for this sample
 
-
     ManifestId:
       type: string
       format: uuid
+    
+    ManifestTypes:
+      type: string
+      enum: [ASG, DTOL, DTOL_ENV, ERGA]
+      description: Projects or manifest types brokered through COPO
+
+    ManifestVersions:
+      type: string
+      enum: ["2.4","2.4.1", "2.4.2", "2.4.3"]
 
     SpeciesList:
       type: object
@@ -732,7 +997,6 @@ components:
           type: string
         TAXON_REMARKS:
           type: string
-
 
     Sample_long:
       type: object
@@ -779,7 +1043,7 @@ components:
           type: string
         IDENTIFIED_HOW:
           type: string
-        SPECIMEN_ID_RISK:
+        SPECIMEN_IDENTITY_RISK:
           type: string
         PRESERVED_BY:
           type: string
@@ -855,6 +1119,8 @@ components:
         manifest_id:
           type: string
           format: uuid
+        manifest_version:
+          type: string
         time_updated:
           type: string
           format: date-time
@@ -894,3 +1160,16 @@ components:
         latest_update:
           type: string
           format: date-time
+
+    TOLProjectList:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ "OK", "Error" ]
+        number_found:
+          type: integer
+        data:
+          type: array
+          items:
+            type: string

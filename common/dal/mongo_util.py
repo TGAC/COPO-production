@@ -92,6 +92,21 @@ def change_mongo_id_format_to_standard(cursor):
         r['id'] = r.pop('_id')
     return l
 
+def cursor_to_list_str2(cursor, use_underscore_in_id=True):
+    # method to return pymongo cursor into standard python list
+    # with IDs as strings instead than ObjectIds
+    # and datetimes as string datetime instead of datetime objects
+    records = cursor_to_list(cursor)
+    for r in records:
+        if use_underscore_in_id:
+            r["_id"] = str(r["_id"])
+        else:
+            r["id"] = str(r["_id"])
+            r.pop("_id")
+
+        r["date_created"] = r['date_created'].strftime('%a, %d %b %Y %H:%M')
+        r["date_modified"] = r['date_modified'].strftime('%a, %d %b %Y %H:%M')
+    return records
 
 def convert_text(data):
     # change text to shortform :=: iri

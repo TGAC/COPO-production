@@ -1,8 +1,4 @@
-from django.urls import path, re_path
-#from web.apps.web_copo import ajax_handlers
-
-#from web.apps.web_copo.file_server import BaseFileDownloadView  deprecated
-#from web.apps.web_copo.utils import annotation_handlers, template_handlers, EnaSpreadsheetParse
+from django.urls import path 
 from . import views
 
 app_name = 'copo_dtol_upload'

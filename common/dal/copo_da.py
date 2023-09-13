@@ -1,9 +1,9 @@
 __author__ = 'felix.shaw@tgac.ac.uk - 22/10/15'
+
 import os
 from datetime import datetime, timezone, date
 
 import copy
-import importlib
 import re
 import pandas as pd
 import pymongo
@@ -14,23 +14,16 @@ from bson.errors import InvalidId
 from django.conf import settings
 from django.contrib.auth.models import User
 from django_tools.middlewares import ThreadLocal
-#import web.apps.copo_core.utils.EnaUtils as u
-from .copo_base_da import DataSchemas
-from .mongo_util import get_collection_ref, cursor_to_list, cursor_to_list_str, cursor_to_list_no_ids
+from common.dal.mongo_util import cursor_to_list, cursor_to_list_str, cursor_to_list_no_ids, get_collection_ref
+from common.dal.copo_base_da import DataSchemas
 from common.lookup.copo_enums import Loglvl, Logtype
 from common.lookup.lookup import DB_TEMPLATES
-# from web.apps.web_copo.lookup.dtol_lookups import TOL_PROFILE_TYPES, SANGER_TOL_PROFILE_TYPES
-#from web.apps.copo_core.models import UserDetails
+from common.schema_versions.lookup.dtol_lookups import STANDALONE_ACCESSION_TYPES,TOL_PROFILE_TYPES, SANGER_TOL_PROFILE_TYPES
 from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
 from pymongo.collection import ReturnDocument
 from common.utils import helpers 
 
 lg = settings.LOGGER
-
-schema_version_path_dtol_lookups = f'common.schema_versions.{settings.CURRENT_SCHEMA_VERSION}.lookup.dtol_lookups'
-dtol_lookups_data = importlib.import_module(schema_version_path_dtol_lookups)
-TOL_PROFILE_TYPES = dtol_lookups_data.TOL_PROFILE_TYPES
-SANGER_TOL_PROFILE_TYPES = dtol_lookups_data.SANGER_TOL_PROFILE_TYPES
 
 PubCollection = 'PublicationCollection'
 PersonCollection = 'PersonCollection'
@@ -53,14 +46,21 @@ FileTransferQueueCollection = 'FileTransferQueueCollection'
 StatsCollection = 'StatsCollection'
 BarcodeCollection = 'BarcodeCollection'
 ValidationQueueCollection = 'ValidationQueueCollection'
-ENAFileTransferCollection = 'EnaFileTransferCollection'
+EnaFileTransferCollection = 'EnaFileTransferCollection'
 APIValidationReport = 'ApiValidationReport'
 TestCollection = 'TestCollection'
 AssemblyCollection = 'AssemblyCollection'
+AnnotationCollection = "SeqAnnotationCollection"
+TaggedSequenceChecklistCollection = "TagSequenceChecklistCollection"
+TaggedSequenceCollection = "TagSequenceCollection"
+EnaChecklistCollection ="EnaChecklistCollection"
+EnaObectCollection = "EnaObjectCollection"
+ReadObjectCollection = "SampleCollection"
 
 handle_dict = dict(publication=get_collection_ref(PubCollection),
                    person=get_collection_ref(PersonCollection),
                    sample=get_collection_ref(SampleCollection),
+                   accessions=get_collection_ref(SampleCollection),
                    source=get_collection_ref(SourceCollection),
                    profile=get_collection_ref(ProfileCollection),
                    submission=get_collection_ref(SubmissionCollection),
@@ -75,9 +75,16 @@ handle_dict = dict(publication=get_collection_ref(PubCollection),
                    test=get_collection_ref(TestCollection),
                    barcode=get_collection_ref(BarcodeCollection),
                    validationQueue=get_collection_ref(ValidationQueueCollection),
-                   enaFileTransferObject=get_collection_ref(ENAFileTransferCollection),
+                   enaFileTransfer=get_collection_ref(EnaFileTransferCollection),
                    apiValidationReport=get_collection_ref(APIValidationReport),
-                   assembly=get_collection_ref(AssemblyCollection)
+                   assembly=get_collection_ref(AssemblyCollection),
+                   seqannotation=get_collection_ref(AnnotationCollection),
+                   submissionQueue=get_collection_ref(SubmissionQueueCollection),
+                   taggedSequenceChecklist=get_collection_ref(TaggedSequenceChecklistCollection),
+                   taggedSequence=get_collection_ref(TaggedSequenceCollection),
+                   enaChecklist=get_collection_ref(EnaChecklistCollection),
+                   enaObject=get_collection_ref(EnaObectCollection),
+                   read=get_collection_ref(ReadObjectCollection)
                    )
 
 
@@ -92,24 +99,40 @@ class ProfileInfo:
     def get_counts(self):
         """
         Method to return current numbers of Publication, Person, Data,
-        Sample and Submission objects in the given profile
+        Sample, Accessions and Submission objects in the given profile
         :return: Dictionary containing the data
         """
         num_dict = dict(num_pub="publication",
                         num_person="person",
                         num_data="datafile",
                         num_sample="sample",
+                        num_accessions="accessions",
                         num_submission="submission",
                         num_annotation="annotation",
-                        num_temp="metadata_template"
+                        num_temp="metadata_template",
+                        num_seqannotation="seqannotation",
+                        num_assembly="assembly",
+                        num_read="sample"
                         )
 
         status = dict()
-
+        profile_type = Profile().get_type(self.profile_id)
         for k, v in num_dict.items():
             if handle_dict.get(v, None):
-                status[k] = handle_dict.get(v).count(
-                    {'profile_id': self.profile_id})
+                if v == "accessions":
+                    if "Stand-alone" in profile_type:
+                        # Stand-alone projects
+                        status[k] = Submission().get_collection_handle().count({"$and": [
+                            {"profile_id": self.profile_id, "repository": "ena",
+                             "accessions": {"$exists": True, "$ne": {}}}]})
+
+                    if any(x.upper() in profile_type for x in TOL_PROFILE_TYPES):
+                        # Other projects
+                        status[k] = handle_dict.get(v).count({"$and": [
+                            {'profile_id': self.profile_id, "biosampleAccession": {"$exists": True, "$ne": ""}}]})
+                else:
+                    status[k] = handle_dict.get(v).count(
+                        {'profile_id': self.profile_id})
 
         return status
 
@@ -175,6 +198,7 @@ class DAComponent:
             person="copo.person",
             datafile="copo.datafile",
             sample="copo.sample",
+            accessions="copo.accessions",
             source="copo.source",
             profile="copo.profile",
             submission="copo.submission",
@@ -190,7 +214,7 @@ class DAComponent:
     def get_qualified_field(self, elem=str()):
         return self.get_id_base() + "." + elem
 
-    def get_schema(self):
+    def get_schema(self, **kwargs):
         from common.schemas.utils import data_utils
         schema_base = DataSchemas("COPO").get_ui_template().get("copo")
         x = data_utils.json_to_object(schema_base.get(self.component, dict()))
@@ -371,7 +395,7 @@ class ValidationQueue(DAComponent):
                                                 {"$set": {"schema_validation_status": "error"}, "$push": {"err_msg":
                                                                                                               err}})
 
-"""
+
 class Publication(DAComponent):
     def __init__(self, profile_id=None):
         super(Publication, self).__init__(profile_id, "publication")
@@ -403,7 +427,7 @@ class TextAnnotation(DAComponent):
         docs = self.get_collection_handle().find({"file_id": ObjectId(file_id)})
         if docs:
             return cursor_to_list_str(docs)
-"""
+
 
 class MetadataTemplate(DAComponent):
     def __init__(self, profile_id=None):
@@ -427,7 +451,7 @@ class MetadataTemplate(DAComponent):
         terms = self.get_collection_handle().find_one({"_id": ObjectId(template_id)}, {"terms": 1, "_id": 0})
         return terms
 
-"""
+
 class Annotation(DAComponent):
     def __init__(self, profile_id=None):
         super(Annotation, self).__init__(profile_id, "annotation")
@@ -469,7 +493,7 @@ class Annotation(DAComponent):
             ])
         data = cursor_to_list(docs)
         return data
-"""
+
 
 class Person(DAComponent):
     def __init__(self, profile_id=None):
@@ -509,6 +533,7 @@ class Person(DAComponent):
                     'copo.person.email': user.email
                 }
             except Exception as e:
+                lg.exception(e)
                 pass
             else:
                 kwargs = dict()
@@ -759,6 +784,35 @@ class Sample(DAComponent):
         # Get samples from Mongo database similar to SQL's '%' operator or 'LIKE'
         return self.get_collection_handle().find({"SPECIMEN_ID": {'$regex': specimen_id, '$options': 'i'}})
 
+    def get_sample_by_id(self, sample_id):
+        cursor = self.get_collection_handle().find({"_id": sample_id})
+
+        # get schema
+        sc = self.get_component_schema()
+        out = list()
+        taxon = dict()
+        for i in list(cursor):
+            if "species_list" in i:
+                sp_lst = i["species_list"]
+                for sp in sp_lst:
+                    # only extract target info...don't extract symnbiont info
+                    if sp["SYMBIONT"] == "TARGET":
+                        for k, v in sp.items():
+                            i[k] = v
+                    else:
+                        pass
+            sam = dict()
+            for cell in i:
+                for field in sc:
+
+                    if cell == field.get("id", "").split(".")[-1] or cell == "_id":
+                        if set(TOL_PROFILE_TYPES).intersection(set(field.get("specifications", ""))):
+                            if field.get("show_in_table", ""):
+                                sam[cell] = i[cell]
+            out.append(sam)
+
+        return out
+
     def count_samples_by_specimen_id_for_barcoding(self, specimen_id):
         # specimens must not have already been submitted to ENA so should have status of pending
         return self.get_collection_handle().count(
@@ -768,14 +822,13 @@ class Sample(DAComponent):
         # TODO - for some reason, some dtol samples end up rejected even though the have accessions, so find these and
         # flip them to accepted
         self.get_collection_handle().update_many(
-            {"biosampleAccession": {"$ne": ""}},
+            {"biosampleAccession": {"$ne": ""}, "status": "rejected"},
             {"$set": {"status": "accepted"}}
         )
 
     def get_name(self, column, records):
         return self.get_collection_handle().find({"_id": {"$in": records}}, {"name": 1})
 
-    '''  deprecated
     def get_characteristic(self, column, records):
         return self.get_collection_handle().aggregate([
             {"$match": {"_id": {"$in": records}}},
@@ -829,7 +882,96 @@ class Sample(DAComponent):
             {"$match": {"factorValues.category.annotationValue": column}},
             {"$project": {"factorValues": 1, "name": 1}}
         ])
-    '''
+
+    def save_record(self, auto_fields=dict(), **kwargs):
+        from common.schemas.utils import data_utils
+        fields = dict()
+        schema = kwargs.get("schema", list()) or self.get_component_schema()
+
+        # set auto fields
+        if auto_fields:
+            fields = data_utils.DecoupleFormSubmission(auto_fields, schema).get_schema_fields_updated_dict()
+
+        # should have target_id for updates and return empty string for inserts
+        target_id = kwargs.pop("target_id", str())
+
+        # set system fields
+        system_fields = dict(
+            date_modified=helpers.get_datetime(),
+            deleted=helpers.get_not_deleted_flag()
+        )
+
+        if not target_id:
+            system_fields["date_created"] = helpers.get_datetime()
+            system_fields["profile_id"] = self.profile_id
+
+        # Get profile type
+        manifest_type = Profile().get_type(self.profile_id)
+        manifest_type = manifest_type.lower()
+        current_schema_version = ""
+        profile_type = ""
+
+        # Get manifest version based on profile type
+        if "asg" in manifest_type:
+            profile_type = "asg"
+        elif "dtolenv" in manifest_type:
+            profile_type = "dtolenv"
+        elif "dtol" in manifest_type:
+            profile_type = "dtol"
+        elif "erga" in manifest_type:
+            profile_type = "erga"
+
+        current_schema_version = settings.MANIFEST_VERSION.get(profile_type.upper(),"")
+
+
+        # extend system fields
+        for k, v in kwargs.items():
+            system_fields[k] = v
+
+        # add system fields to 'fields' and set default values - insert mode only
+        for f in schema:
+            # Filter schema based on manfest type and manifest version
+            f_specifications = f.get("specifications", "")
+            f_manifest_version = f.get("manifest_version", "")
+
+            if f_specifications and profile_type not in f_specifications or f_manifest_version and current_schema_version not in f_manifest_version:
+                continue
+
+            f_id = f["id"].split(".")[-1]
+            try:
+                v_id = f["versions"][0]
+            except:
+                v_id = ""
+            if f_id in system_fields:
+                fields[f_id] = system_fields.get(f_id)
+            elif v_id in system_fields:
+                fields[f_id] = system_fields.get(v_id)
+
+            if not target_id and f_id not in fields:
+                fields[f_id] = helpers.default_jsontype(f["type"])
+
+        # if True, then the database action (to save/update) is never performed, but validated 'fields' are returned
+        validate_only = kwargs.pop("validate_only", False)
+        fields["date_modified"] = datetime.now()
+        # check if there is attached profile then update date modified
+        if "profile_id" in fields:
+            self.update_profile_modified(fields["profile_id"])
+        if validate_only is True:
+            return fields
+        else:
+            if target_id:
+                self.get_collection_handle().update(
+                    {"_id": ObjectId(target_id)},
+                    {'$set': fields})
+            else:
+                doc = self.get_collection_handle().insert(fields)
+                target_id = str(doc)
+
+            # return saved record
+            rec = self.get_record(target_id)
+
+            return rec
+
     def update_public_name(self, name):
         self.get_collection_handle().update_many(
             {"SPECIMEN_ID": name['specimen']["specimenId"]},
@@ -838,7 +980,7 @@ class Sample(DAComponent):
     def delete_sample(self, sample_id):
         sample = self.get_record(sample_id)
         # check if sample has already been accepted
-        if sample["status"] in ["accepted", "processing"]:
+        if sample["status"] in ["accepted", "processing", "sending"]:
             return "Sample {} with accession {} cannot be deleted as it has already been submitted to ENA.".format(
                 sample.get("SPECIMEN_ID", ""), sample.get("biosampleAccession", "X"))
         else:
@@ -858,6 +1000,14 @@ class Sample(DAComponent):
             {"RACK_OR_PLATE_ID": 1, "TUBE_OR_WELL_ID": 1}
         ))
 
+    def get_samples_by_date(self, d_from, d_to):
+        return cursor_to_list(self.get_collection_handle().aggregate(
+            [
+                {"$match": {"sample_type": {"$in": TOL_PROFILE_TYPES}, "time_created": {"$gte": d_from, "$lt": d_to}}},
+                {"$sort": {"time_created": -1}},
+
+            ]))
+
     def get_all_dtol_samples(self):
         return cursor_to_list(self.get_collection_handle().find(
             {"sample_type": "dtol"},
@@ -871,21 +1021,34 @@ class Sample(DAComponent):
         ))
 
     def get_project_samples_by_associated_project_type(self, values):
-        regex_values = [re.compile(f"^{value}") for value in values]
-        return cursor_to_list(self.get_collection_handle().find({"associated_tol_project": {"$in": regex_values}}))
+        regex_values = ' | '.join(values)
+        return cursor_to_list(
+            self.get_collection_handle().find({"associated_tol_project": {"$regex": regex_values, "$options": "i"}}))
+
+    def get_gal_names(self, projects):
+        return cursor_to_list(self.get_collection_handle().find(
+            {"sample_type": {"$in": projects}},
+            {"GAL": 1}
+        ))
 
     def get_all_tol_samples(self):
         return self.get_collection_handle().find({"tol_project": {"$in": ["ASG", "DTOL"]}})
 
     def get_number_of_dtol_samples(self):
-        return self.get_collection_handle().count(
-            {"sample_type": "dtol"}
-        )
+        return self.get_collection_handle().count({"sample_type": "dtol"})
 
     def get_number_of_samples(self):
-        return self.get_collection_handle().count({
+        return self.get_collection_handle().count({})
+    
+    def get_tol_project_accessions(self, sort_by='_id', sort_direction=-1, projection=dict(), filter_by=dict()):
+        filter_by["biosampleAccession"] = {"$exists": True, "$ne": ""}
+        filter_by["sample_type"] = {"$in": TOL_PROFILE_TYPES}
 
-        })
+        projection = {"biosampleAccession": 1, "sraAccession": 1,
+                 "submissionAccession": 1, "SCIENTIFIC_NAME": 1,
+                 "SPECIMEN_ID": 1, "TAXON_ID": 1, "tol_project": 1, "manifest_id": 1}
+
+        return cursor_to_list_str(self.get_collection_handle().find(filter_by, projection).sort([[sort_by, sort_direction]]))
 
     def get_dtol_type(self, id):
         return self.get_collection_handle().find_one(
@@ -900,13 +1063,18 @@ class Sample(DAComponent):
                                                      {"$set": {"time_created": datetime.now(timezone.utc).replace(
                                                          microsecond=0), "created_by": email}})
 
-    def timestamp_dtol_sample_updated(self, sample_id):
+    def timestamp_dtol_sample_updated(self, sample_id=str(), sample_ids=[]):
+        if not sample_ids:
+            sample_ids = list()
+        if sample_id:
+            sample_ids.append(sample_id)
+        sample_obj_ids = [ObjectId(x) for x in sample_ids]
 
         try:
             email = ThreadLocal.get_current_user().email
         except:
             email = "copo@earlham.ac.uk"
-        sample = self.get_collection_handle().update({"_id": ObjectId(sample_id)},
+        self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}},
                                                      {"$set": {"time_updated": datetime.now(timezone.utc).replace(
                                                          microsecond=0),
                                                          "date_modified": datetime.now(timezone.utc).replace(
@@ -978,8 +1146,8 @@ class Sample(DAComponent):
         )
 
     def get_by_profile_and_field(self, profile_id, field, value):
-        return cursor_to_list(self.get_collection_handle().find({field: {"$in": value}, "profile_id": profile_id}),
-                              {"_id": 1})
+        return cursor_to_list(self.get_collection_handle().find({field: {"$in": value}, "profile_id": profile_id},
+                                                                {"_id": 1}))
 
     def get_by_project_and_field(self, project, field, value):
         return cursor_to_list(self.get_collection_handle().find({field: {"$in": value}, "tol_project": project}))
@@ -1011,7 +1179,7 @@ class Sample(DAComponent):
         if filter == "pending":
             # $nin will return where status neq to values in array, or status is absent altogether
             find_condition["status"] = {
-                "$nin": ["barcode_only", "rejected", "accepted", "processing", "conflicting", "private"]}
+                "$nin": ["barcode_only", "rejected", "accepted", "processing", "conflicting", "private", "sending"]}
 
             # cursor = self.get_collection_handle().find(
             #    { 'profile_id': profile_id,
@@ -1058,6 +1226,10 @@ class Sample(DAComponent):
         #    {'profile_id': profile_id, "status": "processing", '$text': {'$search': search }}).count()
         # samples = list(cursor)
         # cursor = samples
+        elif filter == "processing":
+            find_condition["status"] = {
+                "$in": ["processing", "sending"]}
+
         else:
             find_condition["status"] = filter
             # cursor = handler.find(find_condition).sort(sort_clause).skip(int(start)).limit(int(length))
@@ -1112,29 +1284,112 @@ class Sample(DAComponent):
         return result
 
     def get_sample_display_column_names(self):
+
         sc = self.get_component_schema()
         columns = [];
         columns.append("_id")
         for field in sc:
             if set(TOL_PROFILE_TYPES).intersection(set(field.get("specifications", ""))) and field.get("show_in_table",
                                                                                                        ""):
-                columns.append(field.get("id", "").split(".")[-1])
+                column = field.get("id", "").split(".")[-1]
+                if column not in columns:
+                    columns.append(column)
 
         columns.append("error")
-        return columns;
+        return columns
+
+    def get_dtol_from_profile_id_and_project(self, profile_id, project):
+        cursor = self.get_collection_handle().find({'profile_id': profile_id, "tol_project": project})
+
+        # get schema
+        sc = self.get_component_schema()
+        out = list()
+        taxon = dict()
+        for i in list(cursor):
+            if "species_list" in i:
+                sp_lst = i["species_list"]
+                for sp in sp_lst:
+                    # only extract target info...don't extract symnbiont info
+                    if sp["SYMBIONT"] == "TARGET":
+                        for k, v in sp.items():
+                            i[k] = v
+                    else:
+                        pass
+            sam = dict()
+            for cell in i:
+                for field in sc:
+
+                    if cell == field.get("id", "").split(".")[-1] or cell == "_id":
+                        if set(TOL_PROFILE_TYPES).intersection(set(field.get("specifications", ""))):
+                            if field.get("show_in_table", ""):
+                                sam[cell] = i[cell]
+            out.append(sam)
+        return out
+
+    def get_dtol_by_aggregation(self, match_dict):
+        cursor = self.get_collection_handle().aggregate(
+            [
+                {
+                    "$match": match_dict
+                },
+                {"$sort":
+                     {"time_created": -1}
+                 },
+            ]
+        )
+
+        records = cursor_to_list_str(cursor)
+
+        # get schema
+        sc = self.get_component_schema()
+        out = list()
+        taxon = dict()
+        for i in records:
+            if "species_list" in i:
+                sp_lst = i["species_list"]
+                for sp in sp_lst:
+                    # only extract target info...don't extract symnbiont info
+                    if sp["SYMBIONT"] == "TARGET":
+                        for k, v in sp.items():
+                            i[k] = v
+                    else:
+                        pass
+            sam = dict()
+            for cell in i:
+                for field in sc:
+
+                    if cell == field.get("id", "").split(".")[-1] or cell == "_id":
+                        if set(TOL_PROFILE_TYPES).intersection(set(field.get("specifications", ""))):
+                            if field.get("show_in_table", ""):
+                                sam[cell] = i[cell]
+            out.append(sam)
+        return out
 
     def mark_rejected(self, sample_id, reason="Sample rejected by curator."):
         return self.get_collection_handle().update({"_id": ObjectId(sample_id)},
                                                    {"$set": {"status": "rejected", "error": reason}})
 
-    def mark_processing(self, sample_id):
-        return self.get_collection_handle().update({"_id": ObjectId(sample_id)}, {"$set": {"status": "processing"}})
+    def mark_processing(self, sample_id=str(), sample_ids=[]):
+        if not sample_ids:
+            sample_ids = list()
+        if sample_id:
+            sample_ids.append(sample_id)
+        sample_obj_ids = [ObjectId(x) for x in sample_ids]
+        return self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}}, {"$set": {"status": "processing"}})
+
+    def mark_pending(self, sample_id):
+        return self.get_collection_handle().update({"_id": ObjectId(sample_id)}, {"$set": {"status": "pending"}})
 
     def get_by_manifest_id(self, manifest_id):
         samples = cursor_to_list(self.get_collection_handle().find({"manifest_id": manifest_id}))
         for s in samples:
             s["copo_profile_title"] = Profile().get_name(s["profile_id"])
         return samples
+
+    def get_profileID_by_project_and_manifest_id(self, projects, manifest_ids):
+        return cursor_to_list(self.get_collection_handle().aggregate(
+            [{"$match": {"tol_project": {"$in": projects}, "manifest_id": {"$in": manifest_ids}}},
+             {"$project": {"profile_id": 1}}]))
 
     def get_statuses_by_manifest_id(self, manifest_id):
         return cursor_to_list(self.get_collection_handle().find({"manifest_id": manifest_id},
@@ -1300,6 +1555,23 @@ class Sample(DAComponent):
             "user": "copo@earlham.ac.uk"
         }}})
 
+    def update_read_accession(self, sample_accessions):
+        for accession in sample_accessions:
+            self.get_collection_handle().update_many({"_id": ObjectId(accession["sample_id"])},
+                                                     {"$set": {"biosampleAccession": accession["biosample_accession"],
+                                                               "sraAccession": accession["sample_accession"],
+                                                               "status": "accepted"}})
+
+    def update_datafile_status(self, datafile_ids, status):
+        dt = helpers.get_datetime()
+        for id in datafile_ids:            
+            self.get_collection_handle().update_one({"profile_id": self.profile_id, "read.file_id" : {"$regex": id}, "read.$.status": {"$ne": status}}, {"$set": {"read.$.status": status, "modifed_date":  dt}})
+
+
+
+
+
+
 class Submission(DAComponent):
     def __init__(self, profile_id=None):
         super(Submission, self).__init__(profile_id, "submission")
@@ -1456,7 +1728,7 @@ class Submission(DAComponent):
 
         return super(Submission, self).save_record(auto_fields, **kwargs)
 
-    def validate_and_delete(self, target_id=str()):
+    def validate_and_delete(self, target_id=str(), target_ids=list()):
         """
         function deletes a submission record, but first checks for dependencies
         :param target_id:
@@ -1488,7 +1760,6 @@ class Submission(DAComponent):
 
         return result
 
-    '''
     def get_submission_metadata(self, submission_id=str()):
         """
         function returns the metadata associated with this submission
@@ -1503,8 +1774,9 @@ class Submission(DAComponent):
 
         try:
             repository_type = self.get_repository_type(submission_id=submission_id)
-        except Exception as error:
+        except Exception as e:
             repository_type = str()
+            lg.exception(e)
 
         if not repository_type:
             return dict(status='error', message="Submission repository unknown!", meta=list())
@@ -1532,16 +1804,14 @@ class Submission(DAComponent):
             pass  # todo: if required for other repo, can use metadata from linked bundle
 
         return result
-    '''
-        
 
-    """   need to move to copo_read_submission
+    '''
     def lift_embargo(self, submission_id=str()):
-        '''
+        """
         function attempts to lift the embargo on the submission, releasing to the public
         :param submission_id:
         :return:
-        '''
+        """
 
         result = dict(status='info', message="Release status unknown or unspecified procedure.")
 
@@ -1553,8 +1823,9 @@ class Submission(DAComponent):
 
         try:
             repository_type = self.get_repository_type(submission_id=submission_id)
-        except Exception as error:
+        except Exception as e:
             repository_type = str()
+            lg.exception(e)
 
         if not repository_type:
             return dict(status='error', message="Submission repository unknown!")
@@ -1564,7 +1835,7 @@ class Submission(DAComponent):
             return enareadSubmission.EnaReads(submission_id=submission_id).process_study_release(force_release=True)
 
         return result
-    """
+    '''
 
     def get_repository_type(self, submission_id=str()):
         """
@@ -1626,7 +1897,7 @@ class Submission(DAComponent):
             raise
 
         return repository
-    
+
     '''
     def get_repository_details(self, submission_id=str()):
         """
@@ -1685,9 +1956,7 @@ class Submission(DAComponent):
             raise
 
         return repository_details
-    '''
 
-    '''  deprecated
     def mark_all_token_obtained(self, user_id):
 
         # mark all submissions for profile with type figshare as token obtained
@@ -1715,7 +1984,6 @@ class Submission(DAComponent):
             }
         )
     '''
-
     def clear_submission_metadata(self, sub_id):
         return self.get_collection_handle().update({"_id": ObjectId(sub_id)}, {"$set": {"meta": {}}})
 
@@ -1783,7 +2051,6 @@ class Submission(DAComponent):
 
         )
 
-    ''' deprecated
     def mark_figshare_article_id(self, sub_id, article_id):
         if not type(article_id) is list:
             article_id = [article_id]
@@ -1797,7 +2064,7 @@ class Submission(DAComponent):
                 }
             }
         )
-    '''
+
     def get_file_accession(self, sub_id):
         doc = self.get_collection_handle().find_one(
             {
@@ -1805,31 +2072,26 @@ class Submission(DAComponent):
             },
             {
                 'accessions': 1,
-                #'bundle': 1,
+                'bundle': 1,
                 'repository': 1
             }
         )
-        """  deprecated
         if doc['repository'] == 'figshare':
             return {'accessions': doc['accessions'], 'repo': 'figshare'}
         else:
-        """
-        filenames = list()
+            filenames = list()
+            for file_id in doc['bundle']:
+                f = DataFile().get_by_file_name_id(file_id=file_id)
+                filenames.append(f['name'])
+            if isinstance(doc['accessions'], str):
+                doc['accessions'] = None
+            return {'accessions': doc['accessions'], 'filenames': filenames, 'repo': doc['repository']}
 
-        if isinstance(doc['accessions'], str):
-            doc['accessions'] = None
-        else:
-            for run in doc['accessions'].get("run", []):
-                for data_file in run["datafiles"]:
-                    f = DataFile().get_by_file_name_id(file_id=data_file)
-                    filenames.append(f['name'])
-        return {'accessions': doc['accessions'], 'filenames': filenames, 'repo': doc['repository']}
-
-    """
+    '''
     def get_file_accession_for_dataverse_entry(self, mongo_file_id):
         return self.get_collection_handle().find_one({'accessions.mongo_file_id': mongo_file_id},
-                                              {'_id': 0, 'accessions.$': 1})
-    """
+                                                     {'_id': 0, 'accessions.$': 1})
+    '''
 
     def get_complete(self):
         complete_subs = self.get_collection_handle().find({'complete': True})
@@ -1845,7 +2107,7 @@ class Submission(DAComponent):
             return self.get_collection_handle().update(
                 {'_id': ObjectId(submission_id)}, {'$set': {'destination_repo': 'default'}}
             )
-        r = Repository().get_record(ObjectId(repo_id))
+        r = Repository().get_record(repo_id)
         dest = {"url": r.get('url'), 'apikey': r.get('apikey', ""), "isCG": r.get('isCG', ""), "repo_id": repo_id,
                 "name": r.get('name', ""),
                 "type": r.get('type', ""), "username": r.get('username', ""), "password": r.get('password', "")}
@@ -1862,7 +2124,6 @@ class Submission(DAComponent):
             {'_id': ObjectId(submission_id)}, {'$set': {'meta': json_util.loads(meta)}}
         )
 
-    """
     def get_dataverse_details(self, submission_id):
         doc = self.get_collection_handle().find_one(
             {'_id': ObjectId(submission_id)}, {'destination_repo': 1}
@@ -1876,7 +2137,6 @@ class Submission(DAComponent):
                 return doc['destination_repo']
         else:
             return default_dataverse
-    """
 
     def mark_as_published(self, submission_id):
         return self.get_collection_handle().update(
@@ -1941,13 +2201,286 @@ class Submission(DAComponent):
             return False
 
     def add_assembly_accession(self, s_id, accession, alias, assembly_idstr):
-        #todo if it's decided to have multiple assemblies per profile add accessions.assembly.sample to be able to cross
-        #reference assembly and sample
-        assembly_accession = self.get_collection_handle().find_one({"_id": ObjectId(s_id), "accessions.assembly.accession": accession}, {"_id":1})
+        # todo if it's decided to have multiple assemblies per profile add accessions.assembly.sample to be able to cross
+        # reference assembly and sample
+        assembly_accession = self.get_collection_handle().find_one(
+            {"_id": ObjectId(s_id), "accessions.assembly.accession": accession}, {"_id": 1})
         if not assembly_accession:
             self.get_collection_handle().update_one({"_id": ObjectId(s_id)},
-                                                    {"$push": { "accessions.assembly": {"accession": accession, "alias": alias, "assembly_id": assembly_idstr}}})
+                                                    {"$push": {
+                                                        "accessions.assembly": {"accession": accession, "alias": alias,
+                                                                                "assembly_id": assembly_idstr}}})
         return
+
+    def add_annotation_accessions(self, s_id, accession):
+        # todo if it's decided to have multiple assemblies per profile add accessions.annotation.sample to be able to cross
+        # reference annotation and sample
+        # self.get_collection_handle().update_one(
+        #    {"_id": ObjectId(s_id)}, {"$addToSet": {"accessions.seq_annotation": {"$each": accession}}, "$pull" : {"seq_annotation_submission_error": {"seq_annotation_id": accession[0]["alias"]}}}) 
+        self.get_collection_handle().update_one({"_id": ObjectId(s_id)},
+                                                {"$addToSet": {"accessions.seq_annotation": {"$each": accession}}})
+
+    def make_seq_annotation_submission_uploading(self, sub_id, seq_annotation_ids):
+        sub_handle = self.get_collection_handle()
+        submission = sub_handle.find_one({"_id": ObjectId(sub_id)}, {"seq_annotation_status": 1})
+
+        if not submission:
+            return dict(status='error', message="System Error! Please contact the administrator.")
+
+        if submission.get("seq_annotation_status", str()) in [ "pending", "sending"]:
+            return dict(status='error', message="Sequence annotation submission is in process, please try again later!")
+
+        sub_handle.update_one({"_id": ObjectId(sub_id)},
+                              {"$set": {"seq_annotation_status": "uploading", "date_modified":
+                                  helpers.get_datetime()},
+                               "$addToSet": {"seq_annotations": {"$each": seq_annotation_ids}}})
+        return dict(status='success', message="Sequence annotation submission has been scheduled!")
+
+    def update_seq_annotation_submission(self, sub_id, seq_annotation_id=str(), submission_id=[]):
+        # when dtol sample has been processed, pull id from submission and check if there are remaining
+        # samples left to go. If not, make submission complete. This will stop celery processing the this submission.
+        sub_handle = self.get_collection_handle()
+        # for sam_id in sam_ids:
+        if submission_id:
+            sub_handle.update({"_id": ObjectId(sub_id)},
+                              {"$pull": {"seq_annotation_submission": {"id": submission_id}}})
+        if seq_annotation_id:
+            sub_handle.update({"_id": ObjectId(sub_id)}, {"$pull": {"seq_annotations": seq_annotation_id}})
+        sub = sub_handle.find_one({"_id": ObjectId(sub_id)}, {"seq_annotation_submission": 1, "seq_annotations": 1})
+        if len(sub["seq_annotation_submission"]) < 1 and len(sub["seq_annotations"]) < 1:
+            sub_handle.update({"_id": ObjectId(sub_id)},
+                              {"$set": {"seq_annotation_status": "complete",
+                                        "date_modified": helpers.get_datetime()}})
+
+    def get_seq_annotation_pending_submission(self):
+        REFRESH_THRESHOLD = 3600  # time in seconds to retry stuck submission
+        # called by celery to get samples the supeprvisor has set to be sent to ENA
+        # those not yet sent should be in pending state. Occasionally there will be
+        # stuck submissions in sending state, so get both types
+        subs = self.get_collection_handle().find(
+            {"seq_annotation_status": {"$in": ["sending", "pending"]}},
+            {"seq_annotation_status": 1, "profile_id": 1, "date_modified": 1, "seq_annotations": 1})
+        sub = cursor_to_list(subs)
+        out = list()
+        current_time = helpers.get_datetime()
+        for s in sub:
+            # calculate whether a submission is an old one
+            if s.get("seq_annotation_status", "") == "sending":
+                recorded_time = s.get("date_modified", current_time)
+                time_difference = current_time - recorded_time
+                if time_difference.total_seconds() > (REFRESH_THRESHOLD):
+                    # submission retry time has elapsed so re-add to list
+                    out.append(s)
+                    self.update_submission_modified_timestamp(s["_id"])
+                    lg.log("ADDING STALLED SEQ ANNOTATION SUBMISSION " + str(s["_id"]) + "BACK INTO QUEUE - copo_da",
+                           level=Loglvl.ERROR, type=Logtype.FILE)
+                    # no need to change status
+            elif s.get("seq_annotation_status", "") == "pending":
+                out.append(s)
+                # self.update_submission_modified_timestamp(s["_id"])
+                self.get_collection_handle().update({"_id": ObjectId(s["_id"])},
+                                                    {"$set": {"seq_annotation_status": "sending",
+                                                              "date_modified": current_time}})
+        return out
+
+    def get_seq_annotation_file_uploading(self):
+        subs = self.get_collection_handle().find(
+            {"seq_annotation_status": "uploading"},
+            {"seq_annotations": 1, "profile_id": 1, "date_modified": 1})
+        return cursor_to_list(subs)
+
+    def update_seq_annotation_submission_async(self, sub_id, href, seq_annotation_ids, submission_id):
+        sub_handle = self.get_collection_handle()
+        submission = {'id': submission_id, 'seq_annotation_id': seq_annotation_ids, 'href': href}
+        sub_handle.update({"_id": ObjectId(sub_id)},
+                          {"$set": {"date_modified": datetime.now()},
+                           "$push": {"seq_annotation_submission": submission},
+                           "$pull": {"seq_annotations": {"$in": seq_annotation_ids}}})
+
+    def get_async_seq_annotation_submission(self):
+        sub_handle = self.get_collection_handle()
+        subs = sub_handle.find({"seq_annotation_submission": {"$exists": True, "$ne": []}},
+                               {"_id": 1, "seq_annotation_submission": 1, "profile_id": 1})
+        return cursor_to_list(subs)
+
+    '''
+    def update_seq_annotation_submission_error(self, sub_id, seq_annotation_ids, error):
+
+        sub_handle = self.get_collection_handle()
+        sub = sub_handle.find_one({"_id": ObjectId(sub_id), "seq_annotation_submission.id": seq_annotation_submission_id}, {"seq_annotation_submission.seq_annotation_id": 1})
+        seq_annotation_ids = sub["seq_annotation_submission"][0]["seq_annotation_id"]
+        for id in seq_annotation_ids:    
+            count = sub_handle.find({"_id": ObjectId(sub_id), "seq_annotation_submission_error.seq_annotation_id": id}).count()
+            if count == 0:
+                sub_handle.update_one({"_id": ObjectId(sub_id)},
+                            {"$set": {"date_modified": datetime.now()}, "$push": {"seq_annotation_submission_error": {"seq_annotation_id": id, "error": error}}})
+            else:
+                sub_handle.update_one({"_id": ObjectId(sub_id), "seq_annotation_submission_error.seq_annotation_id": id},
+                            {"$set": {"date_modified": datetime.now(), "seq_annotation_submission_error.$.error": error}})
+    '''
+
+    def update_seq_annotation_submission_pending(self, sub_ids):
+        self.get_collection_handle().update_many({"_id": {"$in": sub_ids}},
+                                                 {"$set": {"seq_annotation_status": "pending"}})
+
+    def reset_read_submisison_bundle(self, submission_id):
+        submission = self.get_record(submission_id)
+
+        samples = Sample(profile_id=self.profile_id).get_all_records_columns(
+            filter_by={"read.file_id": {"$in": submission["bundle"]}}, projection={"read": 1})
+        for sample in samples:
+            is_update = False
+            for read in sample["read"]:
+                if read["file_id"] in submission["bundle"]:
+                    if read["status"] == "processing":
+                        read["status"] = "pending"
+                        is_update = True
+
+            if is_update:
+                sample["date_modified"] = helpers.get_datetime()
+                Sample(profile_id=self.profile_id).get_collection_handle().update_one({"_id": sample["_id"]},
+                                                                                      {"$set": sample})
+        self.get_collection_handle().update_one({"_id": ObjectId(submission_id)}, {"$set": {"bundle": []}})
+
+    def reset_dtol_submission_status(self, submission_id, samples_ids):
+        doc = self.get_collection_handle().find_one({"_id": ObjectId(submission_id)})
+        l = len(doc["dtol_samples"])
+        if l > 0:
+            status = "pending"
+        else:
+            status = "complete"
+
+        Submission().get_collection_handle().update({"_id": ObjectId(submission_id)}, {"$set": {"dtol_status": status}})
+        if samples_ids:
+            object_samples_ids = [ObjectId(x) for x in samples_ids]
+        Sample().get_collection_handle().update_many({"_id": {"$in": object_samples_ids}},
+                                                     {"$set": {"status": "processing"}})
+
+    def make_tagged_seq_submission_pending(self, sub_id, target_ids):
+        self.get_collection_handle().update_one({"_id": ObjectId(sub_id)},  {"$set": {"tagged_seq_status": "pending"}, "$addToSet" : {"tagged_seqs": {"$each": target_ids}}}) 
+
+    def get_tagged_seq_pending_submission(self):
+        REFRESH_THRESHOLD = 3600  # time in seconds to retry stuck submission
+        # called by celery to get samples the supeprvisor has set to be sent to ENA
+        # those not yet sent should be in pending state. Occasionally there will be
+        # stuck submissions in sending state, so get both types
+        subs = self.get_collection_handle().find(
+            {"tagged_seq_status": {"$in": ["sending", "pending"]}},
+            {"tagged_seq_status": 1, "profile_id": 1, "date_modified": 1, "tagged_seqs": 1})
+        sub = cursor_to_list(subs)
+        out = list()
+        current_time = helpers.get_datetime()
+        for s in sub:
+            # calculate whether a submission is an old one
+            if s.get("tagged_seq_status", "") == "sending":
+                recorded_time = s.get("date_modified", current_time)
+                time_difference = current_time - recorded_time
+                if time_difference.total_seconds() > (REFRESH_THRESHOLD):
+                    # submission retry time has elapsed so re-add to list
+                    out.append(s)
+                    self.update_submission_modified_timestamp(s["_id"])
+                    lg.log("ADDING STALLED TAGGED SEQ SUBMISSION " + str(s["_id"]) + "BACK INTO QUEUE - copo_da",
+                        level=Loglvl.ERROR, type=Logtype.FILE)
+                    # no need to change status
+            elif s.get("tagged_seq_status", "") == "pending":
+                out.append(s)
+                #self.update_submission_modified_timestamp(s["_id"])
+                self.get_collection_handle().update({"_id": ObjectId(s["_id"])},
+                                                    {"$set": {"tagged_seq_status": "sending", "date_modified": current_time}})
+        return out
+
+    def get_standalone_project_accessions(self, sort_by='_id', sort_direction=-1, projection=dict(), filter_by=dict()):
+        filter_by["repository"] = "ena"
+        filter_by["accessions"] = {"$exists": True, "$ne": {}}
+        projection={"_id":1, "accessions": 1, "profile_id": 1}
+
+        records = cursor_to_list_str(self.get_collection_handle().find(filter_by, projection).sort([[sort_by, sort_direction]]), use_underscore_in_id=False)
+       
+        out = list()
+        for i in records:
+            # Get profile title
+            profile_title = Profile().get_name(i.get("profile_id", ""))  # Get profile title
+            i.update({'profile_title': profile_title})  # update list of dictionaries with profile title
+
+            # Reorder the list of accessions types
+            reordered_accessions_dict = {k: i.get("accessions", "").get(k, "") for k in
+                                            STANDALONE_ACCESSION_TYPES if i.get("accessions", "").get(k, "")}
+            i.update({'accessions': reordered_accessions_dict})
+            out.append(i)
+
+        return out
+    
+    def make_assembly_submission_uploading(self, sub_id, assembly_ids):
+        sub_handle = self.get_collection_handle()
+        submission = sub_handle.find_one({"_id": ObjectId(sub_id)}, {"assembly_status": 1})
+
+        if not submission:
+            return dict(status='error', message="System Error! Please contact the administrator.")
+
+        if submission.get("assembly_status", str()) in ["pending", "sending"]:
+            return dict(status='error', message="Assembly submission is in process, please try again later!")
+
+        sub_handle.update_one({"_id": ObjectId(sub_id)},
+                              {"$set": {"assembly_status": "uploading", "date_modified":
+                                  helpers.get_datetime()},
+                               "$addToSet": {"assemblies": {"$each": assembly_ids}}})
+        return dict(status='success', message="Assembly submission has been scheduled!")
+
+    def update_assembly_submission(self, sub_id, assembly_id=str()):
+        # when dtol sample has been processed, pull id from submission and check if there are remaining
+        # samples left to go. If not, make submission complete. This will stop celery processing the this submission.
+        sub_handle = self.get_collection_handle()
+        # for sam_id in sam_ids:
+        if assembly_id:
+            sub_handle.update({"_id": ObjectId(sub_id)}, {"$pull": {"assemblies": assembly_id}})
+
+        sub = sub_handle.find_one({"_id": ObjectId(sub_id)}, {"assemblies": 1})
+        if len(sub["assemblies"]) < 1:
+            sub_handle.update({"_id": ObjectId(sub_id)},
+                              {"$set": {"assembly_status": "complete",
+                                        "date_modified": helpers.get_datetime()}})
+
+    def get_assembly_pending_submission(self):
+        REFRESH_THRESHOLD = 3600  # time in seconds to retry stuck submission
+        # called by celery to get samples the supeprvisor has set to be sent to ENA
+        # those not yet sent should be in pending state. Occasionally there will be
+        # stuck submissions in sending state, so get both types
+        subs = self.get_collection_handle().find(
+            {"assembly_status": {"$in": ["sending", "pending"]}},
+            {"assembly_status": 1, "profile_id": 1, "date_modified": 1, "assemblies": 1})
+        sub = cursor_to_list(subs)
+        out = list()
+        current_time = helpers.get_datetime()
+        for s in sub:
+            # calculate whether a submission is an old one
+            if s.get("assembly_status", "") == "sending":
+                recorded_time = s.get("date_modified", current_time)
+                time_difference = current_time - recorded_time
+                if time_difference.total_seconds() > (REFRESH_THRESHOLD):
+                    # submission retry time has elapsed so re-add to list
+                    out.append(s)
+                    self.update_submission_modified_timestamp(s["_id"])
+                    lg.log("ADDING STALLED ASSEMBLY SUBMISSION " + str(s["_id"]) + "BACK INTO QUEUE - copo_da",
+                           level=Loglvl.ERROR, type=Logtype.FILE)
+                    # no need to change status
+            elif s.get("assembly_status", "") == "pending":
+                out.append(s)
+                # self.update_submission_modified_timestamp(s["_id"])
+                self.get_collection_handle().update({"_id": ObjectId(s["_id"])},
+                                                    {"$set": {"assembly_status": "sending",
+                                                              "date_modified": current_time}})
+        return out
+
+    def get_assembly_file_uploading(self):
+        subs = self.get_collection_handle().find(
+            {"assembly_status": "uploading"},
+            {"assemblies": 1, "profile_id": 1, "date_modified": 1})
+        return cursor_to_list(subs)
+
+    def update_assembly_submission_pending(self, sub_ids):
+            self.get_collection_handle().update_many({"_id": {"$in": sub_ids}},
+                                                    {"$set": {"assembly_status": "pending"}})
+
 
 class DataFile(DAComponent):
     def __init__(self, profile_id=None):
@@ -1982,7 +2515,6 @@ class DataFile(DAComponent):
         return docs
 
 
-
     def get_record_property(self, datafile_id=str(), elem=str()):
         """
         eases the access to deeply nested properties
@@ -2008,7 +2540,6 @@ class DataFile(DAComponent):
 
         return property_dict.get(elem, str())
 
-    '''  deprecated
     def add_fields_to_datafile_stage(self, target_ids, fields, target_stage_ref):
 
         for target_id in target_ids:
@@ -2023,7 +2554,6 @@ class DataFile(DAComponent):
             # now update datafile record
             self.get_collection_handle().update({'_id': ObjectId(target_id)},
                                                 {'$set': {'description.stages': df['description']['stages']}})
-    '''
 
     def update_file_level_metadata(self, file_id, data):
         self.get_collection_handle().update({"_id": ObjectId(file_id)}, {"$push": {"file_level_annotation": data}})
@@ -2092,15 +2622,24 @@ class Profile(DAComponent):
 
     def get_type(self, profile_id):
         p = self.get_collection_handle().find_one({"_id": ObjectId(profile_id)})
+
         if p:
             return p.get("type", "")
         else:
             return False
 
-    def get_associated_type(self, profile_id):
+    def get_associated_type(self, profile_id, value=True, label=True):
         p = self.get_collection_handle().find_one({"_id": ObjectId(profile_id)})
         if p:
-            return p.get("associated_type", "")
+            if p.get("associated_type", ""):
+                if value and not label:
+                    return [i.get("value", "") for i in p.get("associated_type", "") if i.get("value", "")]
+                elif label and not value:
+                    return [i.get("label", "") for i in p.get("associated_type", "") if i.get("label", "")]
+                else:
+                    return p.get("associated_type", "")
+            else:
+                return []
         else:
             return False
 
@@ -2153,27 +2692,25 @@ class Profile(DAComponent):
             Person(profile_id=str(rec["_id"])).create_sra_person()
         return rec
 
-    """
     def add_dataverse_details(self, profile_id, dataverse):
         handle_dict['profile'].update_one({'_id': ObjectId(profile_id)}, {'$set': {'dataverse': dataverse}})
 
     def check_for_dataverse_details(self, profile_id):
-        p = self.get_record(ObjectId(profile_id))
+        p = self.get_record(profile_id)
         if 'dataverse' in p:
             return p['dataverse']
 
     def add_dataverse_dataset_details(self, profile_id, dataset):
 
-        handle_dict['profile'].update_one({'_id': ObjectId(profile_id)}, {'$push': {'dataverse.datasets': dataset}})
+        handle_dict['profile'].update_one({'_id': profile_id}, {'$push': {'dataverse.datasets': dataset}})
         return [dataset]
 
     def check_for_dataset_details(self, profile_id):
-        p = self.get_record(ObjectId(profile_id))
+        p = self.get_record(profile_id)
         if 'dataverse' in p:
             if 'datasets' in p['dataverse']:
                 return p['dataverse']['datasets']
-    """
-                
+
     def get_dtol_profiles(self):
         p = self.get_collection_handle().find(
             {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]}}).sort(
@@ -2192,9 +2729,36 @@ class Profile(DAComponent):
                                                                                               pymongo.DESCENDING)
         return cursor_to_list(p)
 
+    def get_profiles_by_aggregation(self, data, currentUser=True):
+        p = None
+        owner_id = helpers.get_user_id()
+
+        if type(data) == str:
+            if currentUser:
+                p = self.get_collection_handle().find(
+                    {"user_id": owner_id, "type": {"$regex": data, "$options": "i"}}).sort(
+                    "date_created", pymongo.DESCENDING)
+            else:
+
+                p = self.get_collection_handle().aggregate(
+                    {"type": {"$regex": data, "$options": "i"}}).sort("date_created", pymongo.DESCENDING)
+        return cursor_to_list(p)
+
+    def get_profiles_based_on_sample_data(self, projects, manifest_ids):
+        profile_ids = Sample().get_profileID_by_project_and_manifest_id(projects, manifest_ids)
+        profile_ids = [ObjectId(x.get("profile_id", "")) for x in profile_ids]  # Convert string profileID to ObjectId
+
+        p = self.get_collection_handle().find(
+            {"_id": {"$in": profile_ids}}).sort("date_created", pymongo.DESCENDING)
+
+        return cursor_to_list_str(p)
+
     def get_name(self, profile_id):
-        p = self.get_record(ObjectId(profile_id))
-        return p["title"]
+        p = self.get_record(profile_id)
+        if type(p) != InvalidId:
+            return p.get("title","")
+        else:
+            return "profile not exists"
 
     def get_by_title(self, title):
         p = self.get_collection_handle().find({"title": title})
@@ -2254,7 +2818,7 @@ class CopoGroup(DAComponent):
 
     def get_profiles_for_group_info(self, group_id):
         p_list = cursor_to_list(Profile().get_for_user(helpers.get_user_id()))
-        group = CopoGroup().get_record(ObjectId(group_id))
+        group = CopoGroup().get_record(group_id)
         for p in p_list:
             if p['_id'] in group['shared_profile_ids']:
                 p['selected'] = True
@@ -2264,7 +2828,7 @@ class CopoGroup(DAComponent):
 
     '''
     def get_repos_for_group_info(self, uid, group_id):
-        g = CopoGroup().get_record(ObjectId(group_id))
+        g = CopoGroup().get_record(group_id)
         docs = cursor_to_list(Repository().Repository.find({'users.uid': uid}))
         for d in docs:
             if d['_id'] in g['repo_ids']:
@@ -2273,9 +2837,9 @@ class CopoGroup(DAComponent):
                 d['selected'] = False
         return list(docs)
     '''
-    
+
     def get_users_for_group_info(self, group_id):
-        group = CopoGroup().get_record(ObjectId(group_id))
+        group = CopoGroup().get_record(group_id)
         member_ids = group['member_ids']
         user_list = list()
         for u in member_ids:
@@ -2429,7 +2993,7 @@ class Repository(DAComponent):
         doc = self.get_collection_handle().remove({"_id": ObjectId(repo_id)})
         return doc
 
-    def validate_and_delete(self, target_id=str()):
+    def validate_and_delete(self, target_id=str(), target_ids=list()):
         """
         function deletes repository only if there are no dependent records
         :param target_id:
@@ -2463,11 +3027,89 @@ class Repository(DAComponent):
         self.get_collection_handle().remove({"_id": ObjectId(repository_id)})
 
         return result
+'''
+'''
+class RemoteDataFile:
+    def __init__(self, profile_id=None):
+        self.RemoteFileCollection = get_collection_ref(RemoteFileCollection)
+        self.profile_id = profile_id
+
+    def GET(self, id):
+        doc = self.RemoteFileCollection.find_one({"_id": ObjectId(id)})
+        if not doc:
+            pass
+        return doc
+
+    def get_by_sub_id(self, sub_id):
+        doc = self.RemoteFileCollection.find_one({"submission_id": sub_id})
+        return doc
+
+    def create_transfer(self, submission_id, file_path=None):
+        # before creating a new transfer record for this submission, remove all others
+        remote_record = self.get_by_sub_id(submission_id)
+        if remote_record:
+            self.delete_transfer(str(remote_record["_id"]))
+
+        fields = helpers.json_to_pytype(DB_TEMPLATES['REMOTE_FILE_COLLECTION'])
+        fields['submission_id'] = submission_id
+        fields['profile_id'] = self.profile_id
+        fields['file_path'] = file_path
+        transfer_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        fields["commenced_on"] = transfer_time
+        fields["current_time"] = transfer_time
+        fields["transfer_rate"] = ""
+
+        if file_path:
+            d = DataFile().GET(submission_id)
+            chunked_upload = ChunkedUpload.objects.get(id=int(d['file_id']))
+            fields["file_size_bytes"] = u.filesize_toString(chunked_upload.offset)
+
+        doc = self.RemoteFileCollection.insert(fields)
+
+        # return inserted record
+        df = self.GET(str(doc))
+        return df
+
+    def delete_transfer(self, transfer_id):
+        self.RemoteFileCollection.delete_one({'_id': ObjectId(transfer_id)})
+
+    def update_transfer(self, transfer_id, fields, delete="0"):
+
+        fields["deleted"] = delete
+        if 'transfer_rate' in fields:
+            # speed = fields.pop("transfer_rate")
+
+            self.RemoteFileCollection.update(
+                {
+                    "_id": ObjectId(transfer_id)
+                },
+                {
+                    # '$push': {"transfer_rate": float(speed)},
+                    '$set': fields
+                }
+            )
+        else:
+            self.RemoteFileCollection.update(
+                {
+                    "_id": ObjectId(transfer_id)
+                },
+                {
+                    '$set': fields
+                }
+            )
+
+    def get_all_records(self):
+        doc = {'profile_id': self.profile_id, 'deleted': helpers.get_not_deleted_flag()}
+        return cursor_to_list(self.RemoteFileCollection.find(doc))
+
+    def get_by_datafile(self, datafile_id):
+        doc = {'datafile_id': ObjectId(datafile_id), 'deleted': helpers.get_not_deleted_flag()}
+        return cursor_to_list(self.RemoteFileCollection.find(doc))
+
+    def sanitise_remote_files(self):
+        pass
 
 '''
-
-
-
 class Stats:
     def update_stats(self):
         datafiles = handle_dict["datafile"].count({})
@@ -2564,41 +3206,39 @@ class Barcode(DAComponent):
                                                  upsert=True)
 
 
-class ENAFileTransferObject(DAComponent):
+class EnaFileTransfer(DAComponent):
     def __init__(self, profile_id=None):
-        super(ENAFileTransferObject, self).__init__(profile_id, "ENAFileTransferObject")
-        self.ENAFileTransferObjectCollection = get_collection_ref(ENAFileTransferCollection)
+        super(EnaFileTransfer, self).__init__(profile_id, "enaFileTransfer")
         self.profile_id = profile_id
-        self.component = str()
+        # self.component = str()
 
     def get_pending_transfers(self):
         result_list = []
-        result = self.ENAFileTransferObjectCollection.find({"transfer_status": {"$ne": 2}, "status": "pending"})
+        result = self.get_collection_handle().find({"transfer_status": {"$ne": 2}, "status": "pending"})
         if result:
             result_list = list(result)
-        #at most download 2 files at the sametime    
-        count = self.ENAFileTransferObjectCollection.find({"transfer_status": 2, "status": "processing"}).count()
+        # at most download 2 files at the sametime
+        count = self.get_collection_handle().find({"transfer_status": 2, "status": "processing"}).count()
         if count <= 1:
-            result = self.ENAFileTransferObjectCollection.find_one({"transfer_status": 2, "status": "pending"})
+            result = self.get_collection_handle().find_one({"transfer_status": 2, "status": "pending"})
             if result:
                 result_list.append(result)
         return result_list
 
     def get_processing_transfers(self):
-        return self.ENAFileTransferObjectCollection.find({"transfer_status": {"$gt": 0}, "status": "processing"})
-     
+        return self.get_collection_handle().find({"transfer_status": {"$gt": 0}, "status": "processing"})
 
     def set_processing(self, tx_id):
-        self.ENAFileTransferObjectCollection.update_one({"_id": ObjectId(tx_id)},
-                                                        {"$set": {"status": "processing",
-                                                                  "last_checked": datetime.utcnow()}})
+        self.get_collection_handle().update_one({"_id": ObjectId(tx_id)},
+                                                {"$set": {"status": "processing",
+                                                          "last_checked": datetime.utcnow()}})
 
     def set_pending(self, tx_id):
-        self.ENAFileTransferObjectCollection.update_one({"_id": ObjectId(tx_id)}, {
+        self.get_collection_handle().update_one({"_id": ObjectId(tx_id)}, {
             "$set": {"status": "pending", "last_checked": datetime.utcnow()}})
 
     def set_complete(self, tx_id):
-        self.ENAFileTransferObjectCollection.update_one({"_id": ObjectId(tx_id)}, {"$set": {"status": "complete"}})
+        self.get_collection_handle().update_one({"_id": ObjectId(tx_id)}, {"$set": {"status": "complete"}})
 
 
 class APIValidationReport(DAComponent):
@@ -2631,6 +3271,230 @@ class APIValidationReport(DAComponent):
 class Assembly(DAComponent):
     def __init__(self, profile_id=None):
         super(Assembly, self).__init__(profile_id, "assembly")
+
+    def add_accession(self, id, accession):
+        self.get_collection_handle().update({"_id": ObjectId(id)},
+                                            {"$set": {"accession": accession, "error": ""}})
+
+    def update_assembly_error(self, assembly_ids, msg):
+        assembly_obj_ids = [ObjectId(id) for id in assembly_ids]
+        self.get_collection_handle().update_many({"_id": {"$in": assembly_obj_ids}},
+                                                 {"$set": {"error": msg}})
+
+    def validate_and_delete(self, target_id=str(), target_ids=list()):
+        if not target_ids:
+            target_ids = []
+        if target_id:
+            target_ids.append(target_id)
+        assembly_obj_ids = [ ObjectId(id) for id in target_ids ]
+        result = self.execute_query({"_id": {"$in": assembly_obj_ids},  "accession":{"$exists": True, "$ne": ""} })
+        if result:
+            return dict(status='error', message="One or more Assembly has been accessed!")
+
+        self.get_collection_handle().remove({"_id": {"$in": assembly_obj_ids}})
+        return dict(status='success', message="Assembly record/s have been deleted!")
+
+
+class Sequnece_annotation(DAComponent):
+    def __init__(self, profile_id=None):
+        super(Sequnece_annotation, self).__init__(profile_id, "seqannotation")
+
+    def add_accession(self, id, accession):
+        self.get_collection_handle().update({"_id": ObjectId(id)},
+                                            {"$set": {"accession": accession, "error": []}})
+
+    def update_seq_annotation_error(self, seq_annotation_ids, seq_annotation_sub_id, msg):
+        seq_annotation_obj_ids = None
+
+        if seq_annotation_ids:
+            seq_annotation_obj_ids = [ObjectId(id) for id in seq_annotation_ids]
+
+        elif seq_annotation_sub_id:
+            result = Submission().get_collection_handle().find({"seq_annotation_submission.id": seq_annotation_sub_id},
+                                                               {"seq_annotation_submission.$": 1})
+            if result:
+                records = cursor_to_list(result)
+                seq_annotation_obj_ids = [ObjectId(id) for id in
+                                          records[0]['seq_annotation_submission'][0]['seq_annotation_id']]
+
+        if seq_annotation_obj_ids:
+            self.get_collection_handle().update_many({"_id": {"$in": seq_annotation_obj_ids}},
+                                                     {"$set": {"error": msg}})
+
+    def validate_and_delete(self, target_id=str(), target_ids=list()):
+        if not target_ids:
+            target_ids = []
+        if target_id:
+            target_ids.append(target_id)
+        
+        seq_annotation_obj_ids = [ ObjectId(id) for id in target_ids ]
+        result = self.execute_query({"_id": {"$in": seq_annotation_obj_ids},  "accession":{"$exists": True, "$ne": ""} })
+        if result:
+            return dict(status='error', message="One or more sequence annotation record/s have been accessed!")
+
+        self.get_collection_handle().remove({"_id": {"$in": seq_annotation_obj_ids}})
+        return dict(status='success', message="Sequence annotation record/s have been deleted!")
+
+
+class SubmissionQueue(DAComponent):
+    def __init__(self, profile_id=None):
+        super(SubmissionQueue, self).__init__(profile_id, "submissionQueue")
+
+class TaggedSequenceChecklist(DAComponent):
+    def __init__(self, profile_id=None):
+        super(TaggedSequenceChecklist, self).__init__(profile_id, "taggedSequenceChecklist")
+
+    def get_checklist(self, checklist_id):
+        return self.execute_query({"primary_id": checklist_id})
+    
+    def get_checklists(self):
+        return self.get_all_records_columns(projection={"primary_id": 1, "name": 1, "description": 1})
+    
+
+class TaggedSequence(DAComponent):
+    def __init__(self, profile_id=None):
+        super(TaggedSequence, self).__init__(profile_id, "taggedSequence")
+
+    def get_schema(self, target_id=str()):
+        if not target_id:
+            return dict(schema_dict=[],
+                        schema=[]
+                        )   
+        taggedSeq = TaggedSequence(self.profile_id).get_record(target_id)
+        fields = []
+        if taggedSeq:
+            checklist = TaggedSequenceChecklist().execute_query({"primary_id": taggedSeq["checklist_id"]})
+            if checklist:
+                for key, field  in checklist[0].get("fields", {}).items() :
+                    if taggedSeq.get(key, ""):
+                        field["id"] = key
+                        field["show_as_attribute"] = True
+                        field["label"]=field["name"]
+                        field.pop("name")
+                        field["control"] = "text"
+                        if field["type"] == "TEXT_AREA_FIELD":
+                            field["control"] = "textarea"
+                    
+                    fields.append(field)
+
+            return dict(schema_dict=fields,
+                        schema=fields
+                        )
+
+    def validate_and_delete(self, target_id=str(), target_ids=list()):        
+        if not target_ids:
+            target_ids = []
+        if target_id:
+            target_ids.append(target_id)
+
+        tagged_seq_ids = [ ObjectId(id) for id in target_ids ]
+        result = self.execute_query({"_id": {"$in": tagged_seq_ids},  "$or": [ {"accession":{"$exists": True, "$ne": ""}}, {"status": {"$exists": True, "$ne": "pending" }}] } )
+        if result:
+           return dict(status='error', message="One or more tagged sequence record/s have been accessed or scheduled to submit!")
+        
+        self.get_collection_handle().remove({"_id": {"$in":   tagged_seq_ids}})
+        return dict(status='success', message="Tagged Sequence record/s have been deleted!")
+    
+    def update_tagged_seq_processing(self, profile_id=str(), tagged_seq_ids=list()):
+        tagged_seq_obj_ids = [ ObjectId(id) for id in tagged_seq_ids ]
+        self.get_collection_handle().update_many({"profile_id": profile_id,  "_id": {"$in":   tagged_seq_obj_ids},  "$or":[ {"status": {"$exists": False}}, {"status": "pending" }]},
+                                            {"$set": {"status":  "processing"}})
+
+
+class EnaChecklist(DAComponent):
+    def __init__(self, profile_id=None):
+        super(EnaChecklist, self).__init__(profile_id, "enaChecklist")
+
+    def get_checklist(self, checklist_id):
+        return self.execute_query({"primary_id": checklist_id})
+    
+    def get_barcoding_checklists_no_fields(self):
+        return self.get_all_records_columns(filter_by={"primary_id": {"$in" : settings.BARCODING_CHECKLIST}},  projection={"primary_id": 1, "name": 1, "description": 1})
+    
+    def get_sample_checklists_no_fields(self):
+        return self.get_all_records_columns(filter_by={"primary_id": { "$regex" : "^ERC" } },  projection={"primary_id": 1, "name": 1, "description": 1})
+    
+
+class EnaObject(DAComponent):
+    def __init__(self, profile_id=None):
+        super(EnaObject, self).__init__(profile_id, "enaObject")
+
+    def get_schema(self, target_id=str()):
+        if not target_id:
+            return dict(schema_dict=[],
+                        schema=[]
+                        )   
+        taggedSeq = EnaObject(self.profile_id).get_record(target_id)
+        fields = []
+        if taggedSeq:
+            checklist = EnaChecklist().execute_query({"primary_id": taggedSeq["checklist_id"]})
+            if checklist:
+                for key, field  in checklist[0].get("fields", {}).items() :
+                    if taggedSeq.get(key, ""):
+                        field["id"] = key
+                        field["show_as_attribute"] = True
+                        field["label"]=field["name"]
+                        field.pop("name")
+                        field["control"] = "text"
+                        if field["type"] == "TEXT_AREA_FIELD":
+                            field["control"] = "textarea"
+                    
+                    fields.append(field)
+
+            return dict(schema_dict=fields,
+                        schema=fields
+                        )
+
+    def validate_and_delete(self, target_id=str(), target_ids=list()):        
+        if not target_ids:
+            target_ids = []
+        if target_id:
+            target_ids.append(target_id)
+
+        tagged_seq_ids = [ ObjectId(id) for id in target_ids ]
+        result = self.execute_query({"_id": {"$in": tagged_seq_ids},  "$or": [ {"accession":{"$exists": True, "$ne": ""}}, {"status": {"$exists": True, "$ne": "pending" }}] } )
+        if result:
+           return dict(status='error', message="One or more Ena object/s have been accessed or scheduled to submit!")
+        
+        self.get_collection_handle().remove({"_id": {"$in":   tagged_seq_ids}})
+        return dict(status='success', message="Ena object/s have been deleted!")
+    
+    def update_ena_object_processing(self, profile_id=str(), tagged_seq_ids=list()):
+        tagged_seq_obj_ids = [ ObjectId(id) for id in tagged_seq_ids ]
+        self.get_collection_handle().update_many({"profile_id": profile_id,  "_id": {"$in":   tagged_seq_obj_ids},  "$or":[ {"status": {"$exists": False}}, {"status": "pending" }]},
+                                            {"$set": {"status":  "processing"}})
+
+
+class Read(DAComponent):
+    def __init__(self, profile_id=None):
+        super(Read, self).__init__(profile_id, "read")
+
+    def get_schema(self, target_id):
+
+        if not target_id:
+            return dict(schema_dict=[], schemas=[])
+        
+        read = Read(self.profile_id).get_record(target_id)
+        fields = []
+        if read:
+            checklist = EnaChecklist().execute_query({"primary_id": read["checklist_id"]})
+            if checklist:
+                for key, field  in checklist[0].get("fields", {}).items() :
+                    if read.get(key, ""):
+                        field["id"] = key
+                        field["show_as_attribute"] = True
+                        field["label"]=field["name"]
+                        field.pop("name")
+                        field["control"] = "text"
+                        if field["type"] == "TEXT_AREA_FIELD":
+                            field["control"] = "textarea"
+                    
+                    fields.append(field)
+
+            return dict(schema_dict=fields,
+                        schema=fields
+                        )
+
 
 def is_number(s):
     try:

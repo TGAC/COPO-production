@@ -1,50 +1,11 @@
 from  common.validators.validator import Validator
-from common.dal.copo_da import Profile
-from django.conf import settings
-# from web.apps.web_copo.lookup import dtol_lookups as lookup
+from common.dal.copo_da import Sample
+from common.schema_versions.lookup import dtol_lookups as lookup
 from common.utils.helpers import notify_frontend
 from common.validators.helpers import check_taxon_ena_submittable
 from common.validators.validation_messages import MESSAGES as msg
 from Bio import Entrez
-import importlib
-
-schema_version_path_dtol_lookups = f'common.schema_versions.{settings.CURRENT_SCHEMA_VERSION}.lookup.dtol_lookups'
-lookup = importlib.import_module(schema_version_path_dtol_lookups)
-
-
-class ColumnValidator(Validator):
-    def validate(self):
-        p_type = Profile().get_type(profile_id=self.profile_id)
-        columns = list(self.data.columns)
-        # check required fields are present in spreadsheet
-        for item in self.fields:
-            notify_frontend(data={"profile_id": self.profile_id}, msg="Validating Column- " + item,
-                            action="info",
-                            html_id="sample_info")
-            if item not in columns:
-                # invalid or missing field, inform user and return false
-                self.errors.append("Field not found - " + item)
-                self.flag = False
-                # if we have a required fields, check that there are no missing values
-        return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
-
-
-class MissingValuesValidator(Validator):
-    def validate(self):
-        p_type = Profile().get_type(profile_id=self.profile_id)
-        for header, cells in self.data.iteritems():
-            # here we need to check if there are not missing values in its cells
-            if header in self.fields:
-                cellcount = 0
-                for c in cells:
-                    cellcount += 1
-                    if c.strip() == "":
-                        # we have missing data in required cells
-                        self.errors.append(msg["validation_msg_missing_data_ena_seq"] % (
-                            header, str(cellcount + 1)))
-                        self.flag = False
-        return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
-
+from django_tools.middlewares import ThreadLocal
 
 class SinglePairedValuesValidator(Validator):
     def validate(self):
@@ -95,5 +56,55 @@ class GzipValidator(Validator):
                 if not f.strip().endswith(".gz"):
                     error_str = f + ": File not gzipped. All files must be gzipped and end in '.gz'"
                     self.errors.append(error_str)
+                    self.flag = False
+        return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
+
+
+class ReadNotInSubmissionQueueValidator(Validator):
+    def validate(self):
+        sample_names = list(self.data["sample"])
+        samples = Sample(profile_id=self.profile_id).get_all_records_columns(projection=dict(read=1,name=1), filter_by=dict(profile_id=self.profile_id, name={"$in": sample_names}))
+        sampleMap = {}
+        for sample in samples:
+            sampleMap[sample["name"]] = sample.get("read",[])
+            
+        for index, row in self.data.iterrows():
+            file_names = row["file_name"]
+            sample_name = row["sample"]
+            reads = sampleMap.get(sample_name, None)
+            if reads:
+                for read in reads:
+                    if set(read.get("file_name", str()).split(",")) == set(file_names.split(",")) and read.get("status","pending") == "processing":
+                        self.errors.append("File " + file_names + " already in submission queue for sample " + sample_name)
+                        self.flag = False 
+        return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
+    
+class DuplicatedDataFile(Validator):
+    def validate(self):
+        user = ThreadLocal.get_current_user()
+        file_names = list(self.data["file_name"])
+        samples = Sample(profile_id=self.profile_id).get_collection_handle().find({"$or" : [{"created_by" : str(user.id)}, {"updated_by" : str(user.id)}]} ,{"read":1,"name":1, "profile_id":1})
+        fileMap = {}
+        for sample in samples:
+            for read in sample.get("read", []):
+                files = read.get("file_name", str()).split(",")
+                for f in files:
+                    fileMap[f] = sample["profile_id"]+ " | "+ sample["name"]
+
+        file_name_list = [ file_name  for paried_names in file_names for file_name in paried_names.split(",")]
+        file = [ x for x in file_name_list if file_name_list.count(x) > 1]
+
+        for f in set(file):
+            self.errors.append("File " + f + " is duplicated in manifest")
+            self.flag = False               
+
+        for index, row in self.data.iterrows():
+            file_names = row["file_name"]
+            sample_name = self.profile_id + " | " + row["sample"]
+            files = file_names.split(",")
+            for f in files:
+                sample = fileMap.get(f, None)
+                if sample and sample != sample_name:
+                    self.errors.append(f"File {f} for sample {sample_name} already attached sample {sample}")
                     self.flag = False
         return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")

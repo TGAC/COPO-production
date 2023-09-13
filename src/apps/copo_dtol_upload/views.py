@@ -2,10 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from common.dal.copo_da import   ValidationQueue
 from .utils.Dtol_Spreadsheet import DtolSpreadsheet
+from common.utils import html_tags_utils as htags
 import pickle
+import jsonpickle
 from datetime import datetime 
 import json
 from common.utils.logger import Logger 
+l = Logger()
 
 @login_required
 # Create your views here.
@@ -22,8 +25,10 @@ def sample_spreadsheet(request, report_id=""):
     elif name.endswith("csv"):
         fmt = 'csv'
     else:
-        Logger().error("ajax handlers: 1324 - Unrecognised file format for spreadsheet")
-        return HttpResponse(status=400, content="Unrecognised file format for spreadsheet")
+        msg = "Unrecognised file format for spreadsheet. " \
+              "File format should be either <strong>.xls</strong>, <strong>.xlsx</strong> or <strong>.csv</strong>."
+        l.log(msg)        
+        return HttpResponse(status=400, content=msg)
 
     if dtol.loadManifest(m_format=fmt):
         srlz_dtol = pickle.dumps(dtol.file)
@@ -64,7 +69,13 @@ def create_spreadsheet_samples(request):
     # note calling DtolSpreadsheet without a spreadsheet object will attempt to load one from the session
     dtol = DtolSpreadsheet(validation_record_id=validation_record_id)
     dtol.save_records()
-    return HttpResponse(status=200)
+
+    # Save table_data
+    context = dict()
+    context["table_data"] = htags.generate_table_records(profile_id=request.session["profile_id"], component="sample")
+    context["component"] = "sample"
+    out = jsonpickle.encode(context, unpicklable=False)
+    return HttpResponse(status=200, content=out, content_type='application/json')
 
 @login_required
 def update_spreadsheet_samples(request):
@@ -72,4 +83,10 @@ def update_spreadsheet_samples(request):
     # note calling DtolSpreadsheet without a spreadsheet object will attempt to load one from the session
     dtol = DtolSpreadsheet(validation_record_id=validation_record_id)
     dtol.update_records()
-    return HttpResponse(status=200)
+
+    # Save table_data
+    context = dict()
+    context["table_data"] = htags.generate_table_records(profile_id=request.session["profile_id"], component="sample")
+    context["component"] = "sample"
+    out = jsonpickle.encode(context, unpicklable=False)
+    return HttpResponse(status=200, content=out, content_type='application/json')

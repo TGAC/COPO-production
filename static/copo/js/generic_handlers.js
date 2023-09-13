@@ -2237,7 +2237,7 @@ function format_camel_case(xter) {
     return refinedXter.join(' ');
 
 }
-/*
+
 function build_description_display(data) {
     //this is a specialised counterpart to the function 'build_attributes_display()',
     // but handles datafile description metadata
@@ -2262,7 +2262,7 @@ function build_description_display(data) {
 
     return resolvedTable;
 }
-*/
+
 function build_attributes_display(data) {
     var contentHtml = $('<table/>', {
         // cellpadding: "5",
@@ -2373,7 +2373,7 @@ function get_panel(panelType) {
     return $('<div/>').append(panel).clone();
 }
 
-// Set COPO frontpage properties in this dictionary
+//Set COPO frontpage properties in this dictionary
 function get_component_meta(component) {
     var componentMeta = null;
     var components = get_profile_components();
@@ -2394,7 +2394,7 @@ function get_profile_components() {
             component: 'profile',
             title: 'Work Profiles',
             buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-profiles-legend"],
             tableID: 'copo_profiles_table',
             secondaryTableID: 'copo_shared_profiles_table',
             visibleColumns: 4,
@@ -2406,16 +2406,76 @@ function get_profile_components() {
             iconClass: "fa fa-filter",
             semanticIcon: "filter", //semantic UI equivalence of fontawesome icon
             countsKey: "num_sample",
-            buttons: ["quick-tour-template", "new-samples-template", "new-samples-spreadsheet-template", "new-samples-spreadsheet-template-erga", "accept_reject_samples"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            buttons: ["quick-tour-template", "new-samples-template", "new-samples-spreadsheet-template", "new-samples-spreadsheet-template-erga","download-blank-manifest-template|href:#blank_manifest_url", "accept_reject_samples"],
+            sidebarPanels: ["copo-sidebar-info"],
             colorClass: "samples_color",
             color: "olive",
-            profile_component: false,
+            profile_component: "dtol",
             tableID: 'sample_table',
             recordActions: ["show_sample_source", "describe_record_all", "edit_record_single"],
             visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
         },
-        /*   deprecated
+        {
+            component: 'accessions',
+            title: 'Accessions',
+            iconClass: "fa fa-barcode",
+            semanticIcon: "barcode", //semantic UI equivalence of fontawesome icon
+            countsKey: "num_accessions",
+            buttons: ["copo_accessions", "accept_reject_samples", "tol_inspect", "tol_inspect_gal"],
+            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-accessions"],
+            colorClass: "accessions_color",
+            color: "pink",
+        profile_component: "dtol",
+            tableID: 'accessions_table',
+            recordActions: ["btn-toggle"],
+            visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
+        },
+        {
+            component: 'accessions',
+            title: 'Accessions',
+            iconClass: "fa fa-barcode",
+            semanticIcon: "barcode", //semantic UI equivalence of fontawesome icon
+            countsKey: "num_accessions",
+            buttons: ["copo_accessions", "accept_reject_samples", "tol_inspect", "tol_inspect_gal"],
+            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-accessions"],
+            colorClass: "accessions_color",
+            color: "pink",
+            profile_component: "stand-alone",
+            tableID: 'accessions_table',
+            recordActions: ["btn-toggle"],
+            visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
+        },
+        {
+            component: 'accessions_dashboard',
+            title: 'Accessions',
+            iconClass: "fa fa-barcode",
+            semanticIcon: "barcode", //semantic UI equivalence of fontawesome icon
+            countsKey: "num_accessions",
+            buttons: ["copo_accessions", "accept_reject_samples", "tol_inspect", "tol_inspect_gal"],
+            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-accessions"],
+            colorClass: "accessions_color",
+            color: "pink",
+            profile_component: "",
+            tableID: 'accessions_table',
+            recordActions: ["btn-toggle"],
+            visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
+        },
+        {
+            component: 'read',
+            title: 'Reads',
+            subtitle: "#component_subtitle",
+            iconClass: "fa fa-filter",
+            semanticIcon: "filter", //semantic UI equivalence of fontawesome icon
+            countsKey: "num_read",
+            buttons: ["new-reads-spreadsheet-template",  "download-blank-manifest-template|href:#blank_manifest_url"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "samples_color",
+            color: "olive",
+            profile_component: "stand-alone",
+            tableID: 'read_table',
+            recordActions: ["delete_read_multi", "submit_read_multi"],
+            visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
+        },
         {
             component: 'datafile',
             title: 'Datafiles',
@@ -2425,14 +2485,13 @@ function get_profile_components() {
             colorClass: "data_color",
             color: "black",
             buttons: ["quick-tour-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            sidebarPanels: ["copo-sidebar-info"],
             tableID: 'datafile_table',
-            profile_component: true,
+            //profile_component: true,
             // recordActions: ["describe_record_multi", "unbundle_record_multi", "undescribe_record_multi"],
             recordActions: [],
             visibleColumns: 3
         },
-        */
         {
             component: 'submission',
             title: 'Submissions',
@@ -2440,14 +2499,14 @@ function get_profile_components() {
             semanticIcon: "mail outline",
             countsKey: "num_submission",
             buttons: ["quick-tour-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            sidebarPanels: ["copo-sidebar-info"],
             colorClass: "submissions_color",
             color: "green",
             tableID: 'submission_table',
-            profile_component: true,
+            //profile_component: true,
             recordActions: [],
             visibleColumns: 3
-        }/*,        
+        },
         {
             component: 'publication',
             title: 'Publications',
@@ -2455,11 +2514,11 @@ function get_profile_components() {
             semanticIcon: "attach",
             countsKey: "num_pub",
             buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            sidebarPanels: ["copo-sidebar-info"],
             colorClass: "pubs_color",
             color: "orange",
             tableID: 'publication_table',
-            profile_component: true,
+            //profile_component: true,
             recordActions: ["add_record_all", "edit_record_single", "delete_record_multi"],
             visibleColumns: 4
         },
@@ -2470,7 +2529,7 @@ function get_profile_components() {
             semanticIcon: "attach",
             countsKey: "num_temp",
             buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            sidebarPanels: ["copo-sidebar-info"],
             colorClass: "pubs_color",
             color: "blue",
             tableID: 'metadata_template_table',
@@ -2484,47 +2543,81 @@ function get_profile_components() {
             semanticIcon: "users",
             countsKey: "num_person",
             buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help"],
+            sidebarPanels: ["copo-sidebar-info"],
             colorClass: "people_color",
             color: "red",
             tableID: 'person_table',
-            profile_component: true,
+            //profile_component: true,
             recordActions: ["add_record_all", "edit_record_single"],
             visibleColumns: 5
-        },      
+        },
+
         {
-            component: 'annotation',
-            title: 'Generic Annotations',
-            iconClass: "fa fa-pencil",
-            semanticIcon: "write",
-            countsKey: "num_annotation",
-            buttons: ["quick-tour-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help", "copo-sidebar-annotate"],
-            colorClass: "annotations_color",
-            color: "violet",
-            tableID: 'annotation_table',
-            recordActions: ["delete_record_multi"],
-            visibleColumns: 10000
-        }, TODO - these need to be reactivated in the future sometime
-        {
-            component: 'repository',
-            title: 'Repositories',
-            iconClass: "fa fa-pencil",
-            semanticIcon: "write",
-            countsKey: "num_annotation",
+            component: 'seqannotation',
+            title: 'Sequence Annotations',
+            iconClass: "fa fa-database",
+            semanticIcon: "database",
+            countsKey: "num_seqannotation",
             buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info", "copo-sidebar-help", "copo-sidebar-annotate"],
-            colorClass: "annotations_color",
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "data_color",
+            color: "yellow",
+            tableID: 'seqannotation_table',
+            profile_component: "stand-alone",
+            recordActions: ["add_record_all", "edit_record_single", "delete_record_multi", "submit_annotation_multi"],
+            visibleColumns: 5
+        },
+
+        {
+            component: 'assembly',
+            title: 'Assembly',
+            iconClass: "fa fa-database",
+            semanticIcon: "database",
+            countsKey: "num_assembly",
+            buttons: [ "new-component-template"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "assembly_color",
             color: "violet",
-            tableID: 'repository_table',
-            recordActions: ["delete_record_multi"],
-            visibleColumns: 10000
-        }*/
+            tableID: 'assembly_table',
+            profile_component: "stand-alone",
+            recordActions: ["add_record_all", "edit_record_single", "delete_record_multi", "submit_assembly_multi"],
+            visibleColumns: 5
+        } ,
+        {
+            component: 'files',
+            title: 'Files',
+            iconClass: "fa fa-file",
+            semanticIcon: "file",
+            countsKey1: "num_assembly",
+            buttons: ["new-local-file","new-terminal-file"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "files_color",
+            color: "blue",
+            tableID: 'files_table',
+            profile_component: "stand-alone",
+            recordActions: [ "add_local_all", "add_terminal_all", "delete_record_multi"],   // , "delete_record_multi, submit_assembly_multi , "edit_record_single" 
+            visibleColumns: 5
+        },
+        {
+            component: 'taggedseq',
+            title: 'Barcoding Manifests',
+            subtitle: "#component_subtitle",
+            iconClass: "fa fa-database",
+            semanticIcon: "database",
+            countsKey1: "num_barcode_manifest",
+            buttons: ["new-taggedseq-spreadsheet-template", "download-blank-manifest-template|href:#blank_manifest_url"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "data_color",
+            color: "red",
+            tableID: 'tagged_seq_table',
+            profile_component: "dtol",
+            recordActions: ["delete_record_multi",  "submit_tagged_seq_multi"],
+            visibleColumns: 5
+        },        
     ];
 
     return componentProperties
 }
-
 
 //builds component-page navbar
 function do_page_controls(componentName) {
@@ -2533,8 +2626,24 @@ function do_page_controls(componentName) {
 
     components.forEach(function (comp) {
         if (comp.component == componentName) {
-            component = comp;
-            return false;
+            profile_type = $("#profile_type").val() 
+            if (profile_type != undefined) {
+                if (profile_type.toLowerCase() == "stand-alone") {
+                  if (comp.profile_component == "stand-alone") {
+                        component = comp;
+                        return false 
+                  }     
+                 } else if (profile_type.toLowerCase() != "stand-alone") {
+                    if (comp.profile_component != "stand-alone") {
+                          component = comp;
+                          return false
+                    }       
+                }
+            }     
+            else {
+                component = comp;
+                return false
+            }       
         }
     });
 
@@ -2567,7 +2676,7 @@ function generate_component_control(component) {
     var PageTitle = $('<span/>', {
         class: "page-title-custom",
         style: "margin-right:10px;",
-        html: component.title
+        html: component.title + " " + (component.subtitle ? "<span style='color: #8c8c8c; font-size: 18px;'>(" + $(component.subtitle).val() + ")</span>" : "")
     });
 
     pageHeaders.append(PageTitle);
@@ -2585,28 +2694,41 @@ function generate_component_control(component) {
         component.sidebarPanels.forEach(function (item) {
             sidebarPanels.find(".nav-tabs").append(sidebarPanels2.find(".nav-tabs").find("." + item));
             sidebarPanels.find(".tab-content").append(sidebarPanels2.find(".tab-content").find("." + item));
+            sidebarPanels.find(".profiles-legend").append(sidebarPanels2.find(".profiles-legend").find("." + item));
+            sidebarPanels.find(".accessions-legend").append(sidebarPanels2.find(".accessions-legend").find("." + item));
         });
 
         sideBar
             .append(sidebarPanels.find(".nav-tabs"))
-            .append(sidebarPanels.find(".tab-content"));
+            .append(sidebarPanels.find(".tab-content"))
 
+        // Add 'profile types' legend to profile web page only
+        if (component.component == "profile") sideBar.append(sidebarPanels.find(".profiles-legend"))
 
+        // Add 'accessions types' filter to accessions dashboard web page only
+        if (component.component == "accessions_dashboard") sideBar.append(sidebarPanels.find(".accessions-legend"));
     }
 
     //create buttons
     var buttonsSpan = $('<span/>', {style: "white-space:nowrap;"});
     pageHeaders.append(buttonsSpan);
-    component.buttons.forEach(function (item) {
+    //component.buttons.forEach(function (item) {
         if (component.buttons) {
             component.buttons.forEach(function (item) {
-                buttonsSpan.append($("." + item)).append("<span style='display: inline;'>&nbsp;</span>");
+                button = $("." + item.split("|")[0]).clone();
+                if (item.indexOf("|") > -1) {
+                    arg = item.split("|")[1];
+                    if (arg.indexOf(":") > -1) {
+                        button.attr(arg.split(":")[0], $(arg.split(":")[1]).val());
+                    }    
+                }    
+                buttonsSpan.append(button).append("<span style='display: inline;'>&nbsp;</span>");
             });
         }
-    });
+    //});
 
     //...and profile component buttons
-    if (component.hasOwnProperty("profile_component") && component.profile_component.toString() == "true") {
+    if (component.hasOwnProperty("profile_component")) {
         var pcomponentHTML = $(".pcomponents-icons-templates").clone().removeClass("pcomponents-icons-templates");
         var pcomponentAnchor = pcomponentHTML.find(".pcomponents-anchor").clone().removeClass("pcomponents-anchor");
         pcomponentHTML.find(".pcomponents-anchor").remove();
@@ -2617,9 +2739,12 @@ function generate_component_control(component) {
 
         for (var i = 1; i < components.length; ++i) {
             var comp = components[i];
-            if (comp.hasOwnProperty("profile_component") && comp.profile_component.toString() == "true") {
+            if (comp.hasOwnProperty("profile_component")) {
 
                 if ((comp.component == component.component)) {
+                    continue;
+                }
+                if (component.profile_component.toString() != comp.profile_component.toString()) {
                     continue;
                 }
 
@@ -3165,10 +3290,10 @@ function quick_tour_messages() {
                 "title": "Profile Details",
                 "content": "View a profile details here having selected a profile record."
             },
-            "page_context_help_panel": {
-                "title": "Help",
-                "content": "Interact with the help pane to find help topics relevant to the page and/or current task."
-            },
+            // "page_context_help_panel": {
+            //     "title": "Help",
+            //     "content": "Interact with the help pane to find help topics relevant to the page and/or current task."
+            // },
             "profile_table": {
                 "title": "Profile Records",
                 "content": "Profile records list.<ol><li>Click on any component (e.g., Samples) within a profile to access any particular component's page</li><li>Use the action buttons (e.g., Select all, Add) to interact with profile records</li><li>Use the profile search control to display a filtered listing of records, based on matched terms</li></ol>"

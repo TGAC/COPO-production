@@ -5,13 +5,22 @@ import json
 from bson import ObjectId
 from django.contrib.auth.models import User
 import common.lookup.lookup as lkup
-#from web.apps.api.doi_metadata import DOI2Metadata
-from .templatetags import html_tags as htags
-from .copo_lookup_service import COPOLookup
+from src.apps.copo_read_submission.utils import ena_read
+from src.apps.copo_assembly_submission.utils import EnaAssembly
+from src.apps.copo_seq_annotation_submission.utils import EnaAnnotation
+from src.apps.copo_accession.utils import Accession as accession
+from src.apps.copo_file.utils import CopoFiles as copo_file
+from common.utils import html_tags_utils as htags
+from common.utils.copo_lookup_service import COPOLookup
 from common.dal.copo_da import Profile, Source, Person, Sample, Submission, DataFile, DAComponent, \
-    Description, CGCore, MetadataTemplate
+    CGCore, MetadataTemplate, Assembly, Sequnece_annotation, TaggedSequence
 from common.schemas.utils import data_utils
 from common.utils import helpers
+from common.utils.logger import Logger
+from common.dal.mongo_util import cursor_to_list_str 
+from src.apps.copo_barcoding_submission.utils.EnaTaggedSequence import EnaTaggedSequence
+from common.s3.s3Connection import S3Connection as s3
+
 
 
 class BrokerDA:
@@ -22,6 +31,7 @@ class BrokerDA:
         self.visualize = self.param_dict.get("visualize", str())
         self.profile_id = self.param_dict.get("profile_id", str())
         self.auto_fields = self.param_dict.get("auto_fields", dict())
+        self.request_dict = self.param_dict.get("request_dict", dict())
 
         if self.auto_fields and isinstance(self.auto_fields, str):
             self.auto_fields = json.loads(self.auto_fields)
@@ -39,8 +49,12 @@ class BrokerDA:
             submission=Submission,
             #annotation=Annotation,
             cgcore=CGCore,
-            metadata_template=MetadataTemplate
+            metadata_template=MetadataTemplate,
             #repository=Repository
+            seqannotation=Sequnece_annotation,
+            assembly=Assembly,
+            files=s3,
+            taggedseq=TaggedSequence            
         )
 
         if self.component in da_dict:
@@ -90,14 +104,14 @@ class BrokerDA:
             self.context["action_feedback"] = report_metadata
             return self.context
 
-        #check the title is not duplicated for profiles
-        #initialise to empty to keep a single check for all types
+        # check the title is not duplicated for profiles
+        # initialise to empty to keep a single check for all types
         existingprofile = []
         if isinstance(self.da_object, Profile):
             existingprofile = self.da_object.get_by_title(self.auto_fields["copo.profile.title"])
 
         if not existingprofile:
-            #check users are not changing the type of an existing profile
+            # check users are not changing the type of an existing profile
             if action_type == "edit":
                 targetprofiletype = self.da_object.get_record(kwargs["target_id"]).get("type", "")
                 if targetprofiletype != self.auto_fields["copo.profile.type"]:
@@ -116,22 +130,55 @@ class BrokerDA:
         if not record_object and status not in ["duplicated", "forbidden action"]:
             status = "danger"
 
-
         if action_type == "add" and status == "success":
-            report_metadata["message"] = "New " + self.component + " record created!"
+            if "profile" in self.component:
+                report_metadata[
+                    "message"] = "New " + self.component + " record created! <br><br>Web page will refresh in 3 seconds."
+            else:
+                report_metadata["message"] = "New " + self.component + " record created!"
         elif action_type == "add" and status == "duplicated":
-            report_metadata["message"] = "Record already exist with title " + self.auto_fields["copo.profile.title"]
-            status="error"
+            report_metadata["message"] = "Record already exist with title, " + self.auto_fields["copo.profile.title"]
+            status = "error"
         elif action_type == "add" and status != "success":
             report_metadata["message"] = "There was a problem creating the " + self.component + " record!"
         elif action_type == "edit" and status == "success":
-            report_metadata["message"] = "Record updated!"
+            report_metadata["message"] = "Record updated! <br><br>Web page will refresh in 3 seconds."
         elif action_type == "edit" and status == "duplicated":
-            report_metadata["message"] = "Record already exist with title " + self.auto_fields["copo.profile.title"]
-            status="error"
+            targetid = kwargs["target_id"]
+            targetprofiletitle = self.da_object.get_record(targetid).get("title", "")
+            user_id = helpers.get_user_id()
+            existing_profiles_ids = Profile().get_collection_handle().find(
+                {"user_id": user_id, "title": self.auto_fields["copo.profile.title"]}, {"_id": 1})
+
+            # Get a list of profile IDs that have the same profile title as the profile record to be edited
+            lst_of_profile_ids = cursor_to_list_str(existing_profiles_ids)
+
+            # Get target profile type
+            targetprofiletype = self.da_object.get_record(kwargs["target_id"]).get("type", "")
+
+            if targetprofiletype != self.auto_fields["copo.profile.type"]:
+                # Profile type cannot be changed
+                report_metadata["message"] = "Forbidden action, it is not possible to modify the profile type"
+                status = "error"
+            elif targetprofiletitle == self.auto_fields["copo.profile.title"] and targetid == lst_of_profile_ids[0].get(
+                    "_id", "") and len(lst_of_profile_ids) == 1:
+                # if the target ID  matches the ID in the list and the targeted profile title matches the title
+                # in the editable field then, proceed with the 'edit' task
+                record_object = self.da_object.save_record(auto_fields=self.auto_fields, **kwargs)
+                report_metadata["message"] = "Record updated! <br><br>Web page will refresh in 3 seconds."
+                status = "success"
+            elif targetprofiletitle != self.auto_fields["copo.profile.title"] and targetid != lst_of_profile_ids[0].get(
+                    "_id", "") and len(lst_of_profile_ids) == 1:
+                # if the target ID  does not match the ID in the list and the targeted profile title is not the
+                # same as the title in the editable field then, the title already exists
+                report_metadata["message"] = "Record already exist with title, " + self.auto_fields["copo.profile.title"]
+                status = "error"
+            else:
+                report_metadata["message"] = "Record already exist with title, " + self.auto_fields["copo.profile.title"]
+                status = "error"
         elif action_type == "edit" and status == "forbidden action":
             report_metadata["message"] = "Forbidden action, it is not possible to modify the profile type"
-            status="error"
+            status = "error"
         elif action_type == "edit" and status != "success":
             report_metadata["message"] = "There was a problem updating the " + self.component + " record!"
 
@@ -175,8 +222,14 @@ class BrokerDA:
         if not callable(validate_delete_method):
             return self.context
 
-        return self.da_object.validate_and_delete(target_id=self.param_dict.get("target_id", str()))
-
+        target_id = self.param_dict.get("target_id", str())
+        target_ids = self.param_dict.get("target_ids", [])
+        result = self.da_object.validate_and_delete(target_id=target_id, target_ids=target_ids)
+        if result.get("status", "") == "success":
+            self.context = self.broker_visuals.do_table_data()
+        self.context["action_feedback"] = result
+        return self.context
+    
     def do_delete(self):
         target_ids = [ObjectId(i) for i in self.param_dict.get("target_ids")]
 
@@ -253,7 +306,8 @@ class BrokerDA:
         return self.context
 
     def do_user_email(self):
-        user_id = self.param_dict.get("user_id", str())
+        # user_id = self.param_dict.get("user_id", str())
+        user_id = data_utils.get_current_user().id
         user_email = self.param_dict.get("user_email", str())
         user = User.objects.get(pk=int(user_id))
         user.email = user_email
@@ -394,6 +448,108 @@ class BrokerDA:
         return self.context
     '''
 
+    def do_submit_assembly(self):
+        """
+        function handles the delete of a record for those components
+        that have provided a way of first validating (dependencies checks etc.) this action
+        :return:
+        """
+        '''
+        submit_assembly = getattr(self.da_object, "submit_assembly", None)
+
+        if submit_assembly is None:
+            return self.context
+
+        if not callable(submit_assembly):
+            return self.context
+        '''
+        target_id = self.param_dict.get("target_id", str())
+        target_ids = self.param_dict.get("target_ids", [])
+        result = EnaAssembly.submit_assembly(profile_id=self.profile_id,  target_id=target_id, target_ids=target_ids)
+    
+        report_metadata = dict()
+        report_metadata["status"] = result.get("status", "success")
+        report_metadata["message"] = result.get("message", "success")
+        self.context["action_feedback"] = report_metadata
+
+        return self.context
+    
+    def do_submit_annotation(self):
+        """
+        function handles the delete of a record for those components
+        that have provided a way of first validating (dependencies checks etc.) this action
+        :return:
+        """
+
+        target_id = self.param_dict.get("target_id", str())
+        target_ids = self.param_dict.get("target_ids", [])
+
+        result = EnaAnnotation.submit_seq_annotation(profile_id=self.profile_id, target_ids=target_ids,
+                                                     target_id=target_id)
+        report_metadata = dict()
+        report_metadata["status"] = result.get("status", "success")
+        report_metadata["message"] = result.get("message", "success")
+        self.context["action_feedback"] = report_metadata
+
+        return self.context
+
+    def do_submit_read(self):
+        """
+        function handles the delete of a record for those components
+        that have provided a way of first validating (dependencies checks etc.) this action
+        :return:
+        """
+
+        target_id = self.param_dict.get("target_id", str())
+        target_ids  = self.param_dict.get("target_ids", [])
+        sample_checklist_id = self.request_dict.get("sample_checklist_id", str())
+
+        result = ena_read.submit_read(profile_id=self.profile_id, target_ids=target_ids, target_id=target_id,checklist_id=sample_checklist_id)
+        report_metadata = dict()
+        report_metadata["status"] = result.get("status", "success")
+        report_metadata["message"] = result.get("message", "success")
+        self.context["action_feedback"] = report_metadata       
+        if result.get("status","success") == "success":
+            self.context["table_data"] = ena_read.generate_read_record(profile_id=self.profile_id,checklist_id=sample_checklist_id)
+            self.context["component"] = "read"
+        return self.context
+
+    def do_delete_read(self):
+        """
+        function handles the delete of a record for those components
+        that have provided a way of first validating (dependencies checks etc.) this action
+        :return:
+        """
+
+        target_id = self.param_dict.get("target_id", str())
+        target_ids  = self.param_dict.get("target_ids", [])
+        sample_checklist_id  = self.request_dict.get("sample_checklist_id", [])
+
+        result = ena_read.delete_ena_records(profile_id=self.profile_id, target_ids=target_ids,
+                                                        target_id=target_id)
+        report_metadata = dict()
+        report_metadata["status"] = result.get("status", "success")
+        report_metadata["message"] = result.get("message", "success")
+        self.context["action_feedback"] = report_metadata
+        if result.get("status","success") == "success":
+            self.context["table_data"] = ena_read.generate_read_record(profile_id=self.profile_id, checklist_id=sample_checklist_id)
+            self.context["component"] = "read"
+        return self.context
+
+    def do_submit_tagged_seq(self):
+        target_id = self.param_dict.get("target_id", str())
+        target_ids  = self.param_dict.get("target_ids", [])
+        tagged_seq_checklist_id = self.request_dict.get("tagged_seq_checklist_id", str())
+        result = EnaTaggedSequence().submit_tagged_seq(profile_id=self.profile_id, checklist_id=tagged_seq_checklist_id, target_ids=target_ids, target_id=target_id)
+        report_metadata = dict()
+        report_metadata["status"] = result.get("status","success")
+        report_metadata["message"] = result.get("message", "success")
+        self.context["action_feedback"] = report_metadata
+        if result.get("status","success") == "success":
+            self.context["table_data"] = htags.generate_taggedseq_record(profile_id=self.profile_id, checklist_id=tagged_seq_checklist_id)
+            self.context["component"] = "taggedseq"
+        return self.context
+    
 class BrokerVisuals:
     def __init__(self, **kwargs):
         self.param_dict = kwargs
@@ -401,6 +557,7 @@ class BrokerVisuals:
         self.profile_id = self.param_dict.get("profile_id", str())
         self.user_id = self.param_dict.get("user_id", str())
         self.context = self.param_dict.get("context", dict())
+        self.request_dict = self.param_dict.get("request_dict", dict())
 
     def set_extra_params(self, extra_param):
         for k, v in extra_param.items():
@@ -408,6 +565,8 @@ class BrokerVisuals:
 
     def do_table_data(self):
         table_data_dict = dict(
+            accessions=(accession.generate_accessions_record, dict(profile_id=self.profile_id, isUserProfileActive=self.request_dict.get("isUserProfileActive", str()), isSampleProfileTypeStandalone=self.request_dict.get("isSampleProfileTypeStandalone", str()))),
+            accessions_dashboard=(accession.generate_accessions_record, dict(profile_id=self.profile_id, isUserProfileActive=self.request_dict.get("isUserProfileActive", str()), isSampleProfileTypeStandalone=self.request_dict.get("isSampleProfileTypeStandalone", str()))),
             #annotation=(htags.generate_copo_table_data, dict(profile_id=self.profile_id, component=self.component)),
             #publication=(htags.generate_table_records, dict(profile_id=self.profile_id, component=self.component)),
             #person=(htags.generate_table_records, dict(profile_id=self.profile_id, component=self.component)),
@@ -418,6 +577,11 @@ class BrokerVisuals:
             metadata_template=(htags.generate_table_records, dict(profile_id=self.profile_id, component=self.component)),
             profile=(htags.generate_copo_profiles_data, dict(profiles=Profile().get_all_profiles())),
             submission=(htags.generate_submissions_records, dict(profile_id=self.profile_id, component=self.component)),
+            seqannotation=(htags.generate_table_records, dict(profile_id=self.profile_id, component=self.component)),
+            assembly=(htags.generate_table_records, dict(profile_id=self.profile_id, component=self.component)),
+            read = (ena_read.generate_read_record, dict(profile_id=self.profile_id,checklist_id=self.request_dict.get("sample_checklist_id", str()))),
+            files = (copo_file.generate_files_record, dict(user_id=self.user_id)),
+            taggedseq = (htags.generate_taggedseq_record, dict(profile_id=self.profile_id,checklist_id=self.request_dict.get("tagged_seq_checklist_id", str()))),
         )
 
         # NB: in table_data_dict, use an empty dictionary as a parameter for listed functions that define zero arguments
@@ -462,9 +626,9 @@ class BrokerVisuals:
 
     def do_server_side_table_data(self):
         self.context["component"] = self.component
-        request = self.param_dict.get("request", dict())
+        request_dict = self.param_dict.get("request_dict", dict())
 
-        data = htags.generate_server_side_table_records(self.profile_id, component=self.component, request=request.POST)
+        data = htags.generate_server_side_table_records(self.profile_id, component=self.component, request=request_dict)
         self.context["draw"] = data["draw"]
         self.context["records_total"] = data["records_total"]
         self.context["records_filtered"] = data["records_filtered"]
@@ -541,7 +705,7 @@ class BrokerVisuals:
 
         if data_source:
             option_values = COPOLookup(accession=[target_id],
-                                       data_source=data_source).broker_component_search()['result']
+                                       data_source=data_source, profile_id=self.profile_id).broker_component_search()['result']
 
         self.context["option_values"] = option_values
         self.context["created_record_id"] = target_id

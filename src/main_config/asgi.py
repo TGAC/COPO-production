@@ -11,15 +11,18 @@ import os
 
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
-from channels.sessions import SessionMiddlewareStack
+#from channels.sessions import SessionMiddlewareStack
+from channels.security.websocket import AllowedHostsOriginValidator
 from channels.routing import ProtocolTypeRouter, URLRouter
 import src.apps.copo_core.routing
+from django.urls import path
+from src.apps.copo_core import consumers
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'src.main_config.settings.all')
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
-    'websocket': SessionMiddlewareStack(
+    'websocket': AllowedHostsOriginValidator(
         AuthMiddlewareStack(
 
             URLRouter(

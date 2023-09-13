@@ -5,11 +5,16 @@ from django.http import HttpResponse
 from bson import json_util
 import common.dal.copo_da as da
 from  common.dal.copo_da import Sample
-
+from ..utils import finish_request
 
 def get_number_of_users(request):
     users = User.objects.all()
     number = len(users)
+    return HttpResponse(number)
+
+
+def get_number_of_dtol_samples(request):
+    number = Sample().get_number_of_dtol_samples()
     return HttpResponse(number)
 
 
@@ -66,3 +71,16 @@ def samples_hist_json(request, metric):
     for x in u.keys():
         out.append({"k": x, "v": int(u[x])})
     return HttpResponse(json_util.dumps(out))
+
+def get_tol_projects(request):
+    project_lst = da.handle_dict["profile"].distinct("type") # Get unique list of tol projects
+    project_lst.sort() # Sort the list of tol projects
+
+    return finish_request(project_lst)
+
+def get_associated_tol_projects(request):    
+    associated_project_lst = da.handle_dict["profile"].distinct("associated_type") # Get unique list of associated tol projects
+    associated_project_lst = [item.get('label','') for item in associated_project_lst] # Get labels only
+    associated_project_lst.sort() # Sort the list of associated tol projects
+
+    return finish_request(associated_project_lst)

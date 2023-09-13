@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 import subprocess
 from tools import resolve_env
 import os
-from web.apps.web_copo.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
+from common.schema_versions.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
 import json
 
 import dal.copo_da as da

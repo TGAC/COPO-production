@@ -1,7 +1,7 @@
 from Bio import Entrez
 from common.dal.copo_da import Profile
 from common.utils.helpers import notify_frontend
-from common.lookup import dtol_lookups as lookup
+from common.schema_versions.lookup import dtol_lookups as lookup
 from common.validators.helpers import check_taxon_ena_submittable
 from common.validators.validator import Validator
 from common.validators.validation_messages import MESSAGES as msg
@@ -70,7 +70,7 @@ class DtolEnumerationValidator(Validator):
                 for element in records:
                     self.taxonomy_dict[element['TaxId']] = element
 
-        #if DTOL_ENV we only check the rank is species
+        # if DTOL_ENV we only check the rank is species
         if p_type == "DTOL_ENV":
             for index, row in self.data[['TAXON_ID']].iterrows():
                 taxon_id = row['TAXON_ID'].strip()
@@ -83,7 +83,6 @@ class DtolEnumerationValidator(Validator):
                         self.errors.append(msg["validation_msg_invalid_rank"] % (str(index + 2)))
                         self.flag = False
             return self.errors, self.warnings, self.flag
-
 
         for index, row in self.data[
             ['ORDER_OR_GROUP', 'FAMILY', 'GENUS', 'TAXON_ID', 'SCIENTIFIC_NAME']].iterrows():
@@ -113,8 +112,9 @@ class DtolEnumerationValidator(Validator):
                     self.errors.append(
                         "Invalid data: couldn't resolve SCIENTIFIC_NAME <strong>%s</strong> at row "
                         "<strong>%s</strong>. " % (
-                            scientific_name, str(index + 2)) + ". If you know there is a matching record in NCBI, please make sure to add the " \
-                                                               "TAXON_ID in the manifest")
+                            scientific_name,
+                            str(index + 2)) + ". If you know there is a matching record in NCBI, please make sure to add the " \
+                                              "TAXON_ID in the manifest")
                     self.flag = False
                     continue
                 self.warnings.append(msg["validation_warning_field"] % (
@@ -208,7 +208,7 @@ class DtolEnumerationValidator(Validator):
                                 row['ORDER_OR_GROUP'], "ORDER_OR_GROUP", str(index + 2),
                                 element.get('ScientificName').upper()))
                             self.flag = False
-                #edge case, TAXON doesn't have GENUS or FAMILY
+                # edge case, TAXON doesn't have GENUS or FAMILY
                 ranks_available = [x.get('Rank') for x in self.taxonomy_dict[taxon_id]['LineageEx']]
                 if 'genus' not in ranks_available:
                     if row['GENUS'].strip():
@@ -216,12 +216,13 @@ class DtolEnumerationValidator(Validator):
                             row['GENUS'], "GENUS", str(index + 2), "*missing value in NCBI*"))
                         self.flag = False
                 if 'family' not in ranks_available:
-                    #if empty fill in with NOT_APPLICABLE
+                    # if empty fill in with NOT_APPLICABLE
                     if not row['FAMILY'].strip():
                         self.data.at[index, "FAMILY"] = "NOT_APPLICABLE"
                     elif row['FAMILY'].strip() != "NOT_APPLICABLE":
                         self.errors.append(msg["validation_msg_invalid_taxonomy"] % (
-                            row['FAMILY'], "FAMILY", str(index + 2), "*missing value in NCBI*, please default to NOT_APPLICABLE"))
+                            row['FAMILY'], "FAMILY", str(index + 2),
+                            "*missing value in NCBI*, please default to NOT_APPLICABLE"))
                         self.flag = False
             else:
                 self.errors.append(

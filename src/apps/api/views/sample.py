@@ -9,9 +9,14 @@ from bson.errors import InvalidId
 from django.conf import settings
 from django.http import HttpResponse
 import json
+import jsonpath_rw_ext as jp
+from bson.errors import InvalidId
 from src.apps.api.utils import get_return_template, extract_to_template, finish_request
 from common.dal.copo_da import Sample, Source, Submission, APIValidationReport, Profile, ValidationQueue
-# from web.apps.web_copo.lookup import dtol_lookups as lookup
+from itertools import chain
+from common.utils.helpers import json_to_pytype
+from common.schema_versions.lookup import dtol_lookups as lookup
+from common.lookup.lookup import API_ERRORS, WIZARD_FILES
 from common.lookup.lookup import API_ERRORS
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,10 +25,6 @@ from rest_framework import authentication, permissions
 from common.utils.logger import Logger
 import pickle
 from src.apps.copo_dtol_upload.utils.Dtol_Spreadsheet import DtolSpreadsheet
-
-schema_version_path_dtol_lookups = f'common.schema_versions.{settings.CURRENT_SCHEMA_VERSION}.lookup.dtol_lookups'
-lookup = importlib.import_module(schema_version_path_dtol_lookups)
-
 
 def get(request, id):
     """
@@ -138,7 +139,7 @@ def filter_for_API(sample_list, add_all_fields=False):
                 if k in time_fields:
                     s_out[k] = format_date(v)
                 elif k in ["created_by", "updated_by"]:
-                    s_out[k] = "*****@" + v.split("@")[1]
+                    s_out[k] = "*****@" + (v.split("@")[1] if "@" in v else "")
 
                 else:
                     s_out[k] = v
@@ -171,6 +172,18 @@ def get_manifests(request):
     manifest_ids = Sample().get_manifests()
     return finish_request(manifest_ids)
 
+def get_current_manifest_version(request):
+    manifest_type = request.GET.get('manifest_type', str()).upper()
+    out = list()
+
+    if manifest_type:
+        manifest_version = {manifest_type: settings.MANIFEST_VERSION.get(manifest_type, str())}
+        out.append(manifest_version)
+    else:
+        manifest_versions = {i.upper(): settings.MANIFEST_VERSION.get(i.upper(), str())for i in lookup.TOL_PROFILE_TYPES}
+        out.append(manifest_versions)
+
+    return HttpResponse(json.dumps(out, indent=2))
 
 def query_local_contexts_hub(project_id):
     lch_url = "https://localcontextshub.org/api/v1/projects/" + project_id
@@ -201,6 +214,21 @@ def get_project_manifests_between_dates(request, project, d_from, d_to):
     manifest_ids = Sample().get_manifests_by_date_and_project(project, d_from, d_to)
     return finish_request(manifest_ids)
 
+def get_all_samples_between_dates(request, d_from, d_to):
+    # get all samples between d_from and d_to
+    # dates must be ISO 8601 formatted
+    d_from = parser.parse(d_from)
+    d_to = parser.parse(d_to)
+
+    if d_from > d_to:
+        return HttpResponse(status=400, content="'from date' must be earlier than 'to date'")
+
+    samples = Sample().get_samples_by_date(d_from, d_to)
+    out = list()
+    
+    if samples:
+        out = filter_for_API(samples, add_all_fields=True)
+    return finish_request(out)
 
 def get_samples_in_manifest(request, manifest_id):
     # get all samples tagged with the given manifest_id
@@ -246,6 +274,117 @@ def get_project_samples(request, project):
         out = filter_for_API(samples)
     return finish_request(out)
 
+def get_updatable_fields_by_project(request, project):
+    project_lst = project.split(",")
+    project_lst = list(map(lambda x: x.strip(), project_lst))
+    # remove any empty elements in the list (e.g. where 2 or more comas have been typed in error
+    project_lst[:] = [x.lower() for x in project_lst if x] # Convert all strings in the list to lowercase
+    out = list()
+    
+    for project in project_lst:
+        if project in lookup.DTOL_NO_COMPLIANCE_FIELDS:
+            out.append({project.upper(): lookup.DTOL_NO_COMPLIANCE_FIELDS[project]})
+    return finish_request(out)
+
+def get_fields_by_manifest_version(request):
+    project_type = request.GET.get('project', str())
+    manifest_version = request.GET.get('manifest_version', str())
+    s = json_to_pytype(WIZARD_FILES["sample_details"], compatibility_mode=False)
+    out = list()
+    status = 200
+
+
+    if project_type and manifest_version:
+        # Project type is provided; manifest version is provided
+        data = dict()
+        
+        data['project_type'] = project_type
+        data['manifest_version'] = manifest_version
+
+        # Get all manifest versions for a given project
+        manifest_versions = jp.match(f'$.properties[?(@.specifications[*] == {project_type.lower()})].manifest_version', s)
+        
+        # Get unique manifest versions from a nested list of manifest versions
+        # Sort the list of manifest versions
+        manifest_versions = sorted(list(set(chain(*manifest_versions)))) 
+        
+        if manifest_version in manifest_versions:
+            fields = jp.match(
+                '$.properties[?(@.specifications[*] == "' + project_type.lower() + '"& @.manifest_version[*]=="' + manifest_version + '")].versions[0]',
+                s)
+
+            # Filter list for field names that only begin with an uppercase letter
+            fields = list(filter(lambda x: x[0].isupper() == True, fields))
+
+            data['number_of_fields'] = len(fields)
+            data['fields'] = fields
+        else:
+            status = 400
+            error_message = f'No fields exist for the manifest version, {manifest_version}. Available manifest versions are {manifest_versions}.'
+            data['status'] = { "error": '400', "error_details": error_message}
+
+        out.append(data)
+
+    elif project_type and not manifest_version:
+        # Project type is provided; no manifest version is provided
+        data = dict()
+        # Get current manifest version for a given project type
+        version = settings.MANIFEST_VERSION.get(project_type, str())
+
+        fields = jp.match('$.properties[?(@.specifications[*] == "' + project_type.lower() + '"& @.manifest_version[*]=="' + version + '")].versions[0]',s)
+        
+        # Filter list for field names that only begin with an uppercase letter
+        fields = list(filter(lambda x: x[0].isupper() == True, fields))
+
+        data['project_type'] = project_type
+        data['manifest_version'] = version
+        data['number_of_fields'] = len(fields)
+        data['fields'] = fields
+        
+        out.append(data)
+
+    elif not project_type and manifest_version:
+        # No project type is provided; manifest version is provided
+        for type in lookup.TOL_PROFILE_TYPES:
+            fields = jp.match(
+                '$.properties[?(@.specifications[*] == "' + type + '"& @.manifest_version[*]=="' + manifest_version + '")].versions[0]',
+                s)
+
+            # Return fields, if there are fields that match the given manifest version for a particular project type 
+            if fields:
+                data = dict()
+
+                # Filter list for field names that only begin with an uppercase letter
+                fields = list(filter(lambda x: x[0].isupper() == True, fields))
+
+                data['project_type'] = type.upper()
+                data['manifest_version'] = manifest_version
+                data['number_of_fields'] = len(fields)
+                data['fields'] = fields
+
+                out.append(data)
+    else:
+        # No project type is provided; no manifest version is provided
+        for type in lookup.TOL_PROFILE_TYPES:
+            data = dict()
+
+            # Get current manifest version for each project type
+            version = settings.MANIFEST_VERSION.get(type.upper(), str())
+            
+            # Get all fields for each manifest version for that project type
+            fields = jp.match('$.properties[?(@.specifications[*] == "' + type + '"& @.manifest_version[*]=="' + version + '")].versions[0]',s)
+            
+            # Filter list for field names that only begin with an uppercase letter
+            fields = list(filter(lambda x: x[0].isupper() == True, fields))
+
+            data['project_type'] = type.upper()
+            data['manifest_version'] = version
+            data['number_of_fields'] = len(fields)
+            data['fields'] = fields
+            
+            out.append(data)
+
+    return  HttpResponse(status=status, content=json.dumps(out, indent=2))
 
 def get_project_samples_by_associated_project_type(request, values):
     associated_profile_types_List = values.split("&")
@@ -396,8 +535,10 @@ class APIValidateManifest(APIView):
         elif name.endswith("csv"):
             fmt = 'csv'
         else:
-            Logger().error("ajax handlers: 1324 - Unrecognised file format for spreadsheet")
-            return HttpResponse(status=400, content="Unrecognised file format for spreadsheet")
+            msg = "Unrecognised file format for spreadsheet. " \
+                "File format should be either <strong>.xls</strong>, <strong>.xlsx</strong> or <strong>.csv</strong>."
+            Logger().error("Unrecognised file format for sample spreadsheet")
+            return HttpResponse(status=400, content=msg)
 
         if dtol.loadManifest(m_format=fmt):
             srlz_dtol = pickle.dumps(dtol.file)

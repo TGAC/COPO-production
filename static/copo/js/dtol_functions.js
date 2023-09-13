@@ -122,7 +122,7 @@ $(document).ready(function () {
                         console.log(sample_ids)
                         $.ajax({
                             headers: {'X-CSRFToken': csrftoken},
-                            url: "/copo/dtol_submission/delete_dtol_samples/",
+                            url: "/copo/delete_dtol_samples/",
                             method: "POST",
                             data: {
                                 sample_ids: JSON.stringify(sample_ids)
@@ -309,11 +309,26 @@ function row_select(ev) {
     var profile_id = $(row).find("td").data("profile_id")
     $("#profile_id").val(profile_id)
     $("#spinner").show()
-    sample_table.ajax.reload()
+    sample_table.ajax.reload(function () { 
+        if (sample_table.data().length == 0) {
+            var header = $("<h4/>", {
+                html: "No Samples Found"
+            })
+            $("#sample_panel").find(".labelling").empty().append(header)
+            $('#profile_samples_wrapper').hide()
+        } else {
+            var header = $("<h4/>", {
+                html: "Samples"
+            })
+            $("#sample_panel").find(".labelling").empty().append(header)
+            $('#profile_samples_wrapper').show()
+        }
+    })
+
     $("#spinner").fadeOut("fast")
 /*
     $.ajax({
-        url: "/copo/get_samples_for_profile",
+        url: "/copo/update_pending_samples_table",
         data: d,
         method: "GET",
         dataType: "json"
@@ -423,7 +438,7 @@ function handle_accept_reject(el) {
     if (action == "reject") {
         // mark sample object as rejected
         $.ajax({
-            url: "/copo/dtol_submission/mark_sample_rejected",
+            url: "/copo/mark_sample_rejected",
             method: "GET",
             data: {"sample_ids": JSON.stringify(sample_ids)}
         }).done(function () {
@@ -445,9 +460,8 @@ function handle_accept_reject(el) {
                 $("#profile_titles").find(".selected").click()
                 $("#spinner").fadeOut(fadeSpeed)
             })
-        }
-         else {
-             BootstrapDialog.show({
+        } else {
+            BootstrapDialog.show({
 
                 title: "ENA Submission",
                 message: "By accepting the samples, these will immediately be submitted to ENA. This action is" +
@@ -487,8 +501,9 @@ function handle_accept_reject(el) {
                     }
                 ]
 
-        })
+            })
 
-    }}
+        }
+    }
 
 }

@@ -22,7 +22,15 @@ app.conf.beat_schedule = {
     },
     'process_housekeeping': {
         'task': 'src.apps.copo_core.tasks.process_housekeeping',
-        'schedule': timedelta(seconds=3600)
+        'schedule': timedelta(days=1)
+    },
+    'update_ena_checklist': {
+        'task': 'src.apps.copo_core.tasks.update_ena_checklist',
+        'schedule': timedelta(days=1)
+    },     
+    'update_ena_read_checklist': {
+        'task': 'src.apps.copo_core.tasks.update_ena_read_checklist',
+        'schedule': timedelta(days=1)
     },
     'process_tol_validations': {
         'task': 'src.apps.copo_dtol_upload.tasks.process_tol_validations',
@@ -60,7 +68,33 @@ app.conf.beat_schedule = {
     'check_for_stuck_transfers': {
         'task': 'src.apps.copo_read_submission.tasks.check_for_stuck_transfers',
         'schedule': timedelta(seconds=20)
-    }
+    },
+    'update_assembly_submission_pending': {
+        'task': 'src.apps.copo_assembly_submission.tasks.update_assembly_submission_pending',
+        'schedule': timedelta(seconds=10)
+    },     
+    'process_assembly_submission': {
+        'task': 'src.apps.copo_assembly_submission.tasks.process_assembly_submission',
+        'schedule': timedelta(seconds=10)
+    },    
+
+    'process_seq_annotation_submission': {
+        'task': 'src.apps.copo_seq_annotation_submission.tasks.process_seq_annotation_submission',
+        'schedule': timedelta(seconds=10)
+    },
+    'poll_asyn_seq_annotation_submission_receipt': {
+        'task': 'src.apps.copo_seq_annotation_submission.tasks.poll_asyn_seq_annotation_submission_receipt',
+        'schedule': timedelta(seconds=10)
+    },
+    'update_seq_annotation_submission_pending': {
+        'task': 'src.apps.copo_seq_annotation_submission.tasks.update_seq_annotation_submission_pending',
+        'schedule': timedelta(seconds=10)
+    },
+    'processing_pending_tagged_seq_submission': {
+        'task': 'src.apps.copo_barcoding_submission.tasks.processing_pending_tagged_seq_submission',
+        'schedule': timedelta(seconds=10)
+    },  
+
 }
 
 @app.task(bind=True)

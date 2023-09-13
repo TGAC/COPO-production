@@ -1,0 +1,150 @@
+.center-div {
+    display: grid;
+    place-items: center;
+}
+
+/*CSS for tables*/
+th {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    background-color: rgba(255, 255, 255, 1);
+
+}
+
+td {
+    z-index: 1;
+}
+
+.selected {
+    background-color: #e1e1e1 !important;
+}
+
+.selectable_row {
+    cursor: pointer;
+}
+
+.selected_row {
+    background-color: #fff3ce !important;
+}
+
+/*CSS for input fields*/
+.form-control:hover {
+    color: #4183c4;
+    text-decoration: underline;
+    background-color: white;
+    cursor: pointer;
+}
+
+#taxonomyLevelsDivID .form-control {
+    text-align: center;
+    width: 30%;
+    font-size: 18px;
+}
+
+
+/* tab CSS syles*/
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+div.x-off-canvas .x-off-canvas-content {
+    max-width: 32em;
+    padding: 0 !important;
+    background-color: hsl(0, 0%, 100%);
+}
+
+canvas {
+    width: 100%;
+    object-fit: contain;
+}
+
+.word-break {
+    word-break: break-word;
+}
+
+.page-header-width {
+    width: 350px;
+}
+
+/*CSS for GAL inspection card*/
+.piechart_component_loader {
+    display: flex;
+    justify-content: center;
+    /*position: absolute;*/
+    /*top: 50%;*/
+    /*left: 50%;*/
+    /*transform: translate(-50%, -50%);*/
+}
+
+.emptyPiechartInfo{
+    padding-top: 275px; 
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font-size: 30px;
+    line-height: 1.375;
+    letter-spacing: -0.05rem;
+    font-weight: 600;
+    color: #344767;
+    font-family: 'Helvetica Nueue';
+}
+
+#current_gal_name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1; /* number of lines to show */
+    line-height: 1.5em; /* fallback */
+    max-height: 1.5em; /*1.5em x 1 = 1.5em*/ /* fallback */
+    color: #344767;
+    font-weight: bold;
+}
+
+.noDataDiv{
+    text-align: center;
+    font: "30px 'Helvetica Nueue'";
+    vertical-align: middle;
+}
+
+.huge_loader:after,
+.huge_loader:before {
+    width: 4.14285714rem;
+    height: 4.14285714rem;
+    margin: 0 0 0 -2.07142857rem
+}
+
+.huge_loader {
+    width: 4.14285714rem;
+    height: 4.14285714rem;
+    font-size: 1.42857143em
+}

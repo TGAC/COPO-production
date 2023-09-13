@@ -13,6 +13,10 @@ SCHEMA_VERSIONS_DIR = os.path.join(BASE_DIR, 'common', 'schema_versions')
 
 SCHEMA_VERSIONS_FILE_LIST = ["sample.json", "ena_seq.json"]  # files based on schema versions
 
+MANIFEST_PATH = os.path.join(BASE_DIR, 'static', 'assets', 'manifests')
+MANIFEST_FILE_NAME = "{0}_MANIFEST_TEMPLATE{1}.xlsx"
+MANIFEST_DOWNLOAD_URL =  "/static/assets/manifests/" + MANIFEST_FILE_NAME
+
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 PROFILE_LOG_BASE = os.path.join(BASE_DIR, 'profiler')
@@ -29,15 +33,18 @@ DEBUG = True if str(resolve_env.get_env('DEBUG')).lower() == 'true' else False
 
 # ALLOWED_HOSTS = [ gethostname(), gethostbyname(gethostname()), ]
 ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '.copo-project.org',
-                 '.demo.copo-project.org', 'localhost']
+                 '.demo.copo-project.org', 'localhost', '.copodev.cyverseuk.org']
 ALLOWED_CIDR_NETS = ['10.0.0.0/24']
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://0.0.0.0:8000",
     "http://0.0.0.0:80",
     "http://127.0.0.1:8000",
+    "http://127.0.0.1:8001",    
     "https://copo-project.org",
-    "http://demo.copo-project.org"
+    "http://demo.copo-project.org",
+    "https://copodev.cyverseuk.org"
+
 ]
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
@@ -66,6 +73,11 @@ PROJECT_APPS = [
     'src.apps.copo_landing_page',
     'src.apps.copo_read_submission',
     'src.apps.copo_assembly_submission',
+    'src.apps.copo_seq_annotation_submission',
+    'src.apps.copo_barcoding_submission',
+    'src.apps.copo_file',
+    'src.apps.copo_accession',
+    'src.apps.copo_tol_dashboard',
     'src.apps.copo_manifest_wizard',
     'src.apps.api',
     'allauth',
@@ -140,7 +152,8 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
     'http://0.0.0.0:8000',
-    'http://127.0.0.1:8000'
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:8001',
 )
 # CORS_ORIGIN_ALLOW_ALL = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/copo/auth/login'
@@ -187,8 +200,8 @@ SITE_ID = 1
 COPO_URL = 'copo-project.org'
 
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024
-FILE_UPLOAD_MAX_MEMORY_SIZE = 500000000
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 1024 * 2
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 24
 
 #CACHES = {
 #    'default': {

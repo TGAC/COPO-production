@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $(document).on("click", ".card", function () {
-        window.location = "/copo/stats#"
+        window.location = "/copo/tol_dashboard/stats#"
     })
 
     // $('.ui.dropdown').dropdown();
@@ -15,18 +15,33 @@ $(document).ready(function () {
     }
 
 
-    $.getJSON("api/stats/numbers")
+    $.getJSON("/api/stats/numbers")
         .done(function (data) {
             $("#num_samples").html(data.samples)
             $("#num_profiles").html(data.profiles)
             $("#num_users").html(data.users)
             $("#num_uploads").html(data.datafiles)
-        }).error(function (data) {
+        }).fail(function (data) {
         console.log(data)
     })
-
+    setActiveNavItem() // Set current web page as active nav bar item in top navbar
 });
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
+}
+
+function setActiveNavItem() {
+    const activePage = window.location.href;
+
+    $('.nav li a').filter(function () {
+        let linkPage = `${this.href}/`;
+        // home page i.e. COPO front page URL will end with '//' so it needs to be ommitted
+        linkPage = linkPage.endsWith('//') ? this.href : linkPage;
+
+        if (activePage === linkPage) {
+            $(this).parent().addClass("active");
+            $(this).parent().append('<span class="sr-only">(current)</span>')
+        }
+    });
 }

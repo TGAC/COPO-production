@@ -1,15 +1,8 @@
 import json
 from urllib.parse import urljoin
 import requests
-import jsonpath_rw_ext as jp
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-
-from common.lookup import lookup as lk
-#from web.apps.copo_core.schemas.utils.data_utils import json_to_pytype
-from common.validators import validation_messages as msg
 from common.utils.logger import Logger
-from common.lookup.dtol_lookups import API_KEY
+from common.schema_versions.lookup.dtol_lookups import API_KEY
 from common.lookup.copo_enums import *
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -104,6 +97,7 @@ def check_taxon_ena_submittable(taxon, by="id"):
     return errors
 """
 
+"""
 def create_barcoding_spreadsheet():
     # get barcoding fields
     s = helpers.json_to_pytype(lk.WIZARD_FILES["sample_details"])
@@ -140,6 +134,7 @@ def create_barcoding_spreadsheet():
             sheet.column_dimensions[get_column_letter(idx + 1)].width = len(cell.value) + 5
 
     return wb
+"""
 
 def query_public_name_service(sample_list):
     headers = {"api-key": API_KEY}
@@ -153,10 +148,12 @@ def query_public_name_service(sample_list):
         else:
             # in the case there is a network issue, just return an empty dict
             resp = {}
+            l.error('Name service response status code: ' + str(r.status_code) + ' ' + r.text)
         l.log("name service response: " + str(resp), type=Logtype.FILE)
         return resp
     except Exception as e:
         l.log("PUBLIC NAME SERVER ERROR: " + str(e), type=Logtype.FILE)
+        l.exception(e)
         return {}
 
 def notify_frontend(action="message", msg=str(), data={}, html_id="", profile_id="", group_name='dtol_status'):

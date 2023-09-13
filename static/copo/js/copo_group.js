@@ -19,7 +19,7 @@ $(document).ready(function () {
         $("#tool_window").css("visibility", "visible");
         get_profiles_in_group_data(e);
         get_users_in_group_data(e);
-        get_repos_in_group_data()
+        //get_repos_in_group_data()
     });
     $(document).on("click", "#submit_group", validate_group_form);
     $(document).on("click", "#delete_group_button", show_delete_dialog);
@@ -302,7 +302,7 @@ var user_lookup = function () {
     $(".autocomplete").remove();
     AutoComplete({
         EmptyMessage: "No Users Found",
-        Url: "/rest/get_users/",
+        Url: "/copo/get_users/",
         _Select: do_user_select,
         _Render: do_user_post,
         _Position: do_user_position,

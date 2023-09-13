@@ -57,6 +57,8 @@ UI_CONFIG_MAPPINGS = os.path.join(RESOLVER['uimodels_copo'], 'mappings')
 # path to mapping based on schema version:
 UI_CONFIG_MAPPINGS_BASED_ON_SCHEMA_VERSION = os.path.join(RESOLVER['isa_mappings'])
 
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••#
 # X_FILES dictionary holds paths other (non-categorised) schemas
 X_FILES = {
@@ -865,7 +867,54 @@ BUTTON_TEMPLATES = {
             "className": "copo-dt btn btn-danger",
             "iconClass": "fa fa-tags",
             "btnAction": "undescribe"
-        }
+        },
+        "submit_assembly_multi": {
+            "text": "Submit",
+            "className": "copo-dt btn btn-danger",
+            "iconClass": "fa fa-tags",
+            "btnAction": "submit_assembly"
+        },        
+        "submit_annotation_multi": {
+            "text": "Submit",
+            "className": "copo-dt btn btn-danger",
+            "iconClass": "fa fa-tags",
+            "btnAction": "submit_annotation"
+        },   
+        "submit_read_multi": {
+            "text": "Submit",
+            "className": "copo-dt btn btn-danger",
+            "iconClass": "fa fa-tags",
+            "btnAction": "submit_read"
+        },    
+        "delete_read_multi": {
+            "text": "Delete",
+            "className": " red button copo-dt",
+            "iconClass": "fa fa-trash-o",
+            "btnAction": "delete",
+            "btnType": "multi",
+            "btnMessage": "Delete selected"
+        },    
+        "add_local_all": {
+            "text": "Add locally",
+            "className": "copo-dt btn button",
+            "iconClass": "fa fa-desktop",
+            "btnAction": "add_files_locally",
+            "btnType": "all"
+        },    
+        "add_terminal_all": {
+            "text": "Add by terminal",
+            "className": "copo-dt btn button",
+            "btnAction": "dd_files_by_terminal",
+            "iconClass": "fa fa-terminal",
+            "btnType": "all"
+        },   
+
+        "submit_tagged_seq_multi": {
+            "text": "Submit",
+            "className": "copo-dt btn btn-danger",
+            "iconClass": "fa fa-tags",
+            "btnAction": "submit_tagged_seq"
+        },         
     }
 }
 REPO_NAME_LOOKUP = {
@@ -884,7 +933,31 @@ adding here will make the schema importable as primer fields in a new experimata
 TEMPLATES_TO_APPEAR_IN_EDITOR = ["dc_stages", "miappe", "dcterms"]
 
 DTOL_SAMPLE_COLLECTION_LOCATION_STATEMENT = {
-    "SPAIN" : "The biological material collected in Spain, and used to generate digital sequences, was retrieved from \
+    "__SPAIN__" : "The biological material collected in Spain, and used to generate digital sequences, was retrieved from \
 wildlife taxa regulated by the Spanish Royal Decree 124/2017 (https://www.boe.es/eli/es/rd/2017/02/24/124)."
 
 }
+
+
+# path to UI dropdown
+_drop_downs_pth = RESOLVER['copo_drop_downs']
+DROP_DOWNS_SOURCE = dict(
+    select_yes_no=os.path.join(_drop_downs_pth, 'select_yes_no.json'),
+    select_start_end=os.path.join(_drop_downs_pth, 'select_start_end.json'),
+    cgiar_centres=os.path.join(_drop_downs_pth, 'cgiar_centres.json'),
+    crp_list=os.path.join(_drop_downs_pth, 'crp_list.json'),
+    languagelist=os.path.join(_drop_downs_pth, 'language_list.json'),
+    library_strategy=os.path.join(_drop_downs_pth, 'library_strategy.json'),
+    library_source=os.path.join(_drop_downs_pth, 'library_source.json'),
+    library_selection=os.path.join(_drop_downs_pth, 'library_selection.json'),
+    sequencing_instrument=os.path.join(_drop_downs_pth, 'sequencing_instrument.json'),
+    study_type_options=DROP_DOWNS['STUDY_TYPES'],
+    rooting_medium_options=DROP_DOWNS['ROOTING_MEDIUM'],
+    growth_area_options=DROP_DOWNS['GROWTH_AREAS'],
+    nutrient_control_options=DROP_DOWNS['GROWTH_NUTRIENTS'],
+    watering_control_options=DROP_DOWNS['WATERING_OPTIONS'],
+    dataverse_subject_dropdown=DROP_DOWNS['DATAVERSE_SUBJECTS'],
+    repository_options=os.path.join(_drop_downs_pth, 'metadata_template_types.json'),
+    repository_types_list=os.path.join(_drop_downs_pth, 'repository_types.json'),
+    sample_type_options=os.path.join(_drop_downs_pth, 'sample_types.json'),
+)

@@ -15,12 +15,13 @@ from .models import banner_view
 from common.schemas.utils import data_utils
 from common.utils.helpers import get_env, get_group_membership_asString
 LOGGER = settings.LOGGER
-from .copo_lookup_service import COPOLookup
+from common.utils.copo_lookup_service import COPOLookup
 from django.http import HttpResponse, HttpResponseBadRequest
 import bson.json_util as json_util
 from django.db.models import Q
 from common.utils import helpers
 
+"""
 @login_required
 def index(request):
     print(get_env("MEDIA_ROOT"))
@@ -33,22 +34,13 @@ def index(request):
     context['groups'] = groups
     return render(request, 'copo/index.html', context)
 
-"""
+
 def login(request):
     context = {
         'login_form': LoginForm(),
     }
     return render(request, 'copo/auth/login.html', context)
 """
-
-def stats(request, view=""):
-    if view == "time_series":
-        return render(request, context={}, template_name="copo/stats/time_series_statistics.html")
-    elif view == "variable_histogram":
-        return render(request, context={}, template_name="copo/stats/variable_histogram_statistics.html")
-    else:
-        return render(request, context={}, template_name="copo/stats/time_series_statistics.html")
-
 
 def test(request):
     return render(request, template_name='copo/test.html')
@@ -138,7 +130,8 @@ def copo_visualize(request):
                                    component=request.POST.get("component", str()),
                                    target_id=request.POST.get("target_id", str()),
                                    quick_tour_flag=request.POST.get("quick_tour_flag", False),
-                                   datafile_ids=json.loads(request.POST.get("datafile_ids", "[]"))
+                                   datafile_ids=json.loads(request.POST.get("datafile_ids", "[]")),
+                                   request_dict=request.POST.dict(),
                                    )
 
     task_dict = dict(table_data=broker_visuals.do_table_data,
@@ -197,6 +190,7 @@ def copo_forms(request):
                          data_source=request.POST.get("data_source", str()),
                          user_email=request.POST.get("user_email", str()),
                          bundle_name=request.POST.get("bundle_name", str()),
+                         request_dict=request.POST.dict(),
                          )
 
     task_dict = dict(resources=broker_da.do_form_control_schemas,
@@ -215,15 +209,24 @@ def copo_forms(request):
                      #create_rename_description_bundle=broker_da.create_rename_description_bundle,
                      #clone_description_bundle=broker_da.do_clone_description_bundle,
                      lift_submission_embargo=broker_da.do_lift_submission_embargo,
+                     submit_assembly=broker_da.do_submit_assembly,
+                     submit_annotation=broker_da.do_submit_annotation,
+                     submit_read=broker_da.do_submit_read,
+                     delete_read=broker_da.do_delete_read,
+                     submit_tagged_seq = broker_da.do_submit_tagged_seq,
                      )
 
     if task in task_dict:
         context = task_dict[task]()
 
     out = jsonpickle.encode(context, unpicklable=False)
+    status = context.get("action_feedback", dict()).get("status", "success")
+    if status == "success":
+        return HttpResponse(status=200, content=out, content_type='application/json')
+
     return HttpResponse(out, content_type='application/json')
 
-
+"""
 @login_required()
 def delete_profile(request):
     context = dict()
@@ -248,7 +251,7 @@ def delete_profile(request):
     undeleted_json = json.dumps({"undeleted": profiles_undeleted})
     response.write(undeleted_json)
     return response
-
+"""
 
 @login_required
 @staff_member_required
@@ -368,6 +371,12 @@ def handler404(request, exception):
 def handler500(request):
     return error_page(request)
 
+def handler403(request, message="Apologies, you do not have permission to view this web page"):
+    try:
+        LOGGER.log(message)
+    finally:
+        context = {'message': message}
+        return render(request, 'copo/unauthorised_page.html', context)
 
 def get_source_count(self):
     profile_id = data_utils.get_current_request().session['profile_id']

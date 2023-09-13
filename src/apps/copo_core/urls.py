@@ -4,10 +4,7 @@ from . import views
 app_name = 'copo_core'
 
 urlpatterns = [
-    path('', views.index, name='index'),
 
-    path('stats/<str:view>', views.stats, name='stats'),
-    path('stats/', views.stats, name='stats'),
     #path('login/', views.login, name='auth'),
     #path('logout/', views.copo_logout, name='logout'),
     #path('register/', views.copo_register, name='register'),
@@ -26,7 +23,7 @@ urlpatterns = [
     re_path(r'^ajax_search_copo_local/(?P<data_source>[a-zA-Z0-9,_]+)/$',
             views.search_copo_components, name='ajax_search_copo_local'),
     path('copo_forms/', views.copo_forms, name="copo_forms"),
-    path('delete_profile/', views.delete_profile, name="delete_profile"),
+    #path('delete_profile/', views.delete_profile, name="delete_profile"),
     path('copo_visualize/', views.copo_visualize, name="copo_visualize"),
 
     path('groups/', views.view_groups, name='groups'),
@@ -38,6 +35,8 @@ urlpatterns = [
     path('get_profiles_in_group/', views.get_profiles_in_group,
          name='get_profiles_in_group'),
     path('get_users_in_group/', views.get_users_in_group, name="add_users_in_group"),
+    path('get_users/', views.get_users, name="get_users"),
+
     path('add_user_to_group/', views.add_user_to_group, name="add_user_to_group"),
     path('remove_user_from_group/', views.remove_user_from_group, name="remove_user_from_group"),
 

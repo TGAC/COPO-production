@@ -83,6 +83,7 @@ DATAFILE_OBJECT_PREFIX = "datafiles_"
 DESCRIPTION_GRACE_PERIOD = 10  # no of days after which pending descriptions are deleted
 
 # settings for TOL schemas
+"""
 CURRENT_DTOL_VERSION = "2.4.1"
 CURRENT_ASG_VERSION = "2.4.1"
 CURRENT_ERGA_VERSION = "2.4"
@@ -90,8 +91,32 @@ CURRENT_DTOLENV_VERSION = "2.4"
 
 # settings for schemas i.e. code modularisation
 CURRENT_SCHEMA_VERSION = "v2_4_1"
-
+"""
 # settings for ECS
 ECS_ACCESS_KEY_ID = get_env('ECS_ACCESS_KEY_ID')
 ECS_SECRET_KEY = get_env('ECS_SECRET_KEY')
 ECS_ENDPOINT = get_env('ECS_ENDPOINT')
+
+# settings for manifest
+MANIFEST_VERSION = {
+    "ASG":  "2.4.1",
+    "DTOL": "2.4.1",
+    "DTOLENV": "2.4",
+    "DTOL_ENV": "2.4",
+    "DTOL_EI": "2.4",
+    "ERGA": "2.4.3",
+    "DTOL_BARCODE": "",
+}
+
+BARCODING_CHECKLIST = ["ERT000002", "ERT000020"]
+
+ENA_CHECKLIST_CONFIG = {
+    "ERT000002" : {"skip": ["STRAIN","LAB_HOST"]},
+    "ERT000020" : {"skip": ["STRAIN","SPECVOUCH", "VARIETY", "IDBY"]}
+}
+
+ENA_CHECKLIST_URL  = [
+    "https://www.ebi.ac.uk/ena/submit/report/checklists/xml/ERT000002?type=sequence",
+    "https://www.ebi.ac.uk/ena/submit/report/checklists/xml/ERT000020?type=sequence",
+    "https://www.ebi.ac.uk/ena/submit/report/checklists/xml/*?type=sample"
+]

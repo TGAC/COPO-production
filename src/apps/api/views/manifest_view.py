@@ -7,36 +7,46 @@ import json
 from django.conf import settings
 import os
 from openpyxl.utils import cell
-import importlib
 from bson import json_util
 import pandas as pd
 from io import BytesIO
 import re
+import common.schema_versions.lookup.dtol_lookups as lkup
 
-schema_version_path_dtol_lookups = f'common.schema_versions.{settings.CURRENT_SCHEMA_VERSION}.lookup.dtol_lookups'
-lkup = importlib.import_module(schema_version_path_dtol_lookups)
+def get_latest_manifest_versions(request):
+    return HttpResponse(json.dumps({'current_asg_manifest_version': settings.MANIFEST_VERSION.get("ASG", ""),
+                                    'current_dtolenv_manifest_version': settings.MANIFEST_VERSION.get("DTOLENV", ""),
+                                    'current_dtol_manifest_version': settings.MANIFEST_VERSION.get("DTOL", ""),
+                                    'current_erga_manifest_version': settings.MANIFEST_VERSION.get("ERGA", "")}))
+
 
 def get_manifest_fields(request):
     manifest_type = request.GET["manifest_type"]
+    current_schema_version = ""
+
+    # Get manifest version
+    current_schema_version =  settings.MANIFEST_VERSION.get(manifest_type.upper(), str())
 
     # Get sample fields
     s = helpers.json_to_pytype(lk.WIZARD_FILES["sample_details"], compatibility_mode=False)
 
     field_lst = jp.match(
-        '$.properties[?(@.specifications[*] == "' + manifest_type + '")].versions[''0]', s)
+        '$.properties[?(@.specifications[*] == "' + manifest_type + '"& @.manifest_version[*]=="' + current_schema_version + '")].versions[''0]',
+        s)
 
     # Get sample fields' order number
     order_num_lst = jp.match(
-        '$.properties[?(@.specifications[*] == "' + manifest_type + '")].index.["' + manifest_type + '"].order', s)
+        '$.properties[?(@.specifications[*] == "' + manifest_type + '"& @.manifest_version[*]=="' + current_schema_version + '")].order',
+        s)
 
     # Get sample fields' MS Excel column letter
     excel_col_lst = jp.match(
-        '$.properties[?(@.specifications[*] == "' + manifest_type + '")].index["' + manifest_type + '"].excel_col',
+        '$.properties[?(@.specifications[*] == "' + manifest_type + '"& @.manifest_version[*]=="' + current_schema_version + '")].excel_col',
         s)
 
     # Get sample fields' colour
     colour_lst = jp.match(
-        '$.properties[?(@.specifications[*] == "' + manifest_type + '" )].index["' + manifest_type + '"].colour',
+        '$.properties[?(@.specifications[*] == "' + manifest_type + '"& @.manifest_version[*]=="' + current_schema_version + '")].colour',
         s)
 
     # Combine the information in a tuple
@@ -87,18 +97,21 @@ def get_common_value_dropdown_list(request):
             {'dropdownlist': common_value_dropdownlist, 'date_fields': date_fields, 'integer_fields': integer_fields}))
 
 
-def get_filename(manifest_type):
-    if manifest_type == "asg":
-        return f'ASG_EXAMPLE_SAMPLE_MANIFEST_v{settings.CURRENT_ASG_VERSION}.xlsx'
-    elif manifest_type == "dtol":
-        return f'DTOL_EXAMPLE_SAMPLE_MANIFEST_v{settings.CURRENT_DTOL_VERSION}.xlsx'
-    elif manifest_type == "erga":
-        return f'ERGA_SAMPLE_MANIFEST_V{settings.CURRENT_ERGA_VERSION}.xlsx'
-    else:
-        # manifest_type == "env" or manifest_type == "dtolenv"
-        # filename = f'DTOLENV_EXAMPLE_SAMPLE_MANIFEST_v{CURRENT_DTOLENV_VERSION}.xlsx
-        return ""
+def get_manifest_filename(manifest_type):
+    type = ""
+    if "ASG" in manifest_type:
+        type = "ASG"
+    elif "DTOLENV" in manifest_type or "DTOL_ENV" in manifest_type or "ENV" in manifest_type:
+        type = "DTOLENV"
+    elif "DTOL" in manifest_type:
+        type = "DTOL"
+    elif "ERGA" in manifest_type:
+        type = "ERGA"
 
+    version = settings.MANIFEST_VERSION.get(type, "")
+    if version:
+        version = "_v" + version
+    settings.MANIFEST_FILE_NAME.format(type, version) + ".xlsx"    
 
 def generate_manifest_template(request):
     manifest_type = json_util.loads(request.body)["manifest_type"]
@@ -112,7 +125,7 @@ def generate_manifest_template(request):
     manifests_dir = os.path.join("static", "assets", "manifests")
 
     # Set the path to the blank manifest template based on the manifest type
-    filename = get_filename(manifest_type)
+    filename = get_manifest_filename(manifest_type)
 
     manifest_template_path = os.path.join(manifests_dir, filename)
 

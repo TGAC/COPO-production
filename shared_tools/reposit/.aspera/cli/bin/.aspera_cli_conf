@@ -1,0 +1,31 @@
+{
+  "Faspex": {
+      "faspex_servers" : [
+        {
+           "name": "faspex.com",
+           "sources" : [
+             {
+               "id" : "1",
+               "name" : "Faspex Demo",
+               "scheme" : "https",
+               "host" : "faspex.com",
+               "port" : 443,
+               "username" : "",
+               "password" : "",
+               "base_dir" : "/"
+             }
+           ]
+        }
+      ]
+  },
+  "AoCAccounts": [
+  {
+    "organization": "org",
+    "hostname": "org.ibmaspera.com",
+    "clientId": "aspera.global-cli-client",
+    "clientSecret": "frpmsRsG4mjZ0PlxCgdJlvONqBg4Vlpz_IX7gXmBMAfsgMLy2FO6CXLodKfKAuhqnCqSptLbe_wdmnm9JRuEPO-PpFqpq_Kb",
+    "privateKeyFilename": "private_key_filename.pem",
+    "username": "your_username"
+  }
+]
+}

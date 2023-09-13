@@ -5,6 +5,8 @@
 {% load web_tags %}
 {% load html_tags %}
 
+{% block title %}Samples Submission{% endblock %}
+
 {% block stylesheet_block %}
     <link rel="stylesheet" href="{% static 'copo/css/copo/copo_submission.css' %}" xmlns="http://www.w3.org/1999/html">
 {% endblock %}
@@ -80,10 +82,9 @@
 
     <hr/>
     <!-- submission table -->
-    <!-- deprecated
     <h4 class="h4" id="wizard_submissions_label">Wizard Submissions</h4>
     <div id="component_table_loader" class="col-sm-5 col-md-5 col-lg-5 col-xs-offset-5"
-         data-copo-tour-id="submission_table"></div> 
+         data-copo-tour-id="submission_table"></div> <!-- div used by the quick tour agent -->
     <div id="cover-spin-bundle"></div>
 
     <div class="table-parent-div">
@@ -91,7 +92,7 @@
                cellspacing="0" width="100%">
         </table>
     </div>
-    -->
+
 
 {% endblock %}
 

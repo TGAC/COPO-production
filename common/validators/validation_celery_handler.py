@@ -6,7 +6,7 @@ import pandas
 import inspect
 import pickle
 import math
-from common.lookup import dtol_lookups as lookup
+from common.schema_versions.lookup import dtol_lookups as lookup
 from common.utils.helpers import notify_frontend
 from urllib.error import HTTPError
 from common.schemas.utils.data_utils import json_to_pytype
@@ -14,6 +14,7 @@ from common.lookup import lookup as lk
 import jsonpath_rw_ext as jp
 from common.utils.helpers import map_to_dict
 from common.utils.logger import Logger
+from django.conf import settings
 
 class ProcessValidationQueue:
 
@@ -33,6 +34,7 @@ class ProcessValidationQueue:
         self.data = None
         self.isupdate = None
         self.type = None
+        self.current_schema_version = None
         self.public_name_list = list()
 
     def process_validation_queue(self):
@@ -64,10 +66,12 @@ class ProcessValidationQueue:
         for qm in queued_manifests:
             if not qm["report_id"] == "":
                 APIValidationReport().setRunning(qm["report_id"])
+
             self.sample_data = pickle.loads(qm["manifest_data"])
             self.profile_id = qm["profile_id"]
             self.file_name = qm["file_name"]
             t = Profile().get_type(self.profile_id)
+
             if "ASG" in t:
                 self.type = "ASG"
             elif "DTOL_EI" in t:
@@ -76,6 +80,8 @@ class ProcessValidationQueue:
                 self.type = "ERGA"
             else:
                 self.type = "DTOL"
+            self.current_schema_version = settings.MANIFEST_VERSION.get(self.type, "")
+
             try:
                 self.data = pandas.read_excel(self.sample_data, keep_default_na=False, na_values=lookup.NA_VALS)
             except:
@@ -85,8 +91,8 @@ class ProcessValidationQueue:
 
             notify_frontend(data={"profile_id": self.profile_id}, msg="Loading..", action="info",
                             html_id="sample_info")
-            try:
 
+            try:
                 self.data = self.data.loc[:, ~self.data.columns.str.contains('^Unnamed')]
                 '''
                 for column in self.allowed_empty:
@@ -95,11 +101,22 @@ class ProcessValidationQueue:
                 self.data = self.data.apply(lambda x: x.astype(str))
                 self.data = self.data.apply(lambda x: x.str.strip())
                 self.data.columns = self.data.columns.str.replace(" ", "")
+
+                # validate for an empty manifest/excel file
+                if len(self.data.index) == 0 or len(self.data.columns) == 0:
+                    msg = "<h4>" + self.file_name + "</h4><ol><li>Manifest uploaded is empty</li></ol>"
+                    notify_frontend(data={"profile_id": self.profile_id},
+                                    msg=msg,
+                                    action="error",
+                                    html_id="sample_info")
+                    Logger().error(msg)
+                    return False
             except Exception as e:
                 # if error notify via web socket
                 notify_frontend(data={"profile_id": self.profile_id}, msg="Unable to load file. " + str(e),
                                 action="info",
                                 html_id="sample_info")
+                Logger().exception(e)
                 return False
 
             """
@@ -149,7 +166,6 @@ class ProcessValidationQueue:
                                 action="error",
                                 html_id="sample_info")
                 ValidationQueue().set_taxon_validation_error(qm["_id"], err=msg)
-                Logger().log(error_message)
                 return False
             except Exception as e:
                 error_message = str(e).replace("<", "").replace(">", "")
@@ -158,6 +174,7 @@ class ProcessValidationQueue:
                                 action="error",
                                 html_id="sample_info")
                 ValidationQueue().set_taxon_validation_error(qm["_id"], err=msg)
+                Logger().exception(e)
                 if not qm["report_id"] == "":
                     APIValidationReport().setFailed(qm["report_id"], msg=msg)
                 return False
@@ -174,8 +191,10 @@ class ProcessValidationQueue:
             try:
                 # get definitive list of mandatory DTOL fields from schema
                 s = json_to_pytype(lk.WIZARD_FILES["sample_details"], compatibility_mode=False)
+                
+                # Required fields' validation
                 self.fields = jp.match(
-                    '$.properties[?(@.specifications[*] == "' + self.type.lower() + '" & @.required=="true")].versions[0]',
+                    '$.properties[?(@.specifications[*] == "' + self.type.lower() + '" & @.required=="true" & @.manifest_version[*]== "' + self.current_schema_version + '")].versions[0]',
                     s)
 
                 # validate for required fields
@@ -184,13 +203,15 @@ class ProcessValidationQueue:
                                                               data=self.data,
                                                               errors=errors, warnings=warnings, flag=flag,
                                                               isupdate=self.isupdate).validate()
-                    ValidationQueue().update_manifest_data(qm["_id"], pickle.dumps(self.data))
+                    
                     if self.isupdate:
                         ValidationQueue().set_update_flag(qm["_id"])
 
+                # All fields' validation
                 # get list of all DTOL fields from schemas
                 self.fields = jp.match(
-                    '$.properties[?(@.specifications[*] == ' + self.type.lower() + ')].versions[0]', s)
+                    '$.properties[?(@.specifications[*] == "' + self.type.lower() + '"& @.manifest_version[*]=="' + self.current_schema_version + '")].versions[0]',
+                    s)
 
                 # validate for optional dtol fields
                 for v in self.optional_field_validators:
@@ -221,16 +242,28 @@ class ProcessValidationQueue:
                 error_message = str(e).replace("<", "").replace(">", "")
                 msg = "Server Error - " + error_message,
                 notify_frontend(data={"profile_id": self.profile_id}, msg=msg,
-                                action="info",
+                                action="error",
                                 html_id="sample_info")
                 ValidationQueue().set_schema_validation_error(qm["_id"], err=msg)
+                Logger().exception(e)
                 if not qm["report_id"] == "":
                     APIValidationReport().setFailed(qm["report_id"], msg=msg)
                 return False
 
             # if we get here we have a valid spreadsheet
             # so set validation queue taxon flag to complete
+
+            # Copy all values from the the created column, "NEW_PURPOSE_OF_SPECIMEN" column 
+            # back into the "PURPOSE_OF_SPECIMEN" column if that column exists
+            if 'NEW_PURPOSE_OF_SPECIMEN' in self.data.columns:
+                self.data["PURPOSE_OF_SPECIMEN"] = self.data["NEW_PURPOSE_OF_SPECIMEN"]
+                # Delete the created column
+                self.data.drop(columns=["NEW_PURPOSE_OF_SPECIMEN"], inplace=True)
+
+            # Update data in database    
+            ValidationQueue().update_manifest_data(qm["_id"], pickle.dumps(self.data))
             ValidationQueue().set_schema_validation_complete(qm["_id"])
+
             if not qm["report_id"] == "":
                 APIValidationReport().setComplete(qm["report_id"])
             if self.isupdate:
@@ -251,7 +284,8 @@ class ProcessValidationQueue:
         for col in list(self.data.columns):
             headers.append(col)
         sample_data.append(headers)
-        if "Y" in list(self.data.get("SAMPLING_PERMITS_REQUIRED", "")) + list(self.data.get("ETHICS_PERMITS_REQUIRED", "")) + list(self.data.get("NAGOYA_PERMITS_REQUIRED", "")):
+        if "Y" in list(self.data.get("SAMPLING_PERMITS_REQUIRED", "")) + list(
+                self.data.get("ETHICS_PERMITS_REQUIRED", "")) + list(self.data.get("NAGOYA_PERMITS_REQUIRED", "")):
             permits_required = True
         for index, row in self.data.iterrows():
             r = list(row)
@@ -262,12 +296,14 @@ class ProcessValidationQueue:
 
         notify_frontend(data={"profile_id": self.profile_id}, msg=str(qm["_id"]), action="store_validation_record_id",
                         html_id="")
-        notify_frontend(data={"profile_id": self.profile_id, "permits_required": permits_required}, msg=sample_data, action="make_table",
+        notify_frontend(data={"profile_id": self.profile_id, "permits_required": permits_required}, msg=sample_data,
+                        action="make_table",
                         html_id="sample_table")
 
     def make_update_notifications(self, qm):
         sample_data = self.data
         updates = {}
+        permits_required = False
         for p in range(0, len(sample_data)):
             s = map_to_dict(self.data.columns, self.data.iloc[p, :])
             rack_tube = s.get("RACK_OR_PLATE_ID", "") + "/" + s["TUBE_OR_WELL_ID"]
@@ -278,6 +314,12 @@ class ProcessValidationQueue:
             assert len(exsam) == 1
             exsam = exsam[0]
             updates[rack_tube] = {}
+
+            # Always ask user to upload permit if it is required
+            if any(s.get(x,"") == "Y" for x in
+                    lookup.PERMIT_REQUIRED_COLUMN_NAMES):
+                permits_required = True
+
             for field in s.keys():
                 if s[field].strip() != exsam.get(field, "") and s[field].strip() != exsam["species_list"][0].get(field,
                                                                                                                  ""):
@@ -287,6 +329,9 @@ class ProcessValidationQueue:
                             updates[rack_tube][field]["old_value"] = exsam["species_list"][0][field]
                             updates[rack_tube][field]["new_value"] = s[field]
                         else:
+ #                           if field in lookup.PERMIT_REQUIRED_COLUMN_NAMES:
+ #                               s[field] == "Y"
+ #                               permits_required = True
                             updates[rack_tube][field]["old_value"] = exsam[field]
                             updates[rack_tube][field]["new_value"] = s[field]
                     else:
@@ -317,9 +362,14 @@ class ProcessValidationQueue:
                         r[idx] = ""
                 out_data.append(r)
 
-            notify_frontend(data={"profile_id": self.profile_id}, msg=str(qm["_id"]), action="store_validation_record_id",
+            notify_frontend(data={"profile_id": self.profile_id}, msg=str(qm["_id"]),
+                            action="store_validation_record_id",
                             html_id="")
             notify_frontend(data={"profile_id": self.profile_id}, msg=msg, action="warning",
                             html_id="warning_info3")
-            notify_frontend(data={"profile_id": self.profile_id}, msg=out_data, action="make_update",
+            notify_frontend(data={"profile_id": self.profile_id, "permits_required": permits_required}, msg=out_data, action="make_update",
                             html_id="sample_table")
+
+        #if permits_required:
+        #    notify_frontend(data={"profile_id": self.profile_id}, msg="", action="require_permits",
+        #                    html_id="")

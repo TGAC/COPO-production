@@ -110,7 +110,8 @@ function format_feedback_message(message, messageClass, messageTitle) {
 function do_table_buttons_events() {
     //attaches events to table buttons
 
-    $(document).on("click", ".copo-dt", function (event) {
+    $(document).off("click", ".copo-dt")
+        .on("click", ".copo-dt", function (event) {
         event.preventDefault();
 
         $('.copo-dt').webuiPopover('destroy');
@@ -244,6 +245,11 @@ function display_copo_alert(alertType, alertMessage, displayDuration) {
         alertElement.find(".alert-message").html(alertMessage);
 
         infoPanelElement.prepend(alertElement);
+
+        // adjust the margin-top between sidebar (info) tab content and the profiles legend
+        $('.profiles-legend').css('margin-top', '0');
+
+        $('.other-projects-accessions-filter-checkboxes').css('margin-top', '0');
     }
 
 }
@@ -560,7 +566,7 @@ function do_render_component_table(data, componentMeta) {
 
     set_empty_component_message(dataSet.length); //display empty component message when there's no record
 
-    if (dataSet.length == 0) {
+    if (dataSet.length === 0) {
         return false;
     }
 
@@ -571,8 +577,9 @@ function do_render_component_table(data, componentMeta) {
         //if table instance already exists, then do refresh
         table = $('#' + tableID).DataTable();
     }
-
+ 
     if (table) {
+ 
         //clear old, set new data
         table.rows().deselect();
         table
@@ -582,15 +589,18 @@ function do_render_component_table(data, componentMeta) {
             .rows
             .add(dataSet);
         table
-            .columns
-            .adjust()
-            .draw();
+           .columns
+           .adjust()
+           .draw();
         table
             .search('')
             .columns()
             .search('')
-            .draw();
-    } else {
+            .draw(); 
+    } 
+    
+    else {
+     
         table = $('#' + tableID).DataTable({
             data: dataSet,
             select: true,
@@ -660,6 +670,8 @@ function do_render_component_table(data, componentMeta) {
                 }
 
                 $(row).addClass(tableID + recordId);
+                var event = jQuery.Event("postcreatedrow", row = row, data = data, index = index); //individual compnents can trap and handle this event as they so wish
+                $('body').trigger(event);
             },
 
             dom: 'Bfr<"row"><"row info-rw" i>tlp'
@@ -755,7 +767,7 @@ function do_render_component_table(data, componentMeta) {
 } //end of func
 
 
-function load_records(componentMeta) {
+function load_records(componentMeta,args_dict) {
     var csrftoken = $.cookie('csrftoken');
 
     //loader
@@ -765,16 +777,20 @@ function load_records(componentMeta) {
         $("#component_table_loader").append(tableLoader);
     }
 
+    var post_data = {}
+    if (args_dict != null) {
+        post_data = args_dict;
+    }
+    post_data['task'] = 'table_data';
+    post_data['component'] = componentMeta.component;
+
     $.ajax({
         url: copoVisualsURL,
         type: "POST",
         headers: {
             'X-CSRFToken': csrftoken
         },
-        data: {
-            'task': 'table_data',
-            'component': componentMeta.component
-        },
+        data: post_data,
         success: function (data) {
             do_render_component_table(data, componentMeta);
 

@@ -15,7 +15,7 @@
             },      
             "args": [
                 "runserver",
-                "0.0.0.0:8000"
+                "0.0.0.0:8001"
             ],
             "django": true,
             "justMyCode": false
@@ -37,6 +37,9 @@
         {
             "name": "Python: Celery Workers",
             "type": "python",
+            "env" : {
+                "GEVENT_SUPPORT": "true"
+            },
             "request": "launch",
             "module": "celery",
             "console": "integratedTerminal",

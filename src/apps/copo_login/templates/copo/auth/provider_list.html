@@ -19,7 +19,7 @@
 
 
         <li class="login-li">
-            {% with ''|add:provider.id|add:'.png' as image_static %}
+            {% with provider.id|add:'.png' as image_static %}
 
                 {% if provider.id == 'orcid' %}
 

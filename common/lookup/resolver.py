@@ -23,4 +23,4 @@ RESOLVER['schemas_xml_copo'] = os.path.join(web_copo, 'schemas', 'copo', 'dbmode
 RESOLVER['isa_xml_db_models'] = os.path.join(web_copo, 'schemas', 'copo', 'dbmodels', 'isa', 'xmls')
 # RESOLVER['isa_mappings'] = os.path.join(web_copo, 'schemas', 'copo', 'uimodels', 'mappings', 'isa_mappings')
 # Get "sample.json" mappings based on the current schema version
-RESOLVER['isa_mappings'] = os.path.join(web_copo, 'schema_versions', settings.CURRENT_SCHEMA_VERSION, 'isa_mappings')
+RESOLVER['isa_mappings'] = os.path.join(web_copo, 'schema_versions', 'isa_mappings')

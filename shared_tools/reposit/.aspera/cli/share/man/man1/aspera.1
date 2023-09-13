@@ -1,0 +1,2623 @@
+.TH aspera 1 27\-September\-2018 aspera(1) Aspera
+
+.SH NAME
+IBM Aspera Command-Line Interface (the Aspera CLI) \- Perform Aspera commands from the command line.
+
+.SH SYNOPSIS
+.B aspera
+[\fBcommand\fR]
+[\fBsubcommand\fR]
+[\fBargs\fR ...]
+
+.SH DESCRIPTION
+
+.B The Aspera Command-Line Interface
+
+The "aspera" command is a client application that allows you to
+interact with an Aspera on Cloud, Aspera Faspex, or Aspera Shares
+server from the command line.
+
+.SH ASPERA ON CLOUD COMMANDS
+.Pp
+.TP
+.BR aoc
+browse
+
+Browse an Aspera on Cloud directory.
+.Pp
+.TP
+.BR aoc
+delete
+
+Delete a file in Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+download
+
+Download a file from Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+get
+
+Download a package from Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+help
+
+View help for a specific command.
+.Pp
+.TP
+.BR aoc
+mkdir
+
+Create a folder in Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+node
+
+Interact with Aspera on Cloud nodes.
+.Pp
+.TP
+.BR aoc
+rename
+
+Rename a file in Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+send
+
+Upload a package to Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+upload
+
+Upload a file to Aspera on Cloud.
+.Pp
+.TP
+.BR aoc
+workspace
+
+Interact with Aspera on Cloud workspaces.
+.
+.SH ATS COMMANDS
+.Pp
+.TP
+.BR ats
+browse
+
+Browse files and directories.
+.Pp
+.TP
+.BR ats
+delete
+
+Delete one or more files and directories.
+.Pp
+.TP
+.BR ats
+download
+
+Download files or directories.
+.Pp
+.TP
+.BR ats
+help
+
+View help for a specific command.
+.Pp
+.TP
+.BR ats
+rename
+
+Rename a file or directory.
+.Pp
+.TP
+.BR ats
+upload
+
+Upload files or directories.
+
+.SH FASPEX COMMANDS
+.Pp
+.TP
+.BR faspex
+dropbox
+
+Show information about dropboxes.
+.Pp
+.TP
+.BR faspex
+get
+
+Get (download) a package from a URL.
+.Pp
+.TP
+.BR faspex
+help
+
+View help for a specific command.
+.Pp
+.TP
+.BR faspex
+list
+
+List the contents of a user's inbox, sent, or archived messages.
+.Pp
+.TP
+.BR faspex
+send
+
+Send a package.
+
+.SH NODE COMMANDS
+.Pp
+.TP
+.BR node
+browse
+
+Browse files and directories.
+.Pp
+.TP
+.BR node
+delete
+
+Delete one or more files or directories.
+.Pp
+.TP
+.BR node
+download
+
+Download files or directories.
+.Pp
+.TP
+.BR node
+help
+
+View help for a specific command.
+.Pp
+.TP
+.BR node
+rename
+
+Rename a file or directory.
+.Pp
+.TP
+.BR node
+upload
+
+Upload files or directories.
+
+.SH SHARES COMMANDS
+.Pp
+.TP
+.BR shares
+browse
+
+Browse files and directories.
+.Pp
+.TP
+.BR shares
+delete
+
+Delete one or more files or directories.
+.Pp
+.TP
+.BR shares
+download
+
+Download files or directories from a Shares server.
+.Pp
+.TP
+.BR shares
+help
+
+View help for a specific command.
+.Pp
+.TP
+.BR shares
+rename
+
+Rename a file or directory.
+.Pp
+.TP
+.BR shares
+upload
+
+Upload files or directories to a Shares server.
+
+.SH AOC BROWSE COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR browse [<args>] <source>
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-path <path>
+Path in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-node-id <ID>
+The ID of the node you want to interact with.
+.Pp
+.TP
+.B \-\-file-id <ID>
+Root file ID when browsing by node ID. See 'aspera aoc node list'.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-c, \-\-count <num>
+Only get up to <num> items. Default is 1000.
+.Pp
+.TP
+.B \-k, \--\-skip <num>
+Skip the first <num> items. The skip number must be a multiple of the value set with \-\-count.
+
+.SH AOC DELETE COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR delete [<args>] <source>
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-node-id <ID>
+The ID of the node you want to interact with.
+.Pp
+.TP
+.B \-\-file-id <ID>
+Root file ID when browsing by node ID. See 'aspera aoc node list'.
+.Pp
+.TP
+.B \-s, \-\-source <path>
+Path to the source.
+.Pp
+.TP
+.B\ \-\-package-id <ID>
+ID of the package in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.RE
+
+.SH AOC DOWNLOAD COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR download [--arg] <source> <destination> \-\-[\-\-[\-\-ascp-arg]]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-node-id <ID>
+The ID of the node you want to interact with.
+.Pp
+.TP
+.B \-\-file-id <ID>
+Root file ID when browsing by node ID. See 'aspera aoc node list'.
+.Pp
+.TP
+.B \-s, \-\-source <path>
+Path to the source.
+.Pp
+.TP
+.B \-d, \ \-\-destination <path>
+Path to the destination.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.RE
+
+.SH AOC GET COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR get \-\-package-id [--arg] <destination> \-\-[\-\-[\-\-ascp-arg]]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-\-node-id <ID>
+The ID of the node you want to interact with.
+.Pp
+.TP
+.B \-\-package-id <ID>
+ID of the package in Aspera on Cloud.
+.Pp
+.TP
+.B \-d, \ \-\-destination <path>
+Path to the destination.
+.RE
+
+.SH AOC MKDIR COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR mkdir [--arg] <path>
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-\-path <path>
+Path in Aspera on Cloud.
+.RE
+
+.SH AOC NODE LIST COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR node list [\-\-arg]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.RE
+
+.SH AOC RENAME COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR rename [\-\-arg] <source> <new-name>
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-\-path <path>
+Path in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-node-id <ID>
+The ID of the node you want to interact with.
+.Pp
+.TP
+.B \-\-file-id <ID>
+Root file ID when browsing by node ID. See 'aspera aoc node list'.
+.Pp
+.TP
+.B \-\-new-name <new-name>
+New name for the file you are renaming.
+.Pp
+.TP
+.B \-s, \-\-source <path>
+Path to the source.
+.Pp
+.TP
+.B \-d, \ \-\-destination <path>
+Path to the destination.
+.RE
+
+.SH AOC SEND COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR send [\-\-arg] [<source>] \-\-[\-\-[\-\-ascp-arg]]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-r, \-\-recipient <recipient>
+Recipient name/email/group in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-name <name>
+Package name.
+.Pp
+.TP
+.B \-\-message <message-text>
+Message for recipient(s) of the package.
+.Pp
+.TP
+.B \-\-dropbox <name>
+Shared inbox in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-metadata-file <path>
+Local path to the file with metadata.
+.Pp
+.TP
+.B \-f, \-\-file <path>
+Local path to file to include in the package.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.RE
+
+.SH AOC UPLOAD COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR upload [--arg] <source> <destination> \-\-[\-\-[\-\-ascp-arg]]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.Pp
+.TP
+.B \-w, \-\-workspace <workspace-name>
+Workspace name in Aspera on Cloud.
+.Pp
+.TP
+.B \-\-node-id <ID>
+The ID of the node you want to interact with.
+.Pp
+.TP
+.B \-\-file-id <ID>
+Root file ID when browsing by node ID. See 'aspera aoc node list'.
+.Pp
+.TP
+.B \-s, \-\-source <path>
+Path to the source.
+.Pp
+.TP
+.B \-d, \ \-\-destination <path>
+Path to the destination.
+.Pp
+.TP
+.B \-\-http-proxy <proxy>
+Set HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.RE
+
+.SH AOC WORKSPACE LIST COMMAND
+
+.B Usage:
+.RS
+\fBaspera aoc\fR workspace list [\-\-arg]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.Tp
+.B \-o, \-\-organization <org-name>
+Aspera on Cloud organization name.
+.Pp
+.TP
+.B \-u, \-\-username <username>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Aspera on Cloud log path.
+.Pp
+.TP
+.B \-D
+Set debug level to INFO.
+.Pp
+.TP
+.B \-DD
+Set debug level to DEBUG.
+.Pp
+.TP
+.B \-DDD
+Set debug level to TRACE.
+.RE
+
+.SH ATS BROWSE COMMAND
+
+.B Usage:
+.RS
+\fBaspera ats\fR browse [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-access-key=<username>
+ATS access key.
+.Pp
+.TP
+.B \-p<secret>, \-\-secret=<secret>
+ATS secret.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-c<num>, \-\-count=<num>
+Only get up to <num> items.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path, \-\-path=<path>
+Remote path. Defaults to "/".
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-k<num>, \-\-skip=<num>
+Skip the first <num> items.
+.Pp
+.TP
+.B \-o<order>, \--\-sort=<order>
+Sort by <type|size_a|size_d|mtime_a|mtime_d>. Default is to sort by name.
+
+.SH ATS DELETE COMMAND
+
+.B Usage:
+.RS
+\fBaspera ats\fR delete [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-access-key=<username>
+ATS access key.
+.Pp
+.TP
+.B \-p<secret>, \-\-secret=<secret>
+ATS secret.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path, \-\-path=<path>
+Remote path. Defaults to "/".
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+
+.SH ATS DOWNLOAD COMMAND
+
+.B Usage:
+.RS
+\fBaspera ats\fR download [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-access-key=<username>
+ATS access key.
+.Pp
+.TP
+.B \-p<secret>, \-\-secret=<secret>
+ATS secret.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-s<path>, \-\-source=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-d<path>, \-\-destination=<path>
+Destination directory path. Defaults to "./" .
+.Pp
+.TP
+.B \-c<string>, \-\-cookie=<string>
+Cookie.
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-\-content-protect-password=<password>
+Password used to encrypt/decrypt files.
+.Pp
+.TP
+.B \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+
+.SH ATS RENAME COMMAND
+
+.B Usage:
+.RS
+\fBaspera ats\fR rename [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-access-key=<username>
+ATS access key.
+.Pp
+.TP
+.B \-p<secret>, \-\-secret=<secret>
+ATS secret.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path, \-\-path=<path>
+Remote path. Defaults to "/".
+.Pp
+.TP
+.B \-s<filename>, \-\-source=<filename>
+Remote file or directory that is to be renamed.
+.Pp
+.TP
+.B \-d<filename>, \-\-destination=<filename>
+New name for the file or directory.
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+
+.SH ATS UPLOAD COMMAND
+
+.B Usage:
+.RS
+\fBaspera ats\fR upload [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-access-key=<username>
+ATS access key.
+.Pp
+.TP
+.B \-p<secret>, \-\-secret=<secret>
+ATS secret.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-s<path>, \-\-source=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-d<path>, \-\-destination=<path>
+Path to the destination directory.
+.Pp
+.TP
+.B \-\-source-prefix=<path>
+A set path to be prepended to each source path.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-c<string>, \-\-cookie=<string>
+Cookie.
+.Pp
+.TP
+.B \-O<port>, \-\-udp-port=<port>
+Set the UDP port for FASP.
+.Pp
+.TP
+.B \-P<port>, \-\-tcp-port=<port>
+Set the TCP port for FASP.
+.Pp
+.TP
+.B \-l<rate-in-kbps>, \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-m<rate-in-kbps>, \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-\-fasp-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-\-remote-host=<host-address>
+The address of the remote host.
+.Pp
+.TP
+.B \-\-user=<transfer-node-user>
+The transfer node user for ascp.
+.Pp
+.TP
+.B \-k<0|1|2|3>, \-\-resume-level=<0|1|2|3>
+Resume sparse checksum level.
+.Pp
+.TP
+.B \-\-ignore-host-key
+Ignore the server's SSH host key fingerprint.
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-y<ip/host>, \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+.Pp
+.TP
+.B \-j, \-\-encode-jpeg
+Encode all HTTP transfers as JPEG files.
+.Pp
+.TP
+.B \-\-file-checksum=<none|md5|sha1|sha-256|sha-384>
+Set the hash function to use for calculating and recording file hash values.
+.Pp
+.TP
+.B \-\-preserve-dates
+Preserve file timestamps.
+.Pp
+.TP
+.B \-Z<datagram-size>, \-\-mtu=<datagram-size>
+Set datagram size manually.
+.Pp
+.TP
+.B \-\-file-encrypt
+Encrypt files while sending, or decrypt an encrypted file while receiving. Encrypted files take the form of <filename>.aspera-env.
+.Pp
+.TP
+.B \-T, \-\-disable-encryption
+Disable file encryption.
+.Pp
+.TP
+.B \-\-src-base=<base>
+Specify a prefix to be stripped from each source object.
+.Pp
+.TP
+.B \-\-partial-file-suffix=<suffix>
+Specify a partial file suffix to apply to filenames.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-\-remove-empty-source-directory
+Remove empty source directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-R, \-\-move-after-transfer=<path>
+Path to the directory where files should be moved to after transfer.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-q<filename>, \-\-filelist=<filename>
+File containing a list of files to transfer.
+
+.SH FASPEX DROPBOX COMMAND
+
+.B Usage:
+.RS
+  \fBaspera faspex\fR dropbox [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-username=<name>
+Faspex username
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+Faspex user password (can also be set more securely with ASPERA_PASS environment variable prior to invocation). Omitting this password option will lead to a prompt for non-echoing password to be entered in CLI.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname/ip>, \-\-host=<hostname/ip>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-\-source=<id/name>
+The source server's ID or name (matching ID takes precedence), as given in the .aspera_cli_conf configuration file.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-l<dropbox\-id>, \-\-list=<dropbox\-id>
+Show info for just this dropbox
+.Pp
+.TP
+.B \-a, \-\-list\-all
+Show info for all dropboxes
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-v, \-\-verbose
+Show more verbose output for debugging
+.Pp
+.RE
+
+.SH FASPEX GET COMMAND
+
+.B Usage:
+.RS
+\fBaspera faspex\fR get [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-username=<username>
+Faspex username.
+.Pp
+.TP
+.B \-p<password>, \-\-secret=<password>
+Faspex user password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Faspex server hostname or IP address.
+.Pp
+.TP
+.B \-\-source=<id/name>
+The source server's ID or name (matching ID takes precedence), as given in the .aspera_cli_conf configuration file.
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-f<path>, \-\-file=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-T<port-num>, \-\-port=<port-num>
+The server's listening port.
+.Pp
+.TP
+.B \-\-url=<url>
+faspe:// formatted URL for Faspex package download.
+.Pp
+.TP
+.B \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-y<ip/host>, \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-\-content-protect-password=<password>
+Password used to encrypt/decrypt files.
+.Pp
+.TP
+.B \-U<prefix., \-\-url-prefix=<prefix>
+Set a Faspex URL prefix. Default is /aspera/faspex/.
+
+.SH FASPEX LIST COMMAND
+
+.B Usage:
+.RS
+  \fBaspera faspex\fR list [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-username=<username>
+Faspex username.
+.Pp
+.TP
+.B \-p<password>, \-\-secret=<password>
+Faspex user password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Faspex server hostname or IP address.
+.Pp
+.TP
+.B \-\-source=<id/name>
+The source server's ID or name (matching ID takes precedence), as given in the .aspera_cli_conf configuration file.
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-a, \-\-archived
+List archived packages.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-n, \-\-inbox
+List packages in inbox.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-T<port>, \-\-port=<port>
+The server's listening port.
+.Pp
+.TP
+.B \-s, \-\-sent
+List sent packages.
+.Pp
+.TP
+.B \-x, \-\-xml
+Get raw XML RSS atom for inbox, sent, or archived messages (Note that the faspe://... URLs in this format contain XML escape sequences, like &amp; for example, and cannot be used-as-is and pasted as input to a "get" command, unless first removed "manually" or by an XML parser.)
+.Pp
+.TP
+.B \-U<prefix., \-\-url-prefix=<prefix>
+Set a Faspex URL prefix. Default is /aspera/faspex/.
+
+.SH FASPEX SEND COMMAND
+
+.B Usage:
+.RS
+  \fBaspera faspex\fR send [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-username=<name>
+Faspex username
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+Faspex user password. The password can also be set more securely with the ASPERA_PASS environment variable.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Faspex server hostname or IP address.
+.Pp
+.TP
+.B \-\-source=<id/name>
+The source server's ID or name (matching ID takes precedence), as given in the .aspera_cli_conf configuration file.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-f<path>, \-\-file=<path>
+File(s) to send in the package.
+.Pp
+.TP
+.B \-t<subj>, \-\-title=<subj>
+A title (subject) for the Faspex package
+.Pp
+.TP
+.B \-n<body>, \-\-note=<body>
+A note (body) for the Faspex package
+.Pp
+.TP
+.B \-r<email|username|dropbox>, \-\-recipient=<email|username|dropbox>
+Recipient(s) of the package. The value can be an email address, a Faspex username, or a dropbox name.
+.Pp
+.TP
+.B \-U<prefix., \-\-url-prefix=<prefix>
+Set a Faspex URL prefix. Default is /aspera/faspex/.
+.Pp
+.TP
+.B \-\-metadata=<meta>
+Send metadata (JSON object text) with the package.
+.Pp
+.TP
+.B \-\-source-id=<id>
+Send a file from a Faspex-defined source ID.
+.Pp
+.TP
+.B \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-\-remote-host=<host-address>
+The address of the remote host.
+.Pp
+.TP
+.B \-\-user=<transfer-node-user>
+The transfer node user for ascp.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-\-ignore-host-key
+Ignore the server's SSH host key fingerprint.
+.Pp
+.TP
+.B \-O<port>, \-\-udp-port=<port>
+Set the UDP port for FASP.
+.Pp
+.TP
+.B \-P<port>, \-\-tcp-port=<port>
+Set the TCP port for FASP.
+.Pp
+.TP
+.B \-\-source-prefix=<path>
+A set path to be prepended to each source path.
+.Pp
+.TP
+.B \-R, \-\-move-after-transfer=<path>
+Path to the directory where files should be moved to after transfer.
+.Pp
+.TP
+.B \-l<rate-in-kbps>, \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-m<rate-in-kbps>, \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-Z<datagram-size>, \-\-mtu=<datagram-size>
+Set datagram size manually.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-\-fasp-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-y<ip/host>, \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+.Pp
+.TP
+.B \-\-preserve-dates
+Preserve file timestamps.
+.Pp
+.TP
+.B \-j, \-\-encode-jpeg
+Encode all HTTP transfers as JPEG files.
+.Pp
+.TP
+.B \-T, \-\-disable-encryption
+Disable file encryption.
+.Pp
+.TP
+.B \-k<0|1|2|3>, \-\-resume-level=<0|1|2|3>
+Resume sparse checksum level.
+.Pp
+.TP
+.B \-\-file-checksum=<none|md5|sha1|sha-256|sha-384>
+Set the hash function to use for calculating and recording file hash values.
+.Pp
+.TP
+.B \-\-partial-file-suffix=<suffix>
+Specify a partial file suffix to apply to filenames.
+.Pp
+.TP
+.B \-\-src-base=<base>
+Specify a prefix to be stripped from each source object.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-\-remove-empty-source-directory
+Remove empty source directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-\-file-encrypt
+Encrypt files while sending, or decrypt an encrypted file while receiving. Encrypted files take the form of <filename>.aspera-env.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-q<filename>, \-\-filelist=<filename>
+File containing a list of files to transfer.
+.Pp
+.TP
+.B \-\-cc-on-upload=<email|username|dropbox>
+Notify users when a package is uploaded. The value can be an email address, a Faspex username, or a dropbox name.
+.Pp
+.TP
+.B \-\-cc-on-download=<email|username|dropbox>
+Notify users when a package is downloaded. The value can be an email address, a Faspex username, or a dropbox name.
+.RE
+
+.SH NODE BROWSE COMMAND
+
+.B Usage:
+.RS
+\fBaspera node\fR browse [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-username=<name>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<host>, \-\-host=<host>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-c<num>, \-\-count=<num>
+Only get up to <num> items.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path>, \-\-path=<path>
+Remote path. Defaults to "/".
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-k<num>, \-\-skip=<num>
+Skip the first <num> items.
+.Pp
+.TP
+.B \-o<order>, \--\-sort=<order>
+Sort by <type|size_a|size_d|mtime_a|mtime_d>. Default is to sort by name.
+
+.SH NODE DELETE COMMAND
+
+.B Usage:
+.RS
+\fBaspera node\fR delete [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-username=<name>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<host>, \-\-host=<host>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-c<num>, \-\-count=<num>
+Only get up to <num> items.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path>, \-\-path=<path>
+Remote path. Defaults to "/".
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+
+.SH NODE DOWNLOAD COMMAND
+
+.B Usage:
+.RS
+\fBaspera node\fR download [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-username=<username>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-s<path>, \-\-source=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-d<path>, \-\-destination=<path>
+Destination directory path. Defaults to "./" .
+.Pp
+.TP
+.B \-c<string>, \-\-cookie=<string>
+Cookie.
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-\-content-protect-password=<password>
+Password used to encrypt/decrypt files.
+.Pp
+.TP
+.B \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+
+.SH NODE RENAME COMMAND
+
+.B Usage:
+.RS
+\fBaspera node\fR rename [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-username=<username>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+Aspera on Cloud username (email address).
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path, \-\-path=<path>
+Remote path to the file to be renamed. Defaults to "/".
+.Pp
+.TP
+.B \-s<filename>, \-\-source=<filename>
+Remote file or directory that is to be renamed.
+.Pp
+.TP
+.B \-d<filename>, \-\-destination=<filename>
+New name for the file or directory.
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+
+.SH NODE UPLOAD COMMAND
+
+.B Usage:
+.RS
+\fBaspera node\fR upload [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-username=<username>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname>, \-\-host=<hostname>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-s<path>, \-\-source=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-d<path>, \-\-destination=<path>
+Path to the destination directory.
+.Pp
+.TP
+.B \-\-source-prefix=<path>
+A set path to be prepended to each source path.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-c<string>, \-\-cookie=<string>
+Cookie.
+.Pp
+.TP
+.B \-O<port>, \-\-udp-port=<port>
+Set the UDP port for FASP.
+.Pp
+.TP
+.B \-P<port>, \-\-tcp-port=<port>
+Set the TCP port for FASP.
+.Pp
+.TP
+.B \-l<rate-in-kbps>, \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-m<rate-in-kbps>, \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-\-fasp-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-\-remote-host=<host-address>
+The address of the remote host.
+.Pp
+.TP
+.B \-\-user=<transfer-node-user>
+The transfer node user for ascp.
+.Pp
+.TP
+.B \-k<0|1|2|3>, \-\-resume-level=<0|1|2|3>
+Resume sparse checksum level.
+.Pp
+.TP
+.B \-\-ignore-host-key
+Ignore the server's SSH host key fingerprint.
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-y<ip/host>, \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+.Pp
+.TP
+.B \-j, \-\-encode-jpeg
+Encode all HTTP transfers as JPEG files.
+.Pp
+.TP
+.B \-\-file-checksum=<none|md5|sha1|sha-256|sha-384>
+Set the hash function to use for calculating and recording file hash values.
+.Pp
+.TP
+.B \-\-preserve-dates
+Preserve file timestamps.
+.Pp
+.TP
+.B \-Z<datagram-size>, \-\-mtu=<datagram-size>
+Set datagram size manually.
+.Pp
+.TP
+.B \-\-file-encrypt
+Encrypt files while sending, or decrypt an encrypted file while receiving. Encrypted files take the form of <filename>.aspera-env.
+.Pp
+.TP
+.B \-T, \-\-disable-encryption
+Disable file encryption.
+.Pp
+.TP
+.B \-\-src-base=<base>
+Specify a prefix to be stripped from each source object.
+.Pp
+.TP
+.B \-\-partial-file-suffix=<suffix>
+Specify a partial file suffix to apply to filenames.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-\-remove-empty-source-directory
+Remove empty source directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-R, \-\-move-after-transfer=<path>
+Path to the directory where files should be moved to after transfer.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-q<filename>, \-\-filelist=<filename>
+File containing a list of files to transfer.
+
+.SH SHARES BROWSE COMMAND
+
+.B Usage:
+.RS
+  \fBaspera shares\fR browse [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-user=<name>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password. The password can also be set more securely with the ASPERA_PASS environment variable.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<host>, \-\-host=<host>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-c<num>, \-\-count=<num>
+Only get up to <num> items.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path>, \-\-path=<path>
+Remote path. Defaults to "/".
+.Pp
+.TP
+.B \-T<port>, \-\-port=<port>
+The server's listening port.
+.Pp
+.TP
+.B \-k<num>, \-\-skip=<num>
+Skip the first <num> items.
+.Pp
+.TP
+.B \-o<order>, \--\-sort=<order>
+Sort by <type|size_a|size_d|mtime_a|mtime_d>. Default is to sort by name.
+
+.SH SHARES DELETE COMMAND
+
+.B Usage:
+.RS
+  \fBaspera shares\fR delete [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-user=<name>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password. The password can also be set more securely with the ASPERA_PASS environment variable.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<host>, \-\-host=<host>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path>, \-\-path=<path>
+Remote file or directory to be deleted.
+.Pp
+.TP
+.B \-T<port>, \-\-port=<port>
+The server's listening port.
+
+.SH SHARES DOWNLOAD COMMAND
+
+.B Usage:
+.RS
+  \fBaspera shares\fR download [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-user=<name>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password. The password can also be set more securely with the ASPERA_PASS environment variable.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-\-remote-host=<hostname/ip>
+The address of the remote host.
+.Pp
+.TP
+.B \-H<hostname/ip>, \-\-host=<hostname/ip>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-s<path>, \-\-source=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-d<path>, \-\-destination=<path>
+Destination directory path. Defaults to "./" .
+.Pp
+.TP
+.B \-c<string>, \-\-cookie=<string>
+Cookie.
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-\-content-protect-password=<password>
+Password used to encrypt/decrypt files.
+.Pp
+.TP
+.B \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+
+.SH SHARES RENAME COMMAND
+
+.B Usage:
+.RS
+  \fBaspera shares\fR rename [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<username>, \-\-username=<username>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname/ip>, \-\-host=<hostname/ip>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path <path>
+Path to the log files.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-j, \-\-json
+Output raw JSON.
+.Pp
+.TP
+.B \-P<path, \-\-path=<path>
+Remote path to the file to be renamed. Defaults to "/".
+.Pp
+.TP
+.B \-s<filename>, \-\-source=<filename>
+Remote file or directory that is to be renamed.
+.Pp
+.TP
+.B \-d<filename>, \-\-destination=<filename>
+New name for the file or directory.
+.Pp
+.TP
+.B \-T<port-number>, \-\-port=<port-number>
+The server's listening port.
+
+.SH SHARES UPLOAD COMMAND
+
+.B Usage:
+.RS
+  \fBaspera shares\fR upload [<args>]
+.RE
+
+.B Arguments:
+.RS
+.Pp
+.TP
+.B \-u<name>, \-\-user=<name>
+Username.
+.Pp
+.TP
+.B \-p<password>, \-\-password=<password>
+User's password. The password can also be set more securely with the ASPERA_PASS environment variable.
+.Pp
+.TP
+.B \-x<ip/host>, \-\-http-proxy=<ip/host>
+Set the HTTP proxy in the form <scheme>://<proxy-address>:<port>.
+.Pp
+.TP
+.B \-H<hostname/ip>, \-\-host=<hostname/ip>
+The server's hostname or IP address.
+.Pp
+.TP
+.B \-L, \-\-log-path=<path>
+Path to the log files.
+.Pp
+.TP
+.B \-s<path>, \-\-source=<path>
+Path to the source file.
+.Pp
+.TP
+.B \-d<path>, \-\-destination=<path>
+Destination directory path. Defaults to "./" .
+.Pp
+.TP
+.B \-\-source-prefix=<path>
+A set path to be prepended to each source path.
+.Pp
+.TP
+.B \-b<path>, \-\-base-ca-path=<path>
+Base path for CA certificates (optional).
+.Pp
+.TP
+.B \-\-port=<port-number>
+The server's listening port.
+.Pp
+.TP
+.B \-i, \-\-insecure
+Accept the certificate, even if it is invalid.
+.Pp
+.TP
+.B \-c<string>, \-\-cookie=<string>
+Cookie.
+.Pp
+.TP
+.B \-O<port>, \-\-udp-port=<port>
+Set the UDP port for FASP.
+.Pp
+.TP
+.B \-P<port>, \-\-tcp-port=<port>
+Set the TCP port for FASP.
+.Pp
+.TP
+.B \-l<rate-in-kbps>, \-\-target-rate=<rate-in-kbps>
+Set the target rate for the transfer.
+.Pp
+.TP
+.B \-m<rate-in-kbps>, \-\-min-rate=<rate-in-kbps>
+Set the minimum rate for the transfer.
+.Pp
+.TP
+.B \-\-rate-policy=<fair|low|high|fixed>
+Set the transfer rate policy.
+.Pp
+.TP
+.B \-\-cipher=<aes-128|aes-192|aes-256|none>
+Set the encryption cipher for the transfer.
+.Pp
+.TP
+.B \-\-fasp-proxy=<ip/host>
+Set the (forward) proxy address/hostname.
+.Pp
+.TP
+.B \-\-remote-host=<host-address>
+The address of the remote host.
+.Pp
+.TP
+.B \-\-user=<transfer-node-user>
+The transfer node user for ascp.
+.Pp
+.TP
+.B \-k<0|1|2|3>, \-\-resume-level=<0|1|2|3>
+Resume sparse checksum level.
+.Pp
+.TP
+.B \-\-ignore-host-key
+Ignore the server's SSH host key fingerprint.
+.Pp
+.TP
+.B \-t<port-num>, \-\-http-port=<port-num>
+Set the HTTP fallback port.
+.Pp
+.TP
+.B \-y<ip/host>, \-\-http-fallback=<ip/host>
+Allow HTTP fallback. Set fallback in the form <scheme>://<proxy-address>:<port>
+.Pp
+.TP
+.B \-Y<path, \-\-http-key-path=<path>
+Path to the HTTP key file for HTTP fallback.
+.Pp
+.TP
+.B -I<path>, --http-cert-path=<path>
+Path to the HTTP certificate file for HTTP fallback.
+.Pp
+.TP
+.B \-j, \-\-encode-jpeg
+Encode all HTTP transfers as JPEG files.
+.Pp
+.TP
+.B \-\-file-checksum=<none|md5|sha1|sha-256|sha-384>
+Set the hash function to use for calculating and recording file hash values.
+.Pp
+.TP
+.B \-\-preserve-dates
+Preserve file timestamps.
+.Pp
+.TP
+.B \-Z<datagram-size>, \-\-mtu=<datagram-size>
+Set datagram size manually.
+.Pp
+.TP
+.B \-\-file-encrypt
+Encrypt files while sending, or decrypt an encrypted file while receiving. Encrypted files take the form of <filename>.aspera-env.
+.Pp
+.TP
+.B \-T, \-\-disable-encryption
+Disable file encryption.
+.Pp
+.TP
+.B \-\-src-base=<base>
+Specify a prefix to be stripped from each source object.
+.Pp
+.TP
+.B \-\-partial-file-suffix=<suffix>
+Specify a partial file suffix to apply to filenames.
+.Pp
+.TP
+.B \-e, \-\-remove-empty-directories
+Remove empty directories after transfer.
+.Pp
+.TP
+.B \-\-remove-empty-source-directory
+Remove empty source directories after transfer.
+.Pp
+.TP
+.B \-R, \-\-remove-after-transfer
+Remove source files after transfer.
+.Pp
+.TP
+.B \-R, \-\-move-after-transfer=<path>
+Path to the directory where files should be moved to after transfer.
+.Pp
+.TP
+.B \-E<pattern>, \-\-exclude=<pattern>
+Exclude all files that match the specified pattern. For multiple patterns, repeat the -E argument.
+.Pp
+.TP
+.B \-o<never|always|older|diff|diff+older>, \-\-overwrite=<never|always|older|diff|diff+older>
+Overwrite existing files according to the specified method.
+.Pp
+.TP
+.B \-\-save-before-overwrite
+Rename an existing file if it's going to be overwritten.
+.Pp
+.TP
+.B \-q<filename>, \-\-filelist=<filename>
+File containing a list of files to transfer.
+
+
+
+.SH AUTHOR
+Copyright Aspera, Inc. An IBM Company.  All rights reserved.  http://asperasoft.com

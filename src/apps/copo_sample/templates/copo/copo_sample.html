@@ -4,6 +4,8 @@
 {% load web_tags %}
 {% load html_tags %}
 
+{% block title %}Samples{% endblock %}
+
 {% block stylesheet_block %}
     <link rel="stylesheet" href="//blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
@@ -17,7 +19,7 @@
         <link rel="stylesheet"
               href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui-noscript.css' %}">
     </noscript>
-    <!--link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}"-->
+    <link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}">
     <link rel="stylesheet" href="{% static 'copo/css/copo/sample.css' %}">
 
     <style>
@@ -63,7 +65,7 @@
 
 
 
-{% block title_block %} Index {% endblock %}
+{% block title_block %} Sample {% endblock %}
 
 {% block tagline_block %}
 
@@ -79,6 +81,7 @@
         <input type="hidden" value="{% url 'copo:copo_submissions' profile_id=profile_id %}" name="submission_url"
                id="submission_url"/>
         <input type="hidden" value="{{ profile.type }}" id="profile_type"/>
+        <input type="hidden" id="blank_manifest_url" value="{{ profile.type | get_short_profile_type | get_blank_manifest_url  }}"/>  }}"        
     </div>
 {% endblock browse_header_block %}
 
@@ -97,7 +100,7 @@
     <input type="hidden" id="groups" value="{{ groups|safe }}"/>
 
     <!-- file upload control template -->
-    <!--div id="file_upload_template1" style="display: none;">  deprecated
+    <div id="file_upload_template1" style="display: none;">
         <div style="display: inline-block;">
             <form enctype="multipart/form-data" id="file_upload_form" name="file_upload_form" method="POST"
                   action="/rest/sample_wiz/">
@@ -109,17 +112,16 @@
                 </span>
             </form>
         </div>
-    </div-->
+    </div>
 
     <!-- sample wizard section -->
-    <!-- deprecated
     <div id="wizard_toggle" class="collapse" style="margin-bottom: 20px;">
         <div class="panel panel-primary">
             <div class="panel-heading">Sample Description</div>
             <div class="panel-body">
                 <div class="fuelux" style="margin-bottom: 5px;">
                     <div class="row action-rw">
-                        ### Discard description button ###
+                        <!-- Discard description button -->
                         <div id="remove_act" class=" tiny ui basic red button"
                              data-toggle="tooltip"
                              title="Discard description"
@@ -127,7 +129,7 @@
                             <span style="padding-left: 3px;">Discard description</span>
                         </div>
 
-                        ###save for later description button ###
+                        <!-- save for later description button -->
                         <div id="reload_act" class=" tiny ui basic secondary button"
                              data-toggle="tooltip"
                              title="Save description for later"
@@ -170,7 +172,7 @@
                                            value="intro" type="hidden">
                                 </form>
 
-                                ###description wizard getting started section####
+                                <!-- description wizard getting started section -->
                                 <div class="webpop-content-div">
                                     <h4>Getting started...</h4>
                                     The following tips are provided to help you navigate the wizard:
@@ -234,7 +236,6 @@
             </div>
         </div>
     </div>
-    -->
 
     <!-- sample table section -->
     <div style="margin-top: 15px;">
@@ -255,12 +256,13 @@
                                 process of sample metadata attribution.
                                 <br/><br/>
                                 Use the
-                                <button id="help_add_button" class="circular tiny ui icon primary button">
-                                    <i class="icon add sign"></i>
+                                {#                                <button id="help_add_button" class="circular tiny ui icon button#}
+                                {#                                    {% if "ERGA" in profile.type %}pink{% else %}green{% endif %}">#}
+                                <button id="help_add_button"
+                                        class="circular tiny ui icon button">
+                                    <i class="icon sign table"></i>
                                 </button>
-                                to initiate sample description and follow the steps presented by the
-                                wizard.
-
+                                to upload {{ profile.type }} samples.
                                 <br/><br/>
                                 <div><strong>Quick Tour: </strong>To explore the various
                                     controls available on this page, click the
@@ -373,7 +375,7 @@
                     <li>
                         <a data-toggle="tab" id="image_table_nav_tab" href="#image">Sample Images</a>
                     </li>
-                     <li>
+                    <li>
                         <a data-toggle="tab" id="permits_table_nav_tab" href="#permits_div">Sample Permits</a>
                     </li>
 
@@ -400,7 +402,7 @@
                         </table>
                     </div>
                     <div class="tab-pane" id="permits_div">
-                        <table id="permits_table" class="table table-striped table-bordered" >
+                        <table id="permits_table" class="table table-striped table-bordered">
 
                             <thead></thead>
                             <tbody></tbody>
@@ -511,6 +513,7 @@
     <script src="{% static 'copo/js/copo_sample.js' %}"></script>
     <script src="{% static 'copo/js/dtol_functions.js' %}"></script>
     <script src="{% static 'copo/js/copo_parse_spreadsheet.js' %}"></script>
+    <script src="{% static 'copo/js/csv_column_updates.js' %}"></script>
     <script src="{% static 'copo/js/fastdom.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>

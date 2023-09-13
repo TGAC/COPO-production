@@ -7,7 +7,7 @@ from src.apps.copo_core.tasks import only_one, CopoBaseClassForTask
 from common.utils.logger import Logger
                  
 @app.task(bind=True, base=CopoBaseClassForTask)
-@only_one(key="biosample_submission", timeout=5)
+@only_one(key="process_dtol_sample_submission", timeout=5)
 def process_dtol_sample_submission(self):
     Logger().debug("Running process_dtol_sample_submission")
     dtol.process_pending_dtol_samples()
@@ -15,7 +15,7 @@ def process_dtol_sample_submission(self):
 
 
 @app.task(bind=True, base=CopoBaseClassForTask)
-@only_one(key="bioimage_submission", timeout=5)
+@only_one(key="process_bioimage_submission", timeout=5)
 def process_bioimage_submission(self):
     Logger().debug("Running process_bioimage_submission")
     dtol_bioimage.process_bioimage_pending_submission()

@@ -5,14 +5,13 @@ import json
 import os
 import xml.etree.ElementTree as ET
 from collections import namedtuple
-from datetime import tzinfo, timedelta
+from datetime import datetime, tzinfo, timedelta
 from common.utils.logger import Logger
 from bson.json_util import dumps
-
 import common.lookup.lookup as lookup
 from common.lookup.resolver import RESOLVER
-from .copo_isa_ena import ISAHelpers
 from common.utils import helpers
+from .copo_isa_ena import ISAHelpers
 
 l = Logger()
 
@@ -33,7 +32,19 @@ def pretty_print(data, path=None):
                   indent=4, separators=(',', ': '))
         with open(path, 'w+') as file:
             file.write(s)
+            
+# Convert string boolean to boolean
+def convertStringToBoolean(string):
+    return str(string).lower() in ("yes", "true", "t", "1")
 
+# Convert given a string to title case/sentence case 
+def convertStringToTitleCase(str):
+    return str.title() \
+        .replace("_", " ") \
+        .replace("Id", "ID") \
+        .replace("accession", " Accession") \
+        .replace("Sra", "SRA") \
+        .replace("Seq", "Sequence")
 
 # converts a dictionary to object
 def json_to_object(data_object):
@@ -98,7 +109,7 @@ def json_to_pytype(path_to_json, compatibility_mode=True):
 
 """
 def get_samples_options():
-    from web.apps.copo_core.dal.copo_da import Sample
+    from dal.copo_da import Sample
     profile_id = get_current_request().session['profile_id']
     samples = Sample(profile_id).get_all_records()
 
@@ -109,17 +120,15 @@ def get_samples_options():
 
     return option_values
 """
-
 def get_repo_type_options():
     return lookup.DROP_DOWNS['REPO_TYPE_OPTIONS']
-
 
 def get_dataverse_subject_dropdown():
     return lookup.DROP_DOWNS['DATAVERSE_SUBJECTS']
 
 """
 def get_existing_study_options():
-    from web.apps.copo_core.dal.copo_da import Submission
+    from dal.copo_da import Submission
     subs = Submission().get_complete()
     out = list()
     out.append({
@@ -145,9 +154,9 @@ def get_existing_study_options():
 def get_isasamples_json():
     '''
     returns isa samples in a profile
-    :return
+    :return:
     '''
-    from web.apps.copo_core.dal.copo_da import Sample
+    from dal.copo_da import Sample
     profile_id = get_current_request().session['profile_id']
     samples = Sample(profile_id).get_all_records()
 
@@ -177,7 +186,7 @@ def get_isasamples_json():
 
 
 def generate_sources_json(target_id=None):
-    from web.apps.copo_core.dal.copo_da import Source
+    from dal.copo_da import Source
     profile_id = get_current_request().session['profile_id']
 
     if target_id:
@@ -217,7 +226,7 @@ def get_samples_json(target_id=None):
     returns all samples in a profile (i.e isa and biosamples)
     :return:
     '''
-    from web.apps.copo_core.dal.copo_da import Sample
+    from dal.copo_da import Sample
     profile_id = get_current_request().session['profile_id']
 
     if target_id:
@@ -248,13 +257,12 @@ def get_samples_json(target_id=None):
 
     return elem_json
 
-
 def get_datafiles_json(target_id=None):
     '''
     returns all datafile record
     :return:
     '''
-    from web.apps.copo_core.dal.copo_da import DataFile
+    from dal.copo_da import DataFile
     profile_id = get_current_request().session['profile_id']
 
     if target_id:
@@ -283,7 +291,6 @@ def get_datafiles_json(target_id=None):
             })
 
     return elem_json
-
 """
 def get_study_type_options():
     return lookup.DROP_DOWNS['STUDY_TYPES']
@@ -291,6 +298,21 @@ def get_study_type_options():
 
 def get_assembly_type_option():
     return lookup.DROP_DOWNS['ASSEMBLY_TYPES']
+
+
+def get_sample_type_options():
+    data = lookup.DROP_DOWNS_SOURCE.get("sample_type_options", str())
+    if isinstance(data, str) and data:  # it's only a path, resolve to get actual data
+        data = helpers.json_to_pytype(data)
+    return data
+
+
+def get_repository_options():
+    data = lookup.DROP_DOWNS_SOURCE.get("repository_options", str())
+    if isinstance(data, str) and data:  # it's only a path, resolve to get actual data
+        data = helpers.json_to_pytype(data)
+    return data
+
 
 def get_omics_type_options():
     return lookup.DROP_DOWNS['OMICS_TYPE']
@@ -448,8 +470,8 @@ def get_ena_remote_path(submission_token):
     remote_path = os.path.join(submission_token, str(get_current_user()))
 
     return remote_path
-
 '''
+
 def get_ena_submission_url(user_name, password):
     """
     function builds the submission url to point to the specified (test or live box) ENA service
@@ -585,7 +607,6 @@ class DecoupleFormSubmission:
         self.global_key_split = "___0___"
 
     def get_schema_fields_updated(self):
-
 
         auto_dict = dict()
 
@@ -939,7 +960,10 @@ class DecoupleFormSubmission:
 
                     # get the primary field...and secondary data
                     if f_id in self.auto_fields.keys():
-                        value_list.append(self.auto_fields[f_id])
+                        if type(self.auto_fields[f_id]) == list:
+                            value_list = self.auto_fields[f_id]
+                        else:
+                            value_list.append(self.auto_fields[f_id])
                         secondary_data_list = [k for k in self.auto_fields.keys() if
                                                k.startswith(f_id + self.global_key_split)]
 

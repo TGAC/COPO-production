@@ -7,6 +7,7 @@ import celery
 import redis
 from functools import wraps
 from django.conf import settings
+from common.ena_utils.EnaChecklistHandler import ChecklistHandler, ReadChecklistHandler
 
 REDIS_CLIENT = redis.Redis(host=settings.SESSION_REDIS_HOST, port=settings.SESSION_REDIS_PORT)
 
@@ -61,4 +62,18 @@ def process_housekeeping(self):
     Logger().debug("Running process_housekeeping")
     Logger().housekeeping_logfile()
     #dtol_bioimage.housekeeping_bioimage_archive()
+    return True
+
+@app.task(bind=True, base=CopoBaseClassForTask)
+@only_one(key="update_ena_checklist", timeout=5)
+def update_ena_checklist(self):
+    Logger().debug("Running update_ena_checklist")
+    ChecklistHandler().updateCheckList()
+    return True
+
+@app.task(bind=True, base=CopoBaseClassForTask)
+@only_one(key="update_ena_read_checklist", timeout=5)
+def update_ena_read_checklist(self):
+    Logger().debug("Running update_ena_read_checklist")
+    ReadChecklistHandler().updateCheckList()
     return True
