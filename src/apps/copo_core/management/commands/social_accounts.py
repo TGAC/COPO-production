@@ -51,7 +51,7 @@ class Command(BaseCommand):
 
             cursor.execute(
                 "INSERT INTO socialaccount_socialapp (id, provider_id, provider, name, client_id, secret, key, settings) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                (1,1, "orcid", "Orcid", ORCID_CLEINT, ORCID_SECRET, " ", "{}"))
+                (1, "" , "orcid", "Orcid", ORCID_CLEINT, ORCID_SECRET, " ", "{}"))
 
             print("Creating 'socialaccount_socialapp_sites' record...\n")
             cursor.execute("INSERT INTO socialaccount_socialapp_sites (id, socialapp_id, site_id) VALUES (%s, %s, %s)",
