@@ -26,6 +26,7 @@ from common.lookup.lookup import SRA_SUBMISSION_TEMPLATE, SRA_EXPERIMENT_TEMPLAT
 import common.ena_utils.FileTransferUtils as tx
 from common.utils.logger import Logger
 import common.dal.mongo_util as mutil
+from pathlib import Path
 
 
 #REPOSITORIES = settings.REPOSITORIES
@@ -283,8 +284,11 @@ class EnaReads:
         :return:
         """
 
-        conv_dir = os.path.join(os.path.join(os.path.dirname(__file__), "data"), self.submission_id)
+        #conv_dir = os.path.join(os.path.join(os.path.dirname(__file__), "data"), self.submission_id)
+        conv_dir = os.path.join(settings.MEDIA_ROOT, "ena_read_files", self.submission_id)
+        Path(conv_dir).mkdir(parents=True,exist_ok=True)
 
+        """
         try:
             if not os.path.exists(conv_dir):
                 os.makedirs(conv_dir)
@@ -293,7 +297,7 @@ class EnaReads:
             notify_read_status(data={"profile_id": self.profile_id}, msg=message, action="error", html_id="sample_info")
             ghlper.logging_error(message, self.submission_id)
             raise
-
+        """
         ghlper.logging_info('Created submission location: ' + conv_dir, self.submission_id)
 
         return conv_dir
