@@ -3,7 +3,7 @@ __author__ = 'etuka'
 
 from django.core.management.base import BaseCommand
 
-import psycopg2
+import psycopg
 from common.utils import helpers
 
 
@@ -22,11 +22,11 @@ class Command(BaseCommand):
 
         try:
             print("Connecting to database...")
-            conn = psycopg2.connect(conn_string)
+            conn = psycopg.connect(conn_string)
 
             cursor = conn.cursor()
             print("Connected!\n")
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, psycopg.DatabaseError) as error:
             self.stdout.write(self.style.ERROR("Encountered error while creating social accounts: " + str(error)))
             raise
 
@@ -76,7 +76,7 @@ class Command(BaseCommand):
                            (4, 4, 1))
 
             self.stdout.write(self.style.SUCCESS('Successfully created social accounts'))
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, psycopg.DatabaseError) as error:
             self.stdout.write(self.style.ERROR("Encountered error while creating social accounts: " + str(error)))
             raise
 

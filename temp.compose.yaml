@@ -8,7 +8,7 @@ services:
       - "8000:8000"
       - "8100:8100"
     volumes:
-      - /Users/zef22hak/development/COPO:/copo
+      - /Users/fshaw/development/COPO:/copo
     environment:
       - ENVIRONMENT_TYPE=prod
       - ASPERA_PLUGIN_DIRECTORY=aspera_linux_plugin
