@@ -17,6 +17,7 @@ import requests
 from common.ena_utils.generic_helper import get_study_status
 import json
 from bson import ObjectId
+import re
 
 l = Logger()
 

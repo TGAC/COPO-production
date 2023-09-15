@@ -1,7 +1,7 @@
 {% load static %}
 {% load web_tags %}
 <div class="grid">
-    <div class="copo-records-panel" profile_type="{{ profile.type }}" study_status="{{ profile.study_status | get_first_value_from_array }}" study_release_date="{{ profile.study_release_date | get_first_value_from_array }}">
+    <div class="copo-records-panel" profile_type="{{ profile.type }}" shared_profile_type="{{ profile.shared_type }}"  study_status="{{ profile.study_status | get_first_value_from_array }}" study_release_date="{{ profile.study_release_date | get_first_value_from_array }}">
         <!--Panel -->
         <div class="panel">
             <!--Panel heading -->
@@ -25,7 +25,7 @@
                     <div class="col-sm-12 col-md-12 col-lg-12"
                          style="height:fit-content;">
                         <!--Panel content -->
-                        <div style="display:inline; margin-bottom: 10px;"><span class="boldText">Created: </span> {{ profile.date_created }}</div>
+                        <div class="date_createdDiv" style="display:inline; margin-bottom: 10px;" date_created="{{ profile.date_created }}"><span class="boldText">Created: </span> {{ profile.date_created }}</div>
                         
                         {% if profile.study_status %}
                             <div class="studyStatusDiv" style="margin-top: 10px;"><span class="boldText">Release Status: </span> <span id="study_status_{{profile.id}}">{{ profile.study_status | get_first_value_from_array}}</span></div>
@@ -84,11 +84,11 @@
                                 <i class="dropdown icon"></i>
                                 <div class="menu" tabindex="-1">
                                     <a class="item action" profile_component="stand-alone" anchor_type="files" data-action_type="files">Upload Files</a>                                   
-                                    <a class="item action" profile_component="stand-alone" anchor_type="read" data-action_type="read">Submit Reads</a>
+                                    <a class="item action" profile_component="stand-alone" anchor_type="reads" data-action_type="read">Submit Reads</a>
                                     <a class="item action" profile_component="stand-alone" anchor_type="assembly" data-action_type="assembly">Submit Assembly</a>
                                     <a class="item action" profile_component="stand-alone" anchor_type="seq_annotation" data-action_type="seq_annotation">Submit Annotation</a>
-                                    <a class="item action" profile_component="dtol" anchor_type="sample" data-action_type="sample">Submit DTOL/ASG manifest</a>
-                                    <a class="item action" profile_component="erga" anchor_type="sample" data-action_type="sample">Submit ERGA Manifest</a>
+                                    <a class="item action" profile_component="dtol" anchor_type="samples" data-action_type="samples">Submit DTOL/ASG manifest</a>
+                                    <a class="item action" profile_component="erga" anchor_type="samples" data-action_type="samples">Submit ERGA Manifest</a>
                                     <a class="item action" profile_component="erga" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding Manifest</a>
                                     <a class="item action" profile_component="dtol" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding Manifest</a>
                                     <a class="item action" profile_component="all" anchor_type="all" data-action_type="release_study">Release Study</a>

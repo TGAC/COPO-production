@@ -20,6 +20,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 import bson.json_util as json_util
 from django.db.models import Q
 from common.utils import helpers
+from common.schema_versions.lookup.dtol_lookups import  TOL_PROFILE_TYPES
 
 """
 @login_required
@@ -341,8 +342,14 @@ def view_groups(request):
     # g = Group().create_group(description="test descrition")
     profile_list = cursor_to_list(Profile().get_for_user())
     group_list = cursor_to_list(CopoGroup().get_by_owner(request.user.id))
+    manifest_types_lst = list(map(str.upper,TOL_PROFILE_TYPES)) # Get a list of uppercase manifest types
+    
+    # Separate uppercase profile types by commas
+    manifest_types_str = ' or '.join([', '.join(manifest_types_lst[:-1]),manifest_types_lst[-1]] if len(manifest_types_lst) > 2 else manifest_types_lst)
+    
     return render(request, 'copo/copo_group.html',
-                  {'request': request, 'profile_list': profile_list, 'group_list': group_list})
+                  {'request': request, 'profile_list': profile_list, 'group_list': group_list, 'manifest_types': manifest_types_str})
+
 
 """
 # @login_required()
