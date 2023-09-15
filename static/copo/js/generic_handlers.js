@@ -2412,7 +2412,7 @@ function get_profile_components() {
             color: "olive",
             profile_component: "dtol",
             tableID: 'sample_table',
-            recordActions: ["edit_record_single"],
+            recordActions: ["show_sample_source", "describe_record_all", "edit_record_single"],
             visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
         },
         {
@@ -2425,7 +2425,7 @@ function get_profile_components() {
             sidebarPanels: ["copo-sidebar-info", "copo-sidebar-accessions"],
             colorClass: "accessions_color",
             color: "pink",
-        profile_component: "dtol",
+            profile_component: "dtol",
             tableID: 'accessions_table',
             recordActions: ["btn-toggle"],
             visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
