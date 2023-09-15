@@ -371,7 +371,7 @@ def handler404(request, exception):
 def handler500(request):
     return error_page(request)
 
-def handler403(request, message="Apologies, you do not have permission to view this web page"):
+def handler403(request, exception, message="Apologies, you do not have permission to view this web page" ):
     try:
         LOGGER.log(message)
     finally:

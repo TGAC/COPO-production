@@ -2615,9 +2615,9 @@ class Profile(DAComponent):
     def get_num(self):
         return self.get_collection_handle().count({})
 
-    def get_all_profiles(self, user=None):
-        mine = list(self.get_for_user(user))
-        shared = list(self.get_shared_for_user(user))
+    def get_all_profiles(self, user=None, id_only=False):
+        mine = list(self.get_for_user(user, id_only))
+        shared = list(self.get_shared_for_user(user, id_only))
         return shared + mine
 
     def get_type(self, profile_id):
@@ -2643,17 +2643,22 @@ class Profile(DAComponent):
         else:
             return False
 
-    def get_for_user(self, user=None):
+    def get_for_user(self, user=None, id_only=False):
         if not user:
             user = helpers.get_current_user().id
-        docs = self.get_collection_handle().find({"user_id": user, "deleted": helpers.get_not_deleted_flag()}).sort(
-            'date_modified', pymongo.DESCENDING)
+
+        if id_only:
+            docs = self.get_collection_handle().find({"user_id": user, "deleted": helpers.get_not_deleted_flag()},{"_id":1})
+        else:
+            docs = self.get_collection_handle().find({"user_id": user, "deleted": helpers.get_not_deleted_flag()}).sort(
+                'date_modified', pymongo.DESCENDING)
+            
         if docs:
             return docs
         else:
             return None
 
-    def get_shared_for_user(self, user=None):
+    def get_shared_for_user(self, user=None, id_only=False):
         # get profiles shared with user
         if not user:
             user = helpers.get_current_user().id
@@ -2663,14 +2668,23 @@ class Profile(DAComponent):
         for g in groups:
             gp = dict(g)
             p_list.extend(gp['shared_profile_ids'])
+            
         # remove duplicates
         # p_list = list(set(p_list))
-        docs = self.get_collection_handle().find(
+
+        if id_only:
+            docs = self.get_collection_handle().find({
+            "_id": {"$in": p_list},
+                "deleted": helpers.get_not_deleted_flag()
+            },{"_id":1, "type":1})
+        else:
+            docs = self.get_collection_handle().find(
             {
                 "_id": {"$in": p_list},
                 "deleted": helpers.get_not_deleted_flag()
             }
-        ).sort("date_modified", pymongo.DESCENDING)
+            ).sort("date_modified", pymongo.DESCENDING)
+
         out = list(docs)
         for d in out:
             d['shared'] = True
@@ -2729,7 +2743,7 @@ class Profile(DAComponent):
                                                                                               pymongo.DESCENDING)
         return cursor_to_list(p)
 
-    def get_profiles_by_aggregation(self, data, currentUser=True):
+    def get_profile_records(self, data, currentUser=True):
         p = None
         owner_id = helpers.get_user_id()
 
@@ -2740,7 +2754,7 @@ class Profile(DAComponent):
                     "date_created", pymongo.DESCENDING)
             else:
 
-                p = self.get_collection_handle().aggregate(
+                p = self.get_collection_handle().find(
                     {"type": {"$regex": data, "$options": "i"}}).sort("date_created", pymongo.DESCENDING)
         return cursor_to_list(p)
 
