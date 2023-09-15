@@ -72,7 +72,7 @@ class S3Connection():
         '''
         try:
             response = self.s3_client.generate_presigned_url('put_object', Params={'Bucket': bucket, 'Key': key},
-                                                             ExpiresIn=expires_seconds)
+                                                             ExpiresIn=expires_seconds, HttpMethod="https")
         except Exception as e:
             Logger().exception(e)
             response = e
