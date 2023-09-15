@@ -62,7 +62,7 @@ class S3Connection():
         #   self.s3_client.download_fileobj(bucket, key, data, Config=config)
         Logger().log("transfer complete: " + loc)
 
-    def get_presigned_url(self, bucket, key, expires_seconds=60 * 60 * 24):
+    def get_presigned_url(self, bucket, key, expires_seconds=60*60):
         '''
         Create a pre-signed url for uploading a single file to the s3 ECS
         :param bucket: name of the bucket to which the object sould be uploaded
@@ -72,10 +72,12 @@ class S3Connection():
         '''
         try:
             response = self.s3_client.generate_presigned_url('put_object', Params={'Bucket': bucket, 'Key': key},
-                                                             ExpiresIn=expires_seconds, HttpMethod="https")
+                                                             ExpiresIn=expires_seconds)
+            response = response.replace("http://", "https://")
         except Exception as e:
             Logger().exception(e)
             response = e
+        
         return response
 
     def check_for_s3_bucket(self, uid):
