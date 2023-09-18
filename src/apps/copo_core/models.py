@@ -11,6 +11,7 @@ from django.conf import settings
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from asgiref.sync import sync_to_async
+from django.contrib.auth.models import Group
 
 class UserDetails(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -141,3 +142,14 @@ class ViewLock(models.Model):
         for l in locks:
             l.delete()
         print(locks)
+
+    
+
+class SequencingCenter(models.Model):
+    users = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.group.name

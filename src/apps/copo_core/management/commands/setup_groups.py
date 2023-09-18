@@ -3,7 +3,8 @@
 from django.core.management import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from src.apps.copo_core.models import Repository
+from src.apps.copo_core.models import Repository, SequencingCenterGroup
+
 
 
 # The class must be named Command, and subclass BaseCommand
@@ -49,3 +50,4 @@ class Command(BaseCommand):
         dtolenv_managers, created = Group.objects.get_or_create(name='dtolenv_sample_managers')
         # receive dtol env notification emails
         dtolenv_notifiers, created = Group.objects.get_or_create(name="dtolenv_sample_notifiers")
+       
