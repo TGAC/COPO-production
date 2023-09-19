@@ -25,7 +25,5 @@ class Command(BaseCommand):
         self.stdout.write("Sequencing Centers Added")
         records = SequencingCenter.objects.all()
 
-        u = User.objects.get(username="felix")
-        earlham.users.add(u)
         for record in records:
             self.stdout.write(record.name)
