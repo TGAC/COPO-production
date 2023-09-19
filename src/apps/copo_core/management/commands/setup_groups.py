@@ -3,7 +3,7 @@
 from django.core.management import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from src.apps.copo_core.models import Repository, SequencingCenterGroup
+from src.apps.copo_core.models import Repository
 
 
 

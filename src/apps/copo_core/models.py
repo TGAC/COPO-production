@@ -146,10 +146,21 @@ class ViewLock(models.Model):
     
 
 class SequencingCenter(models.Model):
-    users = models.ForeignKey(User, on_delete=models.CASCADE)
+    users = models.ManyToManyField(User)
     description = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     label = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.group.name
+        return self.name
+    
+    def create_sequencing_center(self, name, description, label):
+        self.name = name
+        self.description = description
+        self.label = label
+        self.save()
+        return self
+    
+    def remove_all_sequencing_centers(self):
+        SequencingCenter.objects.all().delete()
+        return True

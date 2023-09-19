@@ -130,6 +130,8 @@ services:
 
   postgres:
     image: postgres:15
+    ports:
+      - "5432:5432"    
     networks:
       - copo-backend-network
     volumes:
@@ -145,7 +147,7 @@ services:
       - POSTGRES_INITDB_ARGS="--data-checksums"
     deploy:
       replicas: 1
-      endpoint_mode: dnsrr
+      #endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
       placement:
