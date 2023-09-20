@@ -12,6 +12,7 @@ urlpatterns = [
     # path('delete_profile/', views.delete_profile, name="delete_profile"),
     path('delete', views.delete_profile, name="delete_profile"),
     #path('visualise/', views.copo_profile_visualise, name="copo_profile_visualise")
-        re_path(r'^(?P<profile_id>[a-z0-9]+)/release_study', views.release_study,
-            name='release_study'),
+    re_path(r'^(?P<profile_id>[a-z0-9]+)/release_study', views.release_study,
+        name='release_study'),
+    path('get_sequencing_centers/', views.get_sequencing_centers, name='get_sequencing_centers'),
 ]

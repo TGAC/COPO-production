@@ -116,6 +116,26 @@
       ]
     },
     {
+      "help_tip": "Select the Sequencing Center which will handle these samples.",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "sequencing_center"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Sequencing Center",
+      "placeholder": "Select Sequencing Center",
+      "show_in_form": true,
+      "id": "copo.profile.sequencing_center",
+      "type": "array",
+      "show_in_table": true,
+      "control": "copo-multi-select2",
+      "option_values": []
+    },
+    {
       "help_tip": "",
       "required": "true",
       "default_value": "",
@@ -222,33 +242,6 @@
       "type": "string",
       "show_in_table": false,
       "control": "text"
-    },
-    {
-      "help_tip": "Select the Sequencing Center which will handle these samples.",
-      "required": "false",
-      "default_value": "",
-      "control_meta": {},
-      "versions": [
-        "sequencing_center"
-      ],
-      "ref": "",
-      "deprecated": false,
-      "hidden": "false",
-      "label": "Sequencing Center",
-      "placeholder": "Select Sequencing Center",
-      "show_in_form": true,
-      "id": "copo.profile.sequencing_center",
-      "type": "array",
-      "show_in_table": true,
-      "control": "copo-multi-select2",
-      "option_values": [
-        {
-          "value": "WELLCOME_SANGER_INSTITUTE",
-          "label": "Wellcome Sanger Institute"
-        }
-
-        
-      ]
     }
   ],
   "description": "Attributes for COPO Profile schema.",

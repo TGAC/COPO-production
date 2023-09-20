@@ -108,10 +108,11 @@ function initiate_form_call(component) {
         success: function (data) {
             json2HtmlForm(data);
             componentData = data;
-
+            return true
         },
         error: function () {
             alert(errorMsg);
+            return false
         }
     });
 }

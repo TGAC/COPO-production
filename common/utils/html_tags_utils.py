@@ -13,6 +13,7 @@ import common.lookup.lookup as lkup
 import common.schemas.utils.data_utils as d_utils
 from .copo_lookup_service import COPOLookup
 from common.dal.copo_base_da import DataSchemas
+from src.apps.copo_core.models import SequencingCenter
 from common.dal.copo_da import ProfileInfo, Description, Profile, Source, Person, Sample, \
     Submission, EnaChecklist, TaggedSequence, \
     DataFile, DAComponent, CGCore, MetadataTemplate, Read
@@ -181,6 +182,16 @@ def generate_copo_form(component=str(), target_id=str(), component_dict=dict(), 
                 request = ThreadLocal.get_current_request()
                 is_user_in_any_manifest_group = request.user.groups.filter(
                     name__in=['dtol_users', 'erga_users', 'dtolenv_users']).exists()
+                
+                # iff this is a sequencing center field and the user is in manifest group
+                # display all sequencing centers in the dropdown menu on the form
+                if "sequencing_center" in f["id"] and is_user_in_any_manifest_group:
+                    sc = SequencingCenter().get_sequencing_centers()
+                    for each in sc:
+                        option_value = {
+                            "value": each.name, "label": each.label
+                        }
+                        f["option_values"].append(option_value)
 
                 # If a user has not been added to any of the manifest groups, display only the 'Stand-alone'
                 # project type in the dropdown menu on the form

@@ -164,3 +164,7 @@ class SequencingCenter(models.Model):
     def remove_all_sequencing_centers(self):
         SequencingCenter.objects.all().delete()
         return True
+    
+    def get_sequencing_centers(self):
+        return SequencingCenter.objects.all()
+    

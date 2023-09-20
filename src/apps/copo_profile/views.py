@@ -1,6 +1,7 @@
 from common.dal.mongo_util import cursor_to_list_str2
 #from dal.broker_da import BrokerDA, BrokerVisuals
 from common.dal.copo_da import ProfileInfo, Profile, Submission
+from src.apps.copo_core.models import SequencingCenter
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
@@ -338,3 +339,8 @@ def release_study(request, profile_id):
         #return HttpResponse(status=200, content="Project release successful.")
         dt_str = dt.strftime('%a, %d %b %Y %H:%M')
         return JsonResponse({"study_release_date": dt_str})
+
+@login_required
+def get_sequencing_centers(request):
+    centers = SequencingCenter.objects.all()
+    return HttpResponse(encode(centers), content_type='application/json')
