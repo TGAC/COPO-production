@@ -13,9 +13,8 @@ import pandas
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django_tools.middlewares import ThreadLocal
-
 import common.schemas.utils.data_utils as d_utils
-from common.utils.helpers import map_to_dict
+from common.utils.helpers import map_to_dict, get_datetime
 from common.dal.copo_da import Sample, DataFile, Profile, ValidationQueue
 from .helpers import notify_frontend
 from .copo_email import Email
@@ -538,7 +537,7 @@ class DtolSpreadsheet:
         # Iterate the list of permit filenames and create a mapping
         for permit_filename in permit_filename_lst:
             if permit_filename.endswith(".pdf"):
-                current_date = d_utils.get_datetime().strftime('%Y%m%d')
+                current_date = get_datetime().strftime('%Y%m%d')
                 new_permit_filename = permit_filename.replace('.pdf', "_" + str(current_date) + ".pdf")
                 permit_filename_mapping[permit_filename] = new_permit_filename
 
@@ -656,7 +655,7 @@ class DtolSpreadsheet:
         # Iterate the list of permit filenames and create a mapping
         for permit_filename in permit_filename_lst:
             if permit_filename.endswith(".pdf"):
-                current_date = d_utils.get_datetime().strftime('%Y%m%d')
+                current_date = get_datetime().strftime('%Y%m%d')
                 new_permit_filename = permit_filename.replace('.pdf', "_" + str(current_date) + ".pdf")
                 permit_filename_mapping[permit_filename] = new_permit_filename
 
