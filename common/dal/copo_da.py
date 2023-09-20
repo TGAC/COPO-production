@@ -2745,7 +2745,7 @@ class Profile(DAComponent):
 
     def get_profile_records(self, data, currentUser=True):
         p = None
-        owner_id = data_utils.get_user_id()
+        owner_id = helpers.get_user_id()
 
         if type(data) == str:
             if currentUser:
