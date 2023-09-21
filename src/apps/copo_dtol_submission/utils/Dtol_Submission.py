@@ -271,7 +271,7 @@ def process_pending_dtol_samples():
                             Sample().add_rejected_status(status, s_id)
                             s_ids.remove(s_id)
                             Submission().dtol_sample_rejected(submission['_id'], sam_ids=[s_id], submission_id=[])
-                            rejected_sample[sam["rack_tube"], toliderror]
+                            rejected_sample[sam["rack_tube"]] = toliderror
 
                             msg = "A public name request was rejected, some submissions were halted -" + toliderror
                             log_message(msg, Loglvl.ERROR, profile_id=profile_id)
@@ -313,7 +313,7 @@ def process_pending_dtol_samples():
                         Sample().add_rejected_status(status, s_id)
                         s_ids.remove(s_id)
                         Submission().dtol_sample_rejected(submission['_id'], sam_ids=[s_id], submission_id=[])
-                        rejected_sample[sam["rack_tube"], msg]
+                        rejected_sample[sam["rack_tube"]] = msg
                         Source().get_collection_handle().remove({"_id": sour['_id']})
                         # Submission().make_dtol_status_pending(submission['_id'])
                         continue
@@ -430,10 +430,10 @@ def process_pending_dtol_samples():
             if any(not public_names[x].get("tolId", "") for x in range(len(public_names))):
                 # hadle failure to get public names and halt submission
                 if all(public_names[x].get("status", "") == "Rejected" for x in range(len(public_names))):
-                    l.log("all missing tolid request were rejected")
                     Submission().dtol_sample_rejected(submission['_id'], sam_ids=[submission["dtol_samples"]],
                                                       submission_id=[])
-                    rejected_sample["All", "all missing tolid request were rejected"]
+                    rejected_sample["All"] =  "all missing tolid request were rejected"
+                    log_message(msg, Loglvl.ERROR, profile_id=profile_id)
                     tolidflag = False
                 else:
                     # change dtol_status to "awaiting_tolids"
@@ -445,6 +445,8 @@ def process_pending_dtol_samples():
                     #                html_id="dtol_sample_info")
                     Submission().make_dtol_status_awaiting_tolids(submission['_id'])
                     Sample().mark_processing(sample_ids = s_ids)
+                    notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
+                            html_id="dtol_sample_info")
                     tolidflag = False
 
             for name in public_names:
@@ -458,8 +460,15 @@ def process_pending_dtol_samples():
                     processedids = [str(x) for x in processed]
                     # for sampleid in processedids:
                     Submission().dtol_sample_rejected(submission['_id'], sam_ids=processedids, submission_id=[])
-                    rejected_sample[name['specimen']["specimenId"], "all missing tolid request were rejected"]
+                    rejected_sample[name['specimen']["specimenId"]] = "all missing tolid request were rejected"
 
+            if rejected_sample:
+                profile = Profile().get_record(profile_id)
+                if profile:
+                    Email().notify_sample_rejected_after_approval(project=get_profile_type(profile["type"]),
+                                                                    title=profile["title"],
+                                                                    description=profile["description"],
+                                                                    rejected_sample=rejected_sample)
             # if tolid missing for specimen skip
             if not tolidflag:
                 l.log("missing tolid, removing draft xml", type=Logtype.FILE)
@@ -490,13 +499,6 @@ def process_pending_dtol_samples():
                 l.log("submitting bundle xml to ENA", type=Logtype.FILE)
                 accessions = submit_biosample_v2(file_subfix + "-02", Sample(), submission['_id'], s_ids,
                                                  async_send=True)
-        if rejected_sample:
-            profile = Profile().get_record(profile_id)
-            if profile:
-                Email().notify_sample_rejected_after_approval(project=get_profile_type(profile["type"]),
-                                                                  title=profile["title"],
-                                                                  description=profile["description"],
-                                                                  rejected_sample=rejected_sample)
 
 
 def query_awaiting_tolids():
@@ -552,7 +554,7 @@ def query_awaiting_tolids():
                         print(str(rejsam["_id"]))
                         Submission().dtol_sample_rejected(submission['_id'], sam_ids=[str(rejsam["_id"])],
                                                           submission_id=[])
-                        rejected_sample[name.get("specimen", "").get("specimenId", ""), toliderror]
+                        rejected_sample[name.get("specimen", "").get("specimenId", "")] = toliderror
                 else:
                     l.log("Still no tolId identified for " + str(name))
                     return

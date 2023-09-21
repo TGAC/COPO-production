@@ -1,7 +1,9 @@
 import subprocess
 import json
-from common.validators import validation_messages as msg
+from common.validators.validation_messages import MESSAGES as msg
 import datetime
+from common.utils.logger import Logger
+l = Logger()
 
 def validate_date(date_text):
     try:
@@ -37,12 +39,17 @@ def check_taxon_ena_submittable(taxon, by="id"):
                 errors.append("TAXON_ID " + taxon + " is not submittable to ENA")
             if taxinfo["rank"] not in ["species", "subspecies"]:
                 errors.append("TAXON_ID " + taxon + " is not a 'species' or 'subspecies' level entity.")
+            if taxinfo["binomial"] == "false":  
+                errors.append(msg['validation_msg_invalid_binomial_name'] % (taxon, taxinfo["scientificName"]))    
         elif by == "binomial":
             if taxinfo[0]["submittable"] != 'true':
                 errors.append("TAXON_ID " + taxon + " is not submittable to ENA")
             if taxinfo[0]["rank"] not in ["species", "subspecies"]:
                 errors.append("TAXON_ID " + taxon + " is not a 'species' or 'subspecies' level entity.")
+            if taxinfo["binomial"] == "false":
+                errors.append(msg['validation_msg_invalid_binomial_name'] % (taxon, taxinfo["scientificName"]))    
     except Exception as e:
+        l.exception(e)
         if receipt:
             if receipt.decode("utf-8") == "No results.":
                 errors.append(

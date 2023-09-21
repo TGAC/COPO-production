@@ -51,7 +51,7 @@ APIValidationReport = 'ApiValidationReport'
 TestCollection = 'TestCollection'
 AssemblyCollection = 'AssemblyCollection'
 AnnotationCollection = "SeqAnnotationCollection"
-TaggedSequenceChecklistCollection = "TagSequenceChecklistCollection"
+#TaggedSequenceChecklistCollection = "TagSequenceChecklistCollection"
 TaggedSequenceCollection = "TagSequenceCollection"
 EnaChecklistCollection ="EnaChecklistCollection"
 EnaObectCollection = "EnaObjectCollection"
@@ -80,7 +80,7 @@ handle_dict = dict(publication=get_collection_ref(PubCollection),
                    assembly=get_collection_ref(AssemblyCollection),
                    seqannotation=get_collection_ref(AnnotationCollection),
                    submissionQueue=get_collection_ref(SubmissionQueueCollection),
-                   taggedSequenceChecklist=get_collection_ref(TaggedSequenceChecklistCollection),
+                   #taggedSequenceChecklist=get_collection_ref(TaggedSequenceChecklistCollection),
                    taggedSequence=get_collection_ref(TaggedSequenceCollection),
                    enaChecklist=get_collection_ref(EnaChecklistCollection),
                    enaObject=get_collection_ref(EnaObectCollection),
@@ -3354,6 +3354,7 @@ class SubmissionQueue(DAComponent):
     def __init__(self, profile_id=None):
         super(SubmissionQueue, self).__init__(profile_id, "submissionQueue")
 
+'''
 class TaggedSequenceChecklist(DAComponent):
     def __init__(self, profile_id=None):
         super(TaggedSequenceChecklist, self).__init__(profile_id, "taggedSequenceChecklist")
@@ -3363,7 +3364,7 @@ class TaggedSequenceChecklist(DAComponent):
     
     def get_checklists(self):
         return self.get_all_records_columns(projection={"primary_id": 1, "name": 1, "description": 1})
-    
+'''    
 
 class TaggedSequence(DAComponent):
     def __init__(self, profile_id=None):
@@ -3377,7 +3378,7 @@ class TaggedSequence(DAComponent):
         taggedSeq = TaggedSequence(self.profile_id).get_record(target_id)
         fields = []
         if taggedSeq:
-            checklist = TaggedSequenceChecklist().execute_query({"primary_id": taggedSeq["checklist_id"]})
+            checklist = EnaChecklist().execute_query({"primary_id": taggedSeq["checklist_id"]})
             if checklist:
                 for key, field  in checklist[0].get("fields", {}).items() :
                     if taggedSeq.get(key, ""):
