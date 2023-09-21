@@ -2412,7 +2412,7 @@ function get_profile_components() {
             color: "olive",
             profile_component: "dtol",
             tableID: 'sample_table',
-            recordActions: ["show_sample_source", "describe_record_all", "edit_record_single"],
+            recordActions: [],
             visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
         },
         {

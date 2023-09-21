@@ -980,7 +980,7 @@ class Sample(DAComponent):
     def delete_sample(self, sample_id):
         sample = self.get_record(sample_id)
         # check if sample has already been accepted
-        if sample["status"] in ["accepted", "processing", "sending"]:
+        if sample.get("status","") in ["accepted", "processing", "sending"] or sample.get("biosmpleAccession", ""):
             return "Sample {} with accession {} cannot be deleted as it has already been submitted to ENA.".format(
                 sample.get("SPECIMEN_ID", ""), sample.get("biosampleAccession", "X"))
         else:

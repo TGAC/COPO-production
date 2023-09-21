@@ -1,1 +1,1 @@
-0 3 * * * /COPO/script.sh
+0 3 * * * /COPO/script.sh >> /proc/1/fd/1 2>&1

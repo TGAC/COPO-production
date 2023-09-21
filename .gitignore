@@ -128,6 +128,10 @@ Control.ca-bundle
 Control.system-ca-bundle
 GitHub.sublime-settings
 
+static/assets/manifests/ERC*
+static/assets/manifests/ERT*
+b2drop/permits/*
+
 # Visual Studio Code #
 .vscode/*
 !.vscode/settings.json

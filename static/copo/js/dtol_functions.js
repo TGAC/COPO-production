@@ -97,6 +97,17 @@ $(document).ready(function () {
     $(document).on("click", ".delete-selected", function (e) {
 
         var saved_text = $("#dtol_sample_info").text()
+
+        var checked = $(".form-check-input:checked").closest("tr")
+        var sample_ids = []
+        $(checked).each(function (it) {
+            sample_ids.push($(checked[it]).attr("id"))
+        })
+        if (sample_ids.length == 0) {
+            alert("Please select samples to delete")
+            return
+        }
+
         BootstrapDialog.show({
             title: "Delete Samples",
             message: "Are you sure you want to delete?",
@@ -114,21 +125,17 @@ $(document).ready(function () {
                         $("#dtol_sample_info").text("Deleting")
 
                         var csrftoken = $.cookie('csrftoken');
-                        var checked = $(".form-check-input:checked").closest("tr")
-                        var sample_ids = []
-                        $(checked).each(function (it) {
-                            sample_ids.push($(checked[it]).data("id"))
-                        })
-                        console.log(sample_ids)
+
                         $.ajax({
                             headers: {'X-CSRFToken': csrftoken},
-                            url: "/copo/delete_dtol_samples/",
+                            url: "/copo/dtol_submission/delete_dtol_samples/",
                             method: "POST",
                             data: {
                                 sample_ids: JSON.stringify(sample_ids)
                             }
                         }).done(function (e) {
                             $("#profile_titles").find(".selected").click()
+                            $("#dtol_sample_info").text("Deleted")
                             dialog.close()
                         }).error(function (e) {
                             console.error(e)
