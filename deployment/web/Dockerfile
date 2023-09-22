@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     git \
     nano \
     vim \
+    less \
     libxml2-dev \
     python \
     build-essential \

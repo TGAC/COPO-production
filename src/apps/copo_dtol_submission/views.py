@@ -3,10 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseBadRequest
 from common.dal.copo_da import Sample, Profile, Submission
 from bson import json_util 
-from .utils.helpers import get_group_membership_asString
+from common.utils.helpers import get_group_membership_asString, notify_frontend
 from src.apps.copo_core.models import ViewLock
 import json
-from .utils.helpers import notify_frontend
 # Create your views here.
 @login_required
 def copo_sample_accept_reject(request):

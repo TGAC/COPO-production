@@ -14,9 +14,8 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django_tools.middlewares import ThreadLocal
 import common.schemas.utils.data_utils as d_utils
-from common.utils.helpers import map_to_dict, get_datetime
+from common.utils.helpers import map_to_dict, get_datetime, notify_frontend
 from common.dal.copo_da import Sample, DataFile, Profile, ValidationQueue
-from .helpers import notify_frontend
 from .copo_email import Email
 from common.lookup import lookup as lk
 from common.lookup.lookup import SRA_SETTINGS

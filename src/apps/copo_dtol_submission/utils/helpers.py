@@ -30,45 +30,4 @@ def query_public_name_service(sample_list):
     except Exception as e:
         Logger.log("PUBLIC NAME SERVER ERROR: " + str(e))
         return {}
-
-def get_group_membership_asString():
-    r = ThreadLocal.get_current_request()
-    gps = r.user.groups.all()
-    gps = [str(g) for g in gps]
-    return gps
-
-def get_env(env_key):
-    env_value = str()
-    if env_key in os.environ:
-        env_value = os.getenv(env_key)
-
-    # resolve for file assignment
-    file_env = os.environ.get(env_key + "_FILE", str())
-    if len(file_env) > 0:
-        try:
-            with open(file_env, 'r') as mysecret:
-                data = mysecret.read().replace('\n', '')
-                env_value = data
-        except:
-            pass
-
-    return env_value
-
-def notify_frontend(action="message", msg=str(), data={}, html_id="", profile_id="", group_name='dtol_status'):
-    """
-        function notifies client changes in Sample creation status
-        :param profile_id:
-        :param action:
-        :param msg:
-        :return:
-    """
-    # type points to the object type which will be passed to the socket and is a method defined in consumer.py
-    event = {"type": "msg", "action": action, "message": msg, "data": data, "html_id": html_id}
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        event
-    )
-    return True
-
  

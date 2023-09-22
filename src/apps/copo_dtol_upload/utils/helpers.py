@@ -9,12 +9,6 @@ from channels.layers import get_channel_layer
 from django_tools.middlewares import ThreadLocal
 from common.utils import helpers
 
-def get_group_membership_asString():
-    r = ThreadLocal.get_current_request()
-    gps = r.user.groups.all()
-    gps = [str(g) for g in gps]
-    return gps
-
 
 def make_tax_from_sample(s):
     out = dict()
@@ -155,21 +149,4 @@ def query_public_name_service(sample_list):
         l.log("PUBLIC NAME SERVER ERROR: " + str(e), type=Logtype.FILE)
         l.exception(e)
         return {}
-
-def notify_frontend(action="message", msg=str(), data={}, html_id="", profile_id="", group_name='dtol_status'):
-    """
-        function notifies client changes in Sample creation status
-        :param profile_id:
-        :param action:
-        :param msg:
-        :return:
-    """
-    # type points to the object type which will be passed to the socket and is a method defined in consumer.py
-    event = {"type": "msg", "action": action, "message": msg, "data": data, "html_id": html_id}
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        event
-    )
-    return True
 
