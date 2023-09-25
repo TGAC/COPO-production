@@ -142,7 +142,9 @@ services:
           memory: 512mb
 
   backup:
-    image: copo/copo-backup
+    image: copo/copo-backup:v18.04_1
+    command: >
+      bash -c "printenv >> /etc/environment && cron && sleep infinity"    
     networks:
       - copo-backend-network
     volumes:
@@ -238,7 +240,16 @@ services:
           memory: 512mb
 
   mongo:
-    image: copo/copo-mongo:20
+    image: copo/copo-mongo:v4.4.6_1
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /data/replica.key
+    entrypoint:
+       - bash
+       - -c
+       - |
+          openssl rand -base64 756 > /data/replica.key
+          chmod 400 /data/replica.key
+          chown 999:999 /data/replica.key
+          exec docker-entrypoint.sh $$@
     networks:
       - copo-backend-network
     volumes:
