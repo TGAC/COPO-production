@@ -66,7 +66,7 @@
                                         {% endfor %}
                                     </ul>
                                 </div>
-                                {% endif %}
+                            {% endif %}
                         {% else %}
                             {% if profile.study_status %}
                                 <div class="showEllipsisFor2TextLines profileDescription {% if profile.description.strip|length < 56 %}no_associatedTypes_marginBottom_release{% elif profile.description.strip|length >= 56 %}no_associatedTypes_marginBottom_2LineDescriptionText_release{% endif %}">
@@ -76,7 +76,26 @@
                                     {{ profile.description }}</div>
                             {% endif %}
                         {% endif %}
-                          
+
+                        {% if profile.sequencing_center %}
+                        <div class="sequencing_center_label" style="display: block;">
+                            Associated Sequencing Center(s):
+                        </div>
+                        <ul class="sequencing_center_type_div_value_ulTag">
+                            <div
+                                class="sequencing_center_type_div_value {% if profile.sequencing_center|length == 1 %}one_sequencingType_marginBottom {% elif profile.sequencing_center|length == 2 %}two_sequencingTypes_marginBottom {% elif profile.sequencing_center|length == 3 %}three_sequencingTypes_marginBottom {% else %}several_sequencingTypes_marginBottom {% endif %}">
+
+                                {% for element in profile.sequencing_center %}
+                                <li> {{ element }}
+
+                                </li>
+
+                                {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+
+                        
                         <!--Panel expanding menu -->
                         <span class="ui compact menu expanding_menu" id="expanding_menu">
                             <div class="ui up pointing dropdown link item" tabindex="0">

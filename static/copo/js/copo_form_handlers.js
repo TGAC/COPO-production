@@ -108,6 +108,7 @@ function initiate_form_call(component) {
         success: function (data) {
             json2HtmlForm(data);
             componentData = data;
+            
             return true
         },
         error: function () {
@@ -298,6 +299,7 @@ function json2HtmlForm(data) {
     // because "Stand-alone" is the default value for 'Profile Type'
     if (dialog_title.includes('Add Profile') && groups.length >= 1) {
         $dialogContent.find('.row:nth-child(4) > .col-sm-12').hide();
+        $dialogContent.find('.row:nth-child(5) > .col-sm-12').hide();
     }
 
     // If user is in a manifest group, hide 'Associated profile type(s)' field on "Edit Profile" dialog launch
