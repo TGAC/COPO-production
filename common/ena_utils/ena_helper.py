@@ -27,12 +27,13 @@ class SubmissionHelper:
 
         if doc:
             self.profile_id = doc.get("profile_id", str())
+            self.profile = Profile().get_record(self.profile_id)
             #self.description_token = doc.get("description_token", str())
 
-        #self.description = ghlper.get_description_handle().find_one({"_id": ObjectId(self.description_token)})
-        #self.bundle_samples = doc.get("bundle_samples", [])
-        self.project_release_date = doc.get("project_release_date", str())
-        self.bundle = doc.get("bundle", [])
+            #self.description = ghlper.get_description_handle().find_one({"_id": ObjectId(self.description_token)})
+            #self.bundle_samples = doc.get("bundle_samples", [])
+            self.project_release_date = doc.get("project_release_date", str())
+            self.bundle = doc.get("bundle", [])
 
     def get_converter_errors(self):
         return self.__converter_errors
@@ -103,10 +104,10 @@ class SubmissionHelper:
         #if not self.description:
         #    return study_attributes
 
-        profile = Profile().get_record(self.profile_id)
-        study_attributes["name"] = profile.get("title", str())
-        study_attributes["title"] = profile.get("title", str())
-        study_attributes["description"] = profile.get("description", str())
+        #profile = Profile().get_record(self.profile_id)
+        study_attributes["name"] = self.profile.get("title", str())
+        study_attributes["title"] = self.profile.get("title", str())
+        study_attributes["description"] = self.profile.get("description", str())
         
         #attributes = self.description.get("attributes", dict())
         #study_attributes["name"] = attributes.get("project_details", dict()).get("project_name", str())
@@ -188,6 +189,9 @@ class SubmissionHelper:
 
         file_path = os.path.join(submission_location, "datafiles.csv")
         df_attributes_df.to_csv(path_or_buf=file_path, index=False)
+        
+        if self.profile["type"] != "Stand-alone":
+            return []
 
         samples_id_object_list = [ObjectId(sample_id) for sample_id in samples_id]
 
@@ -328,13 +332,26 @@ class SubmissionHelper:
         function returns sample accessions
         :return:
         """
+        result = []
+        if self.profile["type"] != "Stand-alone":
+            doc = self.collection_handle.find_one({"_id": ObjectId(self.submission_id)}, {"accessions.sample_accessions": 1})
+            if not doc:
+                return list()
+            accessions = doc.get('accessions', dict()).get('sample_accessions', dict())
+            for key, value in accessions.items():
+                accession = dict()
+                accession["sample_accession"] = value["sraAccession"]
+                accession["biosample_accession"] = value["biosampleAccession"]
+                accession["sample_id"] = key
+                result.append(accession)   
+            return result
 
-        doc = self.collection_handle.find_one({"_id": ObjectId(self.submission_id)}, {"accessions.sample": 1})
-
-        if not doc:
-            return list()
-
-        return doc.get('accessions', dict()).get('sample', list())
+        else :
+            doc = self.collection_handle.find_one({"_id": ObjectId(self.submission_id)}, {"accessions.sample": 1})
+            if not doc:
+                return list()
+            return doc.get('accessions', dict()).get('sample', list())
+ 
 
     def get_run_accessions(self):
         """

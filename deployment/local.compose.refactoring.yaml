@@ -163,7 +163,17 @@ services:
           memory: 512mb
 
   mongo:
-    image: debbyku/copo-mongo:23
+    image: copo/copo-mongo:v4.4.6_1
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /data/replica.key
+    entrypoint:
+       - bash
+       - -c
+       - |
+          openssl rand -base64 756 > /data/replica.key
+          chmod 400 /data/replica.key
+          chown 999:999 /data/replica.key
+          exec docker-entrypoint.sh $$@    
+    hostname: copo-mongo-server    
     networks:
       - copo-backend-network
     volumes:

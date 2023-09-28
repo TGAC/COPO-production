@@ -4,6 +4,7 @@ from common.dal.copo_da import EnaChecklist
 from common.utils.logger import Logger
 import pandas as pd
 import os
+import io
 from django.conf import settings
 from openpyxl.utils.cell import get_column_letter
 from common.utils.helpers import get_datetime, get_not_deleted_flag, get_env, notify_ena_object_status
@@ -222,12 +223,17 @@ class ChecklistHandler:
 
         for checklist in checklist_set:
             if checklist["primary_id"].startswith("ERC"):
-                for key, value in read["fields"].items():
-                    value.update({"read_field": True})   
-                checklist["fields"].update(read["fields"])
+                read_fields = {key: value for key, value in read["fields"].items() if value.get("for_dtol", False) == False}
+                #for key, value in read_fields.items():                    
+                #    value.update({"read_field": True})   
+                checklist["fields"].update(read_fields)
             EnaChecklist().get_collection_handle().find_one_and_update({"primary_id": checklist["primary_id"]},
                                                                             {"$set": checklist},
                                                                             upsert=True)
+            
+            write_manifest(checklist)
+
+"""             
             df = pd.DataFrame.from_dict(list(checklist["fields"].values()), orient='columns')
             df1 = df
             df.sort_values(by=['mandatory','name'], inplace=True)
@@ -281,6 +287,7 @@ class ChecklistHandler:
                     column_length = max(df[column].astype(str).map(len).max(), len(column))
                     column_index = df.columns.get_loc(column)+1
                     writer.sheets[sheet_name].set_column(column_index, column_index, column_length)    
+""" 
 
 '''
     def parse_ena_taggedseq_spreadsheet(self, request):
@@ -427,7 +434,7 @@ class EnaCheckListSpreedsheet:
         warnings = []
         self.isupdate = False
  
-        checklist = EnaChecklist().get_collection_handle().find_one({"primary_id": self.checklist_id})
+        checklist = EnaChecklist().get_checklist(self.checklist_id)  
 
         # validate for required fields
         for v in self.required_validators:
@@ -539,8 +546,11 @@ class ReadChecklistHandler:
                             if "value_choice" in field_elm:
                                 field["type"] = "TEXT_CHOICE_FIELD"
                                 field["choice"] = field_elm["value_choice"]
-                            checklist["fields"][field_elm["name"]] = field
 
+                            if name == 'Sample':
+                                field["for_dtol"] = False
+                            field["read_field"] = True
+                            checklist["fields"][field_elm["name"]] = field
 
                         field = {}
                         field['name'] = "Organism"
@@ -548,7 +558,40 @@ class ReadChecklistHandler:
                         field['mandatory'] = "mandatory"
                         field['multiplicity'] = "single"
                         field['type'] = "TEXT_FIELD"
+                        field["for_dtol"] = False
+                        field["read_field"] = True
                         checklist['fields']["organism"] = field
+
+                        #add SPECIMEN_ID
+                        field = {}
+                        field['name'] = "SPECIMEN_ID"
+                        field['description'] = "SPECIMENT_ID"
+                        field['mandatory'] = "mandatory"
+                        field['multiplicity'] = "single"
+                        field['type'] = "TEXT_FIELD"
+                        field["for_dtol"] = True
+                        field["read_field"] = True
+                        checklist['fields']["SPECIMEN_ID"] = field
+                        #add TAXON_ID
+                        field = {}
+                        field['name'] = "TAXON_ID"
+                        field['description'] = "TAXON_ID"
+                        field['mandatory'] = "mandatory"
+                        field['multiplicity'] = "single"
+                        field['type'] = "TEXT_FIELD"
+                        field["for_dtol"] = True
+                        field["read_field"] = True
+                        checklist['fields']["TAXON_ID"] = field
+
+                        field = {}
+                        field['name'] = "biosampleAccession"
+                        field['description'] = "Biosample Accession"
+                        field['mandatory'] = "mandatory"
+                        field['multiplicity'] = "single"
+                        field['type'] = "TAXON_FIELD"
+                        field["for_dtol"] = True
+                        field["read_field"] = True
+                        checklist['fields']["biosampleAccession"] = field
 
                         checklists.append(checklist)
                         break
@@ -572,3 +615,75 @@ class ReadChecklistHandler:
             EnaChecklist().get_collection_handle().find_one_and_update({"primary_id": checklist["primary_id"]},
                                                                             {"$set": checklist},
                                                                             upsert=True)        
+            write_manifest(checklist, for_dtol=True)
+
+
+def write_manifest(checklist, for_dtol=False, samples=None, file_path=None):
+    df = pd.DataFrame.from_dict(list(checklist["fields"].values()), orient='columns')
+
+    if for_dtol:
+        df["for_dtol"] = df["for_dtol"].fillna(True)
+        df = df.loc[df["for_dtol"] == True]
+    
+    df.sort_values(by=['mandatory','name'], inplace=True)
+    df.loc[df["mandatory"] == "mandatory" , "name"] = df["name"]
+    df.loc[df["mandatory"] != "mandatory", "name"] = df["name"] + " (optional)"
+
+    df1 = df.transpose()
+    df1 = df1.loc[["name"]]
+    df1.columns = df1.iloc[0]
+
+    version = settings.MANIFEST_VERSION.get(checklist["primary_id"], str())
+    if version:
+        version = "_v" + version
+
+    if samples is not None:
+        sample_df = pd.DataFrame.from_records(samples)
+        df1 = pd.concat([df1, sample_df], axis=0, join="outer")
+        df1 = df1.fillna("")
+
+    if file_path is None:
+        file_path = os.path.join(settings.MANIFEST_PATH, settings.MANIFEST_FILE_NAME.format(checklist["primary_id"], version)  )
+
+    with pd.ExcelWriter(path=file_path, engine='xlsxwriter' ) as writer:  
+        sheet_name = checklist["primary_id"] + " " + checklist["name"]
+        sheet_name = sheet_name[:31]
+        df1.to_excel(writer, sheet_name=sheet_name, index=False, header=False)
+
+        data_validation_column_index = 0
+        for field in checklist["fields"].values():
+            name = field["name"] if field["mandatory"] == "mandatory"  else field["name"] + " (optional)"
+            if name not in df1.columns:
+                continue
+            column_index = df1.columns.get_loc(name)
+            column_length = len(name)
+            writer.sheets[sheet_name].set_column(column_index, column_index, column_length)
+            if "choice" in field:
+                choice = field["choice"]
+                column_letter = get_column_letter(column_index + 1)
+                cell_start_end = '%s2:%s1048576' % (column_letter, column_letter)
+
+                if len(choice) > 0:
+                    source = ""
+                    number_of_char_for_choice = sum([len(x) for x in choice])
+                    if number_of_char_for_choice <= 255:
+                        source = choice
+                    else:
+                        s = pd.Series(choice, name=field["name"])
+                        s.to_frame().to_excel(writer, sheet_name="data_values", index=False, header=True, startrow=0, startcol=data_validation_column_index)
+                        column_letter = get_column_letter(data_validation_column_index + 1)
+                        column_length = max(s.astype(str).map(len).max(), len(field["name"]))
+                        writer.sheets["data_values"].set_column(data_validation_column_index, data_validation_column_index, column_length)
+                        source = "=%s!$%s$2:$%s$%s" % ("data_values", column_letter, column_letter, str(len(choice) + 1))
+                        data_validation_column_index = data_validation_column_index + 1
+                    writer.sheets[sheet_name].data_validation(cell_start_end,
+                                                            {'validate': 'list',
+                                                            'source': source})
+
+        sheet_name = 'field_descriptions'           
+        df.to_excel(writer, sheet_name=sheet_name)
+
+        for column in df.columns:
+            column_length = max(df[column].astype(str).map(len).max(), len(column))
+            column_index = df.columns.get_loc(column)+1
+            writer.sheets[sheet_name].set_column(column_index, column_index, column_length)    

@@ -5,6 +5,7 @@ import bson.json_util as jsonb
 from django.http import HttpResponse
 from django_tools.middlewares import ThreadLocal
 from common.lookup.lookup import API_RETURN_TEMPLATES
+import pandas as pd
 
 def get_return_template(type):
     """
@@ -77,8 +78,9 @@ def finish_request(template=None, error=None, num_found=None, return_http_respon
             df.to_csv(response, index=False) 
             return response
         elif return_type == "rocrate":
-            rocrate_objs = generate_rocrate_response(template)
-            return HttpResponse(content=jsonb.dumps(rocrate_objs),content_type="application/json" )
+            #rocrate_objs = generate_rocrate_response(template)
+            #return HttpResponse(content=jsonb.dumps(rocrate_objs),content_type="application/json" )
+            return HttpResponse(content="Not Implemented" )
         else:    
             return HttpResponse(output, content_type="application/json")
 

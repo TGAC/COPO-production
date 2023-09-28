@@ -246,6 +246,7 @@ services:
     secrets:
       - copo_mongo_initdb_root_password
       - copo_mongo_user_password
+    hostname: copo-mongo-server
     environment:
      - MONGO_INITDB_ROOT_USERNAME=copo_admin
      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/copo_mongo_initdb_root_password

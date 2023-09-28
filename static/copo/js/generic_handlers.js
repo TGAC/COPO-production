@@ -2464,93 +2464,34 @@ function get_profile_components() {
             component: 'read',
             title: 'Reads',
             subtitle: "#component_subtitle",
-            iconClass: "fa fa-filter",
-            semanticIcon: "filter", //semantic UI equivalence of fontawesome icon
+            iconClass: "fa fa-database",
+            semanticIcon: "database", //semantic UI equivalence of fontawesome icon
             countsKey: "num_read",
             buttons: ["new-reads-spreadsheet-template",  "download-blank-manifest-template|href:#blank_manifest_url"],
             sidebarPanels: ["copo-sidebar-info"],
-            colorClass: "samples_color",
-            color: "olive",
+            colorClass: "read_color",
+            color: "orange",
             profile_component: "stand-alone",
             tableID: 'read_table',
             recordActions: ["delete_read_multi", "submit_read_multi"],
             visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
         },
         {
-            component: 'datafile',
-            title: 'Datafiles',
+            component: 'read',
+            title: 'Reads',
+            //subtitle: "#component_subtitle",
             iconClass: "fa fa-database",
-            semanticIcon: "database",
-            countsKey: "num_data",
-            colorClass: "data_color",
-            color: "black",
-            buttons: ["quick-tour-template"],
+            semanticIcon: "database", //semantic UI equivalence of fontawesome icon
+            countsKey: "num_read",
+            buttons: ["new-reads-spreadsheet-template",  "download-blank-manifest-template|href:#blank_manifest_url"],
             sidebarPanels: ["copo-sidebar-info"],
-            tableID: 'datafile_table',
-            //profile_component: true,
-            // recordActions: ["describe_record_multi", "unbundle_record_multi", "undescribe_record_multi"],
-            recordActions: [],
-            visibleColumns: 3
-        },
-        {
-            component: 'submission',
-            title: 'Submissions',
-            iconClass: "fa fa-envelope",
-            semanticIcon: "mail outline",
-            countsKey: "num_submission",
-            buttons: ["quick-tour-template"],
-            sidebarPanels: ["copo-sidebar-info"],
-            colorClass: "submissions_color",
-            color: "green",
-            tableID: 'submission_table',
-            //profile_component: true,
-            recordActions: [],
-            visibleColumns: 3
-        },
-        {
-            component: 'publication',
-            title: 'Publications',
-            iconClass: "fa fa-paperclip",
-            semanticIcon: "attach",
-            countsKey: "num_pub",
-            buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info"],
-            colorClass: "pubs_color",
+            colorClass: "read_color",
             color: "orange",
-            tableID: 'publication_table',
-            //profile_component: true,
-            recordActions: ["add_record_all", "edit_record_single", "delete_record_multi"],
-            visibleColumns: 4
-        },
-        {
-            component: 'metadata_template',
-            title: 'Metadata Template',
-            iconClass: "fa fa-table",
-            semanticIcon: "attach",
-            countsKey: "num_temp",
-            buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info"],
-            colorClass: "pubs_color",
-            color: "blue",
-            tableID: 'metadata_template_table',
-            recordActions: ["add_record_all", "edit_record_single", "delete_record_multi"],
-            visibleColumns: 4
-        },
-        {
-            component: 'person',
-            title: 'People',
-            iconClass: "fa fa-users",
-            semanticIcon: "users",
-            countsKey: "num_person",
-            buttons: ["quick-tour-template", "new-component-template"],
-            sidebarPanels: ["copo-sidebar-info"],
-            colorClass: "people_color",
-            color: "red",
-            tableID: 'person_table',
-            //profile_component: true,
-            recordActions: ["add_record_all", "edit_record_single"],
-            visibleColumns: 5
-        },
+            profile_component: "dtol",
+            tableID: 'read_table',
+            recordActions: ["delete_read_multi", "submit_read_multi"],
+            visibleColumns: 3 //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
+        },        
 
         {
             component: 'seqannotation',
@@ -2567,7 +2508,21 @@ function get_profile_components() {
             recordActions: ["add_record_all", "edit_record_single", "delete_record_multi", "submit_annotation_multi"],
             visibleColumns: 5
         },
-
+        {
+            component: 'seqannotation',
+            title: 'Sequence Annotations',
+            iconClass: "fa fa-database",
+            semanticIcon: "database",
+            countsKey: "num_seqannotation",
+            buttons: ["quick-tour-template", "new-component-template"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "data_color",
+            color: "yellow",
+            tableID: 'seqannotation_table',
+            profile_component: "dtol",
+            recordActions: ["add_record_all", "edit_record_single", "delete_record_multi", "submit_annotation_multi"],
+            visibleColumns: 5
+        },
         {
             component: 'assembly',
             title: 'Assembly',
@@ -2584,6 +2539,21 @@ function get_profile_components() {
             visibleColumns: 5
         } ,
         {
+            component: 'assembly',
+            title: 'Assembly',
+            iconClass: "fa fa-database",
+            semanticIcon: "database",
+            countsKey: "num_assembly",
+            buttons: [ "new-component-template"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "assembly_color",
+            color: "violet",
+            tableID: 'assembly_table',
+            profile_component: "dtol",
+            recordActions: ["add_record_all", "edit_record_single", "delete_record_multi", "submit_assembly_multi"],
+            visibleColumns: 5
+        } ,        
+        {
             component: 'files',
             title: 'Files',
             iconClass: "fa fa-file",
@@ -2598,6 +2568,21 @@ function get_profile_components() {
             recordActions: [ "add_local_all", "add_terminal_all", "delete_record_multi"],   // , "delete_record_multi, submit_assembly_multi , "edit_record_single" 
             visibleColumns: 5
         },
+        {
+            component: 'files',
+            title: 'Files',
+            iconClass: "fa fa-file",
+            semanticIcon: "file",
+            countsKey1: "num_assembly",
+            buttons: ["new-local-file","new-terminal-file"],
+            sidebarPanels: ["copo-sidebar-info"],
+            colorClass: "files_color",
+            color: "blue",
+            tableID: 'files_table',
+            profile_component: "dtol",
+            recordActions: [ "add_local_all", "add_terminal_all", "delete_record_multi"],   // , "delete_record_multi, submit_assembly_multi , "edit_record_single" 
+            visibleColumns: 5
+        },        
         {
             component: 'taggedseq',
             title: 'Barcoding Manifests',

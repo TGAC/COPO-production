@@ -139,15 +139,23 @@ def delete_ena_records(profile_id, target_ids=list(), target_id=None):
 
 
 def generate_read_record(profile_id=str(), checklist_id=str()):
-    default_label = ["study_accession", "ena_file_upload_status", "biosampleAccession", "sraAccession", "status",  "run_accession", "experiment_accession", "error"]
     checklist = EnaChecklist().execute_query({"primary_id" : checklist_id})
     if not checklist:
         return dict(dataSet=[],
                     columns=[],
                     )
-
+    label = []
+    default_label = []
     fields = checklist[0]["fields"]
-    label =  [ x for x in fields.keys() if fields[x]["type"] != "TEXT_AREA_FIELD" ] 
+    if checklist_id == 'read':
+        label =  [ x for x in fields.keys() if fields[x]["type"] != "TEXT_AREA_FIELD" and fields[x].get("for_dtol", True) ]
+        default_label = ["ena_file_upload_status", "study_accession",  "sraAccession", "status",  "run_accession", "experiment_accession", "error"]
+
+    else:
+        label = [ x for x in fields.keys() if fields[x]["type"] != "TEXT_AREA_FIELD" and not fields[x].get("for_dtol", False) ]
+        default_label = ["ena_file_upload_status", "study_accession",  "biosampleAccession", "sraAccession", "status",  "run_accession", "experiment_accession", "error"]
+
+
     read_label =  [ x for x in fields.keys() if fields[x]["type"] != "TEXT_AREA_FIELD" and fields[x].get("read_field", False) ] 
 
     data_set = []

@@ -83,7 +83,7 @@ EXPORT_LOCATIONS = {
     }
 }
 
-ENA_TYPES = ["ena", "ena-asm"]
+ENA_TYPES = ["ena", "ena-asm", ""]
 
 
 

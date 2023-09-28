@@ -3421,8 +3421,17 @@ class EnaChecklist(DAComponent):
         super(EnaChecklist, self).__init__(profile_id, "enaChecklist")
 
     def get_checklist(self, checklist_id):
-        return self.execute_query({"primary_id": checklist_id})
-    
+        checklists = self.execute_query({"primary_id": checklist_id})
+        if checklists:
+            if checklist_id == 'read':
+                fields = checklists[0].get("fields", {})
+                fields = {k: v for k, v in fields.items() if v.get("for_dtol", True)}
+                checklist = checklists[0]
+                checklist["fields"] = fields
+                return checklist
+
+            return checklists[0]
+
     def get_barcoding_checklists_no_fields(self):
         return self.get_all_records_columns(filter_by={"primary_id": {"$in" : settings.BARCODING_CHECKLIST}},  projection={"primary_id": 1, "name": 1, "description": 1})
     

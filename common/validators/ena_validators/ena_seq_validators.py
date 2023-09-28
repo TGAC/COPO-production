@@ -29,6 +29,9 @@ class SinglePairedValuesValidator(Validator):
 class TaxonValidator(Validator):
 
     def validate(self):
+        if "organism" not in self.data.columns:
+            return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
+        
         Entrez.api_key = lookup.NIH_API_KEY
         # build dictioanry of species in this manifest  max 200 IDs per query
         taxon_id_set = set([x for x in self.data['organism'].tolist() if x])
@@ -52,6 +55,8 @@ class GzipValidator(Validator):
     def validate(self):
         for row in self.data.iterrows():
             file_names = row[1]["file_name"]
+            if file_names.strip() == "":
+                continue
             for f in file_names.split(","):
                 if not f.strip().endswith(".gz"):
                     error_str = f + ": File not gzipped. All files must be gzipped and end in '.gz'"
@@ -62,15 +67,19 @@ class GzipValidator(Validator):
 
 class ReadNotInSubmissionQueueValidator(Validator):
     def validate(self):
-        sample_names = list(self.data["sample"])
-        samples = Sample(profile_id=self.profile_id).get_all_records_columns(projection=dict(read=1,name=1), filter_by=dict(profile_id=self.profile_id, name={"$in": sample_names}))
         sampleMap = {}
-        for sample in samples:
-            sampleMap[sample["name"]] = sample.get("read",[])
-            
+        if "sample" not in self.data.columns:
+            biosamlpeAccessions = list(self.data["biosampleAccession"])
+            samples = Sample(profile_id=self.profile_id).get_all_records_columns(projection=dict(read=1,name=1, biosampleAccession=1), filter_by=dict(profile_id=self.profile_id, biosampleAccession={"$in": biosamlpeAccessions}, read={"$exists": True}))
+            sampleMap = {sample["biosampleAccession"]: sample.get("read",[]) for sample in samples if "biosamlpeAccession" in sample}
+        else:
+            sample_names = list(self.data["sample"])
+            samples = Sample(profile_id=self.profile_id).get_all_records_columns(projection=dict(read=1,name=1), filter_by=dict(profile_id=self.profile_id, name={"$in": sample_names}, read={"$exists": True}))
+            sampleMap = {sample["name"]: sample.get("read",[]) for sample in samples}
+             
         for index, row in self.data.iterrows():
             file_names = row["file_name"]
-            sample_name = row["sample"]
+            sample_name = row["sample"] if "sample" in self.data.columns else row["biosampleAccession"]
             reads = sampleMap.get(sample_name, None)
             if reads:
                 for read in reads:
@@ -83,15 +92,15 @@ class DuplicatedDataFile(Validator):
     def validate(self):
         user = ThreadLocal.get_current_user()
         file_names = list(self.data["file_name"])
-        samples = Sample(profile_id=self.profile_id).get_collection_handle().find({"$or" : [{"created_by" : str(user.id)}, {"updated_by" : str(user.id)}]} ,{"read":1,"name":1, "profile_id":1})
+        samples = Sample(profile_id=self.profile_id).get_collection_handle().find({"$or" : [{"created_by" : str(user.id)}, {"updated_by" : str(user.id)}], "read":{"$exists": True}} ,{"read":1,"name":1, "biosampleAccession":1, "profile_id":1})
         fileMap = {}
         for sample in samples:
             for read in sample.get("read", []):
                 files = read.get("file_name", str()).split(",")
                 for f in files:
-                    fileMap[f] = sample["profile_id"]+ " | "+ sample["name"]
+                    fileMap[f] = sample["profile_id"]+ " | "+ (sample["name"] if "name" in sample else sample["biosampleAccession"])
 
-        file_name_list = [ file_name  for paried_names in file_names for file_name in paried_names.split(",")]
+        file_name_list = [ file_name  for paried_names in file_names if paried_names.strip() != "" for file_name in paried_names.split(",")]
         file = [ x for x in file_name_list if file_name_list.count(x) > 1]
 
         for f in set(file):
@@ -100,7 +109,7 @@ class DuplicatedDataFile(Validator):
 
         for index, row in self.data.iterrows():
             file_names = row["file_name"]
-            sample_name = self.profile_id + " | " + row["sample"]
+            sample_name = self.profile_id + " | " + (row["sample"] if "sample" in self.data.columns else row["biosampleAccession"])
             files = file_names.split(",")
             for f in files:
                 sample = fileMap.get(f, None)

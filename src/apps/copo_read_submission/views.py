@@ -19,9 +19,11 @@ from common.ena_utils import generic_helper as ghlper
 import inspect
 from common.validators.validator import Validator
 from common.validators.ena_validators import ena_seq_validators as required_validators
-from common.ena_utils.EnaChecklistHandler import EnaCheckListSpreedsheet
+from common.ena_utils.EnaChecklistHandler import EnaCheckListSpreedsheet, write_manifest
+
 from common.utils.helpers import get_datetime, get_not_deleted_flag,map_to_dict
 from .utils import ena_read  
+from io import BytesIO
 
 l = Logger()
 
@@ -155,61 +157,67 @@ def save_ena_records(request):
         }
         '''
 
+        if "biosampleAccession" in s:
+            sample = Sample().get_collection_handle().find_one({"profile_id": profile_id, "biosampleAccession": s["biosampleAccession"]})   
+        else:
+            # check if sample already exists, if so, add new datafile
+            sample = Sample().get_collection_handle().find_one({"name": s["Sample"], "profile_id": profile_id})
 
-        # check if sample already exists, if so, add new datafile
-        sample = Sample().get_collection_handle().find_one({"name": s["Sample"], "profile_id": profile_id})
         insert_record = {}
 
-        if not sample or sample.get("organism","") != s["Organism"]:
-            if not sample:
-                sample = dict()
+        if "Organism" in s:
+            if not sample or sample.get("organism","") != s["Organism"]:
+                if not sample:
+                    sample = dict()
 
-            source = dict()
-            curl_cmd = "curl " + \
-                       "https://www.ebi.ac.uk/ena/taxonomy/rest/scientific-name/" + s["Organism"].replace(" ", "%20")
-            receipt = subprocess.check_output(curl_cmd, shell=True)
-            # ToDo - exit if species not found
-            print(receipt)
+                source = dict()
+                curl_cmd = "curl " + \
+                        "https://www.ebi.ac.uk/ena/taxonomy/rest/scientific-name/" + s["Organism"].replace(" ", "%20")
+                receipt = subprocess.check_output(curl_cmd, shell=True)
+                # ToDo - exit if species not found
+                print(receipt)
 
-            taxinfo = json.loads(receipt.decode("utf-8"))
+                taxinfo = json.loads(receipt.decode("utf-8"))
 
-            # create source from organism
-            termAccession = "http://purl.obolibrary.org/obo/NCBITaxon_" + str(taxinfo[0]["taxId"])
-            source["organism"] = \
-                {"annotationValue": s["Organism"], "termSource": "NCBITAXON", "termAccession":
-                    termAccession}
-            # source["profile_id"] = request.session["profile_id"]
-            source["date_modified"] = dt
-            source["profile_id"] = profile_id
-            source["deleted"] = "0"
-            source["name"] = s["Sample"]
-            insert_record["created_by"] = uid
-            insert_record["time_created"] = get_datetime()
-            insert_record["date_created"] = dt
+                # create source from organism
+                termAccession = "http://purl.obolibrary.org/obo/NCBITaxon_" + str(taxinfo[0]["taxId"])
+                source["organism"] = \
+                    {"annotationValue": s["Organism"], "termSource": "NCBITAXON", "termAccession":
+                        termAccession}
+                # source["profile_id"] = request.session["profile_id"]
+                source["date_modified"] = dt
+                source["deleted"] = "0"
+                source["name"] = s["Sample"]
+                source["profile_id"] = profile_id                
+                insert_record["created_by"] = uid
+                insert_record["time_created"] = get_datetime()
+                insert_record["date_created"] = dt
 
-            source_id = str(
-                Source().get_collection_handle().find_one_and_update({"organism.termAccession": termAccession, "profile_id": profile_id},
-                                                                     {"$set": source, "$setOnInsert": insert_record},
-                                                                     upsert=True, return_document=ReturnDocument.AFTER)["_id"])
-            sample["derivesFrom"] = source_id
-            insert_record["status"] = "pending"
-
-
-        # create associated sample
-        sample["sample_type"] = "isasample"
-        #sample["derivesFrom"] = source_id
-        sample["profile_id"] = profile_id
-        sample["name"] = s["Sample"]
-        sample["date_modified"] = dt 
-        sample["deleted"] = get_not_deleted_flag()
-        #sample["read"] = {"file_name": [s["file_name"]] }
-        sample["checklist_id"] = request.session["checklist_id"]
-        sample["updated_by"] = uid
+                source_id = str(
+                    Source().get_collection_handle().find_one_and_update({"organism.termAccession": termAccession, "profile_id": profile_id},
+                                                                        {"$set": source, "$setOnInsert": insert_record},
+                                                                        upsert=True, return_document=ReturnDocument.AFTER)["_id"])
+                sample["derivesFrom"] = source_id
+                insert_record["status"] = "pending"
+                insert_record["profile_id"] = profile_id                
+                sample["name"] = s["Sample"]
+                # create associated sample
+                insert_record["sample_type"] = "isasample"
+                #sample["derivesFrom"] = source_id
+                #sample["read"] = {"file_name": [s["file_name"]] }
+        else:
+            sample["name"] = s["biosampleAccession"]
+                
         sample.pop("created_by", None)
         sample.pop("time_created", None)
         sample.pop("date_created", None)
         sample.pop("status", None) 
+        sample["date_modified"] = dt 
+        sample["deleted"] = get_not_deleted_flag()           
+        sample["updated_by"] = uid
+        sample["checklist_id"] = request.session["checklist_id"]
 
+            
         for key, value in s.items():
             header = key
             header = header.replace(" (optional)", "", -1)
@@ -217,9 +225,16 @@ def save_ena_records(request):
             if upper_key in column_name_mapping:
                 sample[column_name_mapping[upper_key]] = value
 
-        sample = Sample().get_collection_handle().find_one_and_update({"profile_id": profile_id, "name":s["Sample"]},
+
+        condition = {"profile_id": profile_id}
+        if "biosampleAccession" in s:
+            condition["biosampleAccession"] = s["biosampleAccession"]
+        else:
+            condition["name"] = s["Sample"]
+        sample = Sample().get_collection_handle().find_one_and_update(condition,
                                                                     {"$set": sample, "$setOnInsert": insert_record},
                                                                     upsert=True,  return_document=ReturnDocument.AFTER)
+ 
         sample_id = str(sample["_id"])
        
 
@@ -531,3 +546,15 @@ def copo_reads(request, profile_id):
     profile = Profile().get_record(profile_id)
     checklists = EnaChecklist().get_sample_checklists_no_fields()
     return render(request, 'copo/copo_read.html', {'profile_id': profile_id, 'profile': profile, 'checklists': checklists})
+
+
+@login_required
+def download_initial_read_manfiest(request, profile_id):
+    request.session["profile_id"] = profile_id
+    samples = Sample().get_all_records_columns(filter_by={"profile_id": profile_id}, projection={"_id":0, "biosampleAccession":1, "TAXON_ID":1, "SPECIMEN_ID":1})
+    checklist = EnaChecklist().get_collection_handle().find_one({"primary_id": "read"})
+    bytesstring = BytesIO()
+    write_manifest(checklist=checklist, samples=samples, for_dtol=True, file_path=bytesstring)
+    response = HttpResponse(bytesstring.getvalue(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response['Content-Disposition'] = f"attachment; filename=read_manfiest_{profile_id}.xlsx"
+    return response

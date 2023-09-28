@@ -536,6 +536,9 @@ class EnaReads:
 
             return result
 
+        if not samples:
+            return dict(status=True, value='')
+        
         # filter out already submitted samples
         sample_accession_list = self.submission_helper.get_sample_accessions()
         submitted_samples_id = [x['sample_id'] for x in sample_accession_list]
@@ -1392,7 +1395,7 @@ class EnaReads:
         # completion formalities
         if submission_errors:
             result['status'] = False
-            result['message'] = submission_errors
+            result['message'] = " \n".join(submission_errors)
         else:
             # do post submission clean-up
 

@@ -1,3 +1,11 @@
+function get_checklist_id() {
+    if($("#checklist_id").length > 0) {
+        return $("#checklist_id").find(":selected").val();
+    } else {
+        return "read"
+    }
+}
+
 var dialog = new BootstrapDialog({
     title: "Upload Read Manifest",
     message: "<div><input type='file' id='fileid' style='display:none' /></div>",
@@ -128,7 +136,7 @@ $(document).ready(function () {
             $(element).removeClass("alert-danger").addClass("alert-info")
             $(element).html(d.message)
             var args_dict = {}
-            args_dict["sample_checklist_id"] = $("#checklist_id").find(":selected").val();
+            args_dict["sample_checklist_id"] =  get_checklist_id();
             load_records(componentMeta, args_dict); // call to load component records
         }    
     }
@@ -148,10 +156,9 @@ $(document).ready(function () {
 
     //load_records(componentMeta); // call to load component records
 
-    var args_dict = {}
-    args_dict["sample_checklist_id"] = $("#checklist_id").find(":selected").val();
+    var args_dict = {"sample_checklist_id":  get_checklist_id()}
+    $('.download-blank-manifest-template').attr("href",  $('#blank_manifest_url_'+ get_checklist_id()).val())
     load_records(componentMeta, args_dict); // call to load component records
-    $('.download-blank-manifest-template').attr("href",  $('#blank_manifest_url_'+args_dict["sample_checklist_id"]).val())
 
     //register_resolvers_event(); //register event for publication resolvers
 
@@ -170,7 +177,7 @@ $(document).ready(function () {
 
     //add new component button
     $(document).off("click").on("click", ".new-reads-spreadsheet-template", function (event) {
-        url =  "/copo/copo_read/ena_read_manifest_validate/" + uid + "?checklist_id=" + $("#checklist_id").find(":selected").val();
+        url =  "/copo/copo_read/ena_read_manifest_validate/" + uid + "?checklist_id=" + get_checklist_id();
         dialog.realize();
         dialog.setMessage($('<div></div>').load(url));
         dialog.open();
@@ -217,6 +224,7 @@ $(document).ready(function () {
     //******************************Functions Block******************************//
 
 
+
     function do_record_task(event) {
         var task = event.task.toLowerCase(); //action to be performed e.g., 'Edit', 'Delete'
         var tableID = event.tableID; //get target table
@@ -228,20 +236,8 @@ $(document).ready(function () {
             records.push(item);
         });
 
-        //add task
-        if (task == "add") {
-            url = "/copo/copo_read/ena_annotation/" + uid
-            handle_add_n_edit(url)
-        } else if (task == "edit") {
-            url = "/copo/copo_read/ena_annotation/" + uid + "/" + records[0].record_id
-            handle_add_n_edit(url)
-        }
-        else {
-            var args_dict = {}
-            args_dict["sample_checklist_id"] = $("#checklist_id").find(":selected").val();            
-            form_generic_task("sample", task, records, args_dict);
-        }
-
+        var args_dict = {"sample_checklist_id": get_checklist_id()};
+        form_generic_task("sample", task, records, args_dict);
     }
 
 
@@ -274,7 +270,7 @@ function upload_spreadsheet(file) {
     $("#warning_info2").fadeOut("fast")
     var csrftoken = $.cookie('csrftoken');
     form = new FormData()
-    form.append("checklist_id", $("#checklist_id").find(":selected").val())
+    form.append("checklist_id",  get_checklist_id())
     form.append("file", file)
     var percent = $(".percent")
     jQuery.ajax({
