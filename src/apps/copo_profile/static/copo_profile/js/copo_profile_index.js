@@ -409,7 +409,7 @@ function deleteProfileRecord(profileRecordID) {
                         // Delete the profile
                         BootstrapDialog.show({
                             title: "Profile deleted",
-                            message: "Profile has been deleted. Web page will reload in 3 seconds.",
+                            message: "Profile has been deleted.",
                             cssClass: "copo-modal1",
                             closable: true,
                             animate: true,
@@ -418,10 +418,10 @@ function deleteProfileRecord(profileRecordID) {
 
                         document.getElementById(profileRecordID).closest(".copo-records-panel").style.display = 'none';
 
-                        // Refresh web page to have change reflected after 3 seconds
+                        // Refresh web page to have change reflected
                         setTimeout(function () {
                             window.location.reload();
-                        }, 3000);
+                        }, 1000);
 
 
                     }).error(function (data_response) {

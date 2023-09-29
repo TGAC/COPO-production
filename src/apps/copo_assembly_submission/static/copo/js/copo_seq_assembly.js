@@ -12,9 +12,9 @@ $(document).ready(function () {
         message: "",
         buttons: [{
             id: 'submit_assembly_button',
-            label: 'Submit Aseembly',
+            label: 'Submit Assembly',
             cssClass: 'btn-primary',
-            title: 'Submit Aseembly',
+            title: 'Submit Assembly',
             action: function () {
                 doPost()
                 var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.

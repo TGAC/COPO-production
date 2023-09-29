@@ -133,7 +133,7 @@ class BrokerDA:
         if action_type == "add" and status == "success":
             if "profile" in self.component:
                 report_metadata[
-                    "message"] = "New " + self.component + " record created! <br><br>Web page will refresh in 3 seconds."
+                    "message"] = "New " + self.component + " record created!"
             else:
                 report_metadata["message"] = "New " + self.component + " record created!"
         elif action_type == "add" and status == "duplicated":
@@ -142,7 +142,7 @@ class BrokerDA:
         elif action_type == "add" and status != "success":
             report_metadata["message"] = "There was a problem creating the " + self.component + " record!"
         elif action_type == "edit" and status == "success":
-            report_metadata["message"] = "Record updated! <br><br>Web page will refresh in 3 seconds."
+            report_metadata["message"] = "Record updated!"
         elif action_type == "edit" and status == "duplicated":
             targetid = kwargs["target_id"]
             targetprofiletitle = self.da_object.get_record(targetid).get("title", "")
@@ -165,7 +165,7 @@ class BrokerDA:
                 # if the target ID  matches the ID in the list and the targeted profile title matches the title
                 # in the editable field then, proceed with the 'edit' task
                 record_object = self.da_object.save_record(auto_fields=self.auto_fields, **kwargs)
-                report_metadata["message"] = "Record updated! <br><br>Web page will refresh in 3 seconds."
+                report_metadata["message"] = "Record updated!"
                 status = "success"
             elif targetprofiletitle != self.auto_fields["copo.profile.title"] and targetid != lst_of_profile_ids[0].get(
                     "_id", "") and len(lst_of_profile_ids) == 1:
