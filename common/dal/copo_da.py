@@ -22,6 +22,7 @@ from common.schema_versions.lookup.dtol_lookups import STANDALONE_ACCESSION_TYPE
 from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
 from pymongo.collection import ReturnDocument
 from common.utils import helpers 
+from src.apps.copo_core.models import SequencingCenter
 
 lg = settings.LOGGER
 
@@ -2725,22 +2726,55 @@ class Profile(DAComponent):
             if 'datasets' in p['dataverse']:
                 return p['dataverse']['datasets']
 
-    def get_dtol_profiles(self):
-        p = self.get_collection_handle().find(
-            {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]}}).sort(
-            "date_created",
-            pymongo.DESCENDING)
+    def get_users_seq_centers(self):
+        user = ThreadLocal.get_current_user()
+        seq_centers = SequencingCenter.objects.filter(users=user)
+        return seq_centers
+
+    def get_dtol_profiles(self, filter="all_profiles"):
+        
+        if filter=="all_profiles":
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
+        elif filter=='my_profiles':
+            seq_centers = self.get_users_seq_centers()
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]},
+                 "sequencing_center": {"$in": [str(x.id) for x in seq_centers]}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
         return cursor_to_list(p)
 
-    def get_erga_profiles(self):
-        p = self.get_collection_handle().find(
-            {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]}}).sort("date_created", pymongo.DESCENDING)
+    def get_erga_profiles(self, filter="all_profiles"):
+        
+        if filter=="all_profiles":
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]}}).sort("date_created", pymongo.DESCENDING)
+            
+        elif filter=='my_profiles':
+            seq_centers = self.get_users_seq_centers()  
+            if filter=="all_profiles":
+                p = self.get_collection_handle().find(
+                    {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]},
+                    "sequencing_center": {"$in": [str(x.id) for x in seq_centers]}}).sort(
+                    "date_created",
+                    pymongo.DESCENDING)
         return cursor_to_list(p)
 
-    def get_dtolenv_profiles(self):
-        p = self.get_collection_handle().find(
-            {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]}}).sort("date_modified",
-                                                                                              pymongo.DESCENDING)
+    def get_dtolenv_profiles(self, filter="all_profiles"):
+        if filter=="all_profiles":
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]}}).sort("date_modified",
+                                                                                                pymongo.DESCENDING)
+        elif filter=='my_profiles':
+            seq_centers = self.get_users_seq_centers()
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]},
+                 "sequencing_center": {"$in": [str(x.id) for x in seq_centers]}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
         return cursor_to_list(p)
 
     def get_profile_records(self, data, currentUser=True):

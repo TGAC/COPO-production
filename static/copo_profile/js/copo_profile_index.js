@@ -30,6 +30,7 @@ $(document).ready(function () {
     // Add new profile button
     $(document).on("click", ".new-component-template", function () {
         initiate_form_call(component);
+        
     });
 
     $(document).on("click", "#accept_reject_shortcut", function () {
@@ -994,8 +995,9 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
         .addEventListener('change', function () {
             // Perform the following only if selected 'Profile Type' is not "Stand-alone"
             if (this.value !== 'Stand-alone') {
-                $('.row:nth-child(4) > .col-sm-12').show(); // Show 'Associated Profile Type(s)' field
-
+                $('.row:nth-child(4) > .col-sm-12').show();// Show 'Associated Profile Type(s)' field
+                $('.row:nth-child(5) > .col-sm-12').show(); 
+                $('[id*="sequencing_center"]').parent().parent().hide().show()
                 let selected_type = get_acronym(this.value);
                 let multi_select_options = $('.copo-multi-select2');
                 let associated_type_option = multi_select_options.find(
@@ -1034,6 +1036,8 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
                 }
             } else {
                 $('.row:nth-child(4) > .col-sm-12').hide(); // Hide 'Associated Profile Type(s)' field
+                $('.row:nth-child(5) > .col-sm-12').hide();
+                $('[id*="sequencing_center"]').parent().parent().hide().hide
             }
         });
 }

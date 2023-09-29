@@ -134,6 +134,14 @@
     <div class="row">
 
         <div class="col-lg-3 col-md-3 col-sm-3">
+            <ul class="nav nav-tabs" id="sequencing_center_filter">
+                <li class="hot_tab in active">
+                    <a data-toggle="tab" href="my_profiles">Profiles for My Sequencing Center</a>
+                </li>
+                <li class="hot_tab in">
+                    <a data-toggle="tab" href="all_profiles">All profiles</a>
+                </li>  
+            </ul>
 
             <table id="profile_titles" class="table table-hover table-condensed">
                 <thead>
@@ -213,6 +221,7 @@
     <script src="{% static 'copo/js/copo_parse_spreadsheet.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>
+    <script src="{% static 'copo_dtol_submission/js/copo_sample_accept_reject.js' %}"></script>
     <script>socket = undefined</script>
 
 {% endblock %}
