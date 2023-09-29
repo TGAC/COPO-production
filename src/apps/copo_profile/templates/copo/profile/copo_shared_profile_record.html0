@@ -63,18 +63,6 @@
                                 Actions
                                 <i class="dropdown icon"></i>
                                 <div class="menu" tabindex="-1">
-                                    <a class="item action" profile_component="stand-alone" anchor_type="files" data-action_type="files">
-                                        Upload Files
-                                    </a>                                   
-                                    <a class="item action" profile_component="stand-alone" anchor_type="read" data-action_type="read">
-                                        Submit Reads
-                                    </a>
-                                    <a class="item action" profile_component="stand-alone" anchor_type="assembly" data-action_type="assembly">
-                                        Submit Assembly
-                                    </a>
-                                    <a class="item action" profile_component="stand-alone" anchor_type="seq_annotation" data-action_type="seq_annotation">
-                                        Submit Annotation
-                                    </a>                                    
                                     <a class="item action" profile_component="dtol" anchor_type="sample" data-action_type="sample">
                                         Submit DTOL/ASG manifest
                                     </a>
@@ -86,7 +74,19 @@
                                     </a>
                                     <a class="item action" profile_component="erga" anchor_type="taggedseq" data-action_type="taggedseq">
                                         Submit Barcoding Manifest
+                                    </a>                                
+                                    <a class="item action" profile_component="all" anchor_type="files" data-action_type="files">
+                                        Upload Files
+                                    </a>                                   
+                                    <a class="item action" profile_component="all" anchor_type="read" data-action_type="read">
+                                        Submit Reads
                                     </a>
+                                    <a class="item action" profile_component="all" anchor_type="assembly" data-action_type="assembly">
+                                        Submit Assembly
+                                    </a>
+                                    <a class="item action" profile_component="all" anchor_type="seq_annotation" data-action_type="seq_annotation">
+                                        Submit Annotation
+                                    </a>                                       
                                     <a class="item action" profile_component="all" anchor_type="all" data-action_type="all">
                                         Release study
                                     </a>

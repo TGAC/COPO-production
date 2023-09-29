@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 l = Logger()
 
 def generate_files_record(user_id=str()):
-    label = ['file_name', "file_md5", "last_uploaded", "size"]
+    label = ['file_name', "S3_ETag", "last_uploaded", "size"]
     data_set = []
     columns = []
     columns.append(dict(data="record_id", visible=False))
@@ -35,7 +35,7 @@ def generate_files_record(user_id=str()):
                 row_data["DT_RowId"] = "row_" + file["Key"].replace("/", "_")
                 row_data["size"] = file["Size"]
                 row_data["last_uploaded"] = file["LastModified"]
-                row_data["file_md5"] = file["ETag"].replace('"', '')
+                row_data["S3_ETag"] = file["ETag"].replace('"', '')
                 data_set.append(row_data)
 
     return_dict = dict(dataSet=data_set,

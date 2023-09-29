@@ -333,24 +333,10 @@ class SubmissionHelper:
         :return:
         """
         result = []
-        if self.profile["type"] != "Stand-alone":
-            doc = self.collection_handle.find_one({"_id": ObjectId(self.submission_id)}, {"accessions.sample_accessions": 1})
-            if not doc:
-                return list()
-            accessions = doc.get('accessions', dict()).get('sample_accessions', dict())
-            for key, value in accessions.items():
-                accession = dict()
-                accession["sample_accession"] = value["sraAccession"]
-                accession["biosample_accession"] = value["biosampleAccession"]
-                accession["sample_id"] = key
-                result.append(accession)   
-            return result
-
-        else :
-            doc = self.collection_handle.find_one({"_id": ObjectId(self.submission_id)}, {"accessions.sample": 1})
-            if not doc:
-                return list()
-            return doc.get('accessions', dict()).get('sample', list())
+        doc = self.collection_handle.find_one({"_id": ObjectId(self.submission_id)}, {"accessions.sample": 1})
+        if not doc:
+            return list()
+        return doc.get('accessions', dict()).get('sample', list())
  
 
     def get_run_accessions(self):

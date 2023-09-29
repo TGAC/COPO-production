@@ -127,7 +127,7 @@ def validate_assembly(form, profile_id, assembly_id):
         
         file_location = join(these_assemblies, form[field])
         df = DataFile().get_collection_handle().find_one({"file_location": file_location, "deleted": {"$ne": get_deleted_flag()}})
-        if df and df["file_hash"] == s3_file_etags[form[field]]:
+        if df and df["s3_etag"] == s3_file_etags[form[field]]:
             file_ids.append(str(df["_id"]))
             continue
 
@@ -138,7 +138,8 @@ def validate_assembly(form, profile_id, assembly_id):
         df["file_location"] = file_location
         df["name"] = form[field]
         df["file_id"] = "NA"
-        df["file_hash"] = s3_file_etags[form[field]]
+        df["s3_etag"] = s3_file_etags[form[field]]
+        df["file_hash"] = ""
         df["deleted"] = get_not_deleted_flag()
         df["date_created"] = dt
         df["type"] = field
@@ -180,11 +181,11 @@ def _submit_assembly(file_path, profile_id):
                         msg="Submitting Assembly",
                         action="info",
                         html_id="assembly_info")
-        output = subprocess.check_output(webin_cmd, shell=True)
-        Logger().debug(output)
+        output = subprocess.check_output(webin_cmd,stderr=subprocess.STDOUT, shell=True)
+        output = output.decode("ascii")
     except subprocess.CalledProcessError as cpe:
         output = cpe.stdout
-    output = output.decode("ascii")
+        output = output.decode("ascii") + " ERROR return code " + str(cpe.returncode)
     Logger().debug(msg=output)
 
     #todo delete files after successfull submission
@@ -275,7 +276,7 @@ def process_assembly_pending_submission():
                                 msg="Validating Assembly Submission",
                                 action="info",
                                 html_id="assembly_info")
-                output = subprocess.check_output(webin_cmd, shell=True)
+                output = subprocess.check_output(webin_cmd, stderr=subprocess.STDOUT, shell=True)
                 Logger().debug(output)
                 output = output.decode("ascii")
             except subprocess.CalledProcessError as cpe:

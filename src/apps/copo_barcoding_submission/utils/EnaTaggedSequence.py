@@ -653,12 +653,12 @@ class EnaTaggedSequence:
                             msg="Validating barcoding sequence submission",
                             action="info",
                             html_id="tagged_seq_info")
-            output = subprocess.check_output(webin_cmd, shell=True)
-            l.debug(output)
+            output = subprocess.check_output(webin_cmd, stderr=subprocess.STDOUT, shell=True)
+            output = output.decode("ascii")
         except subprocess.CalledProcessError as cpe:
             return_code = cpe.returncode
             output = cpe.stdout
-        output = output.decode("ascii")
+            output = output.decode("ascii") + " ERROR return code " + str(return_code)
         l.debug(msg=output)
         #print(output)
         #todo decide if keeping or deleting these files
@@ -701,7 +701,7 @@ class EnaTaggedSequence:
         test = ""
         if "dev" in self.ena_service:
             test = " -test "
-        webin_cmd = "java -Xmx2048m -jar webin-cli.jar -username " + self.user_token + " -password '" + self.pass_word + "'" + test + " -context sequence -manifest " + manifest_path + " -submit"
+        webin_cmd = "java -Xmx2048m -jar webin-cli.jar -username " + self.user_token + " -password '" + self.pass_word + "'" + test + " -context sequence -manifest " + manifest_path + " -submit -ascp"
         l.debug(msg=webin_cmd)
         # print(webin_cmd)
         # try/except as it turns out this can fail even if validate is successfull
@@ -711,11 +711,11 @@ class EnaTaggedSequence:
                             msg="Submitting barcoding sequence",
                             action="info",
                             html_id="tagged_seq_info")
-            output = subprocess.check_output(webin_cmd, shell=True)
-            l.debug(output)
+            output = subprocess.check_output(webin_cmd, stderr=subprocess.STDOUT, shell=True)
+            output = output.decode("ascii")           
         except subprocess.CalledProcessError as cpe:
             output = cpe.stdout
-        output = output.decode("ascii")
+            output = output.decode("ascii") + " ERROR return code " + str(cpe.returncode)
         l.debug(msg=output)
 
         #todo delete files after successfull submission

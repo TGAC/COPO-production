@@ -57,9 +57,6 @@ class S3Connection():
         config = TransferConfig(multipart_threshold=256 * MB, multipart_chunksize=128 * MB, io_chunksize=32 * MB,
                                 max_concurrency=10, use_threads=True)
         self.s3_client.download_file(bucket, key, loc, Config=config)
-
-        # with open(loc, 'wb') as data:
-        #   self.s3_client.download_fileobj(bucket, key, data, Config=config)
         Logger().log("transfer complete: " + loc)
 
     def get_presigned_url(self, bucket, key, expires_seconds=60*60):
@@ -161,7 +158,7 @@ class S3Connection():
             if len(missing_files) > 0:
                 # report missing files
                 notify_read_status(data={"profile_id": profile_id}, msg="Files Missing: " + str(
-                    missing_files) + ". Please upload these by clicking on 'Upload Data into COPO' and following the instructions",
+                    missing_files) + ". Please upload these files to COPO and try again.",
                                    action="error",
                                    html_id="sample_info")
                 # return false to halt execution

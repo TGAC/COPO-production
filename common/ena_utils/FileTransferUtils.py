@@ -211,7 +211,14 @@ def update_last_checked(tx):
 
 def get_ecs_file(tx):
     file = DataFile().get_collection_handle().find_one({"_id": ObjectId(tx["file_id"])})
-    return s3().get_object(bucket=file["bucket_name"], key=file["file_name"], loc=tx["local_path"])
+    s3().get_object(bucket=file["bucket_name"], key=file["file_name"], loc=tx["local_path"])
+    if not file["file_hash"]:
+        hash_md5 = hashlib.md5()
+        with open(tx["local_path"], "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        calc = hash_md5.hexdigest()
+        DataFile().update_file_hash(file["_id"], calc)
 
 
 def check_file_in_ecs(tx):
@@ -239,7 +246,7 @@ def check_md5(tx):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     calc = hash_md5.hexdigest()
-    if calc == file["file_hash"]:
+    if calc == file["file_hash"]:                   
         return True
     else:
         Logger().log("md5 mismatch, should be: " + file["file_hash"] + ", but got: " + calc)

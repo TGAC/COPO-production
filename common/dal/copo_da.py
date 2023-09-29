@@ -2153,15 +2153,14 @@ class Submission(DAComponent):
             {
                 "_id": ObjectId(collection_id)
             },
-            {"$set":
+            {"$addToSet":
                 {
-                    'accessions.sample_accessions.' + str(oid): {
-                        'biosampleAccession': biosample_accession,
-                        'sraAccession': sra_accession,
-                        'submissionAccession': submission_accession,
-                        'status': 'accepted'}
+                    'accessions.sample' : {
+                        'biosample_accession': biosample_accession,
+                        'sample_accession': sra_accession,
+                        'sample_id': str(oid)}
                 }})
-
+    
     def add_study_accession(self, bioproject_accession, sra_study_accession, study_accession, collection_id):
         return self.get_collection_handle().update(
             {
@@ -2606,7 +2605,9 @@ class DataFile(DAComponent):
         datafiles = cursor_to_list(sub)
         result = [i["name"] for i in datafiles if i['name']]
         return set(result)
-
+    
+    def update_file_hash(self, file_oid, file_hash):
+        self.get_collection_handle().update({"_id":  file_oid}, {"$set": {"file_hash": file_hash}})
 
 class Profile(DAComponent):
     def __init__(self, profile=None):
