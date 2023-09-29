@@ -3485,10 +3485,10 @@ function save_form(formJSON, dialogRef) {
 
                     do_crud_action_feedback(data.action_feedback);
 
-                    // Refresh web page to have change reflected after 3 seconds
+                    // Refresh web page to have change reflected
                     setTimeout(function () {
                         window.location.reload();
-                    }, 3000);
+                    }, 1000);
 
                     return true;
                 }
