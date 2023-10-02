@@ -229,9 +229,12 @@ def save_ena_records(request):
         condition = {"profile_id": profile_id}
         if "biosampleAccession" in s:
             condition["biosampleAccession"] = s["biosampleAccession"]
+            Sample().get_collection_handle().update_one(condition,
+                                                                    {"$set": sample})
+                                                                
         else:
             condition["name"] = s["Sample"]
-        sample = Sample().get_collection_handle().find_one_and_update(condition,
+            sample = Sample().get_collection_handle().find_one_and_update(condition,
                                                                     {"$set": sample, "$setOnInsert": insert_record},
                                                                     upsert=True,  return_document=ReturnDocument.AFTER)
  

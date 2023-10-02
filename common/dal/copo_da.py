@@ -2265,6 +2265,11 @@ class Submission(DAComponent):
         for s in sub:
             # calculate whether a submission is an old one
             if s.get("seq_annotation_status", "") == "sending":
+                if len(s.get("seq_annotations",[])) == 0:
+                    # all samples have been submitted
+                    self.get_collection_handle().update({"_id": s["_id"]},
+                                                        {"$set": {"seq_annotation_status": "complete", "date_modified": current_time}})
+                       
                 recorded_time = s.get("date_modified", current_time)
                 time_difference = current_time - recorded_time
                 if time_difference.total_seconds() > (REFRESH_THRESHOLD):
@@ -2277,7 +2282,7 @@ class Submission(DAComponent):
             elif s.get("seq_annotation_status", "") == "pending":
                 out.append(s)
                 # self.update_submission_modified_timestamp(s["_id"])
-                self.get_collection_handle().update({"_id": ObjectId(s["_id"])},
+                self.get_collection_handle().update({"_id": s["_id"]},
                                                     {"$set": {"seq_annotation_status": "sending",
                                                               "date_modified": current_time}})
         return out
