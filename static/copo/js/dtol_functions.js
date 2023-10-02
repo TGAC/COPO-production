@@ -391,17 +391,19 @@ function update_pending_samples_table() {
     }).error(function (e) {
         console.error(e)
     }).done(function (data) {
-        $(data).each(function (d) {
-            let date = new Date(data[d].date_created.$date).toLocaleDateString('en-GB', {timeZone: 'UTC'})
-            $("#profile_titles").find("tbody").append("<tr class='selectable_row'><td style='max-width: 10px' data-profile_id='" + data[d]._id.$oid + "'>" + data[d].title + "</td><td>" + date + "</td></tr>")
-        })
-        $($("#profile_titles tr")[1]).click()
+        
 
 
         if ($.fn.DataTable.isDataTable('#profile_titles')) {
             $("#profile_titles").DataTable().clear().destroy();
 
         }
+
+        $(data).each(function (d) {
+            let date = new Date(data[d].date_created.$date).toLocaleDateString('en-GB', {timeZone: 'UTC'})
+            $("#profile_titles").find("tbody").append("<tr class='selectable_row'><td style='max-width: 10px' data-profile_id='" + data[d]._id.$oid + "'>" + data[d].title + "</td><td>" + date + "</td></tr>")
+        })
+        
         $.fn.dataTable.moment('DD/MM/YYYY');
         $("#profile_titles").DataTable({
             responsive: true,
@@ -410,7 +412,7 @@ function update_pending_samples_table() {
             "order": [[1, "desc"]],
 
         })
-
+        $($("#profile_titles tr")[1]).click()
     })
 }
 

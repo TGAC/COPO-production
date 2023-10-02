@@ -628,9 +628,9 @@ class DtolSpreadsheet:
         profile = Profile().get_record(profile_id)
         title = profile["title"]
         description = profile["description"]
-        Email().notify_manifest_pending_approval(uri + 'copo/accept_reject_sample/', title=title,
+        Email().notify_manifest_pending_approval(uri + 'copo/dtol_submission/accept_reject_sample/', title=title,
                                                      description=description,
-                                                     project=self.type.upper(), is_new=True)
+                                                     project=self.type.upper(), is_new=True, profile_id=profile_id)
         
     def update_records(self):
         binary = pickle.loads(self.vr["manifest_data"])
@@ -711,7 +711,7 @@ class DtolSpreadsheet:
             description = profile["description"]
 
         if need_send_email:
-            Email().notify_manifest_pending_approval(uri + 'copo/accept_reject_sample/', title=title,
+            Email().notify_manifest_pending_approval(uri + 'copo/dtol_submission/accept_reject_sample/', title=title,
                                                          description=description,
                                                          project=self.type.upper(), is_new=False)
 

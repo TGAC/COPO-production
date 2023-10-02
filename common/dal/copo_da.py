@@ -24,6 +24,7 @@ from pymongo.collection import ReturnDocument
 from common.utils import helpers 
 from src.apps.copo_core.models import SequencingCenter
 
+
 lg = settings.LOGGER
 
 PubCollection = 'PublicationCollection'
@@ -2726,10 +2727,7 @@ class Profile(DAComponent):
             if 'datasets' in p['dataverse']:
                 return p['dataverse']['datasets']
 
-    def get_users_seq_centers(self):
-        user = ThreadLocal.get_current_user()
-        seq_centers = SequencingCenter.objects.filter(users=user)
-        return seq_centers
+    
 
     def get_dtol_profiles(self, filter="all_profiles"):
         
@@ -2739,10 +2737,11 @@ class Profile(DAComponent):
                 "date_created",
                 pymongo.DESCENDING)
         elif filter=='my_profiles':
-            seq_centers = self.get_users_seq_centers()
+            seq_centers = get_users_seq_centers()
+            seq_centers = [str(x.name) for x in seq_centers]
             p = self.get_collection_handle().find(
                 {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]},
-                 "sequencing_center": {"$in": [str(x.id) for x in seq_centers]}}).sort(
+                 "sequencing_center": {"$in": seq_centers}}).sort(
                 "date_created",
                 pymongo.DESCENDING)
         return cursor_to_list(p)
@@ -2752,15 +2751,14 @@ class Profile(DAComponent):
         if filter=="all_profiles":
             p = self.get_collection_handle().find(
                 {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]}}).sort("date_created", pymongo.DESCENDING)
-            
         elif filter=='my_profiles':
-            seq_centers = self.get_users_seq_centers()  
-            if filter=="all_profiles":
-                p = self.get_collection_handle().find(
-                    {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]},
-                    "sequencing_center": {"$in": [str(x.id) for x in seq_centers]}}).sort(
-                    "date_created",
-                    pymongo.DESCENDING)
+            seq_centers = get_users_seq_centers()  
+            seq_centers = [str(x.name) for x in seq_centers]
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]},
+                "sequencing_center": {"$in": seq_centers}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
         return cursor_to_list(p)
 
     def get_dtolenv_profiles(self, filter="all_profiles"):
@@ -2769,10 +2767,11 @@ class Profile(DAComponent):
                 {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]}}).sort("date_modified",
                                                                                                 pymongo.DESCENDING)
         elif filter=='my_profiles':
-            seq_centers = self.get_users_seq_centers()
+            seq_centers = get_users_seq_centers()  
+            seq_centers = [str(x.name) for x in seq_centers]
             p = self.get_collection_handle().find(
                 {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]},
-                 "sequencing_center": {"$in": [str(x.id) for x in seq_centers]}}).sort(
+                 "sequencing_center": {"$in": seq_centers}}).sort(
                 "date_created",
                 pymongo.DESCENDING)
         return cursor_to_list(p)
@@ -3550,3 +3549,8 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+def get_users_seq_centers():
+        user = ThreadLocal.get_current_user()
+        seq_centers = SequencingCenter.objects.filter(users=user)
+        return seq_centers
