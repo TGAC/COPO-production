@@ -7,36 +7,6 @@
     "control_meta": {},
     "control": "text",
     "versions": [
-      "SEQUENCING_CENTRE"
-    ],
-    "ref": "",
-    "specifications": [
-      "dtol_env"
-    ],
-    "deprecated": false,
-    "hidden": "false",
-    "type": "string",
-    "show_in_form": true,
-    "id": "copo.sample.SEQUENCING_CENTRE",
-    "label": "Sequencing Centre",
-    "show_in_table": true,
-    "dwc": "",
-    "index": {
-      "dtol_env": {
-        "colour": "",
-        "excel_col": "",
-        "order": null
-      }
-    }
-  },
-  {
-    "help_tip": "",
-    "required": "true",
-    "default_value": "",
-    "show_as_attribute": true,
-    "control_meta": {},
-    "control": "text",
-    "versions": [
       "WATER_BODY_TYPE"
     ],
     "ref": "",

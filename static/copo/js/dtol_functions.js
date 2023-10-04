@@ -381,7 +381,7 @@ function delay(fn, ms) {
 function update_pending_samples_table() {
     // get profiles with samples needing looked at and populate left hand column
     //check whether we are getting my profiles or all profiles
-    var which_profiles = $("#sequencing_center_filter").find(".active").find("a").attr("href")
+    var which_profiles = $("#sequencing_centre_filter").find(".active").find("a").attr("href")
     console.log(which_profiles)
     $.ajax({
         url: "/copo/dtol_submission/update_pending_samples_table",

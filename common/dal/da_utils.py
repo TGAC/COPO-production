@@ -4,7 +4,7 @@ from django.conf import settings
 from bson import ObjectId
 import pandas as pd
 from common.utils import helpers
-from src.apps.copo_core.models import SequencingCenter
+from src.apps.copo_core.models import SequencingCentre
 
 
 

@@ -9,7 +9,7 @@ canvas {
     object-fit: contain; /*  Enables reponsiveness*/
 }
 
-.center-div {
+.centre-div {
     display: grid;
     place-items: center;
 }

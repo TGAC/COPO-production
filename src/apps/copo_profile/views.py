@@ -1,7 +1,7 @@
 from common.dal.mongo_util import cursor_to_list_str2
 # from dal.broker_da import BrokerDA, BrokerVisuals
 from common.dal.copo_da import ProfileInfo, Profile, Submission
-from src.apps.copo_core.models import SequencingCenter
+from src.apps.copo_core.models import SequencingCentre
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
@@ -78,7 +78,7 @@ def copo_profile_index(request):
             {"$skip": db_skip_num},
             {"$limit": num_of_profiles_per_page},
             {"$project": {"study_status": "$submission.accessions.project.status", "study_release_date": "$submission.accessions.project.release_date",
-                          "sequencing_center": 1, "title": 1, "description": 1, "associated_type": 1, "type": 1, "date_created": 1, "date_modified": 1}}
+                          "sequencing_centre": 1, "title": 1, "description": 1, "associated_type": 1, "type": 1, "date_created": 1, "date_modified": 1}}
         ])
 
     profile_page = cursor_to_list_str2(
@@ -359,6 +359,6 @@ def release_study(request, profile_id):
 
 
 @login_required
-def get_sequencing_centers(request):
-    centers = SequencingCenter.objects.all()
-    return HttpResponse(encode(centers), content_type='application/json')
+def get_sequencing_centres(request):
+    centres = SequencingCentre.objects.all()
+    return HttpResponse(encode(centres), content_type='application/json')

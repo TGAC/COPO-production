@@ -8,16 +8,16 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('copo_core', '0003_sequencingcenter_delete_sequencingcentergroup'),
+        ('copo_core', '0003_sequencingcentre_delete_sequencingcentregroup'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='sequencingcenter',
+            model_name='sequencingcentre',
             name='users',
         ),
         migrations.AddField(
-            model_name='sequencingcenter',
+            model_name='sequencingcentre',
             name='users',
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL),
         ),

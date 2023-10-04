@@ -116,20 +116,20 @@
       ]
     },
     {
-      "help_tip": "Select the Sequencing Center which will handle these samples.",
-      "required": "false",
+      "help_tip": "Choose the sequencing centre that will handle the samples uploaded to this profile.<br><br><p style='margin-top: 10px'>If no sequencing centres are displayed, please contact <b style='font-weight:bold;'>ei.copo@earlham.ac.uk</b> in order to be added to the sequencing centre group to complete the profile creation.</p>",
+      "required": "true",
       "default_value": "",
       "control_meta": {},
       "versions": [
-        "sequencing_center"
+        "sequencing_centre"
       ],
       "ref": "",
       "deprecated": false,
       "hidden": "false",
-      "label": "Sequencing Center",
-      "placeholder": "Select Sequencing Center",
+      "label": "Sequencing Centre",
+      "placeholder": "Select sequencing centre",
       "show_in_form": true,
-      "id": "copo.profile.sequencing_center",
+      "id": "copo.profile.sequencing_centre",
       "type": "array",
       "show_in_table": true,
       "control": "copo-multi-select2",

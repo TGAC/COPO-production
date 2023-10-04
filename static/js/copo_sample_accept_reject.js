@@ -1,3 +1,3 @@
 $(document).ready(function () {
-    $(document).on('click', '#sequencing_center_filter', update_pending_samples_table)
+    $(document).on('click', '#sequencing_centre_filter', update_pending_samples_table)
 });

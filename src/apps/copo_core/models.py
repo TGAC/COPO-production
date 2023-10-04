@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import Group
 
+
 class UserDetails(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     orcid_id = models.TextField(max_length=40, blank=True)
@@ -49,6 +50,7 @@ def create_auth_token(sender, instance, **kwargs):
     except:
         pass
 
+
 @receiver(post_save, sender=User)
 def save_user_details(sender, instance, **kwargs):
     instance.userdetails.save()
@@ -69,12 +71,11 @@ class Repository(models.Model):
 class StatusMessage(models.Model):
     message_owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    message = models.TextField(max_length=500, blank=False, default="All Tasks Complete")
+    message = models.TextField(
+        max_length=500, blank=False, default="All Tasks Complete")
 
     class Meta:
         get_latest_by = 'created'
-
-
 
 
 class banner_view(models.Model):
@@ -134,7 +135,7 @@ class ViewLock(models.Model):
             else:
                 # view is locked
                 return True
-            
+
     @sync_to_async
     def remove_expired_locks(self):
         time_threshold = timezone.now() - settings.VIEWLOCK_TIMEOUT
@@ -143,9 +144,8 @@ class ViewLock(models.Model):
             l.delete()
         print(locks)
 
-    
 
-class SequencingCenter(models.Model):
+class SequencingCentre(models.Model):
     users = models.ManyToManyField(User)
     description = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
@@ -153,18 +153,17 @@ class SequencingCenter(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def create_sequencing_center(self, name, description, label):
+
+    def create_sequencing_centre(self, name, description, label):
         self.name = name
         self.description = description
         self.label = label
         self.save()
         return self
-    
-    def remove_all_sequencing_centers(self):
-        SequencingCenter.objects.all().delete()
+
+    def remove_all_sequencing_centres(self):
+        SequencingCentre.objects.all().delete()
         return True
-    
-    def get_sequencing_centers(self):
-        return SequencingCenter.objects.all()
-    
+
+    def get_sequencing_centres(self):
+        return SequencingCentre.objects.all()
