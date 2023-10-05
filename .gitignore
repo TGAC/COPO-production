@@ -134,6 +134,9 @@ GitHub.sublime-settings
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
 .history
 sass.*
 webin-cli.jar
+bundle_*
+static/assets/manifests/ERC*

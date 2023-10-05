@@ -1189,7 +1189,7 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
       // Perform the following only if selected 'Profile Type' is not "Stand-alone"
       if (this.value !== 'Stand-alone') {
         $('.row:nth-child(4) > .col-sm-12').show(); // Show 'Associated Profile Type(s)' field
-        $('.row:nth-child(5) > .col-sm-12').show(); // Show 'Sequencing Centre(s)' field
+        
         // $('[id*="sequencing_centre"]').parent().parent().hide().show();
         let selected_type = get_acronym(this.value);
         let multi_select_options = $('.copo-multi-select2');
@@ -1231,6 +1231,12 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
         $('.row:nth-child(4) > .col-sm-12').hide(); // Hide 'Associated Profile Type(s)' field
         $('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre(s)' field
         // $('[id*="sequencing_centre"]').parent().parent().hide().hide;
+      }
+      if (this.value.includes('ERGA')) {
+        $('.row:nth-child(5) > .col-sm-12').show(); // Show 'Sequencing Centre(s)' field
+      }
+      else{
+        $('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre(s)' field
       }
     });
 }
