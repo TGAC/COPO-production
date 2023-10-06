@@ -1186,7 +1186,8 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
   document
     .getElementById(profileTypeID)
     .addEventListener('change', function () {
-      // Perform the following only if selected 'Profile Type' is not "Stand-alone"
+      
+      // Perform the following only if selected 'Profile Type' is not "Stand-alone"1
       if (this.value !== 'Stand-alone') {
         $('.row:nth-child(4) > .col-sm-12').show(); // Show 'Associated Profile Type(s)' field
         
@@ -1230,13 +1231,15 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
       } else {
         $('.row:nth-child(4) > .col-sm-12').hide(); // Hide 'Associated Profile Type(s)' field
         $('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre(s)' field
-        // $('[id*="sequencing_centre"]').parent().parent().hide().hide;
+        $('.row:nth-child(5) > .col-sm-12').find("select").removeAttr("required") // Remove 'required' attribute from 'Sequencing Centre(s)' field
       }
       if (this.value.includes('ERGA')) {
         $('.row:nth-child(5) > .col-sm-12').show(); // Show 'Sequencing Centre(s)' field
+        $('.row:nth-child(5) > .col-sm-12').find("select").attr("required", "required") // Add 'required' attribute to 'Sequencing Centre(s)' field
       }
       else{
         $('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre(s)' field
+        $('.row:nth-child(5) > .col-sm-12').find("select").removeAttr("required") // Remove 'required' attribute from 'Sequencing Centre(s)' field
       }
     });
 }

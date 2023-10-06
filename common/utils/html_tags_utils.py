@@ -1589,6 +1589,7 @@ def get_resolver(data, elem):
     if not data:
         return ""
     func_map = dict()
+
     func_map["copo-characteristics"] = resolve_copo_characteristics_data
     func_map["copo-environmental-characteristics"] = resolve_environmental_characteristics_data
     func_map["copo-phenotypic-characteristics"] = resolve_phenotypic_characteristics_data
@@ -1787,6 +1788,7 @@ def resolve_copo_comment_data(data, elem):
     elif len(resolved_data) == 1:
         resolved_data = resolved_data[0]
     return resolved_data
+
 
 
 def resolve_copo_multi_select_data(data, elem):

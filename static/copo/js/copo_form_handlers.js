@@ -58,6 +58,7 @@ $(document).ready(function () {
 
 //map controls to rendering functions
 var controlsMapping = {
+  simple_select: 'do_simple_select_ctrl',
   text: 'do_text_ctrl',
   email: 'do_text_ctrl',
   text_small: 'do_small_text_ctrl',
@@ -300,8 +301,9 @@ function json2HtmlForm(data) {
   if (dialog_title.includes('Add Profile') && groups.length >= 1) {
     $dialogContent.find('.row:nth-child(4) > .col-sm-12').hide(); // Hide 'Associated Profile Type' field
     $dialogContent.find('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre' field
+    $dialogContent.find('.row:nth-child(5) > .col-sm-12').find("select").removeAttr("required") 
   }
-
+  
   // If user is in a manifest group, hide 'Associated profile type(s)' field on "Edit Profile" dialog launch
   // if "Stand-alone" is the value shown for 'Profile Type'
 
@@ -707,6 +709,34 @@ function set_validation_markers(formElem, ctrl) {
 
 //form controls
 var dispatchFormControl = {
+  do_simple_select_ctrl: function (formElem, elemValue) {
+    var ctrlsDiv = $('<div/>', {
+      class: 'ctrlDIV',
+    });
+
+    var select = $('<select/>', {
+      class: 'input-copo form-control',
+      id: formElem.id,
+      name: formElem.id,
+    });
+
+    var options = formElem.option_values;
+
+    for (var i = 0; i < options.length; ++i) {
+      var option = options[i];
+      $('<option value="' + option.value + '">' + option.label + '</option>')
+        .appendTo(select)
+        .prop('selected', option.value == elemValue);
+    }
+
+    //set validation markers
+    var vM = set_validation_markers(formElem, select);
+
+    ctrlsDiv.append(select);
+    ctrlsDiv.append(vM.errorHelpDiv);
+
+    return get_form_ctrl(ctrlsDiv.clone(), formElem, elemValue);
+  },
   do_semantic_search_ui: function (formElem, elemValue) {
     var ctrlsDiv = $('<div/>', {
       class: 'input-group',

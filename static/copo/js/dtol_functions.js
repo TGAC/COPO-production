@@ -1,68 +1,69 @@
 //it has been updated
 
-   var dt_options = {
-        "scrollY": 400,
-        "scrollX": true,
-        "bSortClasses": false,
-        "lengthMenu": [10, 25, 50, 75, 100, 500, 1000, 2000],
-        select: {
-            style: 'os',
-            selector: 'td:first-child'
-        },
-        "rowId":"_id",
-        "paging": true,
-        "createdRow": function( row, data, dataIndex ) {
-             $(row).addClass( 'sample_table_row' )
-        },
+var dt_options = {
+    "scrollY": 400,
+    "scrollX": true,
+    "bSortClasses": false,
+    "lengthMenu": [10, 25, 50, 75, 100, 500, 1000, 2000],
+    select: {
+        style: 'os',
+        selector: 'td:first-child'
+    },
+    "rowId": "_id",
+    "paging": true,
+    "createdRow": function (row, data, dataIndex) {
+        $(row).addClass('sample_table_row')
+    },
 
-        "columnDefs": [
-            {
-                className: "tickbox",
-                render: function (data, type, row) {
-                    var filter = $("#sample_filter").find(".active").find("a").attr("href")
-                    if (filter == "pending" || filter == "rejected") {
-                        return "<input type='checkbox' class='form-check-input checkbox'/>"
-                    } else {
-                        return ""
-                    }
-                },
-                targets: 0,                
+    "columnDefs": [
+        {
+            className: "tickbox",
+            render: function (data, type, row) {
+                var filter = $("#sample_filter").find(".active").find("a").attr("href")
+                if (filter == "pending" || filter == "rejected") {
+                    return "<input type='checkbox' class='form-check-input checkbox'/>"
+                } else {
+                    return ""
+                }
             },
-        ],
-        "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-            $(nRow).children().each(function (index, td) {
-                if (index > 0) {
-                    if ( td.innerText === 'NA')  {
+            targets: 0,
+        },
+    ],
+    "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+        $(nRow).children().each(function (index, td) {
+            if (index > 0) {
+                if (td.innerText === 'NA') {
                     $(td).addClass("na_color")
-                    } else if ( td.innerText === "" ) {
+                } else if (td.innerText === "") {
                     $(td).addClass("empty_color")
-                    }               
-                }     
-            })},
-        processing: true,
-        serverSide: true,
-        // Reload DataTable on input change.
-        search: {
-            "return": true,
+                }
+            }
+        })
+    },
+    processing: true,
+    serverSide: true,
+    // Reload DataTable on input change.
+    search: {
+        "return": true,
+    },
+    ajax: {
+        url: '/copo/dtol_submission/get_samples_for_profile',
+        data: function (d) {
+            return {
+                profile_id: $("#profile_id").val(),
+                filter: $("#sample_filter").find(".active").find("a").attr("href"),
+                draw: d.draw,
+                order: d.order,
+                length: d.length,
+                start: d.start,
+                search: d.search.value,
+            }
         },
-          ajax: {
-            url: '/copo/dtol_submission/get_samples_for_profile',
-            data: function (d) {
-              return {
-                profile_id : $("#profile_id").val(),
-                filter : $("#sample_filter").find(".active").find("a").attr("href"),
-                draw : d.draw,
-                order : d.order,
-                length : d.length,
-                start : d.start,
-                search : d.search.value,
-              }
-            },
-            dataSrc: 'data',
-          },
+        dataSrc: 'data',
+    },
 
-    }
-    var sample_table;
+}
+var sample_table;
 
 $(document).ready(function () {
 
@@ -106,35 +107,35 @@ $(document).ready(function () {
                     dialogItself.close();
                 }
             },
-                {
-                    label: 'Delete',
-                    action: function (dialog) {
+            {
+                label: 'Delete',
+                action: function (dialog) {
 
 
-                        $("#dtol_sample_info").text("Deleting")
+                    $("#dtol_sample_info").text("Deleting")
 
-                        var csrftoken = $.cookie('csrftoken');
-                        var checked = $(".form-check-input:checked").closest("tr")
-                        var sample_ids = []
-                        $(checked).each(function (it) {
-                            sample_ids.push($(checked[it]).data("id"))
-                        })
-                        console.log(sample_ids)
-                        $.ajax({
-                            headers: {'X-CSRFToken': csrftoken},
-                            url: "/copo/delete_dtol_samples/",
-                            method: "POST",
-                            data: {
-                                sample_ids: JSON.stringify(sample_ids)
-                            }
-                        }).done(function (e) {
-                            $("#profile_titles").find(".selected").click()
-                            dialog.close()
-                        }).error(function (e) {
-                            console.error(e)
-                        })
-                    }
+                    var csrftoken = $.cookie('csrftoken');
+                    var checked = $(".form-check-input:checked").closest("tr")
+                    var sample_ids = []
+                    $(checked).each(function (it) {
+                        sample_ids.push($(checked[it]).data("id"))
+                    })
+                    console.log(sample_ids)
+                    $.ajax({
+                        headers: { 'X-CSRFToken': csrftoken },
+                        url: "/copo/delete_dtol_samples/",
+                        method: "POST",
+                        data: {
+                            sample_ids: JSON.stringify(sample_ids)
+                        }
+                    }).done(function (e) {
+                        $("#profile_titles").find(".selected").click()
+                        dialog.close()
+                    }).error(function (e) {
+                        console.error(e)
+                    })
                 }
+            }
             ]
         })
 
@@ -184,56 +185,56 @@ $(document).ready(function () {
     })
 
     $(document).on("keyup", "#taxonid", delay(function (e) {
-            $("#taxonid").addClass("loading-spinner")
-            var taxonid = $("#taxonid").val()
-            if (taxonid == "") {
-                $("#species, #genus, #family, #order, #commonName").val("")
-                $("#species, #genus, #family, #order, #commonName").prop("disabled", false)
-                return false
+        $("#taxonid").addClass("loading-spinner")
+        var taxonid = $("#taxonid").val()
+        if (taxonid == "") {
+            $("#species, #genus, #family, #order, #commonName").val("")
+            $("#species, #genus, #family, #order, #commonName").prop("disabled", false)
+            return false
+        }
+        $.ajax(
+            {
+                url: "/copo/resolve_taxon_id",
+                method: "GET",
+                data: { "taxonid": taxonid },
+                dataType: "json"
             }
-            $.ajax(
-                {
-                    url: "/copo/resolve_taxon_id",
-                    method: "GET",
-                    data: {"taxonid": taxonid},
-                    dataType: "json"
-                }
-            ).done(function (data) {
-                $("#species, #genus, #family, #order, #commonName").val("")
-                $("#species, #genus, #family, #order, #commonName").prop("disabled", false)
-                for (var el in data) {
-                    var element = data[el]
-                    $("#" + el).prop("disabled", true)
-                    $("#" + el).val(element)
-                }
-                $(".loading-spinner").removeClass("loading-spinner")
-            }).error(function (error) {
-                BootstrapDialog.alert(error.responseText);
-            })
+        ).done(function (data) {
+            $("#species, #genus, #family, #order, #commonName").val("")
+            $("#species, #genus, #family, #order, #commonName").prop("disabled", false)
+            for (var el in data) {
+                var element = data[el]
+                $("#" + el).prop("disabled", true)
+                $("#" + el).val(element)
+            }
+            $(".loading-spinner").removeClass("loading-spinner")
+        }).error(function (error) {
+            BootstrapDialog.alert(error.responseText);
         })
+    })
     )
 
     $(document).on("keyup", "#species_search", delay(function (e) {
-            var s = $("#species_search").val()
-            $.ajax(
-                {
-                    url: "/copo/search_species",
-                    method: "GET",
-                    data: {"s": s},
-                    dataType: "json"
-                }
-            ).done(function (data) {
-                var ul = $("ul", {
-                    class: "species_results"
-                })
-                $(data).each(function (d) {
-                    $(ul).append("<li>", {
-                        html: d
-                    })
-                })
-                $("#resultsPanel").append(ul)
+        var s = $("#species_search").val()
+        $.ajax(
+            {
+                url: "/copo/search_species",
+                method: "GET",
+                data: { "s": s },
+                dataType: "json"
+            }
+        ).done(function (data) {
+            var ul = $("ul", {
+                class: "species_results"
             })
+            $(data).each(function (d) {
+                $(ul).append("<li>", {
+                    html: d
+                })
+            })
+            $("#resultsPanel").append(ul)
         })
+    })
     )
 
     $(document).on("click", "#species", function (e) {
@@ -248,28 +249,28 @@ $(document).ready(function () {
     })
 
     var profile_samples = document.getElementById("profile_samples")
-    if (profile_samples && profile_samples.getElementsByTagName("thead")[0].children.length == 0  ) {
-    $.ajax({
-        url: "/copo/dtol_submission/get_sample_column_names",
-        method: "GET",
-        dataType: "json"
-    }).error(function (data) {
-        console.error("ERROR: " + data)
-    }).done(function (data) {
-        if (data.length) {
-            var header = $("<h4/>", {
-                html: "Samples"
-            })
-            $("#sample_panel").find(".labelling").empty().append(header)
+    if (profile_samples && profile_samples.getElementsByTagName("thead")[0].children.length == 0) {
+        $.ajax({
+            url: "/copo/dtol_submission/get_sample_column_names",
+            method: "GET",
+            dataType: "json"
+        }).error(function (data) {
+            console.error("ERROR: " + data)
+        }).done(function (data) {
+            if (data.length) {
+                var header = $("<h4/>", {
+                    html: "Samples"
+                })
+                $("#sample_panel").find(".labelling").empty().append(header)
 
-            var rows = []
-            rows.push({"title": ""})
+                var rows = []
+                rows.push({ "title": "" })
 
                 let i = 0;
                 while (i < data.length) {
-                     if (!excluded_fields.includes(data[i])) {
-                            rows.push({"title": data[i], "data": data[i]})
-                        }
+                    if (!excluded_fields.includes(data[i])) {
+                        rows.push({ "title": data[i], "data": data[i] })
+                    }
                     i++;
                 }
                 if (profile_samples) {
@@ -279,18 +280,18 @@ $(document).ready(function () {
                     dt_options["columns"] = rows
                     sample_table = $("#profile_samples").DataTable(dt_options);
                 }
-        }
-    })
+            }
+        })
     }
     if (profile_samples) {
-       update_pending_samples_table()
+        update_pending_samples_table()
     }
 })
-   var fadeSpeed = 'fast'
+var fadeSpeed = 'fast'
 
 
 
-    var row;
+var row;
 function row_select(ev) {
     $("#accept_reject_button").find("button").prop("disabled", true)
     // get samples for profile clicked in the left hand panel and populate table on the right
@@ -309,7 +310,7 @@ function row_select(ev) {
     var profile_id = $(row).find("td").data("profile_id")
     $("#profile_id").val(profile_id)
     $("#spinner").show()
-    sample_table.ajax.reload(function () { 
+    sample_table.ajax.reload(function () {
         if (sample_table.data().length == 0) {
             var header = $("<h4/>", {
                 html: "No Samples Found"
@@ -326,48 +327,48 @@ function row_select(ev) {
     })
 
     $("#spinner").fadeOut("fast")
-/*
-    $.ajax({
-        url: "/copo/update_pending_samples_table",
-        data: d,
-        method: "GET",
-        dataType: "json"
-    }).error(function (data) {
-        console.error("ERROR: " + data)
-    }).done(function (data) {
-            sample_table.clear();
-            if (data.length) {
-                var header = $("<h4/>", {
-                    html: "Samples"
-                })
-                $("#sample_panel").find(".labelling").empty().append(header)
-
-                sample_table.rows.add(data)
-
-            } else {
-                var content
-                if (data.hasOwnProperty("locked")) {
-                    content = $("<h4/>", {
-                        html: "View is locked by another User. Try again later."
+    /*
+        $.ajax({
+            url: "/copo/update_pending_samples_table",
+            data: d,
+            method: "GET",
+            dataType: "json"
+        }).error(function (data) {
+            console.error("ERROR: " + data)
+        }).done(function (data) {
+                sample_table.clear();
+                if (data.length) {
+                    var header = $("<h4/>", {
+                        html: "Samples"
                     })
+                    $("#sample_panel").find(".labelling").empty().append(header)
+    
+                    sample_table.rows.add(data)
+    
                 } else {
-                    content = $("<h4/>", {
-                        html: "No Samples Found"
-                    })
+                    var content
+                    if (data.hasOwnProperty("locked")) {
+                        content = $("<h4/>", {
+                            html: "View is locked by another User. Try again later."
+                        })
+                    } else {
+                        content = $("<h4/>", {
+                            html: "No Samples Found"
+                        })
+                    }
+                    $("#sample_panel").find(".labelling").empty().html(
+                        content
+                    )
+                    $("#accept_reject_button").find("button").prop("disabled", true)
+    
                 }
-                $("#sample_panel").find(".labelling").empty().html(
-                    content
-                )
-                $("#accept_reject_button").find("button").prop("disabled", true)
-
+                sample_table.draw();
+    
+                $("#spinner").fadeOut("fast")
+    
             }
-            sample_table.draw();
-
-            $("#spinner").fadeOut("fast")
-
-        }
-    )
-    */
+        )
+        */
 }
 
 function delay(fn, ms) {
@@ -387,11 +388,11 @@ function update_pending_samples_table() {
         url: "/copo/dtol_submission/update_pending_samples_table",
         method: "GET",
         dataType: "json",
-        data: {"profiles": which_profiles}
+        data: { "profiles": which_profiles }
     }).error(function (e) {
         console.error(e)
     }).done(function (data) {
-        
+
 
 
         if ($.fn.DataTable.isDataTable('#profile_titles')) {
@@ -400,10 +401,10 @@ function update_pending_samples_table() {
         }
 
         $(data).each(function (d) {
-            let date = new Date(data[d].date_created.$date).toLocaleDateString('en-GB', {timeZone: 'UTC'})
+            let date = new Date(data[d].date_created.$date).toLocaleDateString('en-GB', { timeZone: 'UTC' })
             $("#profile_titles").find("tbody").append("<tr class='selectable_row'><td style='max-width: 10px' data-profile_id='" + data[d]._id.$oid + "'>" + data[d].title + "</td><td>" + date + "</td></tr>")
         })
-        
+
         $.fn.dataTable.moment('DD/MM/YYYY');
         $("#profile_titles").DataTable({
             responsive: true,
@@ -412,7 +413,18 @@ function update_pending_samples_table() {
             "order": [[1, "desc"]],
 
         })
-        $($("#profile_titles tr")[1]).click()
+        if ($($("#profile_titles tr")[1]).find("td").html().includes("No data available in table")) {
+
+            var header = $("<h4/>", {
+                html: "No Samples Found"
+            })
+            $("#sample_panel").find(".labelling").empty().append(header)
+            $('#profile_samples_wrapper').hide()
+
+        }
+        else {
+            $($("#profile_titles tr")[1]).click()
+        }
     })
 }
 
@@ -446,7 +458,7 @@ function handle_accept_reject(el) {
         $.ajax({
             url: "/copo/mark_sample_rejected",
             method: "GET",
-            data: {"sample_ids": JSON.stringify(sample_ids)}
+            data: { "sample_ids": JSON.stringify(sample_ids) }
         }).done(function () {
 
             $("#profile_titles").find(".selected").click()
@@ -461,7 +473,7 @@ function handle_accept_reject(el) {
             $.ajax({
                 url: "/copo/dtol_submission/add_sample_to_dtol_submission/",
                 method: "GET",
-                data: {"sample_ids": JSON.stringify(sample_ids), "profile_id": profile_id},
+                data: { "sample_ids": JSON.stringify(sample_ids), "profile_id": profile_id },
             }).done(function () {
                 $("#profile_titles").find(".selected").click()
                 $("#spinner").fadeOut(fadeSpeed)
@@ -498,7 +510,7 @@ function handle_accept_reject(el) {
                             $.ajax({
                                 url: "/copo/dtol_submission/add_sample_to_dtol_submission/",
                                 method: "GET",
-                                data: {"sample_ids": JSON.stringify(sample_ids), "profile_id": profile_id},
+                                data: { "sample_ids": JSON.stringify(sample_ids), "profile_id": profile_id },
                             }).done(function () {
                                 $("#profile_titles").find(".selected").click()
                                 $("#spinner").fadeOut(fadeSpeed)

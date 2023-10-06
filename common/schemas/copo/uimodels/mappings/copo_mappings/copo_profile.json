@@ -130,9 +130,9 @@
       "placeholder": "Select sequencing centre",
       "show_in_form": true,
       "id": "copo.profile.sequencing_centre",
-      "type": "array",
+      "type": "string",
       "show_in_table": true,
-      "control": "copo-multi-select2",
+      "control": "copo-single-select",
       "option_values": []
     },
     {
