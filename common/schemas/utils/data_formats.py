@@ -48,12 +48,18 @@ class DataFormats:
 
         new_list = []
         json_files_handle = self.get_mapping_files()
-        for file_name in json_files_handle:
-            file_dict = helpers.json_to_pytype(file_name, compatibility_mode=False)
-            self.resource_objects.append(dict(file_handle=file_name, file_dict=file_dict))
 
-            mapped_list = self.dispatch[
-                file_dict['configuration']['provider'] + "_" + file_dict['configuration']['type']](file_dict)
+        for file_name in json_files_handle:
+            file_dict = helpers.json_to_pytype(
+                file_name, compatibility_mode=False)
+            self.resource_objects.append(
+                dict(file_handle=file_name, file_dict=file_dict))
+
+            if (isinstance(file_dict, dict)):
+                mapped_list = self.dispatch[
+                    file_dict['configuration']['provider'] + "_" + file_dict['configuration']['type']](file_dict)
+            else:
+                continue
 
             if isinstance(mapped_list, list):
                 new_list.extend(mapped_list)
@@ -78,7 +84,8 @@ class DataFormats:
             out_dict = {"status": "success", "data": out_dict}
         else:
             out_dict = {}
-            out_dict = {"status": "failed", "messages": self.error_messages, "data": out_dict}
+            out_dict = {"status": "failed",
+                        "messages": self.error_messages, "data": out_dict}
 
         return out_dict
 
@@ -88,7 +95,8 @@ class DataFormats:
         new_list = arg_dict['properties']
         current_list = arg_dict['properties']
 
-        output_dict = d_utils.get_isa_schema_xml(arg_dict['configuration']['ref'])
+        output_dict = d_utils.get_isa_schema_xml(
+            arg_dict['configuration']['ref'])
 
         if output_dict.get("status", str()) == "error":
             self.error_messages.append(output_dict.get("content"))
@@ -136,7 +144,8 @@ class DataFormats:
                                 new_list[indx][k] = f.get(v)
 
                                 if v == "data-type" and f.get(v) in lkup.CONTROL_MAPPINGS["isa_xml"].keys():
-                                    new_list[indx][k] = lkup.CONTROL_MAPPINGS["isa_xml"][f.get(v)]
+                                    new_list[indx][k] = lkup.CONTROL_MAPPINGS["isa_xml"][f.get(
+                                        v)]
 
             # clean up controls
             for elem_dict in new_list:
@@ -174,7 +183,8 @@ class DataFormats:
             key_split = elem_dict["id"].split(".")
 
             if len(key_split) >= 2:
-                out_dict = self.set_model_fields(out_dict, key_split[:-1], elem_dict)
+                out_dict = self.set_model_fields(
+                    out_dict, key_split[:-1], elem_dict)
 
         return out_dict
 
@@ -247,7 +257,8 @@ class DataFormats:
         for ro in self.resource_objects:
             prop_dict = list()
             for p in ro["file_dict"]["properties"]:
-                prop_dict.append([elem_dict for elem_dict in self.generated_controls if elem_dict['id'] == p['id']][0])
+                prop_dict.append(
+                    [elem_dict for elem_dict in self.generated_controls if elem_dict['id'] == p['id']][0])
 
             ro["file_dict"]["properties"] = prop_dict
 
@@ -278,17 +289,24 @@ class DataFormats:
 
         exclude = set(['additional_attributes'])
 
-        for root, dirs, files in os.walk(self.path_to_mappings):
-            dirs[:] = [d for d in dirs if d not in exclude]
-            for name in files:
-                # Get .json file based on schema version
-                if name in settings.SCHEMA_VERSIONS_FILE_LIST:
-                    json_files.append(
-                        os.path.join(self.path_to_mappings_based_on_schema_version, name))
+        def populate_files_list(mappings_path, is_mapping_based_on_schema_version=False):
+            for root, dirs, files in os.walk(mappings_path):
+                dirs[:] = [d for d in dirs if d not in exclude]
+                for name in files:
+                    # Get .json file based on schema version
+                    if is_mapping_based_on_schema_version and name in settings.SCHEMA_VERSIONS_FILE_LIST:
+                        json_files.append(
+                            os.path.join(mappings_path, name))
 
-                # Get other .json files not based on schema version
-                if name.endswith(".json") and name not in settings.SCHEMA_VERSIONS_FILE_LIST:
-                    json_files.append(os.path.join(root, name))
+                    # Get other .json files that are not based on schema version
+                    if name.endswith(".json") and name not in settings.SCHEMA_VERSIONS_FILE_LIST and not is_mapping_based_on_schema_version:
+                        json_files.append(os.path.join(root, name))
+
+        populate_files_list(
+            self.path_to_mappings, is_mapping_based_on_schema_version=False)
+
+        populate_files_list(
+            self.path_to_mappings_based_on_schema_version, is_mapping_based_on_schema_version=True)
 
         return json_files
 

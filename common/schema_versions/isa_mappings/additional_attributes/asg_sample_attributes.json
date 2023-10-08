@@ -427,9 +427,14 @@
     "control": "select",
     "default_value": "Unknown",
     "option_values": [
-      "Male",
-      "Female",
-      "Unknown"
+      "FEMALE",
+      "MALE",
+      "HERMAPHRODITE_MONOECIOUS",
+      "ASEXUAL_MORPH",
+      "SEXUAL_MORPH",
+      "NOT_COLLECTED",
+      "NOT_APPLICABLE",
+      "NOT_PROVIDED"
     ],
     "colour": "#dad3ea",
     "excel_col": "O",
@@ -1921,7 +1926,7 @@
     ],
     "deprecated": false,
     "hidden": "false",
-    "type": "array",
+    "type": "string",
     "show_in_form": true,
     "id": "copo.sample.OTHER_INFORMATION",
     "label": "Other Information",
