@@ -125,8 +125,10 @@ MESSAGES = {
                                           '</strong><strong>%s</strong>. Date cannot be in the future.',
     'validation_msg_paired_file_error': 'Field indicates that files should be paired, 2 filenames are allowed '
                                         'at row <strong>%s</strong>',
-    'validation_msg_rack_tube_both_na': 'NOT_APPLICABLE, NOT_PROVIDED or NOT_COLLECTED found in both RACK_OR_PLATE_ID '
+    'validation_msg_rack_tube_both_na': 'NOT_APPLICABLE, NOT_PROVIDED or NOT_COLLECTED value found in both RACK_OR_PLATE_ID '
                                         'and TUBE_OR_WELL_ID at row <strong>%s</strong>.',
+    'validation_msg_rack_or_tube_is_na': 'NOT_APPLICABLE, NOT_PROVIDED, NOT_COLLECTED or "NA" value found in column, RACK_OR_PLATE_ID '
+                                        'or column, TUBE_OR_WELL_ID at row <strong>%s</strong>.',
     'validation_msg_single_file_error': 'Field indicates that files should be single, but multiple filenames were '
                                         'provided at row <strong>%s</strong>',
     'validation_msg_string_in_taxon_id': 'Non numeric TAXON_ID found in row <strong>%s</strong>. Taxon ids must be '
@@ -145,9 +147,9 @@ MESSAGES = {
     'validation_msg_warning_purpose_of_specimen': 'Warning: Overwriting <strong>PURPOSE_OF_SPECIMEN</strong> value with '
                                                   '<strong>RESEQUENCING</strong> because PURPOSE_OF_SPECIMEN is '
                                                   '<strong>SHORT_READ_SEQUENCING</strong>',
-    'validation_msg_warning_racktube_format': "Warning: <strong>%s</strong> <strong>%s</strong> at row "
+    'validation_msg_warning_racktube_format': "Warning: <strong>%s</strong> in column <strong>%s</strong> at row "
                                               "<strong>%s</strong> does not look like  FluidX format. "
-                                              "Please check this is correct before clicking 'Finish'.",
+                                              "Please check that this is correct before clicking 'Finish'.",
     'validation_msg_warning_regex_gen': "Warning: <strong>%s</strong> <strong>%s</strong> at row <strong>%s</strong> "
                                         "is not in the expected format. Please check this is correct before clicking 'Finish'.",
     'validation_msg_warning_update_submitted_sample': "Warning: <strong>%s</strong> has been submitted with biosample "

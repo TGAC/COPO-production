@@ -4,7 +4,8 @@ from common.validators.validator import Validator
 from common.validators.validation_messages import MESSAGES as msg
 from collections import Counter
 from common.schema_versions.lookup.dtol_lookups import BLANK_VALS, \
-    POP_GENOMICS_OPTIONAL_COLUMNS_DEFAULT_VALUES_MAPPING
+    NA_VALS, POP_GENOMICS_OPTIONAL_COLUMNS_DEFAULT_VALUES_MAPPING
+
 
 class ColumnValidator(Validator):
     def validate(self):
@@ -26,7 +27,8 @@ class ColumnValidator(Validator):
 class CellMissingDataValidator(Validator):
     def validate(self):
         p_type = Profile().get_type(profile_id=self.profile_id)
-        associated_p_type_lst = Profile().get_associated_type(self.profile_id, value=True, label=False)
+        associated_p_type_lst = Profile().get_associated_type(
+            self.profile_id, value=True, label=False)
 
         for header, cells in self.data.items():
             # here we need to check if there are not missing values in its cells
@@ -37,7 +39,7 @@ class CellMissingDataValidator(Validator):
                 elif header in POP_GENOMICS_OPTIONAL_COLUMNS_DEFAULT_VALUES_MAPPING \
                         and "ERGA" in p_type:
                     if "POP_GENOMICS" in associated_p_type_lst or 'SHORT_READ_SEQUENCING' in self.data[
-                        'PURPOSE_OF_SPECIMEN'].unique():
+                            'PURPOSE_OF_SPECIMEN'].unique():
                         # erga manifests that inlude "POP_GENOMICS" as an associated tol project type
                         # are allowed to have blank field
                         continue
@@ -61,8 +63,20 @@ class RackTubeNotNullValidator(Validator):
     def validate(self):
         for index, row in self.data.iterrows():
             if row.get("RACK_OR_PLATE_ID", "") in BLANK_VALS and row["TUBE_OR_WELL_ID"] in BLANK_VALS:
-                self.errors.append(msg["validation_msg_rack_tube_both_na"] % (str(index + 1)))
+                self.errors.append(
+                    msg["validation_msg_rack_tube_both_na"] % (str(index + 1)))
                 self.flag = False
+
+            if row.get("RACK_OR_PLATE_ID", "") in BLANK_VALS or row["TUBE_OR_WELL_ID"] in BLANK_VALS:
+                self.errors.append(
+                    msg["validation_msg_rack_or_tube_is_na"] % (str(index + 1)))
+                self.flag = False
+
+            if row.get("RACK_OR_PLATE_ID", "") in NA_VALS or row["TUBE_OR_WELL_ID"] in NA_VALS:
+                self.errors.append(
+                    msg["validation_msg_rack_or_tube_is_na"] % (str(index + 1)))
+                self.flag = False
+
         return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
 
 
@@ -72,9 +86,11 @@ class OrphanedSymbiontValidator(Validator):
         syms = self.data.loc[(self.data["SYMBIONT"] == "SYMBIONT")]
         tid = syms["TUBE_OR_WELL_ID"]
         for el in list(tid):
-            target = self.data.loc[(self.data["SYMBIONT"] == "TARGET") & (self.data["TUBE_OR_WELL_ID"] == el)]
+            target = self.data.loc[(self.data["SYMBIONT"] == "TARGET") & (
+                self.data["TUBE_OR_WELL_ID"] == el)]
             if len(target) == 0:
-                self.errors.append(msg["validation_msg_orphaned_symbiont"] % el)
+                self.errors.append(
+                    msg["validation_msg_orphaned_symbiont"] % el)
                 self.flag = False
         return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
 
@@ -82,7 +98,8 @@ class OrphanedSymbiontValidator(Validator):
 class RackPlateUniquenessValidator(Validator):
     def validate(self):
         # check for uniqueness of RACK_OR_PLATE_ID and TUBE_OR_WELL_ID in this manifest
-        rack_tube = self.data.get("RACK_OR_PLATE_ID", "") + "/" + self.data["TUBE_OR_WELL_ID"]
+        rack_tube = self.data.get(
+            "RACK_OR_PLATE_ID", "") + "/" + self.data["TUBE_OR_WELL_ID"]
         # now check for uniqueness across all Samples
         p_type = Profile().get_type(profile_id=self.profile_id)
         dup = Sample().check_dtol_unique(rack_tube)
@@ -91,20 +108,24 @@ class RackPlateUniquenessValidator(Validator):
 
         if len(dup) > 0:
             # errors = list(map(lambda x: "<li>" + x + "</li>", errors))
-            err = list(map(lambda x: x.get("RACK_OR_PLATE_ID", "") + "/" + x["TUBE_OR_WELL_ID"], dup))
+            err = list(map(lambda x: x.get("RACK_OR_PLATE_ID",
+                       "") + "/" + x["TUBE_OR_WELL_ID"], dup))
 
             # check if rack_tube present we are in the same profile
-            existingsam = Sample().get_by_field("rack_tube", err)  # [str(rack_tube[0])])
+            existingsam = Sample().get_by_field(
+                "rack_tube", err)  # [str(rack_tube[0])])
             for exsam in existingsam:
                 if exsam["profile_id"] == self.profile_id:
                     # todo check SYMBIONT value in species list is the same too
                     # check accessions do not exist yet and status is pending
                     if not exsam["biosampleAccession"]:
                         if "ERGA" in p_type and exsam["status"] in ["pending", "rejected"]:
-                            self.warnings.append(msg["validation_msg_isupdate"] % exsam["rack_tube"])
+                            self.warnings.append(
+                                msg["validation_msg_isupdate"] % exsam["rack_tube"])
                             self.kwargs["isupdate"] = True
                         elif exsam["status"] == "pending":
-                            self.warnings.append(msg["validation_msg_isupdate"] % exsam["rack_tube"])
+                            self.warnings.append(
+                                msg["validation_msg_isupdate"] % exsam["rack_tube"])
                             self.kwargs["isupdate"] = True
                     else:  # allow for update after approval in the same profile
                         self.kwargs["isupdate"] = True
@@ -115,7 +136,8 @@ class RackPlateUniquenessValidator(Validator):
                     #    self.flag = False
                 else:
                     # rack_tube exist in another profile, can't be updated
-                    self.errors.append(msg["validation_msg_duplicate_tube_or_well_id_in_copo"] % exsam["rack_tube"])
+                    self.errors.append(
+                        msg["validation_msg_duplicate_tube_or_well_id_in_copo"] % exsam["rack_tube"])
                     self.flag = False
 
         # duplicates are allowed for asg (and possibily dtol) but one element of duplicate set must have one
@@ -125,17 +147,20 @@ class RackPlateUniquenessValidator(Validator):
             rack, tube = i.split('/')
             rows = self.data.loc[
                 (self.data.get("RACK_OR_PLATE_ID", "") == rack) & (self.data["TUBE_OR_WELL_ID"] == tube)]
-            counts = Counter([x.upper() for x in list(rows["SYMBIONT"].values)])
+            counts = Counter([x.upper()
+                             for x in list(rows["SYMBIONT"].values)])
             if "TARGET" not in counts:
                 self.errors.append(msg["validation_msg_duplicate_without_target"] % (
                     str(rows.get("RACK_OR_PLATE_ID", "") + "/" + rows["TUBE_OR_WELL_ID"])))
                 self.flag = False
             if counts["TARGET"] > 1:
-                self.errors.append(msg["validation_msg_multiple_targets_with_same_id"] % (i))
+                self.errors.append(
+                    msg["validation_msg_multiple_targets_with_same_id"] % (i))
                 self.flag = False
             # TODO this can go at version 2.3 of DTOL
             if counts["TARGET"] + counts["SYMBIONT"] < len(list(rows["SYMBIONT"].values)):
-                self.errors.append(msg["validation_msg_multiple_targets_with_same_id"] % (i))
+                self.errors.append(
+                    msg["validation_msg_multiple_targets_with_same_id"] % (i))
                 self.flag = False
         return self.errors, self.warnings, self.flag, self.kwargs.get("isupdate")
 
@@ -159,11 +184,13 @@ class DecimalLatitudeLongitudeValidator(Validator):
         """
 
         p_type = Profile().get_type(profile_id=self.profile_id)
-        associated_p_type_lst = Profile().get_associated_type(self.profile_id, value=True, label=False)
+        associated_p_type_lst = Profile().get_associated_type(
+            self.profile_id, value=True, label=False)
 
         if "ERGA" in p_type:
             for index, row in self.data.iterrows():
-                decimal_latlong_lst = [row.get("DECIMAL_LATITUDE", ""), row.get("DECIMAL_LONGITUDE", "")]
+                decimal_latlong_lst = [
+                    row.get("DECIMAL_LATITUDE", ""), row.get("DECIMAL_LONGITUDE", "")]
                 latlong_start_end_lst = [row.get("LATITUDE_START", ""), row.get("LATITUDE_END", ""),
                                          row.get("LONGITUDE_START", ""), row.get("LONGITUDE_END", "")]
 
@@ -176,9 +203,9 @@ class DecimalLatitudeLongitudeValidator(Validator):
                     # erga manifests that inlude "POP_GENOMICS" as an associated tol project type
                     # are allowed to have blank field
                     if any(i == "" for i in POP_GENOMICS_OPTIONAL_COLUMNS_DEFAULT_VALUES_MAPPING) \
-                            and any(i == "" for i in latlong_start_end_lst) \
-                            and "POP_GENOMICS" in associated_p_type_lst or 'SHORT_READ_SEQUENCING' in self.data[
-                        'PURPOSE_OF_SPECIMEN'].unique():
+                        and any(i == "" for i in latlong_start_end_lst) \
+                        and "POP_GENOMICS" in associated_p_type_lst or 'SHORT_READ_SEQUENCING' in self.data[
+                            'PURPOSE_OF_SPECIMEN'].unique():
                         continue
                     else:
                         self.errors.append(
@@ -187,9 +214,9 @@ class DecimalLatitudeLongitudeValidator(Validator):
                         self.flag = False
 
                 elif any(i == "NOT_COLLECTED" for i in decimal_latlong_lst) and any(
-                        i != "NOT_COLLECTED" for i in decimal_latlong_lst) or any(
-                    i == "NOT_COLLECTED" for i in latlong_start_end_lst) and any(
-                    i != "NOT_COLLECTED" for i in latlong_start_end_lst):
+                    i != "NOT_COLLECTED" for i in decimal_latlong_lst) or any(
+                        i == "NOT_COLLECTED" for i in latlong_start_end_lst) and any(
+                        i != "NOT_COLLECTED" for i in latlong_start_end_lst):
                     self.errors.append(
                         msg["validation_msg_error_decimal_latlong_or_latlong_start_end_mixed_value"] % str(index + 2))
                     self.flag = False
@@ -201,14 +228,12 @@ class DecimalLatitudeLongitudeValidator(Validator):
                             index + 2))
                     self.flag = False
 
-
                 elif all(i == "NOT_COLLECTED" for i in decimal_latlong_lst) and any(
                         i == "NOT_COLLECTED" for i in latlong_start_end_lst):
                     self.errors.append(
                         msg["validation_msg_error_decimal_latlong_or_latlong_start_end_missing_start_end"] % str(
                             index + 2))
                     self.flag = False
-
 
                 elif all(i == "NOT_COLLECTED" for i in latlong_start_end_lst) and any(
                         i == "NOT_COLLECTED" for i in decimal_latlong_lst):
@@ -217,11 +242,10 @@ class DecimalLatitudeLongitudeValidator(Validator):
                             index + 2))
                     self.flag = False
 
-
                 elif any(i == "NOT_COLLECTED" for i in decimal_latlong_lst) and any(
                         i == "NOT_COLLECTED" for i in latlong_start_end_lst):
                     self.errors.append(msg[
-                                           "validation_msg_error_decimal_latlong_or_latlong_start_end_not_collected_mixed_value"] % str(
+                        "validation_msg_error_decimal_latlong_or_latlong_start_end_not_collected_mixed_value"] % str(
                         index + 2))
                     self.flag = False
 
@@ -247,39 +271,45 @@ class PopGenomicsAssociatedTypeValidator(Validator):
         """
         p_name = Profile().get_name(self.profile_id)
         p_type = Profile().get_type(profile_id=self.profile_id)
-        associated_p_type_lst = Profile().get_associated_type(self.profile_id, value=True, label=False)
+        associated_p_type_lst = Profile().get_associated_type(
+            self.profile_id, value=True, label=False)
 
-        # Copy all values from the "PURPOSE_OF_SPECIMEN" column into a new 
+        # Copy all values from the "PURPOSE_OF_SPECIMEN" column into a new
         # column called, "NEW_PURPOSE_OF_SPECIMEN"
-        self.data["NEW_PURPOSE_OF_SPECIMEN"] = self.data["PURPOSE_OF_SPECIMEN"] 
+        self.data["NEW_PURPOSE_OF_SPECIMEN"] = self.data["PURPOSE_OF_SPECIMEN"]
 
         if "ERGA" in p_type:
             if "POP_GENOMICS" in associated_p_type_lst and 'SHORT_READ_SEQUENCING' in self.data[
-                'PURPOSE_OF_SPECIMEN'].unique():
+                    'PURPOSE_OF_SPECIMEN'].unique():
                 if (self.data['PURPOSE_OF_SPECIMEN'] == 'SHORT_READ_SEQUENCING').all():
                     # Associated tol project (s) for the manifest includes "POP_GENOMICS"
                     for index, row in self.data.iterrows():
                         # Update value of the created column, 'NEW_PURPOSE_OF_SPECIMEN' column to 'RESEQUENCING'
                         # because it is 'SHORT_READ_SEQUENCING' for all rows
-                        self.data.at[index, 'NEW_PURPOSE_OF_SPECIMEN'] = 'RESEQUENCING'
+                        self.data.at[index,
+                                     'NEW_PURPOSE_OF_SPECIMEN'] = 'RESEQUENCING'
 
                         # Set default value for the optional column if it was left blank
                         for optional_column in POP_GENOMICS_OPTIONAL_COLUMNS_DEFAULT_VALUES_MAPPING:
                             if not row.get(optional_column, "").strip():
                                 if optional_column == 'GAL_SAMPLE_ID':
-                                    default_value = self.data.at[index, "COLLECTOR_SAMPLE_ID"]
-                                    self.data.at[index, optional_column] = default_value
+                                    default_value = self.data.at[index,
+                                                                 "COLLECTOR_SAMPLE_ID"]
+                                    self.data.at[index,
+                                                 optional_column] = default_value
                                 else:
                                     default_value = POP_GENOMICS_OPTIONAL_COLUMNS_DEFAULT_VALUES_MAPPING[
                                         optional_column]
-                                    self.data.at[index, optional_column] = default_value
+                                    self.data.at[index,
+                                                 optional_column] = default_value
 
                                 # Display warning for fields where default values were set
                                 self.warnings.append(msg["validation_msg_missing_optional_field_value"] % (
                                     optional_column, str(index + 2), default_value))
 
                     # Display warning that the value of 'PURPOSE_OF_SPECIMEN' column was changed to 'RESEQUENCING'
-                    self.warnings.append(msg["validation_msg_warning_purpose_of_specimen"])
+                    self.warnings.append(
+                        msg["validation_msg_warning_purpose_of_specimen"])
                 else:
                     # Display error message for rows where value of 'PURPOSE_OF_SPECIMEN' column is not equal to
                     # 'SHORT_READ_SEQUENCING'
@@ -292,7 +322,7 @@ class PopGenomicsAssociatedTypeValidator(Validator):
                             % (self.data.at[index, 'PURPOSE_OF_SPECIMEN'], str(index + 2)))
                         self.flag = False
             elif "POP_GENOMICS" in associated_p_type_lst and 'SHORT_READ_SEQUENCING' not in self.data[
-                'PURPOSE_OF_SPECIMEN'].unique():
+                    'PURPOSE_OF_SPECIMEN'].unique():
                 # Display error message for rows where value of 'PURPOSE_OF_SPECIMEN' column is not equal to
                 # 'SHORT_READ_SEQUENCING'
                 rows_indices = self.data.index[
@@ -304,7 +334,7 @@ class PopGenomicsAssociatedTypeValidator(Validator):
                         % (self.data.at[index, 'PURPOSE_OF_SPECIMEN'], str(index + 2)))
                     self.flag = False
             elif "POP_GENOMICS" not in associated_p_type_lst and 'SHORT_READ_SEQUENCING' in self.data[
-                'PURPOSE_OF_SPECIMEN'].unique():
+                    'PURPOSE_OF_SPECIMEN'].unique():
                 if "BGE" in associated_p_type_lst:
                     # Associated tol project(s) for the "ERGA" manifest can include "BGE" once 'SHORT_READ_SEQUENCING'
                     # is inputted
@@ -313,7 +343,8 @@ class PopGenomicsAssociatedTypeValidator(Validator):
                     # Associated tol project(s) for the manifest does not include "POP_GENOMICS"
                     p_name = f'{p_name[:25]}...' if len(
                         p_name) > 28 else p_name  # Truncate profile name to 25 characters
-                    self.errors.append(msg["validation_msg_invalid_associated_tol_project"] % p_name)
+                    self.errors.append(
+                        msg["validation_msg_invalid_associated_tol_project"] % p_name)
                     self.flag = False
             else:
                 pass

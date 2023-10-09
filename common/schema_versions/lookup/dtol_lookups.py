@@ -191,13 +191,13 @@ DTOL_ENUMS = {
         'UNIVERSITY OF OXFORD',
         'NOT_COLLECTED',
         'NOT_PROVIDED'
-    ],
+        ],
     'BARCODING_STATUS': [
         'DNA_BARCODE_EXEMPT',
         'DNA_BARCODING_COMPLETED',
         'DNA_BARCODING_FAILED',
         'DNA_BARCODING_TO_BE_PERFORMED_GAL'
-    ],
+        ],
     'CELL_NUMBER': [
         '1',
         '2-10',
@@ -209,7 +209,7 @@ DTOL_ENUMS = {
         '100001-500000',
         '500001-1000000',
         '1000000+'
-    ],
+        ],
     'COLLECTION_LOCATION':
         [
             'AFGHANISTAN',
@@ -490,7 +490,7 @@ DTOL_ENUMS = {
             'NOT APPLICABLE',
             'NOT COLLECTED',
             'NOT PROVIDED'
-        ],
+            ],
     'DIFFICULT_OR_HIGH_PRIORITY_SAMPLE':
         [
             'DIFFICULT',
@@ -499,17 +499,17 @@ DTOL_ENUMS = {
             'NOT_APPLICABLE',
             'NOT_COLLECTED',
             'NOT_PROVIDED'
-        ],
+            ],
     'DNA_REMOVED_FOR_BIOBANKING':
         [
             'Y',
             'N'
-        ],
+            ],
     'ETHICS_PERMIT_REQUIRED':
         [
             'Y',
             'N'
-        ],
+            ],
     'GAL': {
         'DTOL': [
             'EARLHAM INSTITUTE',
@@ -553,8 +553,8 @@ DTOL_ENUMS = {
                 'UNIVERSITY OF FLORENCE',
                 'WEST GERMAN GENOME CENTRE',
                 'Other_ERGA_Associated_GAL'
-            ]
-    },
+        ]
+        },
     'HAZARD_GROUP': {
         'DTOL':
             [
@@ -574,7 +574,7 @@ DTOL_ENUMS = {
                 '3',
                 '4'
             ]
-    },
+        },
     'LIFESTAGE':
         [
             'ADULT',
@@ -592,17 +592,17 @@ DTOL_ENUMS = {
             'NOT_APPLICABLE',
             'NOT_COLLECTED',
             'NOT_PROVIDED'
-        ],
+            ],
     'MIXED_SAMPLE_RISK':
         [
             'Y',
             'N'
-        ],
+            ],
     'NAGOYA_PERMITS_REQUIRED':
         [
             'Y',
             'N'
-        ],
+            ],
     'ORGANISM_PART':
         [
             '**OTHER_FUNGAL_TISSUE**',
@@ -678,7 +678,7 @@ DTOL_ENUMS = {
             'NOT_APPLICABLE',
             'NOT_COLLECTED',
             'NOT_PROVIDED',
-        ],
+            ],
     'PARTNER':
         [
             'DALHOUSIE UNIVERSITY',
@@ -695,12 +695,12 @@ DTOL_ENUMS = {
             'UNIVERSITY OF RHODE ISLAND',
             'UNIVERSITY OF VIENNA (CEPHALOPOD)',
             'UNIVERSITY OF VIENNA (MOLLUSC)'
-        ],
+            ],
     'PRIMARY_BIOGENOME_PROJECT': [
         'ERGA-associated'
         'ERGA-BGE',
         'ERGA-Pilot',
-    ],
+        ],
     'PURPOSE_OF_SPECIMEN': {
         'ASG':
             [
@@ -727,30 +727,30 @@ DTOL_ENUMS = {
                 'RNA_SEQUENCING',
                 'SHORT_READ_SEQUENCING'
             ]
-    },
+        },
     'REGULATORY_COMPLIANCE':
         [
             'Y',
             'N',
             'NOT_APPLICABLE'
-        ],
+            ],
     'SAMPLE_FORMAT': [
         'DNA',
         'RNA',
         'biological sample/tissue from non-infectious organism',
         'inactivated biological sample from infectious organism'
         'live biological sample from infectious organism'
-    ],
+        ],
     'SAMPLING_PERMITS_REQUIRED':
         [
             'Y',
             'N'
-        ],
+            ],
     'SEQUENCING_CENTRE':
         [
             'EARLHAM INSTITUTE',
             'SANGER INSTITUTE'
-        ],
+            ],
     'SEX':
         [
             'ASEXUAL_MORPH',
@@ -761,7 +761,7 @@ DTOL_ENUMS = {
             'NOT_COLLECTED',
             'NOT_PROVIDED',
             'SEXUAL_MORPH'
-        ],
+            ],
     'SIZE_OF_TISSUE_IN_TUBE':
         [
             'VS',
@@ -772,22 +772,22 @@ DTOL_ENUMS = {
             'NOT_APPLICABLE',
             'NOT_COLLECTED',
             'NOT_PROVIDED'
-        ],
+            ],
     'SORTER_AFFILIATION':
         [
             'EARLHAM INSTITUTE',
             'UNIVERSITY OF OXFORD'
-        ],
+            ],
     'SPECIMEN_IDENTITY_RISK':
         [
             'Y',
             'N'
-        ],
+            ],
     'SYMBIONT':
         [
             'TARGET',
             'SYMBIONT'
-        ],
+            ],
     'TISSUE_FOR_BARCODING':
         [
             '**OTHER_FUNGAL_TISSUE**',
@@ -864,7 +864,7 @@ DTOL_ENUMS = {
             'UNICELLULAR_ORGANISMS_IN_CULTURE',
             'WHOLE_ORGANISM',
             'WHOLE_PLANT'
-        ],
+            ],
     'TISSUE_FOR_BIOBANKING': [
         '**OTHER_FUNGAL_TISSUE**',
         '**OTHER_PLANT_TISSUE**',
@@ -939,24 +939,24 @@ DTOL_ENUMS = {
         'NOT_APPLICABLE',
         'NOT_COLLECTED',
         'NOT_PROVIDED',
-    ],
+        ],
     'TISSUE_REMOVED_FOR_BARCODING':
         [
             'Y',
             'N'
-        ],
+            ],
     'TISSUE_REMOVED_FOR_BIOBANKING':
         [
             'Y',
             'N'
-        ],
+            ],
     'TO_BE_USED_FOR':
         [
             'BARCODING ONLY',
             'REFERENCE GENOME',
             'RESEQUENCING(POPGEN)',
             'RNAseq'
-        ],
+            ],
     'WATER_BODY_TYPE':
         [
             'COASTAL',
@@ -966,13 +966,13 @@ DTOL_ENUMS = {
             'POND',
             'RIVER',
             'STREAM'
-        ],
+            ],
     'WATER_TYPE':
         [
             'BRACKISH_WATER',
             'FRESH_WATER',
             'SALT_WATER'
-        ]
+            ]
 }
 
 DTOL_EXPORT_TO_STS_FIELDS = {
@@ -1797,10 +1797,11 @@ PERMIT_FILENAME_COLUMN_NAMES = ["SAMPLING_PERMITS_FILENAME", "ETHICS_PERMITS_FIL
 PERMIT_REQUIRED_COLUMN_NAMES = ["SAMPLING_PERMITS_REQUIRED", "ETHICS_PERMITS_REQUIRED",
                                 "NAGOYA_PERMITS_REQUIRED"]
 
-PERMIT_COLUMN_NAMES_PREFIX = ["SAMPLING_PERMITS", "ETHICS_PERMITS", "NAGOYA_PERMITS"]
+PERMIT_COLUMN_NAMES_PREFIX = [
+    "SAMPLING_PERMITS", "ETHICS_PERMITS", "NAGOYA_PERMITS"]
 
 NA_VALS = ['#N/A', '#N/A N/A', '#NA', '-1.#IND', '-1.#QNAN', '-NaN', '-nan', '1.#IND', '1.#QNAN', '<NA>', 'N/A', 'NULL',
-           'NaN', 'n/a', 'nan', 'NaT']
+           'NaN', 'n/a', 'nan', 'NaT', 'null', 'NIL', 'nil', 'NA', 'na', 'NAN', 'Nan', 'NA']
 
 NIH_API_KEY = helpers.get_env("NIH_API_KEY")
 
@@ -1812,7 +1813,8 @@ SANGER_TOL_PROFILE_TYPES = ["asg", "dtol", "dtol_env", "erga"]
 SPECIES_LIST_FIELDS = ["SYMBIONT", "TAXON_ID", "ORDER_OR_GROUP", "FAMILY", "GENUS", "SCIENTIFIC_NAME",
                        "INFRASPECIFIC_EPITHET", "CULTURE_OR_STRAIN", "COMMON_NAME", "TAXON_REMARKS"]
 
-STANDALONE_ACCESSION_TYPES = ["project", "sample", "assembly", "seq_annotation", "experiment", "run"]
+STANDALONE_ACCESSION_TYPES = ["project", "sample",
+                              "assembly", "seq_annotation", "experiment", "run"]
 
 SYMBIONT_FIELDS = ["ORDER_OR_GROUP", "FAMILY", "GENUS", "TAXON_ID", "SCIENTIFIC_NAME", "TAXON_REMARKS",
                    "INFRASPECIFIC_EPITHET", "CULTURE_OR_STRAIN_ID", "COMMON_NAME", "LIFESTAGE", "SEX", "SYMBIONT",
