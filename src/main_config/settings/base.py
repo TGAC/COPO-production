@@ -42,9 +42,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://127.0.0.1:8001",    
     "https://copo-project.org",
-    "http://demo.copo-project.org",
-    "https://copodev.cyverseuk.org"
-
+    "https://demo.copo-project.org",
+    "https://copodev.cyverseuk.org",
+    "http://copodev.cyverseuk.org"
 ]
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
@@ -155,7 +155,7 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8000',
     'http://127.0.0.1:8001',
 )
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 ACCOUNT_LOGOUT_REDIRECT_URL = '/copo/auth/login'
 
 
@@ -177,7 +177,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-# CSRF_TRUSTED_ORIGINS = ['http://*.copo-project.org', 'https://*.copo-project.org', '127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['https://*.copo-project.org', 'https://copodev.cyverseuk.org','http://copodev.cyverseuk.org', 'http://127.0.0.1:8000']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
