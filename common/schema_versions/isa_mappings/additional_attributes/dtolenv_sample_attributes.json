@@ -1175,7 +1175,7 @@
     ],
     "deprecated": false,
     "hidden": "false",
-    "type": "array",
+    "type": "string",
     "show_in_form": true,
     "id": "copo.sample.OTHER_INFORMATION",
     "label": "Other Information",

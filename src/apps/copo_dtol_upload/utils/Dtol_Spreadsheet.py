@@ -22,15 +22,16 @@ from common.lookup.lookup import SRA_SETTINGS
 from common.schemas.utils.data_utils import json_to_pytype
 from .helpers import query_public_name_service
 from common.schema_versions.lookup import dtol_lookups as lookup
-#from common.schema_versions import optional_field_dtol_validators as optional_validators, \
+# from common.schema_versions import optional_field_dtol_validators as optional_validators, \
 #    taxon_validators
-#from common.schema_versions import required_field_dtol_validators as required_validators
+# from common.schema_versions import required_field_dtol_validators as required_validators
 from common.utils.logger import Logger
 from PIL import Image
 
 Image.MAX_IMAGE_PIXELS = None
 
 l = Logger()
+
 
 def make_target_sample(sample):
     # need to pop taxon info, and add back into sample_list
@@ -82,18 +83,21 @@ def make_species_list(sample):
     sample["species_list"].append(out)
     return sample
 
+
 def update_permit_filename(sample, permit_filename_mapping):
     # Update/Set permit filename to a unique name if it exists and it is not equal to "NOT_APPLICABLE"
     # for ERGA manifests
     for col_name in lookup.PERMIT_FILENAME_COLUMN_NAMES:
         if sample.get(col_name, "") and sample.get(col_name, "") not in lookup.BLANK_VALS:
-            sample[col_name] = permit_filename_mapping.get(sample.get(col_name, ""), "")
+            sample[col_name] = permit_filename_mapping.get(
+                sample.get(col_name, ""), "")
     return sample
 
 
 class DtolSpreadsheet:
     fields = ""
-    sra_settings = d_utils.json_to_pytype(SRA_SETTINGS, compatibility_mode=False).get("properties", dict())
+    sra_settings = d_utils.json_to_pytype(
+        SRA_SETTINGS, compatibility_mode=False).get("properties", dict())
 
     def __init__(self, file=None, p_id="", validation_record_id=""):
         self.req = ThreadLocal.get_current_request()
@@ -103,8 +107,8 @@ class DtolSpreadsheet:
         if file:
             self.file = file
         else:
-            #self.sample_data = self.req.session.get("sample_data", "")
-            #if self.sample_data == "":
+            # self.sample_data = self.req.session.get("sample_data", "")
+            # if self.sample_data == "":
             #    self.sample_data = pickle.loads(self.vr["manifest_data"])
             self.sample_data = pickle.loads(self.vr["manifest_data"])
             self.isupdate = self.req.session.get("isupdate", False)
@@ -117,14 +121,14 @@ class DtolSpreadsheet:
         self.these_permits = sample_permits / self.profile_id
         self.display_images = display_images
         self.data = None
-        #self.required_field_validators = list()
-        #self.optional_field_validators = list()
-        #self.taxon_field_validators = list()
-        #self.DtolSpreadsheet = optional_validators
-        #self.required_validators = required_validators
-        #self.taxon_validators = taxon_validators
-        #self.symbiont_list = []
-        #self.validator_list = []
+        # self.required_field_validators = list()
+        # self.optional_field_validators = list()
+        # self.taxon_field_validators = list()
+        # self.DtolSpreadsheet = optional_validators
+        # self.required_validators = required_validators
+        # self.taxon_validators = taxon_validators
+        # self.symbiont_list = []
+        # self.validator_list = []
         # if a file is passed in, then this is the first time we have seen the spreadsheet,
         # if not then we are looking at creating samples having previously validated
 
@@ -138,9 +142,11 @@ class DtolSpreadsheet:
             self.type = "DTOL_ENV"
         else:
             self.type = "DTOL"
-        self.current_schema_version = settings.MANIFEST_VERSION.get(self.type, "")
+        self.current_schema_version = settings.MANIFEST_VERSION.get(
+            self.type, "")
         # get associated profile type(s) of manifest
-        associated_type_lst = Profile().get_associated_type(self.profile_id, value=True, label=False)
+        associated_type_lst = Profile().get_associated_type(
+            self.profile_id, value=True, label=False)
         # Get associated type(s) as string separated by '|' symbol
         self.associated_type = " | ".join(associated_type_lst)
 
@@ -178,7 +184,8 @@ class DtolSpreadsheet:
                 elif m_format == "csv":
                     self.data = pandas.read_csv(self.file, keep_default_na=False,
                                                 na_values=lookup.NA_VALS)
-                self.data = self.data.loc[:, ~self.data.columns.str.contains('^Unnamed')]
+                self.data = self.data.loc[:, ~
+                                          self.data.columns.str.contains('^Unnamed')]
                 '''
                 for column in self.allowed_empty:
                     self.data[column] = self.data[column].fillna("")
@@ -261,7 +268,7 @@ class DtolSpreadsheet:
 
         return True
     """
-        
+
     def validate_taxonomy(self):
         ''' check if provided scientific name, TAXON ID,
         family and order are consistent with each other in known taxonomy'''
@@ -371,7 +378,8 @@ class DtolSpreadsheet:
                     # logging.info("written " + str(file_path))
                     break
             if not found:
-                output.append({"file_name": str(file_display_path), "specimen_id": "", "name": ""})
+                output.append({"file_name": str(file_display_path),
+                              "specimen_id": "", "name": ""})
         # save to session
         request = ThreadLocal.get_current_request()
         request.session["image_specimen_match"] = output
@@ -413,27 +421,31 @@ class DtolSpreadsheet:
             file = files[f]
 
             file_path = write_path / file.name
-            file_path = Path(settings.MEDIA_ROOT) / "sample_permits" / self.profile_id / file.name
+            file_path = Path(settings.MEDIA_ROOT) / \
+                "sample_permits" / self.profile_id / file.name
             with default_storage.open(file_path, 'wb+') as destination:
                 for chunk in file.chunks():
                     destination.write(chunk)
 
             filename = os.path.splitext(file.name)[0].upper()
             # now iterate through samples data to see if there is a match between specimen_id and permit name
-        permit_path = Path(settings.MEDIA_ROOT) / "sample_permits" / self.profile_id
+        permit_path = Path(settings.MEDIA_ROOT) / \
+            "sample_permits" / self.profile_id
         fail_flag = False
         for num, sample in enumerate(samples.values):
 
             specimen_id = sample[specimen_id_column_index].upper()
 
-            file_list = [f for f in os.listdir(permit_path) if isfile(join(permit_path, f))]
+            file_list = [f for f in os.listdir(
+                permit_path) if isfile(join(permit_path, f))]
             file_list = set(file_list)  # Remove duplicate filenames
 
             if sample[ethics_permits_required_index] == "Y":
                 found = False
                 for filename in file_list:
                     if filename == sample[ethics_permits_filename_index]:
-                        p = Path(settings.MEDIA_URL) / "sample_permits" / self.profile_id / filename
+                        p = Path(settings.MEDIA_URL) / \
+                            "sample_permits" / self.profile_id / filename
                         output.append(
                             {"file_name": str(p), "specimen_id": specimen_id, "permit_type": "Ethics Permit"})
                         found = True
@@ -450,7 +462,8 @@ class DtolSpreadsheet:
                 found = False
                 for filename in file_list:
                     if filename == sample[sampling_permits_filename_index]:
-                        p = Path(settings.MEDIA_URL) / "sample_permits" / self.profile_id / filename
+                        p = Path(settings.MEDIA_URL) / \
+                            "sample_permits" / self.profile_id / filename
                         output.append(
                             {"file_name": str(p), "specimen_id": specimen_id, "permit_type": "Sampling Permit"})
                         found = True
@@ -467,7 +480,8 @@ class DtolSpreadsheet:
                 found = False
                 for filename in file_list:
                     if filename == sample[nagoya_permits_filename_index]:
-                        p = Path(settings.MEDIA_URL) / "sample_permits" / self.profile_id / filename
+                        p = Path(settings.MEDIA_URL) / \
+                            "sample_permits" / self.profile_id / filename
                         output.append(
                             {"file_name": str(p), "specimen_id": specimen_id, "permit_type": "Nagoya Permit"})
                         found = True
@@ -488,7 +502,6 @@ class DtolSpreadsheet:
                         html_id="permits")
         return output
 
-
     def save_records(self):
         # create mongo sample objects from info parsed from manifest and saved to session variable
         # sample_data = self.sample_data
@@ -499,14 +512,18 @@ class DtolSpreadsheet:
                                             na_values=lookup.NA_VALS)
         except ValueError:
             sample_data = binary
-        sample_data = sample_data.loc[:, ~sample_data.columns.str.contains('^Unnamed')]
+        sample_data = sample_data.loc[:, ~
+                                      sample_data.columns.str.contains('^Unnamed')]
         '''
         for column in self.allowed_empty:
             self.data[column] = self.data[column].fillna("")
         '''
         sample_data = sample_data.apply(lambda x: x.astype(str))
         sample_data = sample_data.apply(lambda x: x.str.strip())
-        sample_data.columns = sample_data.columns.str.replace(" ", "")
+
+        # Remove special characters from column names
+        sample_data.columns = [col.replace(" ", "").replace(":", "").replace(".", "").replace("(", "").replace(")", "").replace(
+            "/", "").replace(",", "").replace(";", "").replace("'", "").replace('"', "").replace("’", "").replace("“", "").replace("”", "") for col in sample_data.columns]
         manifest_id = str(uuid.uuid4())
         request = ThreadLocal.get_current_request()
         image_data = request.session.get("image_specimen_match", [])
@@ -516,13 +533,17 @@ class DtolSpreadsheet:
             if im["name"]:
                 df = DataFile().get_records_by_fields({"name": im["name"]})
                 if (len(df) == 0):
-                    fields = {"file_location": im["file_name"], "name": im["name"]}
+                    fields = {
+                        "file_location": im["file_name"], "name": im["name"]}
                     DataFile().save_record({}, **fields)
 
         public_name_list = list()
-        x = json_to_pytype(lk.WIZARD_FILES["sample_details"], compatibility_mode=False)
+        x = json_to_pytype(
+            lk.WIZARD_FILES["sample_details"], compatibility_mode=False)
         self.fields = jp.match(
-            '$.properties[?(@.specifications[*] == "' + self.type.lower() + '"& @.manifest_version[*]=="' + self.current_schema_version + '")].versions[0]',
+            '$.properties[?(@.specifications[*] == "' + self.type.lower() +
+            '"& @.manifest_version[*]=="' +
+            self.current_schema_version + '")].versions[0]',
             x)
 
         # Create a permit filename mapping
@@ -531,13 +552,15 @@ class DtolSpreadsheet:
 
         for col_name in lookup.PERMIT_FILENAME_COLUMN_NAMES:
             if col_name in sample_data.columns:
-                permit_filename_lst.extend(sample_data[col_name].unique().tolist())
+                permit_filename_lst.extend(
+                    sample_data[col_name].unique().tolist())
 
         # Iterate the list of permit filenames and create a mapping
         for permit_filename in permit_filename_lst:
             if permit_filename.endswith(".pdf"):
                 current_date = get_datetime().strftime('%Y%m%d')
-                new_permit_filename = permit_filename.replace('.pdf', "_" + str(current_date) + ".pdf")
+                new_permit_filename = permit_filename.replace(
+                    '.pdf', "_" + str(current_date) + ".pdf")
                 permit_filename_mapping[permit_filename] = new_permit_filename
 
         sample_data["_id"] = ""
@@ -564,9 +587,12 @@ class DtolSpreadsheet:
                 s["status"] = "private"
             else:
                 s["status"] = "pending"
-            s["rack_tube"] = s.get("RACK_OR_PLATE_ID", "") + "/" + s["TUBE_OR_WELL_ID"]
+            s["rack_tube"] = s.get("RACK_OR_PLATE_ID", "") + \
+                "/" + s["TUBE_OR_WELL_ID"]
             notify_frontend(data={"profile_id": self.profile_id},
-                            msg="Creating Sample with ID: " + s.get("TUBE_OR_WELL_ID") + "/" + s["SPECIMEN_ID"],
+                            msg="Creating Sample with ID: " +
+                                s.get("TUBE_OR_WELL_ID") +
+                            "/" + s["SPECIMEN_ID"],
                             action="info",
                             html_id="sample_info")
 
@@ -575,12 +601,14 @@ class DtolSpreadsheet:
                 s["ORGANISM_PART"] = "WHOLE_ORGANISM"
                 for field in self.fields:
                     if field not in lookup.SYMBIONT_FIELDS:
-                        target = Sample().get_target_by_field("rack_tube", s["rack_tube"])
+                        target = Sample().get_target_by_field(
+                            "rack_tube", s["rack_tube"])
                         if target:
                             s[field] = target[0].get(field, "")
                         else:
                             for p in range(1, len(sample_data)):
-                                row = (map_to_dict(sample_data[0], sample_data[p]))
+                                row = (map_to_dict(
+                                    sample_data[0], sample_data[p]))
                                 if row.get("RACK_OR_PLATE_ID", "") == s.get("RACK_OR_PLATE_ID", "") and row.get(
                                         "TUBE_OR_WELL_ID", "") == s.get("TUBE_OR_WELL_ID", "") and row.get("SYMBIONT",
                                                                                                            "") == "TARGET":
@@ -593,7 +621,8 @@ class DtolSpreadsheet:
             s = update_permit_filename(s, permit_filename_mapping)
 
             s = make_species_list(s)
-            sampl = Sample(profile_id=self.profile_id).save_record(auto_fields={}, **s)
+            sampl = Sample(profile_id=self.profile_id).save_record(
+                auto_fields={}, **s)
             Sample().timestamp_dtol_sample_created(sampl["_id"])
             # update permit filename in the database i.e. set unique filename as the permit filename
 
@@ -611,7 +640,8 @@ class DtolSpreadsheet:
 
         for im in image_data:
             # create matching DataFile object for image is provided
-            samplelist = sample_data.loc[sample_data["SPECIMEN_ID"] == im["specimen_id"]]["_id"].tolist()
+            samplelist = sample_data.loc[sample_data["SPECIMEN_ID"]
+                                         == im["specimen_id"]]["_id"].tolist()
             DataFile().insert_sample_ids(im["name"], samplelist)
 
         uri = request.build_absolute_uri('/')
@@ -619,7 +649,8 @@ class DtolSpreadsheet:
         public_names = query_public_name_service(public_name_list)
         for name in public_names:
             if name.get("status", "") == "Rejected":
-                Sample().add_rejected_status_for_tolid(name['specimen']["specimenId"])
+                Sample().add_rejected_status_for_tolid(
+                    name['specimen']["specimenId"])
                 continue
             Sample().update_public_name(name)
         profile_id = request.session["profile_id"]
@@ -627,9 +658,9 @@ class DtolSpreadsheet:
         title = profile["title"]
         description = profile["description"]
         Email().notify_manifest_pending_approval(uri + 'copo/accept_reject_sample/', title=title,
-                                                     description=description,
-                                                     project=self.type.upper(), is_new=True)
-        
+                                                 description=description,
+                                                 project=self.type.upper(), is_new=True)
+
     def update_records(self):
         binary = pickle.loads(self.vr["manifest_data"])
         try:
@@ -649,46 +680,55 @@ class DtolSpreadsheet:
 
         for col_name in lookup.PERMIT_FILENAME_COLUMN_NAMES:
             if col_name in sample_data.columns:
-                permit_filename_lst.extend(sample_data[col_name].unique().tolist())
+                permit_filename_lst.extend(
+                    sample_data[col_name].unique().tolist())
 
         # Iterate the list of permit filenames and create a mapping
         for permit_filename in permit_filename_lst:
             if permit_filename.endswith(".pdf"):
                 current_date = get_datetime().strftime('%Y%m%d')
-                new_permit_filename = permit_filename.replace('.pdf', "_" + str(current_date) + ".pdf")
+                new_permit_filename = permit_filename.replace(
+                    '.pdf', "_" + str(current_date) + ".pdf")
                 permit_filename_mapping[permit_filename] = new_permit_filename
 
         for p in range(0, len(sample_data)):
             s = map_to_dict(sample_data.columns, sample_data.iloc[p, :])
             notify_frontend(data={"profile_id": self.profile_id},
-                            msg="Updating Sample with ID: " + s["TUBE_OR_WELL_ID"] + "/" + s["SPECIMEN_ID"],
+                            msg="Updating Sample with ID: " +
+                                s["TUBE_OR_WELL_ID"] + "/" + s["SPECIMEN_ID"],
                             action="info",
                             html_id="sample_info")
-            rack_tube = s.get("RACK_OR_PLATE_ID", "") + "/" + s["TUBE_OR_WELL_ID"]
-            recorded_sample = Sample().get_target_by_field("rack_tube", rack_tube)[0]
+            rack_tube = s.get("RACK_OR_PLATE_ID", "") + \
+                "/" + s["TUBE_OR_WELL_ID"]
+            recorded_sample = Sample().get_target_by_field(
+                "rack_tube", rack_tube)[0]
             sample_data.at[p, '_id'] = recorded_sample["_id"]
             is_updated = False
 
             # Update permit filename
             for col_name in lookup.PERMIT_FILENAME_COLUMN_NAMES:
                 if s.get(col_name, "") and s.get(col_name, "") not in lookup.BLANK_VALS:
-                    s[col_name] = permit_filename_mapping.get(s.get(col_name, ""), "")
+                    s[col_name] = permit_filename_mapping.get(
+                        s.get(col_name, ""), "")
 
             for field in s.keys():
                 if s[field] != recorded_sample.get(field, "") and s[field].strip() != recorded_sample["species_list"][
-                    0].get(field, ""):
+                        0].get(field, ""):
                     if field in lookup.SPECIES_LIST_FIELDS:
                         # record change
                         Sample().record_user_update(field, recorded_sample["species_list"][0][field], s[field],
                                                     recorded_sample["_id"])
                         # update sample
-                        Sample().add_field("species_list.0." + str(field), s[field], recorded_sample["_id"])
+                        Sample().add_field("species_list.0." + str(field),
+                                           s[field], recorded_sample["_id"])
                         is_updated = True
                     else:
                         # record change
-                        Sample().record_user_update(field, recorded_sample[field], s[field], recorded_sample["_id"])
+                        Sample().record_user_update(
+                            field, recorded_sample[field], s[field], recorded_sample["_id"])
                         # update sample
-                        Sample().add_field(field, s[field], recorded_sample["_id"])
+                        Sample().add_field(
+                            field, s[field], recorded_sample["_id"])
                         is_updated = True
 
             if recorded_sample["biosampleAccession"] and is_updated:
@@ -700,7 +740,8 @@ class DtolSpreadsheet:
             public_names = query_public_name_service(public_name_list)
             for name in public_names:
                 if name.get("status", "") == "Rejected":
-                    Sample().add_rejected_status_for_tolid(name['specimen']["specimenId"])
+                    Sample().add_rejected_status_for_tolid(
+                        name['specimen']["specimenId"])
                     continue
                 Sample().update_public_name(name)
             profile_id = request.session["profile_id"]
@@ -710,19 +751,22 @@ class DtolSpreadsheet:
 
         if need_send_email:
             Email().notify_manifest_pending_approval(uri + 'copo/accept_reject_sample/', title=title,
-                                                         description=description,
-                                                         project=self.type.upper(), is_new=False)
+                                                     description=description,
+                                                     project=self.type.upper(), is_new=False)
 
         image_data = request.session.get("image_specimen_match", [])
         for im in image_data:
             if im["name"]:
-                samplelist = sample_data.loc[sample_data["SPECIMEN_ID"] == im["specimen_id"]]["_id"].tolist()
+                samplelist = sample_data.loc[sample_data["SPECIMEN_ID"]
+                                             == im["specimen_id"]]["_id"].tolist()
                 df = DataFile().get_records_by_fields({"name": im["name"]})
                 if (len(df) == 0):
-                    fields = {"file_location": im["file_name"], "name": im["name"]}
+                    fields = {
+                        "file_location": im["file_name"], "name": im["name"]}
                     df = DataFile().save_record({}, **fields)
                     DataFile().insert_sample_ids(im["name"], samplelist)
                 else:
                     orginallist = df[0]["description"]["attributes"]["attach_samples"]["study_samples"]
-                    resultlist = [sam for sam in samplelist if sam not in orginallist]
+                    resultlist = [
+                        sam for sam in samplelist if sam not in orginallist]
                     DataFile().insert_sample_ids(im["name"], resultlist)
