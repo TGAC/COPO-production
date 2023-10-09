@@ -54,7 +54,7 @@ class S3Connection():
         MB = KB * KB
         GB = KB * MB
 
-        config = TransferConfig(multipart_threshold=2 * GB, multipart_chunksize=128 * MB, io_chunksize=128 * MB,
+        config = TransferConfig(multipart_threshold=1 * GB, multipart_chunksize=1024 * MB, io_chunksize=1024 * MB,
                                 max_concurrency=2, use_threads=True)
         self.s3_client.download_file(bucket, key, loc, Config=config)
         Logger().log("transfer complete: " + loc)
