@@ -32,6 +32,7 @@
     <div hidden id="hidden_attrs">
         <!-- hidden attributes  -->
         <input type="hidden" id="profile_title" value="{{ profile.title }}"/>
+        <input type="hidden" id="profile_type" value="{{ profile.type }}" />
         <input type="hidden" id="nav_component_name" value="taggedseq"/>
         <input type="hidden" id="blank_manifest_url" value="">
         {% for checklist in checklists %}
@@ -102,13 +103,16 @@
                     <h3 class="copo-webui-popover-title">Barcoding Manifest - Getting started</h3>
                     <div class="copo-webui-popover-content">
                         <div class="webpop-content-div">
-                            The Barcode Manifest component of a profile  <br/><br/>Select the correct 
-                            checklist and then click the
+                            The <strong>Barcode Manifest</strong> component of a profile 
+                            <br/><br/>
+                            Select the desired checklist from the dropdown menu then, click the
                             <button class="circular tiny ui icon brown  button">
                                 <i class="icon download sign"></i>
                             </button>
-                            button to download the blank manfiest.  Once complete the manifest, you can click 
-                            <button class="circular tiny ui icon green  button">
+                            button to download the blank manifest.  
+                            <br /><br />
+                            After having completed the manifest, click the
+                            <button id="help_add_button" class="circular tiny ui icon button">
                                 <i class="icon table sign"></i>
                             </button>
                             button to upload the manifest. 
