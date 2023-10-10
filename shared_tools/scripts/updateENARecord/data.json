@@ -1,0 +1,27 @@
+{
+    "submit_url": "https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit",
+    "retrive_url": "https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/sample/",
+    "username": "",
+    "password": "",
+    "add_new_attribute": true,
+    "data": [
+        {
+            "sample_accession": "",
+            "bio_material": "",
+            "proxy voucher": "",
+            "specimen_voucher": ""
+        }
+    ],
+    "other_data": [
+        {
+            "action": "kill",
+            "sample_accession": "",
+            "HoldUntilDate": "2023-05-17Z"
+        },
+        {
+            "action": "kill",
+            "sample_accession": "",
+            "HoldUntilDate": "2023-05-17Z"
+        }
+    ]
+}
