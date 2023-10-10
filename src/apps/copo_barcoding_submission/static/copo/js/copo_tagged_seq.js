@@ -236,16 +236,15 @@ $(document).ready(function () {
   if (document.getElementById('profile_type').value.includes('ASG')) {
     $('#help_add_button').addClass('violet');
     $('.new-taggedseq-spreadsheet-template').addClass('violet');
-  }
-
-  if (document.getElementById('profile_type').value.includes('DTOL')) {
+  } else if (document.getElementById('profile_type').value.includes('DTOL')) {
     $('#help_add_button').addClass('green');
     $('.new-taggedseq-spreadsheet-template').addClass('green');
-  }
-
-  if (document.getElementById('profile_type').value.includes('ERGA')) {
+  } else if (document.getElementById('profile_type').value.includes('ERGA')) {
     $('#help_add_button').addClass('pink');
     $('.new-taggedseq-spreadsheet-template').addClass('pink');
+  } else {
+    $('#help_add_button').addClass('green');
+    $('.new-taggedseq-spreadsheet-template').addClass('green');
   }
 
   //******************************Event Handlers Block*************************//
