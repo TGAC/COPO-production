@@ -21,7 +21,7 @@ def get_env(env_key):
 
 username = urllib.parse.quote_plus(get_env("MONGO_USER"))
 password = urllib.parse.quote_plus(get_env("MONGO_USER_PASSWORD"))
-mongo = urllib.parse.quote_plus(get_env("MONGO_HOST")
+mongo = urllib.parse.quote_plus(get_env("MONGO_HOST"))
 port = urllib.parse.quote_plus(get_env("MONGO_PORT"))
 myclient = pymongo.MongoClient(f"mongodb://{username}:{password}@{mongo}:{port}/")
 mydb = myclient["copo_mongo"]
