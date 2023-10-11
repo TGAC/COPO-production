@@ -328,11 +328,17 @@ class DtolEnumerationValidator(Validator):
                     elif header == "TISSUE_REMOVED_FOR_BIOBANKING" and c.strip() == "Y":
                         if self.data.at[
                             cellcount - 1, "TISSUE_VOUCHER_ID_FOR_BIOBANKING"].strip() in lookup.BLANK_VALS:
-                            self.warnings.append(msg["validation_msg_warning_na_value_voucher"] % (
-                                self.data.at[cellcount - 1, "TISSUE_VOUCHER_ID_FOR_BIOBANKING"].strip(),
-                                "TISSUE_VOUCHER_ID_FOR_BIOBANKING", str(cellcount + 1),
-                                "TISSUE_VOUCHER_ID_FOR_BIOBANKING"
-                            ))
+                            # If "TISSUE_REMOVED_FOR_BIOBANKING" is "Y", "NOT_PROVIDED" can be set as
+                            # the value of "TISSUE_VOUCHER_ID_FOR_BIOBANKING" according to the ERGA SOP
+                            if "ERGA" in p_type and self.data.at[
+                                cellcount - 1, "TISSUE_VOUCHER_ID_FOR_BIOBANKING"].strip() == "NOT_PROVIDED":
+                                continue
+                            else:
+                                self.warnings.append(msg["validation_msg_warning_na_value_voucher"] % (
+                                    self.data.at[cellcount - 1, "TISSUE_VOUCHER_ID_FOR_BIOBANKING"].strip(),
+                                    "TISSUE_VOUCHER_ID_FOR_BIOBANKING", str(cellcount + 1),
+                                    "TISSUE_VOUCHER_ID_FOR_BIOBANKING"
+                                ))
                     # if dna removed for biobanking warning that voucher should be present
                     elif header == "DNA_REMOVED_FOR_BIOBANKING" and c.strip() == "Y":
                         if self.data.at[

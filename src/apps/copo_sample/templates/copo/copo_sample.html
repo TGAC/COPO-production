@@ -256,14 +256,17 @@
                                 process of sample metadata attribution.
                                 <br/><br/>
                                 Use the
-                                {#                                <button id="help_add_button" class="circular tiny ui icon button#}
-                                {#                                    {% if "ERGA" in profile.type %}pink{% else %}green{% endif %}">#}
-                                <button id="help_add_button"
-                                        class="circular tiny ui icon button">
+                                <button id="help_add_button" class="circular tiny ui icon button">
                                     <i class="icon sign table"></i>
                                 </button>
-                                to upload {{ profile.type }} samples.
+                                to upload <strong>{{ profile.type }}</strong> samples.
                                 <br/><br/>
+                                Click the
+                                    <button class="circular tiny ui icon brown  button">
+                                        <i class="icon download sign"></i>
+                                    </button>
+                                to download a blank <strong>{{ profile.type }}</strong> manifest template.
+                                <br /><br />
                                 <div><strong>Quick Tour: </strong>To explore the various
                                     controls available on this page, click the
                                     <button class="circular tiny ui icon orange button">
