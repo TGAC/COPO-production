@@ -347,7 +347,7 @@ def generate_server_side_table_records(profile_id=str(), component=str(), reques
 
     return_dict = dict()
 
-    records_total = da_object.get_collection_handle().count(
+    records_total = da_object.get_collection_handle().count_documents(
         {'profile_id': profile_id, 'deleted': helpers.get_not_deleted_flag()})
 
     # retrieve and process records
@@ -359,7 +359,7 @@ def generate_server_side_table_records(profile_id=str(), component=str(), reques
                                                                  filter_by=dict(profile_id=profile_id,
                                                                                 component=component))
         existing_bundles = [str(x["_id"]) for x in existing_bundles]
-        records_total = da_object.get_collection_handle().count({"$and": [
+        records_total = da_object.get_collection_handle().count_documents({"$and": [
             {"profile_id": profile_id, 'deleted': helpers.get_not_deleted_flag()},
             {"$or": [
                 {"description_token": {"$in": [None, False, ""]}},
@@ -396,7 +396,7 @@ def generate_server_side_table_records(profile_id=str(), component=str(), reques
     records_filtered = records_total
 
     if search_term:
-        records_filtered = da_object.get_collection_handle().count(
+        records_filtered = da_object.get_collection_handle().count_documents(
             {'profile_id': profile_id, 'deleted': helpers.get_not_deleted_flag(),
              'name': {'$regex': search_term, "$options": 'i'}})
 

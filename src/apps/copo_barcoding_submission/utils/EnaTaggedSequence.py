@@ -233,7 +233,7 @@ class EnaTaggedSequence:
                     target_ids.append(target_id)
 
                 tagged_seq_obj_ids = [ ObjectId(x) for x in target_ids]
-                count = TaggedSequence().get_collection_handle().find({"_id": {"$in": tagged_seq_obj_ids},"profile_id": profile_id,  "accession":{"$exists": False}} ).count()
+                count = TaggedSequence().get_collection_handle().count_documents({"_id": {"$in": tagged_seq_obj_ids},"profile_id": profile_id,  "accession":{"$exists": False}} )
                 if count != len(target_ids):
                     return dict(status='error', message="One of the biocoding sequence have been accessed. Cannot submit again!")        
 
@@ -437,7 +437,7 @@ class EnaTaggedSequence:
                 message = "Submission processing failed due to exception! Retry again : " + str(e)
                 notify_tagged_seq_status(data={"profile_id": sub["profile_id"]}, msg=message , action="error", html_id="tagged_seq_info")
                 # reset sample status to pending & remove bundle / bundle samples
-                Submission().get_collection_handle().update(
+                Submission().get_collection_handle().update_one(
                     {"_id": sub["_id"]},
                     {'$set': {'tagged_seq_status': 'pending'}})
 
@@ -470,7 +470,7 @@ class EnaTaggedSequence:
         submission["tagged_seqs"] = [ x for x in submission["tagged_seqs"] if ObjectId(x) not in tagged_seq_object_ids]
         if len(submission["tagged_seqs"]) == 0:
             submission["tagged_seq_status"] = "complete"
-        Submission().get_collection_handle().update({"_id": submission_id}, {'$set': {"tagged_seqs" : submission["tagged_seqs"] , 'tagged_seq_status': submission["tagged_seq_status"], "modified_date": dt}})
+        Submission().get_collection_handle().update_one({"_id": submission_id}, {'$set': {"tagged_seqs" : submission["tagged_seqs"] , 'tagged_seq_status': submission["tagged_seq_status"], "modified_date": dt}})
 
     def _register_project(self, profile_id, submission_id, submission_xml_path=str()):
         """
@@ -581,8 +581,8 @@ class EnaTaggedSequence:
             accessions['project'] = project_accessions
             submission_record['accessions'] = accessions
 
-            collection_handle.update(
-                {"_id": ObjectId(str(submission_record.pop('_id')))},
+            collection_handle.update_one(
+                {"_id": submission_record.pop('_id')},
                 {'$set': submission_record})
 
             # update submission status

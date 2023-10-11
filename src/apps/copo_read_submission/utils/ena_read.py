@@ -107,9 +107,9 @@ def delete_ena_records(profile_id, target_ids=list(), target_id=None):
             file_ids.remove(f) if f in file_ids else None
 
     if file_ids:
-        DataFile(profile_id=profile_id).get_collection_handle().remove(
+        DataFile(profile_id=profile_id).get_collection_handle().delete_many(
             {"_id": {"$in": [ObjectId(f) for f in file_ids]}}, multi=True)
-        EnaFileTransfer(profile_id=profile_id).get_collection_handle().remove({"file_id": {"$in": file_ids}},
+        EnaFileTransfer(profile_id=profile_id).get_collection_handle().delete_many({"file_id": {"$in": file_ids}},
                                                                               multi=True)
 
     # remove sample records if no file inside
@@ -128,11 +128,11 @@ def delete_ena_records(profile_id, target_ids=list(), target_id=None):
             {"_id": {"$nin": delete_samples}, "derivesFrom": {"$in": delete_sources}}, {"derivesFrom": 1}))
         for s in other_samples_with_same_source:
             delete_sources.remove(s["derivesFrom"]) if s["derivesFrom"] in delete_sources else None
-        Source(profile_id=profile_id).get_collection_handle().remove(
+        Source(profile_id=profile_id).get_collection_handle().delete_many(
             {"_id": {"$in": [ObjectId(s) for s in delete_sources]}})
 
     if delete_samples:
-        Sample(profile_id=profile_id).get_collection_handle().remove({"_id": {"$in": delete_samples}})
+        Sample(profile_id=profile_id).get_collection_handle().delete_many({"_id": {"$in": delete_samples}})
 
     return dict(status='success', message="Read record/s have been deleted!")
 

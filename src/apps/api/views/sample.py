@@ -559,7 +559,7 @@ class APIValidateManifest(APIView):
 
 
     def post(self, request):
-        id = APIValidationReport().get_collection_handle().insert(
+        id = APIValidationReport().get_collection_handle().insert_one(
             {"profile_id": request.POST["profile_id"], "status": "pending", "content": "",
              "submitted": datetime.datetime.utcnow(), "user_id": request.user.id})
         self.sample_spreadsheet(request, report_id=id)

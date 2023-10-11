@@ -159,7 +159,7 @@ def get_location_details(latitude, longitude):
 
 
 def get_number_of_samples_produced(field_name, field_value):
-    return Sample().get_collection_handle().count({field_name: field_value})
+    return Sample().get_collection_handle().count_documents({field_name: field_value})
 
 
 def get_profile_titles_nav_tabs(request):

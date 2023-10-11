@@ -17,7 +17,7 @@ class Command(BaseCommand):
     # A command must define handle()
     def handle(self, *args, **options):
         manifest_id = options["manifest_id"]
-        fromdb = da.handle_dict["sample"].count({"manifest_id": manifest_id, "status": "processing"})
+        fromdb = da.handle_dict["sample"].count_documents({"manifest_id": manifest_id, "status": "processing"})
         print("samples stuck: " + str(fromdb))
         fromdb = da.handle_dict["sample"].update_many({"manifest_id": manifest_id, "status": "processing"},
                                                       {"$set": {"status": "pending"}})

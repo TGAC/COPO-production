@@ -11,9 +11,9 @@ def get_collection_ref(collection_name):
 
 
 def get_mongo_client():
-    MONGO_CLIENT = pymongo.MongoClient(host=settings.MONGO_HOST, maxPoolSize=settings.MONGO_MAX_POOL_SIZE, )[
+    MONGO_CLIENT = pymongo.MongoClient(host=settings.MONGO_HOST, username=settings.MONGO_USER,password=settings.MONGO_USER_PASSWORD, maxPoolSize=settings.MONGO_MAX_POOL_SIZE, )[
         settings.MONGO_DB]
-    MONGO_CLIENT.authenticate(settings.MONGO_USER, settings.MONGO_USER_PASSWORD, source='admin')
+    #MONGO_CLIENT.authenticate(settings.MONGO_USER, settings.MONGO_USER_PASSWORD, source='admin')
     return MONGO_CLIENT
 
 

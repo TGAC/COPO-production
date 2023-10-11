@@ -242,7 +242,7 @@ class BrokerDA:
         # )
 
         # hard delete
-        self.da_object.get_collection_handle().remove({'_id': {'$in': target_ids}})
+        self.da_object.get_collection_handle().delete_many({'_id': {'$in': target_ids}})
 
         self.context = self.broker_visuals.do_table_data()
         return self.context

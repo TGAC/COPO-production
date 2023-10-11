@@ -331,7 +331,7 @@ def submit_assembly(profile_id, target_ids=list(),  target_id=str()):
             if target_id:
                 target_ids.append(target_id)
             target_obj_ids = [ObjectId(x) for x in target_ids]
-            count = Assembly().get_collection_handle().find({"profile_id": profile_id, "accession": "", "_id" : {"$in": target_obj_ids}}).count()
+            count = Assembly().get_collection_handle().count_documents({"profile_id": profile_id, "accession": "", "_id" : {"$in": target_obj_ids}})
             if count < len(target_ids):
                 return dict(status='error', message="One or more Assembly has been submitted! Cannot submitted again.")        
             

@@ -145,7 +145,7 @@ pycodestyle==2.10.0
 #PyHamcrest==2.0.4
 #PyJWT==1.7.1
 pylint==1.7.2
-pymongo==3.12.3
+pymongo==4.5.0
 #pyOpenSSL==23.0.0
 #pyparsing==2.1.10
 PyPDF2==1.26.0

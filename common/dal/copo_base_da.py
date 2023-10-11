@@ -13,10 +13,10 @@ class DataSchemas:
         self.delete_ui_template()
 
         doc = {"schemaName": self.schema, "schemaType": "UI", "data": template}
-        Schemas.insert(doc)
+        Schemas.insert_one(doc)
 
     def delete_ui_template(self):
-        Schemas.remove({"schemaName": self.schema, "schemaType": "UI"})
+        Schemas.delete_one({"schemaName": self.schema, "schemaType": "UI"})
 
     def get_ui_template(self):
         try:

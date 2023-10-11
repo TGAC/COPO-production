@@ -272,7 +272,7 @@ def release_study(request, profile_id):
         prj[0]['status'] = 'PUBLIC'
         prj[0]['release_date'] = first_public
 
-        Submission().get_collection_handle().update(
+        Submission().get_collection_handle().update_one(
             {"_id": (submission["_id"])},
             {'$set': {"accessions.project": prj}})
         #return HttpResponse(status=200, content=f"Project was already released on {first_public}")
@@ -332,7 +332,7 @@ def release_study(request, profile_id):
         prj[0]['status'] = 'PUBLIC'
         prj[0]['release_date'] = dt
 
-        Submission().get_collection_handle().update(
+        Submission().get_collection_handle().update_one(
             {"_id": submission["_id"]}, {'$set': {"accessions.project": prj}})
 
         #return HttpResponse(status=200, content="Project release successful.")

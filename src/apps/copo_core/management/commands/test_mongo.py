@@ -12,7 +12,7 @@ class Command(BaseCommand):
     # A command must define handle()
     def handle(self, *args, **options):
 
-        TestObjectType().get_collection_handle().remove({})
+        TestObjectType().get_collection_handle().delete_many({})
         types = ["ASG", "DTOL", "other"]
         sexes = ["MALE", "FEMALE", "other", "bipedal", "oversized"]
         lifestages = ["egg", "juvenile", "adult", "spawn", "kid", "old"]
@@ -120,4 +120,4 @@ class Command(BaseCommand):
                 t_sample.pop("GAL")
                 t_sample["PARTNER"] = gal
                 print(x)
-            TestObjectType().get_collection_handle().insert(t_sample)
+            TestObjectType().get_collection_handle().insert_one(t_sample)

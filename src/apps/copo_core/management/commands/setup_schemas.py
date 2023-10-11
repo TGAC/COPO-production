@@ -97,7 +97,7 @@ class Command(BaseCommand):
 
         for k in dispatcher.keys():
             # drop existing records of type
-            Lookups.remove({"type": k})
+            Lookups.delete_many({"type": k})
             try:
                 result_df = dispatcher[k]()
                 result_df['type'] = k

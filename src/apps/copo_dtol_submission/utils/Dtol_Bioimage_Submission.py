@@ -99,7 +99,7 @@ def process_bioimage_pending_submission():
 
 
 
-    Submission().get_collection_handle().update(
+    Submission().get_collection_handle().update_many(
         {"_id" : {"$in": sub_ids}}, {"$set": {"dtol_specimen": [], "dtol_status":"complete", "date_modified": now}}
     )
 

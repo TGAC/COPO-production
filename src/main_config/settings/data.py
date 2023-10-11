@@ -36,9 +36,9 @@ MONGO_DB_TEST = "test_copo_mongo"
 # this is the global DB connection, either use get_collection_ref in dal.mongo_util.py or refer to this setting
 # If unit testing is being done use the Mongo test database instead of the production/actual Mongo database
  
-MONGO_CLIENT = MongoClient(host=MONGO_HOST, maxPoolSize=MONGO_MAX_POOL_SIZE)[MONGO_DB]
+MONGO_CLIENT = MongoClient(host=MONGO_HOST, username=MONGO_USER, password=MONGO_USER_PASSWORD, maxPoolSize=MONGO_MAX_POOL_SIZE)[MONGO_DB]
 
-MONGO_CLIENT.authenticate(MONGO_USER, MONGO_USER_PASSWORD, source='admin')
+#MONGO_CLIENT.authenticate(MONGO_USER, MONGO_USER_PASSWORD, source='admin')
 
 # settings for redis
 SESSION_ENGINE = 'redis_sessions.session'

@@ -172,28 +172,28 @@ def increment_status_counter(tx):
     tx["transfer_status"] = tx["transfer_status"] + 1
     tx["last_checked"] = datetime.utcnow()
     tx["status"] = "pending"
-    EnaFileTransfer().get_collection_handle().update({"_id": tx["_id"]}, tx)
+    EnaFileTransfer().get_collection_handle().update_one({"_id": tx["_id"]}, {"$set" : tx})
 
 
 def decrement_status_counter(tx):
     tx["transfer_status"] = tx["transfer_status"] - 1
     tx["last_checked"] = datetime.utcnow()
     tx["status"] = "pending"
-    EnaFileTransfer().get_collection_handle().update({"_id": tx["_id"]}, tx)
+    EnaFileTransfer().get_collection_handle().update_one({"_id": tx["_id"]}, {"$set" : tx})
 
 
 def mark_error(tx):
     tx["transfer_status"] = 10
     tx["last_checked"] = datetime.utcnow()
     tx["status"] = "error"
-    EnaFileTransfer().get_collection_handle().update({"_id": tx["_id"]}, tx)
+    EnaFileTransfer().get_collection_handle().update_one({"_id": tx["_id"]}, {"$set" : tx})
 
 
 def mark_complete(tx):
     tx["transfer_status"] = 0
     tx["last_checked"] = datetime.utcnow()
     tx["status"] = "complete"
-    EnaFileTransfer().get_collection_handle().update({"_id": tx["_id"]}, tx)
+    EnaFileTransfer().get_collection_handle().update_one({"_id": tx["_id"]}, {"$set" : tx})
 
 
 def reset_status_counter(tx):
@@ -201,12 +201,12 @@ def reset_status_counter(tx):
     tx["transfer_status"] = 1
     tx["last_checked"] = datetime.utcnow()
     tx["status"] = "pending"
-    EnaFileTransfer().get_collection_handle().update({"_id": tx["_id"]}, tx)
+    EnaFileTransfer().get_collection_handle().update_one({"_id": tx["_id"]}, {"$set" : tx})
 
 
 def update_last_checked(tx):
     tx["last_checked"] = datetime.utcnow()
-    EnaFileTransfer().get_collection_handle().update({"_id": tx["_id"]}, tx)
+    EnaFileTransfer().get_collection_handle().update_one({"_id": tx["_id"]}, {"$set" : tx})
 
 
 def get_ecs_file(tx):

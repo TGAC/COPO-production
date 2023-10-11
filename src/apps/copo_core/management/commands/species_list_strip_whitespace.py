@@ -25,7 +25,7 @@ class Command(BaseCommand):
                 for el in d:
                     d[el] = str(d[el]).strip()
                     print(d[el])
-            da.handle_dict["sample"].update(
+            da.handle_dict["sample"].update_one(
                 {"_id": ObjectId(s["_id"])},
                 {"$set": {"species_list": s["species_list"]}}
             )

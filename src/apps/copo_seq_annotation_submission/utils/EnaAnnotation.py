@@ -96,7 +96,7 @@ def validate_annotation(form_data,formset, profile_id, seq_annotation_id=None):
     for f_name in files:
         file_location = join(settings.UPLOAD_PATH, request.user.username, f_name)
         df = DataFile().get_collection_handle().find_one({"file_location": file_location, "deleted": {"$ne": get_deleted_flag()}})
-        if df and df["s3_etag"] == s3_file_etags[f_name]:
+        if df and df.get("s3_etag","") == s3_file_etags[f_name]:
             file_ids.append(str(df["_id"]))
             continue
 
@@ -218,7 +218,7 @@ def reset_seq_annotation_submission_status(sub_id):
         status = "pending"
     else:
         status = "complete"
-    Submission().get_collection_handle().update({"_id": sub_id}, {"$set": {"seq_annotation_status": status}})
+    Submission().get_collection_handle().update_one({"_id": sub_id}, {"$set": {"seq_annotation_status": status}})
 
 def submit_ena_dtol_v2(submission_dom, analysis_dom, sub, seq_annotation_ids):
     webin = ET.Element("WEBIN")

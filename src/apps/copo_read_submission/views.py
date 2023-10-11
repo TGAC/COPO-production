@@ -447,7 +447,7 @@ def init_manifest_submission(request):
             processing_status='pending'
         )
 
-        collection_handle.insert(fields)
+        collection_handle.insert_one(fields)
         context['message'] = 'Submission has been added to the processing queue. Status update will be provided.'
     else:
         context['message'] = 'Submission is already in the processing queue.'

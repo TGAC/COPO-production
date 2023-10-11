@@ -75,7 +75,7 @@ class EnaReads:
 
             if not recorded_time:
                 rec['date_modified'] = dt
-                collection_handle.update(
+                collection_handle.update_one(
                     {"_id": ObjectId(str(rec.pop('_id')))},
                     {'$set': rec})
 
@@ -88,7 +88,7 @@ class EnaReads:
                 # refresh task to be rescheduled
                 rec['date_modified'] = dt
                 rec['processing_status'] = 'pending'
-                collection_handle.update(
+                collection_handle.update_one(
                     {"_id": ObjectId(str(rec.pop('_id')))},
                     {'$set': rec})
 
@@ -113,7 +113,7 @@ class EnaReads:
         ghlper.logging_info(message, self.submission_id)
         ghlper.update_submission_status(status='info', message=message, submission_id=self.submission_id)
 
-        collection_handle.update(
+        collection_handle.update_one(
             {"_id": ObjectId(str(queued_record_id))},
             {'$set': queued_record})
 
@@ -132,14 +132,14 @@ class EnaReads:
             ghlper.logging_info(message, self.submission_id)
             # reset sample status to pending & remove bundle / bundle samples
             queued_record['processing_status'] = 'pending'
-            collection_handle.update(
+            collection_handle.update_one(
                 {"_id": ObjectId(str(queued_record_id))},
                 {'$set': queued_record})
             return False
 
         # remove from queue - this supposes that submissions that returned error will have
         # to be re-scheduled for processing, upon addressing the error, by the user
-        collection_handle.remove({"_id": queued_record_id})
+        collection_handle.delete_one({"_id": queued_record_id})
         #table_data = htags.generate_read_record(profile_id=self.profile_id, checklist_id=)
         #result = {"table_data": table_data, "component": "read"}
         #notify_read_status(data={"profile_id": self.profile_id, "table_data":table_data, "component": "read"}, action="refresh_table", html_id="read_table"  )
@@ -488,7 +488,7 @@ class EnaReads:
             accessions['project'] = project_accessions
             submission_record['accessions'] = accessions
 
-            collection_handle.update(
+            collection_handle.update_one(
                 {"_id": ObjectId(str(submission_record.pop('_id')))},
                 {'$set': submission_record})
 
@@ -720,7 +720,7 @@ class EnaReads:
                 submission_record['accessions'] = accessions
                 submission_record['date_modified'] = dt
 
-                collection_handle.update(
+                collection_handle.update_one(
                     {"_id": ObjectId(str(submission_record.pop('_id')))},
                     {'$set': submission_record})
 
@@ -786,7 +786,7 @@ class EnaReads:
             prj[0]['status'] = 'PUBLIC'
             prj[0]['release_date'] = first_public
 
-            collection_handle.update(
+            collection_handle.update_one(
                 {"_id": ObjectId(str(submission_record.pop('_id')))},
                 {'$set': submission_record})
 
@@ -878,7 +878,7 @@ class EnaReads:
             prj[0]['status'] = 'PUBLIC'
             prj[0]['release_date'] = dt
 
-            collection_handle.update(
+            collection_handle.update_one(
                 {"_id": ObjectId(str(submission_record.pop('_id')))},
                 {'$set': submission_record})
 
@@ -1296,7 +1296,7 @@ class EnaReads:
 
                 submission_record['accessions'] = accessions
 
-                collection_handle.update(
+                collection_handle.update_one(
                     {"_id": ObjectId(self.submission_id)},
                     {'$set': submission_record})
 
@@ -1358,7 +1358,7 @@ class EnaReads:
         # mark submission as complete
         collection_handle = ghlper.get_submission_handle()
         submission_record = dict(complete=True, completed_on=dt)
-        collection_handle.update(
+        collection_handle.update_one(
             {"_id": ObjectId(self.submission_id)},
             {'$set': submission_record})
 
@@ -1505,7 +1505,7 @@ class EnaReads:
         prj[0]['status'] = 'PUBLIC'
         prj[0]['release_date'] = dt
 
-        collection_handle.update(
+        collection_handle.update_one(
             {"_id": ObjectId(str(submission_record.pop('_id')))},
             {'$set': submission_record})
 

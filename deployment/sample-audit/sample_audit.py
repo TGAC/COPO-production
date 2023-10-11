@@ -34,7 +34,9 @@ def process_changes(doc):
 try:
     resume_token = None
     pipeline = [{'$match': {'operationType': 'update'}}]
-    with mydb.SampleCollection.watch(pipeline) as stream:
+    with mydb.SampleCollection.watch(pipeline=pipeline, 
+        full_document_before_change="whenAvailable"
+        ) as stream:
         for update_change in stream:
             process_changes(update_change)
             resume_token = stream.resume_token
@@ -49,7 +51,8 @@ except pymongo.errors.PyMongoError:
         # Use the interrupted ChangeStream's resume token to create
         # a new ChangeStream. The new stream will continue from the
         # last seen insert change without missing any events.
-        with mydb.SampleCollection.watch(
-                pipeline, resume_after=resume_token) as stream:
+        with mydb.SampleCollection.watch(pipeline=pipeline, 
+                full_document_before_change="whenAvailable",
+                resume_after=resume_token) as stream:
             for update_change in stream:
                 process_changes(update_change)

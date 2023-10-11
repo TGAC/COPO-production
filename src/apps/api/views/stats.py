@@ -24,12 +24,12 @@ def get_number_of_samples(request):
 
 
 def get_number_of_profiles(request):
-    number = da.handle_dict["profile"].count({})
+    number = da.handle_dict["profile"].count_documents({})
     return HttpResponse(number)
 
 
 def get_number_of_datafiles(request):
-    number = da.handle_dict["datafile"].count({})
+    number = da.handle_dict["datafile"].count_documents({})
     return HttpResponse(number)
 
 

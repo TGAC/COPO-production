@@ -306,7 +306,7 @@ def process_pending_dtol_samples():
                     else:
                         msg = "Submission Rejected: specimen level " + sam["SPECIMEN_ID"] + "<p>" + accessions[
                             "msg"] + "</p>"
-                        notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
+                        notify_frontend(data={"profile_id": profile_id}, msg=msg, action="error",
                                         html_id="dtol_sample_info")
                         status = {}
                         status["msg"] = msg
@@ -1039,7 +1039,7 @@ def poll_asyn_ena_submission():
 
                 else:
                     msg = "Submission Rejected: <p>" + accessions["msg"] + "</p>"
-                    notify_frontend(data={"profile_id": submission["profile_id"]}, msg=msg, action="info",
+                    notify_frontend(data={"profile_id": submission["profile_id"]}, msg=msg, action="error",
                                     html_id="dtol_sample_info")
                     Submission().dtol_sample_rejected(sub_id=submission["_id"], sam_ids=[], submission_id=sub["id"])
 
@@ -1266,7 +1266,7 @@ def create_study(profile_id, collection_id):
                         html_id="dtol_sample_info")
     else:
         msg = "Submission Rejected: " + "<p>" + accessions["msg"] + "</p>"
-        notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
+        notify_frontend(data={"profile_id": profile_id}, msg=msg, action="error",
                         html_id="dtol_sample_info")
 
 

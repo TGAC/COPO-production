@@ -163,7 +163,7 @@ def update_submission_status(status=str(), message=str(), submission_id=str(), n
     submission_record['transcript'] = transcript
     submission_record['date_modified'] = helpers.get_datetime()
 
-    collection_handle.update(
+    collection_handle.update_one(
         {"_id": ObjectId(str(submission_record.pop('_id')))},
         {'$set': submission_record})
 
