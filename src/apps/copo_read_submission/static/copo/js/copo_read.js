@@ -235,9 +235,15 @@ $(document).ready(function () {
   } else if (document.getElementById('profile_type').value.includes('ERGA')) {
     $('#help_add_button').addClass('pink');
     $('.new-reads-spreadsheet-template').addClass('pink');
+  } else if (
+    document.getElementById('profile_type').value.includes('Stand-alone')
+  ) {
+    $('#help_add_button').addClass('teal active');
+    $('.new-reads-spreadsheet-template').addClass('teal active');
   } else {
-    $('#help_add_button').addClass('green');
-    $('.new-reads-spreadsheet-template').addClass('green');
+    // Button colour for other profile types
+    // $('#help_add_button').addClass('green');
+    // $('.new-reads-spreadsheet-template').addClass('green');
   }
 
   //details button hover
