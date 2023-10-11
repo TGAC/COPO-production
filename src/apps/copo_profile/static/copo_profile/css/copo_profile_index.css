@@ -1,151 +1,4 @@
-
-.pad-left {
-    padding-left: 5px;
-}
-
-.space-left {
-    margin-left: 20px;
-}
-
-span.summary-details-control {
-    position: relative;
-    cursor: pointer;
-}
-
-span.summary-details-control:before {
-    position: absolute;
-    font-family: 'FontAwesome';
-    content: "\f196";
-    color: #3a6c55;
-    top: 10%;
-    left: 50%;
-    font-size: 13px;
-
-}
-
-div.shown span.summary-details-control:before {
-    position: absolute;
-    font-family: 'FontAwesome';
-    content: "\f147";
-    color: #3a6c55;
-    top: 10%;
-    left: 50%;
-    font-size: 13px;
-
-}
-
-.profile-component-icons {
-    color: #000;
-    font-size: 12px;
-}
-
-/*start work profile navs*/
-.work-profiles-nav.navbar-default .navbar-brand {
-    color: rgba(119, 119, 119, 1);
-    background: transparent;
-}
-
-.work-profiles-nav.navbar-default {
-    border: none;
-    background: transparent;
-    box-shadow: none !important;
-}
-
-.work-profiles-nav.navbar-default .navbar-nav > li > a {
-    color: rgba(0, 0, 0, 1);
-    background: rgba(245, 245, 240, 0.95);
-    font-size: 12px;
-    margin-left: 10px;
-    border-radius: 4px;
-    width: 130px;
-    box-shadow: none !important;
-}
-
-.work-profiles-nav.navbar-default .navbar-nav > li > a:hover,
-.work-profiles-nav.navbar-default .navbar-nav > li > a:focus {
-    /*color: #fff;*/
-    background: rgba(240, 240, 240, 1.0);
-}
-
-.work-profiles-nav.navbar-default .navbar-nav > .active > a,
-.work-profiles-nav.navbar-default .navbar-nav > .active > a:hover,
-.work-profiles-nav.navbar-default .navbar-nav > .active > a:focus {
-    color: rgba(85, 85, 85, 1);
-    background-color: transparent;
-}
-
-.work-profiles-nav.navbar-default .navbar-nav .dropdown-menu li > a:hover,
-.work-profiles-nav.navbar-default .navbar-nav.dropdown-menu li > a:focus,
-.work-profiles-nav.navbar-default .navbar-nav.dropdown-submenu:hover > a {
-    background-image: none;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-}
-
-.work-profiles-nav.navbar-default .navbar-toggle:hover,
-.work-profiles-nav.navbar-default .navbar-toggle:focus {
-    background-color: transparent;
-}
-
-.work-profiles-nav.navbar-default .navbar-toggle .icon-bar {
-    background-color: transparent;
-}
-
-.work-profiles-nav.navbar-default .navbar-toggle:hover .icon-bar,
-.work-profiles-nav.navbar-default .navbar-toggle:focus .icon-bar {
-    background-color: transparent;
-}
-
-/*end work profile navs*/
-
-.component-col-left {
-    padding-left: 5px;
-}
-
-.component-col-right {
-    padding-right: 10px;
-}
-
-.component-item {
-    border-radius: 4px;
-    background: rgba(245, 245, 240, 1);
-}
-
-.component-item-header {
-    text-align: center;
-    padding-top: 20px;
-}
-
-.component-item-header > div > .icon_text {
-    font-weight: 500;
-    font-size: 12px;
-}
-
-.component-item-body {
-    margin-top: 10px;
-    padding: 10px;
-    text-align: center;
-    border-top: 1px solid #ffffff;
-}
-
-.component-item-badge {
-    background: rgba(37, 37, 43, 0.8);
-    border-radius: 4px;
-    margin-top: 10px;
-    padding-top: 3px;
-    text-shadow: none;
-    box-shadow: none;
-}
-
-/*component buttons*/
-a.component-btns {
-    text-decoration: none;
-}
-
-.component-btns > i {
-    color: rgba(41, 57, 84, 0.9);
-}
-
+/*Component buttons*/
 /*Set the width of the buttons in the Components tab to the same width*/
 .ui.menu .ui.dropdown.item .comp .ui.button {
     width: 190px !important;
@@ -153,30 +6,13 @@ a.component-btns {
 
 /*end component buttons*/
 
-/*profile details panel*/
-.profile-details.panel,
-.profile-details.panel-default {
-    box-shadow: none;
-    border: none;
-
-}
-
-.profile-details.panel-default > .panel-heading {
-    background: #ffffff none no-repeat;
-    padding: 0px;
-}
-
-.profile-details.panel-default > .panel-footer {
-    background-color: #ffffff;
-    border-top: none;
-}
-
-/* end profile details panel */
-
 /* Text/paragraph ellipsis when text is too long */
 .showEllipsisFor2TextLines {
     overflow: hidden;
     text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+    -moz-binding: url('ellipsis.xml#ellipsis');
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2; /* number of lines to show */
@@ -232,11 +68,11 @@ a.component-btns {
     color: black !important;
 }
 
-.popover {
+.ellipsisDiv .popover {
     width: 195px;
 }
 
-#popoverCloseBtn {
+#profileOptionsPopoverCloseBtn {
     cursor: pointer;
     font-size: 1rem;
     font-weight: 700;
@@ -246,6 +82,13 @@ a.component-btns {
     text-shadow: 0 1px 0 #fff;
     opacity: .5;
 }
+
+/* Popover: showMoreProfileInfo */
+#showMoreProfileInfoBtn+.popover {
+    clear: both;
+    width: 270px;
+}
+
 
 /* Profile panels */
 .panel {
@@ -294,6 +137,20 @@ a.component-btns {
     padding-right: 10px;
 }
 
+.boldText {
+    font-weight: bold;
+}
+
+.profile-info-label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.profileDescription{
+    height: 42px;
+}
+
 /* Profile grid */
 .grid,
 .grid-item {
@@ -337,6 +194,13 @@ a.component-btns {
     animation: load 1s infinite;
 }
 
+.profile-info-row {
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-right: -12px;
+    margin-left: -12px;
+}
+
 @keyframes load {
     /* Slide-in animation */
     100% {
@@ -345,14 +209,6 @@ a.component-btns {
 }
 
 /* Associated types*/
-.boldText {
-    font-weight: bold;
-}
-
-.associated_type_div_label {
-    font-weight: bold;
-}
-
 .associated_type_info_icon {
     position: relative;
     left: 2px;
@@ -372,145 +228,82 @@ ul.associated_type_ulTag {
 }
 
 /*CSS styles for profile records with no associated types assigned*/
-/* The suffix '_release' relates to 'margin-bottom' CSS for if the 
-study/profile has release details
-*/
-
-.no_associatedTypes_marginBottom {
-    margin-bottom: 213px;
-}
-
-.no_associatedTypes_marginBottom_release {
-    margin-bottom: 162px;
-}
-
-.no_associatedTypes_marginBottom_2LineDescriptionText {
-    margin-bottom: 193px;
-}
-
-.no_associatedTypes_marginBottom_2LineDescriptionText_release {
-    margin-bottom: 142px;
-}
-
-.associatedTypes_marginBottom {
-    margin-bottom: 10px;
-}
-
-.associatedTypes_marginBottom_2LineDescriptionText {
-    margin-bottom: 10px;
-}
 
 /*CSS styles for profile records with associated types assigned*/
-/* The suffix '_release' relates to 'margin-bottom' CSS for if the 
-   study/profile has release details 
-*/
-
-.one_associatedType_marginBottom {
-    margin-bottom: 167px;
-    padding-top: 15px;
-}
-
-.one_associatedType_marginBottom_release {
-    margin-bottom: 118px;
-    padding-top: 15px;
-}
-
-.one_associatedType_marginBottom_2LineDescriptionText {
-    margin-bottom: 80px;
-    padding-top: 15px;
-}
-
-.one_associatedType_marginBottom_2LineDescriptionText_release {
-    margin-bottom: 95px;
-    padding-top: 15px;
-}
-
-
-.two_associatedTypes_marginBottom {
-    margin-bottom: 165px;
-    padding-top: 15px;
-}
-
-.two_associatedTypes_marginBottom_release {
-    margin-bottom: 117px;
-    padding-top: 15px;
-}
-
-.two_associatedTypes_marginBottom_2LineDescriptionText {
-    margin-bottom: 80px;
-    padding-top: 15px;
-}
-
-.two_associatedTypes_marginBottom_2LineDescriptionText_release {
-    margin-bottom: 97px;
-    padding-top: 15px;
-}
-
-
-.three_associatedTypes_marginBottom {
-    margin-bottom: 168px;
-    padding-top: 15px;
-}
-
-.three_associatedTypes_marginBottom_release {
-    margin-bottom: 118px;
-    padding-top: 15px;
-}
-
-.three_associatedTypes_marginBottom_2LineDescriptionText {
-    height: 81px;
-    margin-bottom: 80px;
-    overflow: auto;
-    padding-top: 15px;
-    columns: 2;
-}
-
-.three_associatedTypes_marginBottom_2LineDescriptionText_release {
-    height: 81px;
-    margin-bottom: 30px;
-    overflow: auto;
-    padding-top: 15px;
-    columns: 2;
-}
-
-.several_associatedTypes_marginBottom {
-    height: 100px;
-    margin-bottom: 80px;
-    overflow: auto;
-    padding-top: 15px;
-    columns: 2;
-}
-
-.several_associatedTypes_marginBottom_release{
-    height: 100px;
-    margin-bottom: 30px;
-    overflow: auto;
-    padding-top: 15px;
-    columns: 2;
-}
-
-
-.several_associatedTypes_marginBottom_2LineDescriptionText {
-    height: 100px;
-    margin-bottom: 60px;
-    overflow: auto;
-    padding-top: 15px;
-    columns: 2;
-}
-
-.several_associatedTypes_marginBottom_2LineDescriptionText_release{
-    height: 100px;
+.associated_type_div_value{
+    height: 60px;
     margin-bottom: 10px;
     overflow: auto;
     padding-top: 15px;
     columns: 2;
+}
+
+/* Sequencing centres */
+.sequencing_centre_div_value {
+    height: 60px;
+    margin-bottom: 10px;
+    overflow: auto;
+    padding-top: 15px;
+    columns: 2;
+}
+
+ul.sequencing_centre_ulTag {
+    float: left;
+    position: relative;
+    padding-left: 5px;
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+.sequencing_centre_ulTag li {
+    padding-bottom: 10px;
 }
 
 /* Menu: Actions & Components button */
 /* Display buttons in the Components menu button in two columns */
+.menu-row{
+    /*top/right/bottom/left*/
+    padding: 130px 12px 0px 12px;
+    margin-right: -12px;
+    margin-left: -12px;
+}
+
+.menu-no-addtl-info-row {
+    /*top/right/bottom/left*/
+    padding: 180px 12px 0px 12px;
+    margin-right: -12px;
+    margin-left: -12px;
+}
+
 .ui.menu .ui.dropdown.item .comp .item:not(.filtered) {
     display: inline-grid !important;
     grid-template-columns: auto auto;
+}
+
+/* Show more button*/
+#showMoreProfileInfoBtn {
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    color: #000000;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#showMoreProfileInfoBtn:hover {
+    color: #fff;
+    background-color: #616161;
+    bottom: 30px;
+    opacity: 1;
+}
+
+.showMoreProfileInfoBtn_margin{
+    margin-top: 40px;
+}
+
+.showMoreProfileInfoBtn_2LineDescriptionText{
+    margin-top: 20px;
 }
 
 /*Navigate to top button CSS*/
@@ -700,80 +493,21 @@ study/profile has release details
 
 /* Responsiveness */
 @media only screen and (max-width: 2400px) {
-    .no_associatedTypes_marginBottom {
-        margin-bottom: 210px;
-    }
-
-    .no_associatedTypes_marginBottom_release {
-        margin-bottom: 150px;
-    }
-
-    .two_associatedTypes_marginBottom_release {
-        margin-bottom: 105px;
-    }
-
-    .two_associatedTypes_marginBottom_2LineDescriptionText {
-        margin-bottom: 145px;
-    }
-
-    .two_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 85px;
-    }
 }
 
 @media only screen and (max-width: 1920px) {
-    .no_associatedTypes_marginBottom_2LineDescriptionText {
-        margin-bottom: 193px;
-    }
-
-    .no_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 130px;
-    }
-
-    .one_associatedType_marginBottom_2LineDescriptionText {
-        margin-bottom: 146px;
-    }
 }
 
 @media only screen and (max-width: 1797px) {
-    .two_associatedTypes_marginBottom {
-        margin-bottom: 145px;
-    }
-
-    .two_associatedTypes_marginBottom_2LineDescriptionText {
-        margin-bottom: 145px;
-    }
-
-    .several_associatedTypes_marginBottom_release {
-        margin-bottom: 10px
-    }
 }
 
 @media only screen and (max-width: 1716px) {
-    .one_associatedType_marginBottom {
-        margin-bottom: 145px;
-    }
-
-    .three_associatedTypes_marginBottom {
-        margin-bottom: 145px;
-    } 
-    
-    .three_associatedTypes_marginBottom_release {
-        margin-bottom: 94px;
-    }
-
 }
 
 @media only screen and (max-width: 1711px) {
-    .one_associatedType_marginBottom {
-        margin-bottom: 163px;
-    }
 }
 
 @media only screen and (max-width: 1701px) {
-    .two_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 82px;
-    }
 }
 
 @media only screen and (max-width: 1703px) {
@@ -782,39 +516,10 @@ study/profile has release details
         /* 3 grids per row, with space for margin */
        width: calc((100% / 3) - 24px);
     }
-
-    .no_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 165px;
-      }
-
-    .one_associatedType_marginBottom{
-        margin-bottom: 165px;
-    }
-
-    .two_associatedTypes_marginBottom {
-        margin-bottom: 165px;
-    }
-
-    .two_associatedTypes_marginBottom_2LineDescriptionText {
-        margin-bottom: 165px;
-    }
     
-    .two_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 98px;
-    }
-
-    .three_associatedTypes_marginBottom {
-        margin-bottom: 169px;
-    }
-    
-    .three_associatedTypes_marginBottom_release{
-        margin-bottom: 118px;
-    }
-
-
-    .several_associatedTypes_marginBottom_release {
-        margin-bottom: 30px;
-    }
+    .menu-row {
+        padding: 130px 12px 0px 12px;
+    }    
 }
 
 @media only screen and (max-width: 1669px) {
@@ -823,16 +528,9 @@ study/profile has release details
         /* 2 grids per row, with space for margin */
        width: calc((100% / 2) - 24px);
     }
-
-    .two_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 120px;
-    }
 }
 
 @media only screen and (max-width: 1498px) {
-    .two_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 99px;
-    }
 }
 
 @media only screen and (max-width: 1473px) {
@@ -858,7 +556,6 @@ study/profile has release details
         padding: 15px 5px 15px 5px !important; /*top right bottom left */
     }
 }
-
 
 @media only screen and (max-width: 1218px) {
     .dataTables_wrapper .dataTables_paginate .paginate_button {
@@ -898,83 +595,13 @@ study/profile has release details
         height: 335px !important
     }
 
-    .no_associatedTypes_marginBottom {
-        margin-bottom: 190px;
+    .menu-row {
+        padding: 110px 12px 0px 12px;
     }
 
-    .no_associatedTypes_marginBottom_release {
-        margin-bottom: 140px;
+    .menu-no-addtl-info-row {
+        padding: 160px 12px 0px 12px;
     }
-
-    .no_associatedTypes_marginBottom_2LineDescriptionText {
-        margin-bottom: 170px;
-    }
-
-    .no_associatedTypes_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 140px;
-      }
-    
-    .one_associatedType_marginBottom {
-        margin-bottom: 145px;
-    }
-
-    .one_associatedType_marginBottom_release {
-        margin-bottom: 95px;
-    }
-
-    .one_associatedType_marginBottom_2LineDescriptionText_release {
-        margin-bottom: 75px;
-    }
-
-    .two_associatedTypes_marginBottom_release {
-        margin-bottom: 95px;
-    }
-
-    .three_associatedTypes_marginBottom {
-        margin-bottom: 145px;
-    }
-
-    .three_associatedTypes_marginBottom_release {
-        margin-bottom: 35px;
-        columns: 2;
-    }
-
-    .three_associatedTypes_marginBottom_2LineDescriptionText {
-        margin-bottom: 60px;
-    }
-
-    .three_associatedTypes_marginBottom_2LineDescriptionText_release {
-        height: fit-content;
-        margin-bottom: 35px;
-        columns: 3;
-    }
-
-    .several_associatedTypes_marginBottom{
-        margin-bottom: 40px;
-    }
-
-    .several_associatedTypes_marginBottom_release{
-        height: 90px;
-        margin-bottom: 20px;
-        overflow: auto;
-        padding-top: 15px;
-        columns: 3;
-    }
-
-    .several_associatedTypes_marginBottom_2LineDescriptionText{
-        margin-bottom: 40px;
-        overflow: auto;
-        columns: 3;
-    }
-
-    .several_associatedTypes_marginBottom_2LineDescriptionText_release{
-        height: 90px;
-        margin-bottom: 0;
-        overflow: auto;
-        padding-top: 15px;
-        columns: 2;
-    }
-
 }
 
 @media only screen and (max-width: 575px) {
@@ -1018,3 +645,5 @@ study/profile has release details
         left: 37%;
     }
 }
+
+

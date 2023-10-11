@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from src.apps.copo_core.models import Repository
 
 
+
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
     # Show this when the user types help
@@ -49,3 +50,4 @@ class Command(BaseCommand):
         dtolenv_managers, created = Group.objects.get_or_create(name='dtolenv_sample_managers')
         # receive dtol env notification emails
         dtolenv_notifiers, created = Group.objects.get_or_create(name="dtolenv_sample_notifiers")
+       

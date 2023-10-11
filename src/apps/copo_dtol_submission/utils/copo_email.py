@@ -1,9 +1,9 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
+from common.dal.copo_da import Profile
 from django.conf import settings
-from src.apps.copo_core.models import User
+from src.apps.copo_core.models import SequencingCentre
 from common.utils.copo_email import CopoEmail
 
 
@@ -16,15 +16,15 @@ class Email:
 
 
     def notify_sample_rejected_after_approval(self, **kwargs):
-        # get users in group
-        if kwargs.get("project", "") in ["DTOL", "ASG"]:
-            users = User.objects.filter(groups__name='dtol_sample_notifiers')
-        elif kwargs.get("project", "") in ["ERGA"]:
-            users = User.objects.filter(groups__name='erga_sample_notifiers')
-        elif kwargs.get("project", "") in ["DTOL_ENV"]:
-            users = User.objects.filter(groups__name='dtolenv_sample_notifiers')
-        else:
-            users = []
+        # get email addresses of users in sequencing centre
+        users = []
+        p_id = kwargs.get("profile_id", "")
+        if p_id != "":
+            profile = Profile().get_record(p_id)
+            sequencing_centres = profile.get("sequencing_centre", [])
+            for sc in sequencing_centres:
+                centre = SequencingCentre.objects.get(name=sc)
+                users += centre.users.all()
         email_addresses = list()
         sub = ""
         samples = kwargs["rejected_sample"] 

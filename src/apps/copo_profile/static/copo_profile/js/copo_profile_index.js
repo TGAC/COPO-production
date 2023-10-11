@@ -119,10 +119,12 @@ $(document).ready(function () {
 
   set_profile_grid_heading(div_grid); // Set profile grid heading
 
-  // Adjust margin-bottom for associated types when profile description appears on 2 lines
-  set_associated_types_marginBottom();
+  showMoreProfileInfoPopover(); // Initialise 'show more' information popover for profile records
 
-  set_mediaQueries(); // Set media queries for profile records
+  // Adjust margin-bottom for associated types when profile description appears on 2 lines
+  //set_associated_types_marginBottom();
+
+  //set_mediaQueries(); // Set media queries for profile records
 
   $('#sortProfilesBtn').on('change', function () {
     const option_selected = this.value;
@@ -232,7 +234,7 @@ $(document).ready(function () {
     deleteProfileRecord(profile_id);
   });
 
-  $(document).on('click', '#popoverCloseBtn', function () {
+  $(document).on('click', '#profileOptionsPopoverCloseBtn', function () {
     $('#ellipsisID[data-toggle="popover"]').popover('hide');
   });
 
@@ -1053,7 +1055,7 @@ function initialise_loaded_records(
     deleteProfileRecord(profile_id);
   });
 
-  $('#popoverCloseBtn').click(function () {
+  $('#profileOptionsPopoverCloseBtn').click(function () {
     $('#ellipsisID[data-toggle="popover"]').popover('hide');
   });
 
@@ -1194,7 +1196,8 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
       // Perform the following only if selected 'Profile Type' is not "Stand-alone"
       if (this.value !== 'Stand-alone') {
         $('.row:nth-child(4) > .col-sm-12').show(); // Show 'Associated Profile Type(s)' field
-
+        $('.row:nth-child(5) > .col-sm-12').show(); // Show 'Sequencing Centre(s)' field
+        // $('[id*="sequencing_centre"]').parent().parent().hide().show();
         let selected_type = get_acronym(this.value);
         let multi_select_options = $('.copo-multi-select2');
         let associated_type_option = multi_select_options.find(
@@ -1233,10 +1236,28 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
         }
       } else {
         $('.row:nth-child(4) > .col-sm-12').hide(); // Hide 'Associated Profile Type(s)' field
+        $('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre(s)' field
+        // $('[id*="sequencing_centre"]').parent().parent().hide().hide;
       }
     });
 }
 
+function showMoreProfileInfoPopover() {
+  // Initialise the popover to view more profile information for each profile record
+  let counter;
+  $('#showMoreProfileInfoBtn[rel="popover"]').popover({
+    html: true,
+    trigger: 'hover',
+    sanitize: false,
+    content: function (e) {
+      return $(this)
+        .closest('.grid-panel-body')
+        .find('#showMoreProfileInfoContent')
+        .children('.popover-content')
+        .html();
+    },
+  });
+}
 function get_acronym(txt) {
   // Retrieve the parentheses and the enclosed string from the
   // selected profile type

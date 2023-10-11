@@ -657,10 +657,10 @@ class DtolSpreadsheet:
         profile = Profile().get_record(profile_id)
         title = profile["title"]
         description = profile["description"]
-        Email().notify_manifest_pending_approval(uri + 'copo/accept_reject_sample/', title=title,
-                                                 description=description,
-                                                 project=self.type.upper(), is_new=True)
-
+        Email().notify_manifest_pending_approval(uri + 'copo/dtol_submission/accept_reject_sample/', title=title,
+                                                     description=description,
+                                                     project=self.type.upper(), is_new=True, profile_id=profile_id)
+        
     def update_records(self):
         binary = pickle.loads(self.vr["manifest_data"])
         try:
@@ -750,9 +750,9 @@ class DtolSpreadsheet:
             description = profile["description"]
 
         if need_send_email:
-            Email().notify_manifest_pending_approval(uri + 'copo/accept_reject_sample/', title=title,
-                                                     description=description,
-                                                     project=self.type.upper(), is_new=False)
+            Email().notify_manifest_pending_approval(uri + 'copo/dtol_submission/accept_reject_sample/', title=title,
+                                                         description=description,
+                                                         project=self.type.upper(), is_new=False)
 
         image_data = request.session.get("image_specimen_match", [])
         for im in image_data:

@@ -13,10 +13,11 @@ import common.lookup.lookup as lkup
 import common.schemas.utils.data_utils as d_utils
 from .copo_lookup_service import COPOLookup
 from common.dal.copo_base_da import DataSchemas
+from src.apps.copo_core.models import SequencingCentre
 from common.dal.copo_da import ProfileInfo, Description, Profile, Source, Person, Sample, \
     Submission, EnaChecklist, TaggedSequence, \
     DataFile, DAComponent, CGCore, MetadataTemplate, Read
-#from hurry.filesize import size as hurrysize
+# from hurry.filesize import size as hurrysize
 from django_tools.middlewares import ThreadLocal
 from common.utils.logger import Logger
 from common.utils import helpers
@@ -25,23 +26,23 @@ from common.s3.s3Connection import S3Connection as s3
 import numpy as np
 
 # dictionary of components table id, gotten from the UI
-table_id_dict = dict(#publication="publication_table",
-                     person="person_table",
-                     sample="sample_table",
-                     datafile="datafile_table",
-                     #annotation="annotation_table",
-                     profile="profile_table",
-                     metadata_template="metadata_template_table"
-                     )
+table_id_dict = dict(  # publication="publication_table",
+    person="person_table",
+    sample="sample_table",
+    datafile="datafile_table",
+    # annotation="annotation_table",
+    profile="profile_table",
+    metadata_template="metadata_template_table"
+)
 da_dict = dict(
-    #publication=Publication,
+    # publication=Publication,
     person=Person,
     sample=Sample,
     source=Source,
     profile=Profile,
     datafile=DataFile,
     submission=Submission,
-    #annotation=Annotation,
+    # annotation=Annotation,
     cgcore=CGCore,
     metadata_template=MetadataTemplate,
     taggedseq=TaggedSequence,
@@ -68,6 +69,7 @@ def get_providers_orcid_first():
     return [{"id":o.id, "name":o.name} for o in result]
 '''
 
+
 def get_element_by_id(field_id):
     elem = {}
     out_list = get_fields_list(field_id)
@@ -86,8 +88,6 @@ def trim_parameter_value_label(label):
         return label
 
 
-
-
 '''
 @register.filter("generate_ui_labels")
 def generate_ui_labels(field_id):
@@ -100,6 +100,7 @@ def generate_ui_labels(field_id):
     return label
 '''
 
+
 def get_control_options(f, profile_id=None):
     # option values are typically defined as a list,
     # or in some cases (e.g., 'copo-multi-search'),
@@ -110,7 +111,7 @@ def get_control_options(f, profile_id=None):
 
     if f.get("control", "text") in ["copo-lookup", "copo-lookup2"]:
         return COPOLookup(accession=f.get('data', str()),
-                          data_source=f.get('data_source', str()),profile_id=profile_id).broker_component_search()['result']
+                          data_source=f.get('data_source', str()), profile_id=profile_id).broker_component_search()['result']
 
     if "option_values" not in f:  # you shouldn't be here
         return option_values
@@ -121,7 +122,7 @@ def get_control_options(f, profile_id=None):
 
     # resolve option values from a data source
     if f.get("data_source", str()):
-        return COPOLookup(data_source=f.get('data_source', str()),profile_id=profile_id).broker_data_source()
+        return COPOLookup(data_source=f.get('data_source', str()), profile_id=profile_id).broker_data_source()
 
     if isinstance(f["option_values"], dict):
         if f.get("option_values", dict()).get("callback", dict()).get("function", str()):
@@ -135,7 +136,7 @@ def get_control_options(f, profile_id=None):
     return option_values
 
 
-#@register.filter("generate_copo_form")
+# @register.filter("generate_copo_form")
 def generate_copo_form(component=str(), target_id=str(), component_dict=dict(), message_dict=dict(), profile_id=None,
                        **kwargs):
     # message_dict templates are defined in the lookup dictionary: "MESSAGES_LKUPS"
@@ -182,6 +183,16 @@ def generate_copo_form(component=str(), target_id=str(), component_dict=dict(), 
                 is_user_in_any_manifest_group = request.user.groups.filter(
                     name__in=['dtol_users', 'erga_users', 'dtolenv_users']).exists()
 
+                # iff this is a sequencing centre field and the user is in manifest group
+                # display all sequencing centres in the dropdown menu on the form
+                if "sequencing_centre" in f["id"] and is_user_in_any_manifest_group:
+                    sc = SequencingCentre().get_sequencing_centres()
+                    for each in sc:
+                        option_value = {
+                            "value": each.name, "label": each.label
+                        }
+                        f["option_values"].append(option_value)
+
                 # If a user has not been added to any of the manifest groups, display only the 'Stand-alone'
                 # project type in the dropdown menu on the form
                 if not is_user_in_any_manifest_group and "type" in f["id"] and 'Stand-alone' in f["option_values"]:
@@ -209,7 +220,7 @@ def generate_copo_form(component=str(), target_id=str(), component_dict=dict(), 
                 )
 
 
-#@register.filter("get_labels")
+# @register.filter("get_labels")
 def get_labels():
     label_dict = dict(publication=dict(label="Publication"),
                       person=dict(label="Person"),
@@ -226,15 +237,15 @@ def get_labels():
     return label_dict
 
 
-#@register.filter("filter_sample_type")
+# @register.filter("filter_sample_type")
 def filter_sample_type(form_value, elem):
     # filters UI elements based on sample type
 
     allowable = True
     default_type = "biosample"
     sample_types = list()
-    
-    for s_t in  COPOLookup(data_source='sample_type_options').broker_data_source():
+
+    for s_t in COPOLookup(data_source='sample_type_options').broker_data_source():
         sample_types.append(s_t["value"])
 
     if "sample_type" in form_value:
@@ -246,7 +257,7 @@ def filter_sample_type(form_value, elem):
     return allowable
 
 
-#@register.filter("generate_component_record")
+# @register.filter("generate_component_record")
 def generate_component_records(component=str(), profile_id=str(), label_key=str(), **kwargs):
     da_object = DAComponent(component=component, profile_id=profile_id)
 
@@ -269,7 +280,7 @@ def generate_component_records(component=str(), profile_id=str(), label_key=str(
     return component_records
 
 
-#@register.filter("generate_unique_items")
+# @register.filter("generate_unique_items")
 def generate_unique_items(component=str(), profile_id=str(), elem_id=str(), record_id=str(), **kwargs):
     da_object = DAComponent(component=component, profile_id=profile_id)
     action_type = kwargs.get("action_type", str())
@@ -286,7 +297,7 @@ def generate_unique_items(component=str(), profile_id=str(), elem_id=str(), reco
     return component_records
 
 
-#@register.filter("generate_table_columns")
+# @register.filter("generate_table_columns")
 def generate_table_columns(component=str()):
     da_object = DAComponent(component=component)
 
@@ -328,7 +339,7 @@ def generate_table_columns(component=str()):
     return columns
 
 
-#@register.filter("generate_server_side_table_records")
+# @register.filter("generate_server_side_table_records")
 def generate_server_side_table_records(profile_id=str(), component=str(), request=dict()):
     # function generates component records for building an UI table using server-side processing
     # - please note that for effective data display,
@@ -390,7 +401,7 @@ def generate_server_side_table_records(profile_id=str(), component=str(), reques
 
     records = da_object.get_all_records_columns_server(sort_by=sort_by, sort_direction=sort_direction,
                                                        search_term=search_term, projection=dict(
-            projection),
+                                                           projection),
                                                        limit=n_size, skip=start, filter_by=filter_by)
 
     records_filtered = records_total
@@ -519,7 +530,7 @@ def generate_table_records(profile_id=str(), component=str(), record_id=str()):
     return return_dict
 
 
-#@register.filter("generate_submissions_records")
+# @register.filter("generate_submissions_records")
 def generate_submissions_records(profile_id=str(), component=str(), record_id=str()):
     # function generates component records for building an UI table - please note that for effective tabular display,
     # all array and object-type fields (e.g., characteristics) are deferred to sub-table display.
@@ -528,13 +539,14 @@ def generate_submissions_records(profile_id=str(), component=str(), record_id=st
     data_set = list()
 
     # build db column projection
-    submission_projection = [('date_modified', 1), ('complete', 1), ('deleted', 1)]
+    submission_projection = [('date_modified', 1),
+                             ('complete', 1), ('deleted', 1)]
     repository_projection = [('name', 1), ('type', 1)]
 
     schema = [x for x in Submission().get_schema().get("schema_dict") if
               x["id"].split(".")[-1] in [y[0] for y in submission_projection]]
 
-    #repository_schema = [x for x in Repository().get_schema().get("schema_dict") if
+    # repository_schema = [x for x in Repository().get_schema().get("schema_dict") if
     #                     x["id"].split(".")[-1] in [y[0] for y in repository_projection]]
 
     # specify filtering
@@ -618,7 +630,8 @@ def generate_submissions_records(profile_id=str(), component=str(), record_id=st
         new_data["DT_RowId"] = "row_" + str(rec["_id"])
 
         try:
-            new_data["bundle_name"] = rec['description_docs'][0].get('name', str())
+            new_data["bundle_name"] = rec['description_docs'][0].get(
+                'name', str())
         except (IndexError, AttributeError) as error:
             new_data["bundle_name"] = str()
 
@@ -820,7 +833,9 @@ def get_record_data(record_object=dict(), component=str()):
     return return_dict
 '''
 
-#@register.filter("generate_copo_profiles_data")
+# @register.filter("generate_copo_profiles_data")
+
+
 def generate_copo_profiles_data(profiles=list()):
     data_set = list()
 
@@ -843,6 +858,7 @@ def generate_copo_profiles_data(profiles=list()):
     return_dict = dict(dataSet=data_set)
 
     return return_dict
+
 
 '''
 @register.filter("generate_copo_shared_profiles_data")
@@ -892,7 +908,9 @@ def get_repo_stats(repository_id=str()):
     return result
 '''
 
-#@register.filter("get_submission_remote_url")
+# @register.filter("get_submission_remote_url")
+
+
 def get_submission_remote_url(submission_id=str()):
     """
     function generates the resource urls/identifiers to a submission in its remote location
@@ -900,7 +918,8 @@ def get_submission_remote_url(submission_id=str()):
     :return:
     """
 
-    result = dict(status='info', urls=list(), message="Remote identifiers not found or unspecified procedure.")
+    result = dict(status='info', urls=list(
+    ), message="Remote identifiers not found or unspecified procedure.")
 
     # get repository type, and use this to decide what to return
 
@@ -921,11 +940,13 @@ def get_submission_remote_url(submission_id=str()):
 
         prj = doc.get('accessions', dict()).get('project', list())
         if prj:
-            result["urls"].append("https://www.ebi.ac.uk/ena/data/view/" + prj[0].get("accession", str()))
+            result["urls"].append(
+                "https://www.ebi.ac.uk/ena/data/view/" + prj[0].get("accession", str()))
 
     # generate for other repository types here
 
     return result
+
 
 '''
 @register.filter("get_submission_meta_repo")
@@ -1141,7 +1162,9 @@ def get_destination_repo(submission_id=str()):
     return result
 '''
 
-#@register.filter("generate_submission_datafiles_data")
+# @register.filter("generate_submission_datafiles_data")
+
+
 def generate_submission_datafiles_data(submission_id=str()):
     """
     function returns submission datafiles
@@ -1192,7 +1215,7 @@ def generate_submission_datafiles_data(submission_id=str()):
                 )
 
 
-#@register.filter("generate_submission_accessions_data")
+# @register.filter("generate_submission_accessions_data")
 def generate_submission_accessions_data(submission_id=str()):
     """
     method presents accession data in a tabular display friendly way
@@ -1245,8 +1268,6 @@ def generate_submission_accessions_data(submission_id=str()):
                             data_set.append(
                                 [v["accession"], v["alias"], str(), key])
 
-
-
     return_dict = dict(dataSet=data_set,
                        columns=columns,
                        repository=repository
@@ -1255,7 +1276,7 @@ def generate_submission_accessions_data(submission_id=str()):
     return return_dict
 
 
-#@register.filter("generate_attributes")
+# @register.filter("generate_attributes")
 def generate_attributes(component, target_id):
     da_object = DAComponent(component=component)
 
@@ -1275,7 +1296,7 @@ def generate_attributes(component, target_id):
     # account for description metadata in datafiles
     if component == "datafile":
         projection.append(('description', 1))
-      
+
     filter_by = dict(_id=ObjectId(target_id))
     record = da_object.get_all_records_columns(
         projection=dict(projection), filter_by=filter_by)
@@ -1286,7 +1307,8 @@ def generate_attributes(component, target_id):
         record = record[0]
 
         if component == "sample":  # filter based on sample type
-            sample_types = [s_t['value'] for s_t in  COPOLookup(data_source='sample_type_options').broker_data_source()]
+            sample_types = [s_t['value'] for s_t in COPOLookup(
+                data_source='sample_type_options').broker_data_source()]
             sample_type = record.get("sample_type", str())
             schema = [x for x in schema if sample_type in x.get(
                 "specifications", sample_types)]
@@ -1330,6 +1352,7 @@ def resolve_control_output_apply(data, args):
 
     return resolved_value
 
+
 '''
 def resolve_control_output_description(data, args):
     key_split = "___0___"
@@ -1346,6 +1369,7 @@ def resolve_control_output_description(data, args):
 
     return resolved_value
 '''
+
 
 def resolve_control_output(data_dict, elem):
     resolved_value = str()
@@ -1486,6 +1510,7 @@ def resolve_display_data(datafile_items, datafile_attributes):
 
     return dict(columns=columns, data_set=data_record)
 
+
 def resolve_description_data(data, elem):
     attributes = data.get("attributes", dict())
     stages = data.get("stages", list())
@@ -1506,6 +1531,7 @@ def resolve_description_data(data, elem):
 
     return resolve_display_data(datafile_items, datafile_attributes)
 
+
 def resolve_copo_characteristics_data(data, elem):
     schema = d_utils.get_copo_schema("material_attribute_value")
 
@@ -1520,6 +1546,7 @@ def resolve_copo_characteristics_data(data, elem):
                 resolved_data.append(a)
 
     return resolved_data
+
 
 def resolve_environmental_characteristics_data(data, elem):
     schema = d_utils.get_copo_schema("environment_variables")
@@ -1551,6 +1578,7 @@ def resolve_phenotypic_characteristics_data(data, elem):
                 resolved_data.append(a)
 
     return resolved_data  # turn this casting off after merge
+
 
 def resolve_copo_comment_data(data, elem):
     schema = d_utils.get_copo_schema("comment")
@@ -1635,13 +1663,13 @@ def resolve_copo_lookup2_data(data, elem):
 
     if option_values:
         resolved_value = [x[
-                              'label'] + "<span class='copo-embedded' style='margin-left: 5px;' data-source='{"
-                                         "data_source}' data-accession='{data_accession}' >"
-                                         "<i title='click for related information' style='cursor: pointer;' class='fa "
-                                         ""
-                                         ""
-                                         ""
-                                         "fa-info-circle'></i></span>".format(
+            'label'] + "<span class='copo-embedded' style='margin-left: 5px;' data-source='{"
+            "data_source}' data-accession='{data_accession}' >"
+            "<i title='click for related information' style='cursor: pointer;' class='fa "
+            ""
+            ""
+            ""
+            "fa-info-circle'></i></span>".format(
             data_source=elem['data_source'], data_accession=x['accession']) for x in option_values]
 
     return resolved_value
@@ -1743,7 +1771,7 @@ def resolve_default_data(data):
     return data
 
 
-#@register.filter("generate_copo_profiles_counts")
+# @register.filter("generate_copo_profiles_counts")
 def generate_copo_profiles_counts(profiles=list()):
     data_set = list()
 
@@ -1753,7 +1781,7 @@ def generate_copo_profiles_counts(profiles=list()):
     return data_set
 
 
-#@register.filter("lookup_info")
+# @register.filter("lookup_info")
 def lookup_info(val):
     if val in lkup.UI_INFO.keys():
         return lkup.UI_INFO[val]
@@ -1772,7 +1800,7 @@ def get_fields_list(field_id):
     return new_dict["fields"]
 
 
-#@register.filter("id_to_class")
+# @register.filter("id_to_class")
 def id_to_class(val):
     return val.replace(".", "_")
 

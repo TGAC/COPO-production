@@ -116,6 +116,26 @@
       ]
     },
     {
+      "help_tip": "Choose the sequencing centre that will handle the samples uploaded to this profile.<br><br><p style='margin-top: 10px'>If no sequencing centres are displayed, please contact <b style='font-weight:bold;'>ei.copo@earlham.ac.uk</b> in order to be added to the sequencing centre group to complete the profile creation.</p>",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "sequencing_centre"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Sequencing Centre",
+      "placeholder": "Select sequencing centre",
+      "show_in_form": true,
+      "id": "copo.profile.sequencing_centre",
+      "type": "array",
+      "show_in_table": true,
+      "control": "copo-multi-select2",
+      "option_values": []
+    },
+    {
       "help_tip": "",
       "required": "true",
       "default_value": "",
@@ -201,6 +221,24 @@
       "label": "Delete",
       "show_in_form": false,
       "id": "copo.profile.deleted",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "user_id"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "User ID",
+      "show_in_form": false,
+      "id": "copo.profile.user_id",
       "type": "string",
       "show_in_table": false,
       "control": "text"

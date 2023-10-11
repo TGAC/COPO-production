@@ -22,6 +22,8 @@ from common.schema_versions.lookup.dtol_lookups import STANDALONE_ACCESSION_TYPE
 from common.schemas.utils.cg_core.cg_schema_generator import CgCoreSchemas
 from pymongo.collection import ReturnDocument
 from common.utils import helpers
+from src.apps.copo_core.models import SequencingCentre
+
 
 lg = settings.LOGGER
 
@@ -2488,7 +2490,7 @@ class Submission(DAComponent):
             out.append(i)
 
         return out
-
+    
     def make_assembly_submission_uploading(self, sub_id, assembly_ids):
         sub_handle = self.get_collection_handle()
         submission = sub_handle.find_one(
@@ -2818,25 +2820,55 @@ class Profile(DAComponent):
             if 'datasets' in p['dataverse']:
                 return p['dataverse']['datasets']
 
-    def get_dtol_profiles(self):
-        p = self.get_collection_handle().find(
-            {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]}}).sort(
-            "date_created",
-            pymongo.DESCENDING)
+    def get_dtol_profiles(self, filter="all_profiles"):
+
+        if filter == "all_profiles":
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
+        elif filter == 'my_profiles':
+            seq_centres = get_users_seq_centres()
+            seq_centres = [str(x.name) for x in seq_centres]
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life (DTOL)", "Aquatic Symbiosis Genomics (ASG)"]},
+                 "sequencing_centre": {"$in": seq_centres}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
         return cursor_to_list(p)
 
-    def get_erga_profiles(self):
-        p = self.get_collection_handle().find(
-            {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]}}).sort("date_created", pymongo.DESCENDING)
+    def get_erga_profiles(self, filter="all_profiles"):
+
+        if filter == "all_profiles":
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]}}).sort("date_created", pymongo.DESCENDING)
+        elif filter == 'my_profiles':
+            seq_centres = get_users_seq_centres()
+            seq_centres = [str(x.name) for x in seq_centres]
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["European Reference Genome Atlas (ERGA)"]},
+                 "sequencing_centre": {"$in": seq_centres}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
         return cursor_to_list(p)
 
-    def get_dtolenv_profiles(self):
-        p = self.get_collection_handle().find(
-            {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]}}).sort("date_modified",
-                                                                                              pymongo.DESCENDING)
+    def get_dtolenv_profiles(self, filter="all_profiles"):
+        if filter == "all_profiles":
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]}}).sort("date_modified",
+                                                                                                  pymongo.DESCENDING)
+        elif filter == 'my_profiles':
+            seq_centres = get_users_seq_centres()
+            seq_centres = [str(x.name) for x in seq_centres]
+            p = self.get_collection_handle().find(
+                {"type": {"$in": ["Darwin Tree of Life Environmental Samples (DTOL_ENV)"]},
+                 "sequencing_centre": {"$in": seq_centres}}).sort(
+                "date_created",
+                pymongo.DESCENDING)
         return cursor_to_list(p)
 
     def get_profile_records(self, data, currentUser=True):
+        from common.schemas.utils import data_utils
         p = None
         owner_id = helpers.get_user_id()
 
@@ -2977,7 +3009,6 @@ class CopoGroup(DAComponent):
             {'_id': ObjectId(group_id)},
             {'$pull': {'repo_ids': ObjectId(repo_id)}}
         )
-
 
 '''
 class Repository(DAComponent):
@@ -3220,8 +3251,6 @@ class RemoteDataFile:
         pass
 
 '''
-
-
 class Stats:
     def update_stats(self):
         datafiles = handle_dict["datafile"].count_documents({})
@@ -3333,8 +3362,8 @@ class EnaFileTransfer(DAComponent):
         if result:
             result_list = list(result)
         # at most download 2 files at the sametime
-        count = self.get_collection_handle().count_documents(
-            {"transfer_status": 2, "status": "processing"})
+        count = self.get_collection_handle().find(
+            {"transfer_status": 2, "status": "processing"}).count()
         if count <= 1:
             result = self.get_collection_handle().find_one(
                 {"transfer_status": 2, "status": "pending"})
@@ -3467,13 +3496,15 @@ class SubmissionQueue(DAComponent):
 
 
 '''
+
 class TaggedSequenceChecklist(DAComponent):
     def __init__(self, profile_id=None):
-        super(TaggedSequenceChecklist, self).__init__(profile_id, "taggedSequenceChecklist")
+        super(TaggedSequenceChecklist, self).__init__(
+            profile_id, "taggedSequenceChecklist")
 
     def get_checklist(self, checklist_id):
         return self.execute_query({"primary_id": checklist_id})
-    
+
     def get_checklists(self):
         return self.get_all_records_columns(projection={"primary_id": 1, "name": 1, "description": 1})
 '''
@@ -3504,6 +3535,7 @@ class TaggedSequence(DAComponent):
                         if field["type"] == "TEXT_AREA_FIELD":
                             field["control"] = "textarea"
 
+
                     fields.append(field)
 
             return dict(schema_dict=fields,
@@ -3524,6 +3556,7 @@ class TaggedSequence(DAComponent):
 
         self.get_collection_handle().delete_many({"_id": {"$in":   tagged_seq_ids}})
         return dict(status='success', message="Tagged Sequence record/s have been deleted!")
+
 
     def update_tagged_seq_processing(self, profile_id=str(), tagged_seq_ids=list()):
         tagged_seq_obj_ids = [ObjectId(id) for id in tagged_seq_ids]
@@ -3563,6 +3596,7 @@ class EnaObject(DAComponent):
         if not target_id:
             return dict(schema_dict=[],
                         schema=[]
+                        )
                         )
         taggedSeq = EnaObject(self.profile_id).get_record(target_id)
         fields = []
@@ -3645,3 +3679,9 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+
+def get_users_seq_centres():
+    user = ThreadLocal.get_current_user()
+    seq_centres = SequencingCentre.objects.filter(users=user)
+    return seq_centres
