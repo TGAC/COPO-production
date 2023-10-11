@@ -243,8 +243,9 @@ $(document).ready(function () {
     $('#help_add_button').addClass('pink');
     $('.new-taggedseq-spreadsheet-template').addClass('pink');
   } else {
-    $('#help_add_button').addClass('green');
-    $('.new-taggedseq-spreadsheet-template').addClass('green');
+    // Button colour for other profile types
+    // $('#help_add_button').addClass('green');
+    // $('.new-reads-spreadsheet-template').addClass('green');
   }
 
   //******************************Event Handlers Block*************************//
