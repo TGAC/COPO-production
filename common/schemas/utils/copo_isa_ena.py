@@ -8,10 +8,10 @@ import pandas as pd
 from bson import ObjectId
 from common.dal.mongo_util import cursor_to_list
 import common.lookup.lookup as lookup
-#import src.apps.copo_core.templatetags.html_tags as htags
+# import src.apps.copo_core.templatetags.html_tags as htags
 from common.schemas.utils import data_utils as d_utils
-from common.dal.copo_da import Submission, DataFile, DAComponent, Person, Sample, Description
 from common.utils import helpers
+
 
 class Investigation:
     def __init__(self, copo_isa_records=dict(), study_schema=dict()):
@@ -27,14 +27,18 @@ class Investigation:
         if properties:
             for k in properties:
                 if k == "@id":
-                    record = dict(name=self.copo_isa_records.get("submission_token"))
-                    properties[k] = ISAHelpers().get_id_field(component=component, record=record)
+                    record = dict(
+                        name=self.copo_isa_records.get("submission_token"))
+                    properties[k] = ISAHelpers().get_id_field(
+                        component=component, record=record)
                 else:
                     try:
-                        properties[k] = getattr(Investigation, "_" + k)(self, properties[k])
+                        properties[k] = getattr(
+                            Investigation, "_" + k)(self, properties[k])
                     except Exception as e:
                         print(e)
-                        properties[k] = ISAHelpers().get_schema_key_type(properties.get(k, dict()))
+                        properties[k] = ISAHelpers().get_schema_key_type(
+                            properties.get(k, dict()))
 
         return properties
 
@@ -66,12 +70,15 @@ class Investigation:
         records.append(self.copo_isa_records.get("technology_type"))
 
         target_record_list = list()
-        target_object_keys = set(d_utils.get_db_json_schema("ontology_annotation").keys())
+        target_object_keys = set(
+            d_utils.get_db_json_schema("ontology_annotation").keys())
 
         for record in records:
-            target_record_list = ISAHelpers().get_object_instances(record, target_record_list, target_object_keys)
+            target_record_list = ISAHelpers().get_object_instances(
+                record, target_record_list, target_object_keys)
 
-        termsources = [x["termSource"] for x in target_record_list if len(x["termSource"]) > 0]
+        termsources = [x["termSource"]
+                       for x in target_record_list if len(x["termSource"]) > 0]
         termsources = list(set(termsources))
 
         component = "ontology_source_reference"
@@ -88,9 +95,11 @@ class Investigation:
             osr_schema = d_utils.get_db_json_schema(component)
             for k in osr_schema:
                 if k == "@id":
-                    osr_schema[k] = ISAHelpers().get_id_field(component, dict(name=ts))
+                    osr_schema[k] = ISAHelpers().get_id_field(
+                        component, dict(name=ts))
                 else:
-                    osr_schema[k] = value_dict.get(k, ISAHelpers().get_schema_key_type(osr_schema.get(k, dict())))
+                    osr_schema[k] = value_dict.get(
+                        k, ISAHelpers().get_schema_key_type(osr_schema.get(k, dict())))
 
             osr.append(osr_schema)
 
@@ -101,7 +110,8 @@ class Investigation:
         return ISAHelpers().get_schema_key_type(spec)
 
     def _filename(self, spec=dict()):
-        filename = 'i_' + self.copo_isa_records.get("submission_token") + '.txt'
+        filename = 'i_' + \
+            self.copo_isa_records.get("submission_token") + '.txt'
         return filename
 
     def _publicReleaseDate(self, spec=dict()):
@@ -136,14 +146,18 @@ class Study:
         if properties:
             for k in properties:
                 if k == "@id":
-                    record = dict(name=self.copo_isa_records.get("submission_token"))
-                    properties[k] = ISAHelpers().get_id_field(component=component, record=record)
+                    record = dict(
+                        name=self.copo_isa_records.get("submission_token"))
+                    properties[k] = ISAHelpers().get_id_field(
+                        component=component, record=record)
                 else:
                     try:
-                        properties[k] = getattr(Study, "_" + k)(self, properties[k])
+                        properties[k] = getattr(
+                            Study, "_" + k)(self, properties[k])
                     except Exception as e:
                         print(e)
-                        properties[k] = ISAHelpers().get_schema_key_type(properties.get(k, dict()))
+                        properties[k] = ISAHelpers().get_schema_key_type(
+                            properties.get(k, dict()))
 
             schemas.append(properties)
 
@@ -171,7 +185,8 @@ class Study:
 
         isa_schema = d_utils.get_db_json_schema(component)
         for k in isa_schema:
-            isa_schema = ISAHelpers().resolve_schema_key(isa_schema, k, component, value_dict)
+            isa_schema = ISAHelpers().resolve_schema_key(
+                isa_schema, k, component, value_dict)
 
         sdd.append(isa_schema)
 
@@ -190,7 +205,8 @@ class Study:
             for pv in pr.get("parameterValues", list()):
                 pv = helpers.trim_parameter_value_label(pv).lower()
 
-                ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                ontology_schema = d_utils.get_db_json_schema(
+                    "ontology_annotation")
                 for k in ontology_schema:
                     ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, k, "ontology_annotation",
                                                                       dict(annotationValue=pv))
@@ -213,10 +229,12 @@ class Study:
             components = list()
             if pr.get("name", str()) == "nucleic acid sequencing":
                 # get sequencing instrument attached datafiles
-                seq_instruments = list(self.copo_isa_records["seq_instruments"])
+                seq_instruments = list(
+                    self.copo_isa_records["seq_instruments"])
 
                 for si in seq_instruments:
-                    ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                    ontology_schema = d_utils.get_db_json_schema(
+                        "ontology_annotation")
                     for k in ontology_schema:
                         ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, k,
                                                                           "ontology_annotation",
@@ -286,7 +304,8 @@ class Study:
         samples = list(self.copo_isa_records["treated_sample"])
 
         # get executed protocol
-        executes_protocol = [p for p in self._protocols(dict()) if "sample collection" in p.get("name")]
+        executes_protocol = [p for p in self._protocols(
+            dict()) if "sample collection" in p.get("name")]
         id_part = str()
         if executes_protocol:
             id_part = (executes_protocol[0]["name"]).replace(" ", "_")
@@ -326,7 +345,8 @@ class Study:
                     cat_dict = fv.get("category", dict())
                     annotation_value = cat_dict.get("annotationValue", str())
                     if annotation_value and annotation_value.lower() not in seen_list:
-                        ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                        ontology_schema = d_utils.get_db_json_schema(
+                            "ontology_annotation")
                         for k in ontology_schema:
                             ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, k,
                                                                               "ontology_annotation",
@@ -361,7 +381,8 @@ class Study:
             for rec in component_list:
                 # get organism
                 if "organism" in rec and "organism" not in seen_list:
-                    ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                    ontology_schema = d_utils.get_db_json_schema(
+                        "ontology_annotation")
                     for k in ontology_schema:
                         ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, k,
                                                                           "ontology_annotation",
@@ -369,7 +390,8 @@ class Study:
 
                     value_dict = dict(characteristicType=ontology_schema)
 
-                    material_attribute_schema = d_utils.get_db_json_schema("material_attribute")
+                    material_attribute_schema = d_utils.get_db_json_schema(
+                        "material_attribute")
                     for k in material_attribute_schema:
                         if k == "@id":
                             material_attribute_schema[k] = ISAHelpers().get_id_field("characteristic_category", dict(
@@ -384,14 +406,16 @@ class Study:
                     cat_dict = ch.get("category", dict())
                     annotation_value = cat_dict.get("annotationValue", str())
                     if annotation_value and annotation_value.lower() not in seen_list:
-                        ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                        ontology_schema = d_utils.get_db_json_schema(
+                            "ontology_annotation")
                         for k in ontology_schema:
                             ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, k,
                                                                               "ontology_annotation",
                                                                               cat_dict)
                         value_dict = dict(characteristicType=ontology_schema)
 
-                        material_attribute_schema = d_utils.get_db_json_schema("material_attribute")
+                        material_attribute_schema = d_utils.get_db_json_schema(
+                            "material_attribute")
                         for k in material_attribute_schema:
                             if k == "@id":
                                 material_attribute_schema[k] = ISAHelpers().get_id_field("characteristic_category",
@@ -402,7 +426,8 @@ class Study:
                                 material_attribute_schema[k] = value_dict.get(k, ISAHelpers().get_schema_key_type(
                                     material_attribute_schema.get(k, dict())))
 
-                        characteristic_categories.append(material_attribute_schema)
+                        characteristic_categories.append(
+                            material_attribute_schema)
                         seen_list.append(annotation_value.lower())
 
         return characteristic_categories
@@ -416,7 +441,8 @@ class Study:
             component_list = list(self.copo_isa_records[component])
             for rec in component_list:
                 # get units from both characteristics and factors
-                combined_list = rec.get("characteristics", list()) + rec.get("factorValues", list())
+                combined_list = rec.get(
+                    "characteristics", list()) + rec.get("factorValues", list())
                 for ch in combined_list:
                     # value...
                     # called up here mainly to [in]validate the 'unit' property
@@ -432,9 +458,11 @@ class Study:
 
                     if is_numeric:
                         unit_cat = ch.get("unit", dict())
-                        annotation_value = unit_cat.get("annotationValue", str())
+                        annotation_value = unit_cat.get(
+                            "annotationValue", str())
                         if annotation_value != "" and annotation_value.lower() not in seen_list:
-                            ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                            ontology_schema = d_utils.get_db_json_schema(
+                                "ontology_annotation")
                             for k in ontology_schema:
                                 if k == "@id":
                                     ontology_schema[k] = ISAHelpers().get_id_field("unit",
@@ -452,7 +480,8 @@ class Study:
         return unit_categories
 
     def _comments(self, spec=dict()):
-        comments = d_utils.json_to_pytype(lookup.SRA_COMMENTS).get("properties", list())
+        comments = d_utils.json_to_pytype(
+            lookup.SRA_COMMENTS).get("properties", list())
         return comments
 
     def _publicReleaseDate(self, spec=dict()):
@@ -472,7 +501,8 @@ class Study:
         return self.copo_isa_records.get("submission_token")
 
     def _filename(self, spec=dict()):
-        filename = 's_' + self.copo_isa_records.get("submission_token") + '.txt'
+        filename = 's_' + \
+            self.copo_isa_records.get("submission_token") + '.txt'
         return filename
 
 
@@ -491,14 +521,18 @@ class Assay:
         if properties:
             for k in properties:
                 if k == "@id":
-                    record = dict(name=self.copo_isa_records.get("submission_token"))
-                    properties[k] = ISAHelpers().get_id_field(component=component, record=record)
+                    record = dict(
+                        name=self.copo_isa_records.get("submission_token"))
+                    properties[k] = ISAHelpers().get_id_field(
+                        component=component, record=record)
                 else:
                     try:
-                        properties[k] = getattr(Assay, "_" + k)(self, properties[k])
+                        properties[k] = getattr(
+                            Assay, "_" + k)(self, properties[k])
                     except Exception as e:
                         print(e)
-                        properties[k] = ISAHelpers().get_schema_key_type(properties.get(k, dict()))
+                        properties[k] = ISAHelpers().get_schema_key_type(
+                            properties.get(k, dict()))
 
             schemas.append(properties)
 
@@ -508,11 +542,13 @@ class Assay:
         return ISAHelpers().get_schema_key_type(spec)
 
     def _filename(self, spec=dict()):
-        filename = 'a_' + self.copo_isa_records.get("submission_token") + '.txt'
+        filename = 'a_' + \
+            self.copo_isa_records.get("submission_token") + '.txt'
         return filename
 
     def _measurementType(self, spec=dict()):
-        config_source = ISAHelpers().get_config_source(self.copo_isa_records.get("study_type"))
+        config_source = ISAHelpers().get_config_source(
+            self.copo_isa_records.get("study_type"))
         measurement_type = ISAHelpers().get_assay_file_measurement(config_source)
 
         return measurement_type
@@ -529,12 +565,15 @@ class Assay:
         datafiles = list(self.copo_isa_records["datafile"])
 
         # get datafiles from the submission record
-        datafiles = [ISAHelpers().refactor_datafiles(element) for element in datafiles]
+        datafiles = [ISAHelpers().refactor_datafiles(element)
+                     for element in datafiles]
         datafiles = ISAHelpers().get_isa_records(component, datafiles)
 
         df = pd.DataFrame(datafiles)
-        remote_path = helpers.get_ena_remote_path(self.copo_isa_records.get("submission_token"))
-        df["name"] = df["name"].apply(ISAHelpers().refactor_datafile_reference, args=(remote_path,))
+        remote_path = helpers.get_ena_remote_path(
+            self.copo_isa_records.get("submission_token"))
+        df["name"] = df["name"].apply(
+            ISAHelpers().refactor_datafile_reference, args=(remote_path,))
         datafiles = df.to_dict('records')
 
         return datafiles
@@ -547,8 +586,10 @@ class Assay:
 
         if samples:
             df = pd.DataFrame(samples)
-            samps = list(df['name'].apply(ISAHelpers().refactor_sample_reference))
-            other_materials = list(df['name'].apply(ISAHelpers().refactor_material))
+            samps = list(df['name'].apply(
+                ISAHelpers().refactor_sample_reference))
+            other_materials = list(df['name'].apply(
+                ISAHelpers().refactor_material))
 
         value_dict = dict(otherMaterials=other_materials,
                           samples=samps
@@ -571,12 +612,16 @@ class Assay:
         return unitCategories
 
     def _processSequence(self, spec=dict()):
+        from common.dal.copo_da import Description
+
         # get relevant protocols
         protocol_list_temp = list(self.copo_isa_records["protocol_list"])
-        protocol_list_temp[:] = [d for d in protocol_list_temp if d.get('name') not in ["sample collection"]]
+        protocol_list_temp[:] = [d for d in protocol_list_temp if d.get('name') not in [
+            "sample collection"]]
 
         # get pairing map, if it exists
-        description_token = self.copo_isa_records["submission_record"].get("description_token", str())
+        description_token = self.copo_isa_records["submission_record"].get(
+            "description_token", str())
         pairing_info = list()
 
         if description_token:
@@ -585,8 +630,9 @@ class Assay:
         pairing_info = pd.DataFrame(pairing_info)
 
         if len(pairing_info):
-            pairing_info.columns = ["file1","file2"]
-            pairing_info['combined'] = pairing_info.file1 + "," + pairing_info.file2
+            pairing_info.columns = ["file1", "file2"]
+            pairing_info['combined'] = pairing_info.file1 + \
+                "," + pairing_info.file2
 
         datafiles_df = pd.DataFrame(self.copo_isa_records["datafile"])
         datafiles_df._id = datafiles_df['_id'].astype(str)
@@ -598,7 +644,8 @@ class Assay:
         datafiles_df['paired_status'] = datafiles_df.paired_status.str.upper()
 
         # to avoid the risk of obfuscation of the file name, modify path to reflect actual saved name
-        datafiles_df['file_location'] = datafiles_df['file_location'].apply(lambda x: os.path.split(x)[-1])
+        datafiles_df['file_location'] = datafiles_df['file_location'].apply(
+            lambda x: os.path.split(x)[-1])
         datafiles_df["name"] = datafiles_df['file_location']
 
         indx = 0
@@ -607,29 +654,37 @@ class Assay:
                 break
 
             indx = indx + 1
-            self.get_assay_process_sequence(protocol_list_temp, indx, pairing_info, datafiles_df)
+            self.get_assay_process_sequence(
+                protocol_list_temp, indx, pairing_info, datafiles_df)
 
         return self.process_sequence
 
     def get_assay_process_sequence(self, protocol_list_temp, indx, pairing_info, datafiles_df):
         # get file...
-        datafile = datafiles_df[datafiles_df.treated == 'false'].iloc[0].to_dict()
+        datafile = datafiles_df[datafiles_df.treated ==
+                                'false'].iloc[0].to_dict()
         datafiles_df.loc[datafile["_id"], 'treated'] = 'true'
 
         # get description attributes
-        attributes = datafile.get("description", dict()).get("attributes", dict())
-        datafile_samples = attributes.get("attach_samples", dict()).get("study_samples", list())
+        attributes = datafile.get(
+            "description", dict()).get("attributes", dict())
+        datafile_samples = attributes.get(
+            "attach_samples", dict()).get("study_samples", list())
 
         samples = list()
         materials = list()
 
         if datafile_samples:
-            datafile_samples = datafile_samples.split(",") if isinstance(datafile_samples, str) else datafile_samples
+            datafile_samples = datafile_samples.split(",") if isinstance(
+                datafile_samples, str) else datafile_samples
             copo_samples = self.copo_isa_records["sample"]
             df = pd.DataFrame(copo_samples)
-            df = df[df['_id'].isin([ObjectId(element) for element in datafile_samples])]
-            samples = list(df['name'].apply(ISAHelpers().refactor_sample_reference))
-            materials = list(df['name'].apply(ISAHelpers().refactor_material_reference))
+            df = df[df['_id'].isin([ObjectId(element)
+                                   for element in datafile_samples])]
+            samples = list(df['name'].apply(
+                ISAHelpers().refactor_sample_reference))
+            materials = list(df['name'].apply(
+                ISAHelpers().refactor_material_reference))
 
         protocol_list = list(protocol_list_temp)
         lookup_list = list(protocol_list_temp)
@@ -658,25 +713,31 @@ class Assay:
 
             # set datafile output
             if revised_name in ["nucleic_acid_sequencing"]:
-                outputs.append({"@id": ISAHelpers().get_id_field("datafile", datafile)})
+                outputs.append(
+                    {"@id": ISAHelpers().get_id_field("datafile", datafile)})
 
                 # is this file paired
                 if datafile["paired_status"] == "PAIRED" and len(pairing_info):
-                    paired_data = [x for x in list(pairing_info['combined']) if datafile["_id"] in x]
+                    paired_data = [x for x in list(
+                        pairing_info['combined']) if datafile["_id"] in x]
                     if paired_data:
                         paired_data = paired_data[0].split(",")
                         paired_data.remove(datafile["_id"])
                         if paired_data[0] in datafiles_df.index:
-                            paired_datafile = datafiles_df.loc[paired_data[0]].to_dict()
-                            datafiles_df.loc[paired_data[0], 'treated'] = 'true'
-                            outputs.append({"@id": ISAHelpers().get_id_field("datafile", paired_datafile)})
+                            paired_datafile = datafiles_df.loc[paired_data[0]].to_dict(
+                            )
+                            datafiles_df.loc[paired_data[0],
+                                             'treated'] = 'true'
+                            outputs.append(
+                                {"@id": ISAHelpers().get_id_field("datafile", paired_datafile)})
 
             if protocol_list[pr_indx - 1].get("name", str()).replace(" ", "_") == "nucleic_acid_extraction":
                 inputs = materials
 
             # set previous...
             if pr_indx > 0:
-                previous_name = lookup_list[pr_indx - 1].get("name", str()).replace(" ", "_")
+                previous_name = lookup_list[pr_indx -
+                                            1].get("name", str()).replace(" ", "_")
                 previous_process = {"@id": ISAHelpers().get_id_field("process",
                                                                      dict(name=previous_name + str(indx)))}
                 # refine input
@@ -685,7 +746,8 @@ class Assay:
 
             # ...and next processes
             if (pr_indx + 1) < len(lookup_list):
-                next_name = lookup_list[pr_indx + 1].get("name", str()).replace(" ", "_")
+                next_name = lookup_list[pr_indx +
+                                        1].get("name", str()).replace(" ", "_")
 
                 if next_name == "nucleic_acid_sequencing":
                     # expose the experiment name here
@@ -699,7 +761,8 @@ class Assay:
                 pv = helpers.trim_parameter_value_label(pv).lower()
                 pv_revised_name = pv.replace(" ", "_")
 
-                pv_value = attributes.get(revised_name, dict()).get(pv_revised_name)
+                pv_value = attributes.get(
+                    revised_name, dict()).get(pv_revised_name)
 
                 if pv_value is not None:
                     # represent string values as an ontology object
@@ -708,7 +771,8 @@ class Assay:
                                         )
 
                     if isinstance(pv_value, dict):
-                        ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                        ontology_schema = d_utils.get_db_json_schema(
+                            "ontology_annotation")
                         for k in ontology_schema:
                             ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, k,
                                                                               "ontology_annotation",
@@ -717,11 +781,13 @@ class Assay:
                         pv_value = ontology_schema
 
                     pv_dict = dict(
-                        category={"@id": ISAHelpers().get_id_field("parameter", dict(name=pv_revised_name))},
+                        category={
+                            "@id": ISAHelpers().get_id_field("parameter", dict(name=pv_revised_name))},
                         value=pv_value
                     )
 
-                    pp_schema = d_utils.get_db_json_schema("process_parameter_value")
+                    pp_schema = d_utils.get_db_json_schema(
+                        "process_parameter_value")
 
                     for k in pp_schema:
                         pp_schema[k] = pv_dict.get(k,
@@ -796,30 +862,37 @@ class renameRecordThread(threading.Thread):
     def get_renamed_records(self):
         if self.component_records:
             df = pd.DataFrame(self.component_records)
-            df["name"] = df["name"].apply(ISAHelpers().rename_it, args=(self.component_name,))
+            df["name"] = df["name"].apply(
+                ISAHelpers().rename_it, args=(self.component_name,))
             records = df.to_dict('records')
             self.copo_records[self.component_name] = list(records)
 
 
 class ISAHelpers:
     def broker_copo_records(self, submission_token=str()):
+        from common.dal.copo_da import Submission, DataFile, DAComponent, Person, Sample
+
         profile_id = Submission().get_record(submission_token).get("profile_id", str())
         copo_records = dict()
 
         # submission_token
         copo_records["submission_token"] = submission_token
-        copo_records["submission_record"] = DAComponent(component="submission").get_record(submission_token)
+        copo_records["submission_record"] = DAComponent(
+            component="submission").get_record(submission_token)
 
         # profile
-        copo_records["profile"] = DAComponent(component="profile").get_record(profile_id)
+        copo_records["profile"] = DAComponent(
+            component="profile").get_record(profile_id)
 
         # publication
-        copo_records["publication"] = DAComponent(profile_id=profile_id, component="publication").get_all_records()
+        copo_records["publication"] = DAComponent(
+            profile_id=profile_id, component="publication").get_all_records()
 
         # person
         # check for sra person
         Person(profile_id=profile_id).create_sra_person()
-        copo_records["person"] = DAComponent(profile_id=profile_id, component="person").get_all_records()
+        copo_records["person"] = DAComponent(
+            profile_id=profile_id, component="person").get_all_records()
 
         # datafile and samples, sources, study_type and seq_instruments
         df_ids_list = copo_records["submission_record"].pop("bundle", list())
@@ -835,7 +908,8 @@ class ISAHelpers:
 
         # ...this, to correct file names being modified by the system
         df = pd.DataFrame(datafiles)
-        df["name"] = df["file_location"].apply(ISAHelpers().refactor_datafile_name)
+        df["name"] = df["file_location"].apply(
+            ISAHelpers().refactor_datafile_name)
         copo_records["datafile"] = df.to_dict('records')
 
         copo_records["datafilehashes"] = self.get_datafilehashes(copo_records["datafile"],
@@ -844,7 +918,8 @@ class ISAHelpers:
         # sample... contingent on datafiles
         attach_samples = list()
         for x in copo_records["datafile"]:
-            samp = x.get("description", dict()).get("attributes", dict()).get('attach_samples', dict()).get('study_samples', list())
+            samp = x.get("description", dict()).get("attributes", dict()).get(
+                'attach_samples', dict()).get('study_samples', list())
             if isinstance(samp, str):
                 attach_samples.extend(samp.split(","))
             elif isinstance(samp, list):
@@ -854,7 +929,8 @@ class ISAHelpers:
         object_list = [ObjectId(sample_id) for sample_id in attach_samples]
 
         copo_records["sample"] = list()
-        samples = cursor_to_list(Sample().get_collection_handle().find({"_id": {"$in": object_list}}))
+        samples = cursor_to_list(
+            Sample().get_collection_handle().find({"_id": {"$in": object_list}}))
 
         # source
         # source...dependent on samples
@@ -869,8 +945,10 @@ class ISAHelpers:
             DAComponent(component="source").get_collection_handle().find({"_id": {"$in": derived_list}}))
 
         # rename sample and sources
-        thread_rename_sample = renameRecordThread(copo_records, "sample", samples)
-        thread_rename_source = renameRecordThread(copo_records, "source", sources)
+        thread_rename_sample = renameRecordThread(
+            copo_records, "sample", samples)
+        thread_rename_source = renameRecordThread(
+            copo_records, "source", sources)
 
         thread_rename_sample.start()
         thread_rename_source.start()
@@ -893,7 +971,8 @@ class ISAHelpers:
             self.get_config_source(copo_records["study_type"]))
 
         # protocol_list
-        protocol_list = self.get_protocols_parameter_values(copo_records["study_type"])
+        protocol_list = self.get_protocols_parameter_values(
+            copo_records["study_type"])
 
         # remove non-relevant protocols from the list
         protocol_list[:] = [d for d in protocol_list if d.get('name') not in ["dummy", "sequence assembly",
@@ -925,7 +1004,8 @@ class ISAHelpers:
 
         df = pd.DataFrame(datafiles)
         remote_path = helpers.get_ena_remote_path(submission_token)
-        df["name"] = df["name"].apply(ISAHelpers().refactor_datafile_reference, args=(remote_path,))
+        df["name"] = df["name"].apply(
+            ISAHelpers().refactor_datafile_reference, args=(remote_path,))
         datafiles = df.to_dict('records')
 
         for df in datafiles:
@@ -934,10 +1014,13 @@ class ISAHelpers:
         return datafilehashes
 
     def get_study_type(self, datafile_ids=list()):
+        from common.dal.copo_da import DataFile
+
         study_type = str()
 
         if datafile_ids:
-            study_type = DataFile().get_record_property(datafile_ids[0], "study_type")
+            study_type = DataFile().get_record_property(
+                datafile_ids[0], "study_type")
 
         if study_type:
             return study_type
@@ -962,7 +1045,8 @@ class ISAHelpers:
             for t in iter(fields):
                 value_dict = dict(annotationValue=t.get("term-label", str()),
                                   termAccession=t.get("term-accession", str()),
-                                  termSource=t.get("source-abbreviation", str())
+                                  termSource=t.get(
+                                      "source-abbreviation", str())
                                   )
 
                 if value_dict:
@@ -970,7 +1054,8 @@ class ISAHelpers:
 
                     isa_schema = d_utils.get_db_json_schema(component)
                     for k in isa_schema:
-                        isa_schema = ISAHelpers().resolve_schema_key(isa_schema, k, component, value_dict)
+                        isa_schema = ISAHelpers().resolve_schema_key(
+                            isa_schema, k, component, value_dict)
 
                     properties = isa_schema
 
@@ -996,7 +1081,8 @@ class ISAHelpers:
             for t in iter(fields):
                 value_dict = dict(annotationValue=t.get("term-label", str()),
                                   termAccession=t.get("term-accession", str()),
-                                  termSource=t.get("source-abbreviation", str())
+                                  termSource=t.get(
+                                      "source-abbreviation", str())
                                   )
 
             if value_dict:
@@ -1004,7 +1090,8 @@ class ISAHelpers:
 
                 isa_schema = d_utils.get_db_json_schema(component)
                 for k in isa_schema:
-                    isa_schema = ISAHelpers().resolve_schema_key(isa_schema, k, component, value_dict)
+                    isa_schema = ISAHelpers().resolve_schema_key(
+                        isa_schema, k, component, value_dict)
 
                 properties = isa_schema
 
@@ -1016,7 +1103,8 @@ class ISAHelpers:
 
     def get_config_source(self, study_type):
         config_source = None
-        v = [x for x in lookup.DROP_DOWNS['STUDY_TYPES'] if x["value"].lower() == study_type.lower()]
+        v = [x for x in lookup.DROP_DOWNS['STUDY_TYPES']
+             if x["value"].lower() == study_type.lower()]
 
         if v:
             v = v[0]
@@ -1026,12 +1114,14 @@ class ISAHelpers:
         if config_source:
             return config_source
         else:
-            raise KeyError("Couldn't get config source for study_type: " + study_type)
+            raise KeyError(
+                "Couldn't get config source for study_type: " + study_type)
 
     def get_protocols_parameter_values(self, study_type=str()):
         # filters protocols based on the presence of parameter values
 
-        protocols = ISAHelpers().get_study_protocols() + ISAHelpers().get_assay_protocols(study_type)
+        protocols = ISAHelpers().get_study_protocols() + \
+            ISAHelpers().get_assay_protocols(study_type)
 
         for pr in protocols:
             for pv in list(pr["parameterValues"]):
@@ -1066,13 +1156,16 @@ class ISAHelpers:
             for child in list(root[0]):
                 tag = child.tag.split("}")[-1]
                 if tag == "protocol-field":
-                    protocol_list.append(dict(name=child.attrib.get("protocol-type", str()), parameterValues=list()))
+                    protocol_list.append(dict(name=child.attrib.get(
+                        "protocol-type", str()), parameterValues=list()))
                 elif tag == "field":
                     # get parent protocol
-                    protocol_list[-1].get("parameterValues").append(child.attrib.get("header", str()))
+                    protocol_list[-1].get("parameterValues").append(
+                        child.attrib.get("header", str()))
 
             # remove dummy protocol
-            protocol_list[:] = [d for d in protocol_list if d.get('name') != "dummy"]
+            protocol_list[:] = [
+                d for d in protocol_list if d.get('name') != "dummy"]
 
         return protocol_list
 
@@ -1094,10 +1187,12 @@ class ISAHelpers:
             for child in list(root[0]):
                 tag = child.tag.split("}")[-1]
                 if tag == "protocol-field":
-                    protocol_list.append(dict(name=child.attrib.get("protocol-type", str()), parameterValues=list()))
+                    protocol_list.append(dict(name=child.attrib.get(
+                        "protocol-type", str()), parameterValues=list()))
                 elif tag == "field":
                     # get parent protocol
-                    protocol_list[-1].get("parameterValues").append(child.attrib.get("header", str()))
+                    protocol_list[-1].get("parameterValues").append(
+                        child.attrib.get("header", str()))
 
         return protocol_list
 
@@ -1110,16 +1205,19 @@ class ISAHelpers:
             # handle organism property in source
             if component == "source":
                 # get organism and add to characteristics
-                ontology_schema = d_utils.get_db_json_schema("ontology_annotation")
+                ontology_schema = d_utils.get_db_json_schema(
+                    "ontology_annotation")
                 for onto in ontology_schema:
                     ontology_schema = ISAHelpers().resolve_schema_key(ontology_schema, onto,
                                                                       "ontology_annotation",
                                                                       dict(annotationValue="organism"))
 
                 # conform to the ontology schema
-                value_dict = dict(category=ontology_schema, value=rec.get("organism", dict()))
+                value_dict = dict(category=ontology_schema,
+                                  value=rec.get("organism", dict()))
 
-                material_attribute_schema = d_utils.get_db_json_schema("material_attribute_value")
+                material_attribute_schema = d_utils.get_db_json_schema(
+                    "material_attribute_value")
                 for onto in material_attribute_schema:
                     material_attribute_schema = ISAHelpers().resolve_schema_key(material_attribute_schema, onto,
                                                                                 "material_attribute_value",
@@ -1148,7 +1246,8 @@ class ISAHelpers:
                                                           records=rec.get("characteristics", list()))
 
             if "factorValues" in rec:
-                attributes_dict["factorValues"] = dict(component="factor", records=rec.get("factorValues", list()))
+                attributes_dict["factorValues"] = dict(
+                    component="factor", records=rec.get("factorValues", list()))
 
             for k in attributes_dict:
                 for ch in attributes_dict[k]["records"]:
@@ -1167,7 +1266,8 @@ class ISAHelpers:
                         if not bool([a for a in unit_dict.values() if a]):
                             ch["unit"] = dict()
                         else:
-                            annotation_value = unit_dict.get("annotationValue", str())
+                            annotation_value = unit_dict.get(
+                                "annotationValue", str())
                             if annotation_value != "":
                                 # reference unit by ID
                                 annotation_value = ISAHelpers().get_id_field("unit",
@@ -1200,8 +1300,10 @@ class ISAHelpers:
             derived_list = rec.get("derivesFrom", list())
             if derived_list:
                 df = pd.DataFrame(all_derived_from)
-                df = df[df['_id'].isin([ObjectId(element) for element in derived_list])]
-                rec["derivesFrom"] = list(df['name'].apply(ISAHelpers().refactor_source_reference))
+                df = df[df['_id'].isin([ObjectId(element)
+                                       for element in derived_list])]
+                rec["derivesFrom"] = list(df['name'].apply(
+                    ISAHelpers().refactor_source_reference))
 
         return ch_records
 
@@ -1211,7 +1313,8 @@ class ISAHelpers:
         else:
             if isinstance(obj, dict):
                 for k_dict in obj:
-                    ISAHelpers().get_object_instances(obj[k_dict], target_record_list, target_object_keys)
+                    ISAHelpers().get_object_instances(
+                        obj[k_dict], target_record_list, target_object_keys)
             elif isinstance(obj, list):
                 for k_list in obj:
                     ISAHelpers().get_object_instances(k_list, target_record_list, target_object_keys)
@@ -1268,32 +1371,38 @@ class ISAHelpers:
 
         copo_schema = d_utils.get_copo_schema(component)
         isa_schema = d_utils.get_db_json_schema(component)
-        default_value = self.get_schema_key_type(isa_schema.get(schema_field, dict()))
+        default_value = self.get_schema_key_type(
+            isa_schema.get(schema_field, dict()))
         resolved_value = default_value
 
         if schema_field == "@id":
-            schema_dict[schema_field] = ISAHelpers().get_id_field(component, record)
+            schema_dict[schema_field] = ISAHelpers(
+            ).get_id_field(component, record)
             return schema_dict
         else:
             for f in copo_schema:
                 if schema_field == f["versions"][-1]:
-                    static_id = f["id"].split(".")[-1]  # the field known and stored in COPO
+                    # the field known and stored in COPO
+                    static_id = f["id"].split(".")[-1]
                     resolved_value = record.get(static_id)
 
                     # handle object type fields e.g., ontology term, comment
                     if resolved_value:
-                        object_type_control = d_utils.object_type_control_map().get(f["control"].lower(), str())
+                        object_type_control = d_utils.object_type_control_map().get(
+                            f["control"].lower(), str())
                         if object_type_control:
                             if f["type"] == "array":
                                 for indx, val_dict in enumerate(resolved_value):
-                                    isa_schema_2 = d_utils.get_db_json_schema(object_type_control)
+                                    isa_schema_2 = d_utils.get_db_json_schema(
+                                        object_type_control)
                                     for k_2 in isa_schema_2:
                                         isa_schema_2 = ISAHelpers().resolve_schema_key(isa_schema_2, k_2,
                                                                                        object_type_control,
                                                                                        val_dict)
                                     resolved_value[indx] = isa_schema_2
                             else:
-                                isa_schema = d_utils.get_db_json_schema(object_type_control)
+                                isa_schema = d_utils.get_db_json_schema(
+                                    object_type_control)
                                 for k in isa_schema:
                                     isa_schema = ISAHelpers().resolve_schema_key(isa_schema, k,
                                                                                  object_type_control,
@@ -1335,7 +1444,8 @@ class ISAHelpers:
                 osr_schema[k] = ISAHelpers().get_id_field(component, dict(
                     name=x))
             else:
-                osr_schema[k] = value_dict.get(k, ISAHelpers().get_schema_key_type(osr_schema.get(k, dict())))
+                osr_schema[k] = value_dict.get(
+                    k, ISAHelpers().get_schema_key_type(osr_schema.get(k, dict())))
 
         return osr_schema
 
@@ -1346,7 +1456,8 @@ class ISAHelpers:
 
         other_material_properties = d_utils.get_db_json_schema("material")
 
-        material_type = other_material_properties.get("type", dict()).get("enum", list())
+        material_type = other_material_properties.get(
+            "type", dict()).get("enum", list())
         if isinstance(material_type, list) and len(material_type) > 0:
             material_type = material_type[0]
 

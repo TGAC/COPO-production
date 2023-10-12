@@ -3597,7 +3597,7 @@ class EnaObject(DAComponent):
             return dict(schema_dict=[],
                         schema=[]
                         )
-                        )
+                        
         taggedSeq = EnaObject(self.profile_id).get_record(target_id)
         fields = []
         if taggedSeq:

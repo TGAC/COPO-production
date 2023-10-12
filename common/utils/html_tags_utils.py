@@ -433,7 +433,9 @@ def generate_server_side_table_records(profile_id=str(), component=str(), reques
 
     return return_dict
 
-#@register.filter("generate_table_records")
+# @register.filter("generate_table_records")
+
+
 def generate_table_records(profile_id=str(), component=str(), record_id=str()):
     # function generates component records for building an UI table - please note that for effective tabular display,
     # all array and object-type fields (e.g., characteristics) are deferred to sub-table display.
@@ -444,8 +446,9 @@ def generate_table_records(profile_id=str(), component=str(), record_id=str()):
 
     # instantiate data access object
     da_object = DAComponent(profile_id, component)
+    schema = list()
 
-    if component == "sample" :
+    if component == "sample":
 
         profile_type = type.lower()
         if "asg" in profile_type:
@@ -460,22 +463,23 @@ def generate_table_records(profile_id=str(), component=str(), record_id=str()):
         elif "erga" in profile_type:
             profile_type = "erga"
 
-        current_schema_version = settings.MANIFEST_VERSION.get(profile_type.upper(), '')
+        current_schema_version = settings.MANIFEST_VERSION.get(
+            profile_type.upper(), '')
 
         get_dtol_fields = type in ["Aquatic Symbiosis Genomics (ASG)", "Darwin Tree of Life (DTOL)",
-                                "European Reference Genome Atlas (ERGA)",
-                                "Darwin Tree of Life Environmental Samples (DTOL_ENV)"]
+                                   "European Reference Genome Atlas (ERGA)",
+                                   "Darwin Tree of Life Environmental Samples (DTOL_ENV)"]
         # get and filter schema elements based on displayable columns and profile type
         if get_dtol_fields:
 
-            schema = list()
+            # schema = list()
             for x in da_object.get_schema().get("schema_dict"):
                 if x.get("show_in_table", True) and profile_type in x.get("specifications",
-                                                                        []) and current_schema_version in x.get(
+                                                                          []) and current_schema_version in x.get(
                         "manifest_version", ""):
                     schema.append(x)
     else:
-        schema = list()
+        # schema = list()
         for x in da_object.get_schema().get("schema_dict"):
             if (x.get("show_in_table", True) and (component != 'sample' or component == 'sample' and (
                     "biosample" in x.get("specifications", []) or "isasample" in x.get(
