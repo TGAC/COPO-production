@@ -423,7 +423,7 @@ class TextAnnotation(DAComponent):
     def add_term(self, data):
         data["file_id"] = ObjectId(data["file_id"])
         id = self.get_collection_handle().insert_one(data)
-        return id
+        return id.inserted_id
 
     def get_all_for_file_id(self, file_id):
         records = self.get_collection_handle().find(
@@ -485,7 +485,7 @@ class Annotation(DAComponent):
             return self.get_collection_handle().update_one({"_id": a["_id"]}, {"$inc": {"count": 1}})
         else:
             data["count"] = 1
-            return self.get_collection_handle().insert_one(data)
+            return self.get_collection_handle().insert_one(data).inserted_id
 
     def decrement_or_delete_annotation(self, uid, iri):
         a = self.get_collection_handle().find_one({"uid": uid, "iri": iri})
@@ -1003,7 +1003,7 @@ class Sample(DAComponent):
                     {'$set': fields})
             else:
                 doc = self.get_collection_handle().insert_one(fields)
-                target_id = str(doc)
+                target_id = str(doc.inserted_id)
 
             # return saved record
             rec = self.get_record(target_id)
@@ -3294,7 +3294,7 @@ class Description:
         doc = self.DescriptionCollection.insert_one(fields)
 
         # return inserted record
-        df = self.GET(str(doc))
+        df = self.GET(str(doc.inserted_id))
         return df
 
     def edit_description(self, description_id, fields):
@@ -3596,7 +3596,6 @@ class EnaObject(DAComponent):
         if not target_id:
             return dict(schema_dict=[],
                         schema=[]
-                        )
                         )
         taggedSeq = EnaObject(self.profile_id).get_record(target_id)
         fields = []

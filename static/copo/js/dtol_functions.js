@@ -451,7 +451,7 @@ function handle_accept_reject(el) {
     if (action == "reject") {
         // mark sample object as rejected
         $.ajax({
-            url: "/copo/mark_sample_rejected",
+            url: "/copo/dtol_submission/mark_sample_rejected",
             method: "GET",
             data: {"sample_ids": JSON.stringify(sample_ids)}
         }).done(function () {
