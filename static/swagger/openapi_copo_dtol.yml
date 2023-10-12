@@ -4,7 +4,7 @@ info:
   description: Swagger documentation of COPO/DTOL sample API.
   version: 1.1.8
 servers:
-  - url: http://127.0.0.1:8000/api
+  - url: http://127.0.0.1:8001/api
     description: Local Server
   - url: http://demo.copo-project.org/api
     description: Demo Server
@@ -165,7 +165,7 @@ paths:
         - name: project
           in: path
           required: true
-          description: a comma separate list of supported EBP projects in lower case (dtol|asg|dtol_env|erga)
+          description: a comma separate list of supported EBP projects in lower case (dtol,asg,dtol_env,FFFqerga)
           schema:
             type: string
         - name: from

@@ -3023,7 +3023,7 @@ function generate_component_control(component) {
 
     var components = get_profile_components();
 
-    for (var i = 1; i < components.length; ++i) {
+    for (var i = 0; i < components.length; ++i) {
       var comp = components[i];
       if (comp.hasOwnProperty('profile_component')) {
         if (comp.component == component.component) {

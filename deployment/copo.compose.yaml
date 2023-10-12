@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   web:
-    image: copo/copo-new-web:v1.11.8.1
+    image: copo/copo-new-web:v2.0.0.2
     entrypoint:
       - bash
       - -c
@@ -98,9 +98,9 @@ services:
       interval: 2m
       timeout: 10s
       retries: 3
-      start_period: 30s
+      start_period: 50s
   celery_job:
-    image: copo/copo-new-web:v1.11.8.1
+    image: copo/copo-new-web:v2.0.0.2
     entrypoint:
       - bash
       - -c
@@ -266,7 +266,7 @@ services:
           cpus: "0.3"
           memory: 512mb
   sample_audit:
-    image: copo/copo-celery-job:v18.04_1  
+    image: copo/copo-sample-audit:v0.0.2  
     networks:
       - copo-backend-network
     secrets:
@@ -331,7 +331,6 @@ services:
     environment:
       - POSTGRES_DB=copo
       - POSTGRES_USER=copo_user
-      #- POSTGRES_PASSWORD=password
       - POSTGRES_PASSWORD_FILE=/run/secrets/copo_postgres_user_password
     deploy:
       replicas: 1
@@ -408,22 +407,10 @@ secrets:
     external: true
   copo_mongo_user_password:
     external: true
-  #copo_google_secret_key:
-    #external: true
-  #copo_figshare_client_id_key:
-    #external: true
-  #copo_facebook_secret_key:
-    #external: true
-  #copo_twitter_secret_key:
-    #external: true
   copo_orcid_secret_key:
     external: true
   copo_orcid_client_id:
     external: true
-  #copo_figshare_client_secret_key:
-    #external: true
-  #copo_figshare_consumer_secret_key:
-    #external: true
   copo_webin_user:
     external: true
   copo_webin_user_password:
@@ -453,8 +440,6 @@ volumes:
     external: true
   static-data:
     external: true
-  #submission-data:
-    #external: true
   logs-data:
     external: true
   mongo-backup:

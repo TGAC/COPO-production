@@ -1,12 +1,16 @@
 version: "3.8"
 services:
   web:
-    image: copo/copo-web:v1.11.2.1
+    image: copo/copo-new-web:v2.0.0.2
+    entrypoint:
+      - bash
+      - -c
+      - |
+        rsync -avhW --no-compress --progress /code/ /copo/ && rm -rf /code/ && python manage.py migrate && python manage.py social_accounts && python manage.py setup_groups && python manage.py setup_schemas && python manage.py createcachetable && python manage.py collectstatic --noinput && /usr/local/bin/daphne -b 0.0.0.0 -p 8000 src.main_config.asgi:application
     volumes:
       - web-data:/copo/media
       - static-data:/copo/static
       - logs-data:/copo/logs
-      #- submission-data:/copo/submission/data
       - b2drop-permits:/copo/b2drop/permits
     environment:
       - ENVIRONMENT_TYPE=prod
@@ -32,12 +36,6 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/copo_postgres_user_password
       - ORCID_SECRET_FILE=/run/secrets/copo_orcid_secret_key
       - ORCID_CLIENT_FILE=/run/secrets/copo_orcid_client_id
-      #- FIGSHARE_CONSUMER_SECRET_FILE=/run/secrets/copo_figshare_consumer_secret_key
-      #- FIGSHARE_CLIENT_ID_FILE=/run/secrets/copo_figshare_client_id_key
-      #- FIGSHARE_CLIENT_SECRET_FILE=/run/secrets/copo_figshare_client_secret_key
-      #- GOOGLE_SECRET_FILE=/run/secrets/copo_google_secret_key
-      #- TWITTER_SECRET_FILE=/run/secrets/copo_twitter_secret_key
-      #- FACEBOOK_SECRET_FILE=/run/secrets/copo_facebook_secret_key
       - NIH_API_KEY_FILE=/run/secrets/copo_nih_api_key
       - PUBLIC_NAME_SERVICE_API_KEY_FILE=/run/secrets/copo_public_name_service_api_key 
       - MAIL_PASSWORD_FILE=/run/secrets/copo_mail_password
@@ -86,14 +84,8 @@ services:
       - copo_web_secret_key
       - copo_postgres_user_password
       - copo_mongo_user_password
-      #- copo_google_secret_key
-      #- copo_facebook_secret_key
-      #- copo_twitter_secret_key
       - copo_orcid_secret_key
       - copo_orcid_client_id
-      - copo_figshare_client_id_key
-      - copo_figshare_client_secret_key
-      - copo_figshare_consumer_secret_key
       - copo_webin_user
       - copo_webin_user_password
       - copo_nih_api_key
@@ -106,7 +98,99 @@ services:
       interval: 2m
       timeout: 10s
       retries: 3
-      start_period: 30s 
+      start_period: 50s 
+  celery_job:
+    image: copo/copo-new-web:v2.0.0.2
+    entrypoint:
+      - bash
+      - -c
+      - |
+        rsync -avhW --no-compress --progress /code/ /copo/ && rm -rf /code/ && supervisord -c src/celery.conf && supervisorctl -c src/celery.conf start all && sleep infinity   
+    volumes:
+      - web-data:/copo/media
+      - logs-data:/copo/logs
+      - b2drop-permits:/copo/b2drop/permits
+    environment:
+      - ENVIRONMENT_TYPE=prod
+      - ASPERA_PLUGIN_DIRECTORY=aspera_linux_plugin
+      - SECRET_KEY_FILE=/run/secrets/copo_web_secret_key
+      - MEDIA_PATH=media/
+      - DEBUG=false
+      - REDIS_HOST=copo_redis
+      - REDIS_PORT=6379
+      - WEBIN_USER_FILE=/run/secrets/copo_webin_user
+      - WEBIN_USER_PASSWORD_FILE=/run/secrets/copo_webin_user_password
+      - ENA_SERVICE=https://www.ebi.ac.uk/ena/submit/drop-box/submit/
+      - MONGO_USER=copo_user
+      - MONGO_USER_PASSWORD_FILE=/run/secrets/copo_mongo_user_password
+      - MONGO_DB=copo_mongo
+      - MONGO_HOST=copo_mongo
+      - MONGO_PORT=27017
+      - MONGO_MAX_POOL_SIZE=100
+      - POSTGRES_DB=copo
+      - POSTGRES_USER=copo_user
+      - POSTGRES_PORT=5432
+      - POSTGRES_SERVICE=copo_postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/copo_postgres_user_password
+      - ORCID_SECRET_FILE=/run/secrets/copo_orcid_secret_key
+      - ORCID_CLIENT_FILE=/run/secrets/copo_orcid_client_id
+      - NIH_API_KEY_FILE=/run/secrets/copo_nih_api_key
+      - PUBLIC_NAME_SERVICE_API_KEY_FILE=/run/secrets/copo_public_name_service_api_key 
+      - MAIL_PASSWORD_FILE=/run/secrets/copo_mail_password
+      - MAIL_PORT=587
+      - MAIL_ADDRESS=data@earlham.ac.uk
+      - MAIL_SERVER=outlook.office365.com
+      - MAIL_USERNAME=eidata@nbi.ac.uk
+      - ALLOWED_HOSTS=
+      - PUBLIC_NAME_SERVICE=https://id.tol.sanger.ac.uk/api/v2/
+      - ENA_ENDPOINT_REPORT=https://www.ebi.ac.uk/ena/submit/report/samples
+      - ASPERA_PATH=/root/.aspera/cli
+      - BIOIMAGE_PATH_FILE=/run/secrets/copo_bioimage_path
+      - BIOIMAGE_SERVER=bsaspera_w@hx-fasp-1.ebi.ac.uk
+      - ECS_SECRET_KEY_FILE=/run/secrets/ecs_secret_key
+      - ECS_ACCESS_KEY_ID=copo@nbi.ac.uk
+      - ECS_ENDPOINT=http://ei-copo.obj-data.nbi.ac.uk
+      - ENA_V2_SERVICE_SYNC=https://www.ebi.ac.uk/ena/submit/webin-v2/submit
+      - ENA_V2_SERVICE_ASYNC=https://www.ebi.ac.uk/ena/submit/webin-v2/submit/queue
+      - B2DROP_PERMITS=/copo/b2drop/permits
+    depends_on:
+      - redis
+      - postgres 
+      - mongo
+    networks:
+      - copo-frontend-network
+      - copo-backend-network
+    deploy:
+      replicas : 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.backup-service==true"
+      resources:
+        limits:
+          cpus: '3'
+          memory: 10GB
+        reservations:
+          cpus: '1'
+          memory: 1GB
+      update_config:
+        parallelism: 1
+        delay: 10s
+    secrets:
+      - copo_web_secret_key
+      - copo_postgres_user_password
+      - copo_mongo_user_password
+      - copo_orcid_secret_key
+      - copo_orcid_client_id
+      - copo_webin_user
+      - copo_webin_user_password
+      - copo_nih_api_key
+      - copo_public_name_service_api_key
+      - copo_mail_password
+      - copo_bioimage_path
+      - ecs_secret_key      
   nginx:
     image: copo/copo-nginx:1.23.3
     networks:
@@ -142,7 +226,9 @@ services:
           memory: 1GB
 
   backup:
-    image: copo/copo-backup
+    image: copo/copo-backup:v18.04_1
+    command: >
+      bash -c "printenv >> /etc/environment && cron && sleep infinity"       
     networks:
       - copo-backend-network
     volumes:
@@ -180,7 +266,37 @@ services:
         reservations:
           cpus: "1"
           memory: 1GB
-
+  sample_audit:
+    image: copo/copo-sample-audit:v0.0.2  
+    networks:
+      - copo-backend-network
+    secrets:
+      - copo_mongo_user_password
+    environment:
+      - MONGO_HOST=copo_mongo
+      - MONGO_PORT=27017
+      - MONGO_USER=copo_user
+      - MONGO_USER_PASSWORD_FILE=/run/secrets/copo_mongo_user_password
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.backup-service==true"
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1GB
+        reservations:
+          cpus: "0.1"
+          memory: 128mb
+    depends_on:
+      - mongo
 
   redis:
     image: copo/copo-redis:redis-v6.2.6.18
@@ -216,7 +332,6 @@ services:
     environment:
       - POSTGRES_DB=copo
       - POSTGRES_USER=copo_user
-      #- POSTGRES_PASSWORD=password
       - POSTGRES_PASSWORD_FILE=/run/secrets/copo_postgres_user_password
     deploy:
       replicas: 1
@@ -238,15 +353,24 @@ services:
           memory: 1GB
 
   mongo:
-    image: copo/copo-mongo:20
+    image: copo/copo-mongo:v4.4.6_1
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /data/replica.key
+    entrypoint:
+       - bash
+       - -c
+       - |
+          openssl rand -base64 756 > /data/replica.key
+          chmod 400 /data/replica.key
+          chown 999:999 /data/replica.key
+          exec docker-entrypoint.sh $$@
     networks:
       - copo-backend-network
+    hostname: copo-mongo-server
     volumes:
       - mongo-data:/data/db
     secrets:
       - copo_mongo_initdb_root_password
       - copo_mongo_user_password
-    hostname: copo-mongo-server
     environment:
      - MONGO_INITDB_ROOT_USERNAME=copo_admin
      - MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/copo_mongo_initdb_root_password
@@ -284,22 +408,10 @@ secrets:
     external: true
   copo_mongo_user_password:
     external: true
-  #copo_google_secret_key:
-    #external: true
-  #copo_figshare_client_id_key:
-    #external: true
-  #copo_facebook_secret_key:
-    #external: true
-  #copo_twitter_secret_key:
-    #external: true
   copo_orcid_secret_key:
     external: true
   copo_orcid_client_id:
     external: true  
-  #copo_figshare_client_secret_key:
-    #external: true
-  #copo_figshare_consumer_secret_key:
-    #external: true
   copo_webin_user:
     external: true
   copo_webin_user_password:
@@ -329,8 +441,6 @@ volumes:
     external: true
   static-data:
     external: true
-  #submission-data:
-    #external: true
   logs-data:
     external: true
   mongo-backup:
