@@ -284,6 +284,9 @@ $(document).ready(function () {
                         sample_table.clear().destroy();
                     }
                     dt_options["columns"] = rows
+                    dt_options["scrollCollapse"] = true
+                    dt_options["scrollX"] = true
+                    dt_options["scrollY"] = 2000
                     sample_table = $("#profile_samples").DataTable(dt_options);
                 }
         }
