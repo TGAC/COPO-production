@@ -125,7 +125,7 @@ class ProfileInfo:
         profile_type = Profile().get_type(self.profile_id)
         for k, v in num_dict.items():
 
-            if v in handle_dict :
+            if v in handle_dict:
                 if v == "accessions":
                     if "Stand-alone" in profile_type:
                         # Stand-alone projects
@@ -142,7 +142,7 @@ class ProfileInfo:
                         {'profile_id': self.profile_id})
 
         return status
-   
+
     def source_count(self):
         return handle_dict.get("source").count_documents(
             {'profile_id': self.profile_id, 'deleted': helpers.get_not_deleted_flag()})
@@ -186,7 +186,7 @@ class DAComponent:
             return e
         handler = self.get_collection_handle()
         if handler is not None:
-            cursor =handler.find({"_id": {"$in": oids}})
+            cursor = handler.find({"_id": {"$in": oids}})
 
         return cursor_to_list(cursor)
 
@@ -453,7 +453,7 @@ class MetadataTemplate(DAComponent):
 
     def update_name(self, template_name, template_id):
         record = self.get_collection_handle().update_one({"_id": ObjectId(template_id)},
-                                                     {"$set": {"template_name": template_name}})
+                                                         {"$set": {"template_name": template_name}})
         record = self.get_by_id(template_id)
         return record
 
@@ -755,14 +755,14 @@ class Source(DAComponent):
              }
         )
 
-    def add_field(self, field, value, oid):
+    def update_field(self, field, value, oid):
         return self.get_collection_handle().update_one(
             {
                 "_id": ObjectId(oid)
             },
             {"$set":
-                {
-                    field: value}
+                {field: value, 'date_modified': datetime.now(timezone.utc).replace(microsecond=0), 'time_updated': datetime.now(
+                    timezone.utc).replace(microsecond=0), 'updated_by': 'ei.copo@earlham.ac.uk', 'update_type': 'system'}
              })
 
     def update_public_name(self, name):
@@ -880,37 +880,37 @@ class Sample(DAComponent):
         if "unit" in element["header"].lower():
             # update unit with ontology data
             return self.get_collection_handle().update_many({"_id": {"$in": records}},
-                                                       {"$set": {char_or_fac + "." + index +
-                                                                 ".unit.annotationValue":
-                                                                     element["value"],
-                                                                 char_or_fac + "." + index + ".unit.termSource":
-                                                                     element["ontology_prefix"],
-                                                                 char_or_fac + "." + index + ".unit.termAccession":
-                                                                     element["iri"],
-                                                                 char_or_fac + "." + index + ".unit.comments": element[
-                                                                     "description"]
-                                                                 }})
+                                                            {"$set": {char_or_fac + "." + index +
+                                                                      ".unit.annotationValue":
+                                                                      element["value"],
+                                                                      char_or_fac + "." + index + ".unit.termSource":
+                                                                      element["ontology_prefix"],
+                                                                      char_or_fac + "." + index + ".unit.termAccession":
+                                                                      element["iri"],
+                                                                      char_or_fac + "." + index + ".unit.comments": element[
+                                                                          "description"]
+                                                                      }})
         else:
             if is_number(element["value"]):
                 # update value with simple numeric
                 return self.get_collection_handle().update_many({"_id": {"$in": records}},
-                                                           {"$set": {char_or_fac + "." + index +
-                                                                     ".value.annotationValue":
-                                                                         element["value"]}})
+                                                                {"$set": {char_or_fac + "." + index +
+                                                                          ".value.annotationValue":
+                                                                          element["value"]}})
             else:
                 # update value with ontology data
                 return self.get_collection_handle().update_many({"_id": {"$in": records}},
-                                                           {"$set": {char_or_fac + "." + index +
-                                                                     ".value.annotationValue":
-                                                                         element["value"],
-                                                                     char_or_fac + "." + index + ".value.termSource":
-                                                                         element["ontology_prefix"],
-                                                                     char_or_fac + "." + index + ".value.termAccession":
-                                                                         element["iri"],
-                                                                     char_or_fac + "." + index + ".value.comments":
-                                                                         element[
-                                                                             "description"]
-                                                                     }})
+                                                                {"$set": {char_or_fac + "." + index +
+                                                                          ".value.annotationValue":
+                                                                          element["value"],
+                                                                          char_or_fac + "." + index + ".value.termSource":
+                                                                          element["ontology_prefix"],
+                                                                          char_or_fac + "." + index + ".value.termAccession":
+                                                                          element["iri"],
+                                                                          char_or_fac + "." + index + ".value.comments":
+                                                                          element[
+                                                                              "description"]
+                                                                          }})
 
     def get_factor(self, column, records):
         return self.get_collection_handle().aggregate([
@@ -1023,7 +1023,8 @@ class Sample(DAComponent):
                 sample.get("SPECIMEN_ID", ""), sample.get("biosampleAccession", "X"))
         else:
             # delete sample from mongo
-            self.get_collection_handle().DeleteOne({"_id": ObjectId(sample_id)})
+            self.get_collection_handle().DeleteOne(
+                {"_id": ObjectId(sample_id)})
             message = "Sample {} was deleted".format(
                 sample.get("SPECIMEN_ID", ""))
             # check if the parent source to see if it can also be delete
@@ -1103,8 +1104,8 @@ class Sample(DAComponent):
     def timestamp_dtol_sample_created(self, sample_id):
         email = ThreadLocal.get_current_user().email
         sample = self.get_collection_handle().update_one({"_id": ObjectId(sample_id)},
-                                                     {"$set": {"time_created": datetime.now(timezone.utc).replace(
-                                                         microsecond=0), "created_by": email}})
+                                                         {"$set": {"time_created": datetime.now(timezone.utc).replace(
+                                                             microsecond=0), "created_by": email}})
 
     def timestamp_dtol_sample_updated(self, sample_id=str(), sample_ids=[]):
         if not sample_ids:
@@ -1142,17 +1143,24 @@ class Sample(DAComponent):
                     'biosampleAccession': biosample_accession,
                     'sraAccession': sra_accession,
                     'submissionAccession': submission_accession,
-                    'status': 'accepted'}
+                    'status': 'accepted',
+                    'time_updated': datetime.now(timezone.utc).replace(
+                        microsecond=0),
+                    'date_modified': datetime.now(timezone.utc).replace(
+                        microsecond=0),
+                    'updated_by': 'ei.copo@earlham.ac.uk',
+                    'update_type': 'system'
+                }
              })
 
-    def add_field(self, field, value, oid):
+    def update_field(self, field, value, oid):
         return self.get_collection_handle().update_one(
             {
                 "_id": ObjectId(oid)
             },
             {"$set":
-                {
-                    field: value}
+             {field: value, 'date_modified': datetime.now(timezone.utc).replace(microsecond=0), 'time_updated': datetime.now(
+                 timezone.utc).replace(microsecond=0), 'updated_by': ThreadLocal.get_current_user().email, 'update_type': 'user'}
              })
 
     def remove_field(self, field, oid):
@@ -1413,7 +1421,7 @@ class Sample(DAComponent):
 
     def mark_rejected(self, sample_id, reason="Sample rejected by curator."):
         return self.get_collection_handle().update_one({"_id": ObjectId(sample_id)},
-                                                   {"$set": {"status": "rejected", "error": reason}})
+                                                       {"$set": {"status": "rejected", "error": reason}})
 
     def mark_processing(self, sample_id=str(), sample_ids=[]):
         if not sample_ids:
@@ -1540,8 +1548,8 @@ class Sample(DAComponent):
 
     def add_blank_barcode_record(self, specimen_id, barcode_id):
         self.get_collection_handle().update_many({"specimen_id": specimen_id},
-                                            {"$set": {"specimen_id": specimen_id, "barcode_id":
-                                                      barcode_id}}, upsert=True)
+                                                 {"$set": {"specimen_id": specimen_id, "barcode_id":
+                                                           barcode_id}}, upsert=True)
 
     def update_tol_by_specimen(self, specimen_id, sample_data):
 
@@ -1636,28 +1644,28 @@ class Submission(DAComponent):
         # for sam_id in sam_ids:
         if submission_id:
             sub_handle.update_one({"_id": ObjectId(sub_id)}, {
-                              "$pull": {"submission": {"id": submission_id}}})
+                "$pull": {"submission": {"id": submission_id}}})
         if sam_ids:
             sub_handle.update_one({"_id": ObjectId(sub_id)}, {
-                              "$pull": {"dtol_samples": {"$in": sam_ids}}})
+                "$pull": {"dtol_samples": {"$in": sam_ids}}})
         sub = sub_handle.find_one({"_id": ObjectId(sub_id)}, {
                                   "submission": 1, "dtol_samples": 1})
         if len(sub["submission"]) < 1 and len(sub["dtol_samples"]) < 1:
             sub_handle.update_one({"_id": ObjectId(sub_id)},
-                              {"$set": {"dtol_status": next_status, "date_modified": datetime.now()}})
+                                  {"$set": {"dtol_status": next_status, "date_modified": datetime.now()}})
 
     def update_dtol_specimen_for_bioimage_tosend(self, sub_id, sepcimen_ids):
         sub_handle = self.get_collection_handle()
         sub_handle.update_one({"_id": ObjectId(sub_id)}, {"$push": {"dtol_specimen": {"$each": sepcimen_ids}},
-                                                      "$set": {"date_modified": datetime.now()}})
+                                                          "$set": {"date_modified": datetime.now()}})
 
     def update_submission_async(self, sub_id, href, sample_ids, submission_id):
         sub_handle = self.get_collection_handle()
         submission = {'id': submission_id,
                       'sample_ids': sample_ids, 'href': href}
         sub_handle.update_one({"_id": ObjectId(sub_id)},
-                          {"$set": {"date_modified": datetime.now()}, "$push": {"submission": submission},
-                           "$pull": {"dtol_samples": {"$in": sample_ids}}})
+                              {"$set": {"date_modified": datetime.now()}, "$push": {"submission": submission},
+                               "$pull": {"dtol_samples": {"$in": sample_ids}}})
 
     def get_async_submission(self):
         sub_handle = self.get_collection_handle()
@@ -1702,7 +1710,7 @@ class Submission(DAComponent):
                 out.append(s)
                 self.update_submission_modified_timestamp(s["_id"])
                 self.get_collection_handle().update_one({"_id": ObjectId(s["_id"])},
-                                                    {"$set": {"dtol_status": "bioimage_sending"}})
+                                                        {"$set": {"dtol_status": "bioimage_sending"}})
         return out
 
     def get_pending_dtol_samples(self):
@@ -1812,7 +1820,8 @@ class Submission(DAComponent):
         # ..and other checks as they come up
 
         # delete record
-        self.get_collection_handle().delete_one({"_id": ObjectId(submission_id)})
+        self.get_collection_handle().delete_one(
+            {"_id": ObjectId(submission_id)})
 
         return result
 
@@ -2310,16 +2319,16 @@ class Submission(DAComponent):
         # for sam_id in sam_ids:
         if submission_id:
             sub_handle.update_one({"_id": ObjectId(sub_id)},
-                              {"$pull": {"seq_annotation_submission": {"id": submission_id}}})
+                                  {"$pull": {"seq_annotation_submission": {"id": submission_id}}})
         if seq_annotation_id:
             sub_handle.update_one({"_id": ObjectId(sub_id)}, {
-                              "$pull": {"seq_annotations": seq_annotation_id}})
+                "$pull": {"seq_annotations": seq_annotation_id}})
         sub = sub_handle.find_one({"_id": ObjectId(sub_id)}, {
                                   "seq_annotation_submission": 1, "seq_annotations": 1})
         if len(sub["seq_annotation_submission"]) < 1 and len(sub["seq_annotations"]) < 1:
             sub_handle.update_one({"_id": ObjectId(sub_id)},
-                              {"$set": {"seq_annotation_status": "complete",
-                                        "date_modified": helpers.get_datetime()}})
+                                  {"$set": {"seq_annotation_status": "complete",
+                                            "date_modified": helpers.get_datetime()}})
 
     def get_seq_annotation_pending_submission(self):
         REFRESH_THRESHOLD = 3600  # time in seconds to retry stuck submission
@@ -2338,7 +2347,7 @@ class Submission(DAComponent):
                 if len(s.get("seq_annotations", [])) == 0:
                     # all samples have been submitted
                     self.get_collection_handle().update_one({"_id": s["_id"]},
-                                                        {"$set": {"seq_annotation_status": "complete", "date_modified": current_time}})
+                                                            {"$set": {"seq_annotation_status": "complete", "date_modified": current_time}})
 
                 recorded_time = s.get("date_modified", current_time)
                 time_difference = current_time - recorded_time
@@ -2353,8 +2362,8 @@ class Submission(DAComponent):
                 out.append(s)
                 # self.update_submission_modified_timestamp(s["_id"])
                 self.get_collection_handle().update_one({"_id": s["_id"]},
-                                                    {"$set": {"seq_annotation_status": "sending",
-                                                              "date_modified": current_time}})
+                                                        {"$set": {"seq_annotation_status": "sending",
+                                                                  "date_modified": current_time}})
         return out
 
     def get_seq_annotation_file_uploading(self):
@@ -2368,9 +2377,9 @@ class Submission(DAComponent):
         submission = {'id': submission_id,
                       'seq_annotation_id': seq_annotation_ids, 'href': href}
         sub_handle.update_one({"_id": ObjectId(sub_id)},
-                          {"$set": {"date_modified": datetime.now()},
-                           "$push": {"seq_annotation_submission": submission},
-                           "$pull": {"seq_annotations": {"$in": seq_annotation_ids}}})
+                              {"$set": {"date_modified": datetime.now()},
+                               "$push": {"seq_annotation_submission": submission},
+                               "$pull": {"seq_annotations": {"$in": seq_annotation_ids}}})
 
     def get_async_seq_annotation_submission(self):
         sub_handle = self.get_collection_handle()
@@ -2465,7 +2474,7 @@ class Submission(DAComponent):
                 out.append(s)
                 # self.update_submission_modified_timestamp(s["_id"])
                 self.get_collection_handle().update_one({"_id": ObjectId(s["_id"])},
-                                                    {"$set": {"tagged_seq_status": "sending", "date_modified": current_time}})
+                                                        {"$set": {"tagged_seq_status": "sending", "date_modified": current_time}})
         return out
 
     def get_standalone_project_accessions(self, sort_by='_id', sort_direction=-1, projection=dict(), filter_by=dict()):
@@ -2490,7 +2499,7 @@ class Submission(DAComponent):
             out.append(i)
 
         return out
-    
+
     def make_assembly_submission_uploading(self, sub_id, assembly_ids):
         sub_handle = self.get_collection_handle()
         submission = sub_handle.find_one(
@@ -2515,13 +2524,13 @@ class Submission(DAComponent):
         # for sam_id in sam_ids:
         if assembly_id:
             sub_handle.update_one({"_id": ObjectId(sub_id)}, {
-                              "$pull": {"assemblies": assembly_id}})
+                "$pull": {"assemblies": assembly_id}})
 
         sub = sub_handle.find_one({"_id": ObjectId(sub_id)}, {"assemblies": 1})
         if len(sub["assemblies"]) < 1:
             sub_handle.update_one({"_id": ObjectId(sub_id)},
-                              {"$set": {"assembly_status": "complete",
-                                        "date_modified": helpers.get_datetime()}})
+                                  {"$set": {"assembly_status": "complete",
+                                            "date_modified": helpers.get_datetime()}})
 
     def get_assembly_pending_submission(self):
         REFRESH_THRESHOLD = 3600  # time in seconds to retry stuck submission
@@ -2550,8 +2559,8 @@ class Submission(DAComponent):
                 out.append(s)
                 # self.update_submission_modified_timestamp(s["_id"])
                 self.get_collection_handle().update_one({"_id": ObjectId(s["_id"])},
-                                                    {"$set": {"assembly_status": "sending",
-                                                              "date_modified": current_time}})
+                                                        {"$set": {"assembly_status": "sending",
+                                                                  "date_modified": current_time}})
         return out
 
     def get_assembly_file_uploading(self):
@@ -2638,7 +2647,7 @@ class DataFile(DAComponent):
 
             # now update datafile record
             self.get_collection_handle().update_one({'_id': ObjectId(target_id)},
-                                                {'$set': {'description.stages': df['description']['stages']}})
+                                                    {'$set': {'description.stages': df['description']['stages']}})
 
     def update_file_level_metadata(self, file_id, data):
         self.get_collection_handle().update_one({"_id": ObjectId(file_id)}, {
@@ -2667,8 +2676,8 @@ class DataFile(DAComponent):
 
     def delete_annotation(self, col_idx, sheet_name, file_id):
         docs = self.get_collection_handle().update_one({"_id": ObjectId(file_id)},
-                                                   {"$pull": {"file_level_annotation": {"sheet_name": sheet_name,
-                                                                                        "column_idx": str(col_idx)}}})
+                                                       {"$pull": {"file_level_annotation": {"sheet_name": sheet_name,
+                                                                                            "column_idx": str(col_idx)}}})
         return docs
 
     def get_num_pending_samples(self, sub_id):
@@ -3010,6 +3019,7 @@ class CopoGroup(DAComponent):
             {'$pull': {'repo_ids': ObjectId(repo_id)}}
         )
 
+
 '''
 class Repository(DAComponent):
     def __init__(self, profile=None):
@@ -3251,6 +3261,8 @@ class RemoteDataFile:
         pass
 
 '''
+
+
 class Stats:
     def update_stats(self):
         datafiles = handle_dict["datafile"].count_documents({})
@@ -3415,7 +3427,7 @@ class APIValidationReport(DAComponent):
         for el in replacements:
             msg = msg.replace(el[0], el[1])
         self.get_collection_handle().update_one({"_id": ObjectId(report_id)},
-                                            {"$set": {"status": "failed", "content": msg}})
+                                                {"$set": {"status": "failed", "content": msg}})
 
 
 class Assembly(DAComponent):
@@ -3424,7 +3436,7 @@ class Assembly(DAComponent):
 
     def add_accession(self, id, accession):
         self.get_collection_handle().update_one({"_id": ObjectId(id)},
-                                            {"$set": {"accession": accession, "error": ""}})
+                                                {"$set": {"accession": accession, "error": ""}})
 
     def update_assembly_error(self, assembly_ids, msg):
         assembly_obj_ids = [ObjectId(id) for id in assembly_ids]
@@ -3442,7 +3454,8 @@ class Assembly(DAComponent):
         if result:
             return dict(status='error', message="One or more Assembly has been accessed!")
 
-        self.get_collection_handle().delete_many({"_id": {"$in": assembly_obj_ids}})
+        self.get_collection_handle().delete_many(
+            {"_id": {"$in": assembly_obj_ids}})
         return dict(status='success', message="Assembly record/s have been deleted!")
 
 
@@ -3452,7 +3465,7 @@ class Sequnece_annotation(DAComponent):
 
     def add_accession(self, id, accession):
         self.get_collection_handle().update_one({"_id": ObjectId(id)},
-                                            {"$set": {"accession": accession, "error": []}})
+                                                {"$set": {"accession": accession, "error": []}})
 
     def update_seq_annotation_error(self, seq_annotation_ids, seq_annotation_sub_id, msg):
         seq_annotation_obj_ids = None
@@ -3535,7 +3548,6 @@ class TaggedSequence(DAComponent):
                         if field["type"] == "TEXT_AREA_FIELD":
                             field["control"] = "textarea"
 
-
                     fields.append(field)
 
             return dict(schema_dict=fields,
@@ -3554,9 +3566,9 @@ class TaggedSequence(DAComponent):
         if result:
             return dict(status='error', message="One or more tagged sequence record/s have been accessed or scheduled to submit!")
 
-        self.get_collection_handle().delete_many({"_id": {"$in":   tagged_seq_ids}})
+        self.get_collection_handle().delete_many(
+            {"_id": {"$in":   tagged_seq_ids}})
         return dict(status='success', message="Tagged Sequence record/s have been deleted!")
-
 
     def update_tagged_seq_processing(self, profile_id=str(), tagged_seq_ids=list()):
         tagged_seq_obj_ids = [ObjectId(id) for id in tagged_seq_ids]
@@ -3631,7 +3643,8 @@ class EnaObject(DAComponent):
         if result:
             return dict(status='error', message="One or more Ena object/s have been accessed or scheduled to submit!")
 
-        self.get_collection_handle().delete_many({"_id": {"$in":   tagged_seq_ids}})
+        self.get_collection_handle().delete_many(
+            {"_id": {"$in":   tagged_seq_ids}})
         return dict(status='success', message="Ena object/s have been deleted!")
 
     def update_ena_object_processing(self, profile_id=str(), tagged_seq_ids=list()):

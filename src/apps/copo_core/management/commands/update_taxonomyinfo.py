@@ -8,25 +8,25 @@ import common.dal.copo_da as da
 from common.utils.logger import Logger
 
 
-
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
-    help="update taxonomy information of samples - " \
-         "provide comma separated biosamples:'new scientific name'"
+    help = "update taxonomy information of samples - " \
+        "provide comma separated biosamples:'new scientific name'"
     Entrez.email = "copo@earlham.ac.uk"
 
     def __init__(self):
         self.TAXONOMY_FIELDS = ["TAXON_ID", "ORDER_OR_GROUP", "FAMILY", "GENUS",
-                               "SCIENTIFIC_NAME", "COMMON_NAME", "TAXON_REMARKS",
+                                "SCIENTIFIC_NAME", "COMMON_NAME", "TAXON_REMARKS",
                                 "INFRASPECIFIC_EPITHET"]
         self.rankdict = {
             "order": "ORDER_OR_GROUP",
-            "family" : "FAMILY",
-            "genus" :  "GENUS"
+            "family": "FAMILY",
+            "genus":  "GENUS"
         }
         self.pass_word = get_env('WEBIN_USER_PASSWORD')
         self.user_token = get_env('WEBIN_USER').split("@")[0]
-        self.ena_service = get_env('ENA_SERVICE')  # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        self.ena_service = get_env('ENA_SERVICE')
         self.ena_sample_retrieval = self.ena_service[:-len(
             'submit/')] + "samples/"  # https://devwww.ebi.ac.uk/ena/submit/drop-box/samples/" \
 
@@ -49,27 +49,31 @@ class Command(BaseCommand):
         print(list(d_updates.keys()))
         samplesindb = da.Sample().get_by_biosample_ids(list(d_updates.keys()))
         if len(samplesindb) < len(list(d_updates.keys())):
-            print("**********************************************************************************")
+            print(
+                "**********************************************************************************")
             print("one or more samples couldn't be found")
-            found_accessions = [sample.get("biosampleAccession") for sample in samplesindb]
-            diff = [x for x in list(d_updates.keys()) if x not in found_accessions]
+            found_accessions = [sample.get("biosampleAccession")
+                                for sample in samplesindb]
+            diff = [x for x in list(d_updates.keys())
+                    if x not in found_accessions]
             for element in diff:
                 print(element, "may be a Source")
-            print("**********************************************************************************")
+            print(
+                "**********************************************************************************")
         for sample in samplesindb:
-            #retrieve new taxonomy information
+            # retrieve new taxonomy information
             scientific_name = d_updates[sample["biosampleAccession"]]
             taxonomyinfo = self.query_taxonomy(scientific_name)
             taxonomy = taxonomyinfo['LineageEx']
             taxon = taxonomyinfo['TaxId']
             scien_name = taxonomyinfo['ScientificName']
-            self.update_sampletaxonomy(sample['_id'], taxonomy, taxon, scien_name, barcoding)
+            self.update_sampletaxonomy(
+                sample['_id'], taxonomy, taxon, scien_name, barcoding)
             if sample.get("sampleDerivedFrom", ""):
                 source_biosample = sample.get("sampleDerivedFrom")
             else:
                 source_biosample = sample.get("sampleSameAs")
             self.update_specsampletaxonomy(source_biosample, taxon, barcoding)
-
 
     def query_taxonomy(self, scientific_name):
         handle = Entrez.esearch(db="Taxonomy", term=scientific_name)
@@ -84,7 +88,7 @@ class Command(BaseCommand):
         return records[0]
 
     def update_sampletaxonomy(self, sample, taxonomy, taxon, name, barcoding):
-        #update db record
+        # update db record
         out = dict()
         for item in taxonomy:
             if item['Rank'] in self.rankdict:
@@ -104,33 +108,34 @@ class Command(BaseCommand):
                     da.Sample().record_barcoding_update(tax_field, oldvalue, newvalue, sample)
                 else:
                     da.Sample().record_manual_update(tax_field, oldvalue, newvalue, sample)
-        da.Sample().add_field("species_list.0", out, sample)
+        da.Sample().update_field("species_list.0", out, sample)
 
-        #query public name (skip this for now)
+        # query public name (skip this for now)
 
-        #update ENA record
+        # update ENA record
         updatedrecord = da.Sample().get_record(sample)
-        #todo retrieve sample from xml
-        #retrieve submitted XML for sample
+        # todo retrieve sample from xml
+        # retrieve submitted XML for sample
         curl_cmd = "curl -u " + self.user_token + \
                    ':' + self.pass_word + " " + self.ena_sample_retrieval \
                    + updatedrecord['biosampleAccession']
         registered_sample = subprocess.check_output(curl_cmd, shell=True)
 
-
-        self.update_samplexml(registered_sample, out['TAXON_ID'], updatedrecord['biosampleAccession'])
-
+        self.update_samplexml(
+            registered_sample, out['TAXON_ID'], updatedrecord['biosampleAccession'])
 
     def update_specsampletaxonomy(self, accession, taxon, barcoding):
-        #update db record
+        # update db record
         source = da.Source().get_by_field("biosampleAccession", accession)
-        assert len(source)==1
+        assert len(source) == 1
         if barcoding:
-            da.Source().record_barcoding_update("TAXON_ID", source[0]["TAXON_ID"], taxon, source[0]['_id'])
+            da.Source().record_barcoding_update(
+                "TAXON_ID", source[0]["TAXON_ID"], taxon, source[0]['_id'])
         else:
-            da.Source().record_manual_update("TAXON_ID", source[0]["TAXON_ID"], taxon, source[0]['_id'])
-        da.Source().add_field("TAXON_ID", taxon, source[0]['_id'])
-        #update ENA record
+            da.Source().record_manual_update(
+                "TAXON_ID", source[0]["TAXON_ID"], taxon, source[0]['_id'])
+        da.Source().update_field("TAXON_ID", taxon, source[0]['_id'])
+        # update ENA record
         updatedrecord = da.Source().get_record(source[0]['_id'])
         # retrieve submitted XML for source
         curl_cmd = "curl -u " + self.user_token + \
@@ -138,9 +143,8 @@ class Command(BaseCommand):
                    + updatedrecord['biosampleAccession']
         registered_specimen = subprocess.check_output(curl_cmd, shell=True)
 
-        self.update_samplexml(registered_specimen, updatedrecord['TAXON_ID'], updatedrecord['biosampleAccession'])
-
-
+        self.update_samplexml(
+            registered_specimen, updatedrecord['TAXON_ID'], updatedrecord['biosampleAccession'])
 
     def modify_sample(self, accession):
         curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
@@ -160,16 +164,18 @@ class Command(BaseCommand):
 
         os.remove(accession + ".xml")
 
-    def update_samplexml(self, registered_sample, new_taxon , accession):
-        #only thing to update in ENA is taxon ID
+    def update_samplexml(self, registered_sample, new_taxon, accession):
+        # only thing to update in ENA is taxon ID
         doc = ET.fromstring(registered_sample)
         tree = ET.ElementTree(doc)
         name_block = tree.find('SAMPLE').find('SAMPLE_NAME')
         taxon_block = tree.find('SAMPLE').find('SAMPLE_NAME').find('TAXON_ID')
         taxon_block.text = new_taxon
-        scname_block = tree.find('SAMPLE').find('SAMPLE_NAME').find('SCIENTIFIC_NAME')
+        scname_block = tree.find('SAMPLE').find(
+            'SAMPLE_NAME').find('SCIENTIFIC_NAME')
         scname_block.text = " "
-        comname_block = tree.find('SAMPLE').find('SAMPLE_NAME').find('COMMON_NAME')
+        comname_block = tree.find('SAMPLE').find(
+            'SAMPLE_NAME').find('COMMON_NAME')
         if comname_block and comname_block.text:
             comname_block.text = " "
 
