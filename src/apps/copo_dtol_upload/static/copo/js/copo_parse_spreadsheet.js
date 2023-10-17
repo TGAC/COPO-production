@@ -256,6 +256,7 @@ $(document).ready(function () {
       type: BootstrapDialog.TYPE_INFO,
       buttons: [
         {
+          id: 'cancelBtnID',
           label: 'Cancel',
           cssClass: 'tiny ui basic button',
           action: function (dialogRef) {
@@ -263,11 +264,21 @@ $(document).ready(function () {
           },
         },
         {
+          id: 'updateBtnID',
           label: 'Update',
           cssClass: 'tiny ui basic button',
           action: function (dialogRef) {
             $('#confirm_button').hide();
             $('#ss_upload_spinner').fadeIn('fast');
+
+            dialogRef.getButton('cancelBtnID').disable(); // Disable 'Cancel' button
+
+            // Disable the 'Update' button and show spinner
+            let $button = this;
+            $button.disable();
+            $button.spin();
+            dialogRef.setClosable(false);
+
             $.ajax({
               url: '/copo/dtol_manifest/update_spreadsheet_samples',
               data: {
@@ -275,7 +286,8 @@ $(document).ready(function () {
               },
             })
               .done(function (data) {
-                dialogRef.close(); // Close 'Confirm' modal
+                dialogRef.close(); // Close 'Update' modal
+                
                 // Refresh table
                 let result_dict = {};
                 result_dict['status'] = 'success';
