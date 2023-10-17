@@ -6,7 +6,6 @@ from datetime import datetime
 import re
 
 register = template.Library()
-from common.dal.copo_da import DataFile
 
 
 @register.filter("mongo_id")
@@ -20,6 +19,7 @@ def mongo_id(value):
 
 @register.filter("datafile_title")
 def datafile_title(value):
+    from common.dal.copo_da import DataFile
     d = DataFile().get_record(value)
     cu = DataFile().get_relational_record_for_id(d['file_id'])
     return cu.filename
@@ -59,6 +59,7 @@ def check_group(user, group_name):
     group = Group.objects.get(name=group_name)
     return group in user.groups.all()
 
+
 @register.filter(is_safe=True, name="get_blank_manifest_url")
 def get_blank_manifest_url(value):
     manfiest_version = settings.MANIFEST_VERSION
@@ -66,16 +67,18 @@ def get_blank_manifest_url(value):
     version = "_v" + version if version else ""
     return settings.MANIFEST_DOWNLOAD_URL.format(value, version)
 
+
 @register.filter(is_safe=True, name="get_short_profile_type")
 def get_short_profile_type(value):
     result = re.search(r"\((.*?)\)", value)
     return result.group(1) if result else value
+
 
 @register.filter(is_safe=True, name="get_first_value_from_array")
 def get_first_value_from_array(value):
     if value and type(value) is list:
         result = value[0]
         if type(result) is datetime:
-            result = result.strftime('%a, %d %b %Y %H:%M')    
+            result = result.strftime('%a, %d %b %Y %H:%M')
         return result
     return value

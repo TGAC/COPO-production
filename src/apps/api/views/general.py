@@ -1,29 +1,29 @@
 __author__ = 'felix.shaw@tgac.ac.uk - 14/05/15'
 
-import json
-
-import jsonpickle
+from common.schemas.utils.data_formats import DataFormats
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect
-
-from common.dal.copo_da import Profile, Sample, DataFile
-from common.schemas.utils.data_formats import DataFormats
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-
 from rest_framework.authentication import SessionAuthentication
+
+import json
+import jsonpickle
+
 
 def forward_to_swagger(request):
     response = redirect('/static/swagger/apidocs_index.html')
 
     return response
 
+
 def check_orcid_credentials(request):
     # TODO - here we check if the orcid tokens are valid
-    out = {'exists': False, 'authorise_url': settings['REPOSITORIES']['ORCID']['urls']['authorise_url']}
+    out = {'exists': False,
+           'authorise_url': settings['REPOSITORIES']['ORCID']['urls']['authorise_url']}
     return HttpResponse(jsonpickle.encode(out))
 
 
@@ -32,20 +32,24 @@ def generate_ena_template(request):
     temp_dict = DataFormats("ENA").generate_ui_template()
     return HttpResponse(jsonpickle.encode(temp_dict))
 
+
 def numbers(request):
     profiles = number_of_profiles()
     samples = number_of_samples()
     users = number_of_users()
     datafiles = number_of_datafiles()
-    out = {"profiles": profiles, "samples": samples, "users": users, "datafiles": datafiles}
+    out = {"profiles": profiles, "samples": samples,
+           "users": users, "datafiles": datafiles}
     return HttpResponse(json.dumps(out))
 
 
 def number_of_profiles():
+    from common.dal.copo_da import Profile
     return Profile().get_number()
 
 
 def number_of_samples():
+    from common.dal.copo_da import Sample
     # get total number of sample records in COPO instance
     return Sample().get_number()
 
@@ -55,6 +59,7 @@ def number_of_users():
 
 
 def number_of_datafiles():
+    from common.dal.copo_da import DataFile
     return DataFile().get_number()
 
 
