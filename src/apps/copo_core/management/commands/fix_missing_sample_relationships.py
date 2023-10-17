@@ -1,11 +1,11 @@
-import dal.copo_da as da
+import common.dal.copo_da as da
 import re
 import subprocess
 from Bio import Entrez
-from dal import cursor_to_list
-from dal.copo_da import Sample
+from common.dal.mongo_util import cursor_to_list
+from common.dal.copo_da import Sample
 from django.core.management import BaseCommand
-from web.apps.web_copo.management.commands import update_samplefield
+from src.apps.copo_core.management.commands import update_samplefield
 
 # To run this file in the PyCharm terminal: $ python manage.py fix_missing_sample_relationships
 
@@ -13,8 +13,9 @@ from web.apps.web_copo.management.commands import update_samplefield
 
 
 class Command(BaseCommand):
-    help = "Fix missing relationships between sample specimens"  # Show this when the user types help
-    Entrez.email = "copo@earlham.ac.uk"
+    # Show this when the user types help
+    help = "Fix missing relationships between sample specimens"
+    Entrez.email = "EI.copo@earlham.ac.uk"
 
     def get_sample_relationship(self, sample):
         organism_part = sample['ORGANISM_PART']
@@ -34,19 +35,22 @@ class Command(BaseCommand):
         # Retrieve the accession also known as biosample accession from the ENA webin submission portal
         # Look at the xml format in the DTOLSubmission class to see how to retrieve a value of a tag for the accession
         # Use the links sent to determine how to search for the biosample from the ENA website
-        sraAccession="ERS12158254"
+        sraAccession = "ERS12158254"
         ena_api_search_service = "https://wwwdev.ebi.ac.uk/ena/portal/api/search"
         curl_cmd = r"""curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=sample&query=secondary_sample_accession={}&fields=accession&format=json' {}""".format(
             sraAccession, ena_api_search_service)
 
         try:
-            source_submitted_on_ENA = subprocess.check_output(curl_cmd, shell=True)
-            decodedOutput = source_submitted_on_ENA.decode('utf-8')  # Convert bytes to string
+            source_submitted_on_ENA = subprocess.check_output(
+                curl_cmd, shell=True)
+            decodedOutput = source_submitted_on_ENA.decode(
+                'utf-8')  # Convert bytes to string
             pattern_accession = "SAMEA\d{9}"
             # Checks if pattern matches and the field exists to prevent an AttributeError: 'NoneType' error
             # isPatternAMatch = re.search(pattern_accession, decodedOutput)
             # if isPatternAMatch:
-            accession_value = re.search(pattern_accession, decodedOutput).group(0)
+            accession_value = re.search(
+                pattern_accession, decodedOutput).group(0)
             return accession_value
         except subprocess.CalledProcessError as error:
             print("Ping stdout output: ", error.output)
@@ -78,8 +82,10 @@ class Command(BaseCommand):
             specimen_id = sample['SPECIMEN_ID']
             # Get source object based on the field, "specimen_ID"
             source_object = da.Source().get_by_specimen(specimen_id)
-            assert len(source_object) == 1  # Sources should only result in one object
-            command = update_samplefield.Command()  # Instantiate the Command() before using it
+            # Sources should only result in one object
+            assert len(source_object) == 1
+            # Instantiate the Command() before using it
+            command = update_samplefield.Command()
 
             # Check if "biosampleAccession" field and "sraAccession" field exist in the source object
             # .get(<field-name>,"") prevents a KeyError if a field does not exist
@@ -87,7 +93,8 @@ class Command(BaseCommand):
                 print("\"biosampleAccession\" and \"sraAccession\" fields exist")
                 self.update_sample_relationship(command, sample, source_object)
             else:
-                print("\"biosampleAccession\" field and \"sraAccession\" field do not exist but an error exists")
+                print(
+                    "\"biosampleAccession\" field and \"sraAccession\" field do not exist but an error exists")
 
                 """Access the ENA production webin submission portal to get the values of 
                    the"biosampleAccession" field and the "accession" """
@@ -96,7 +103,8 @@ class Command(BaseCommand):
                 if "The object being added already exists in the submission account with accession" in error_to_parse:
                     # Catch alias and accession
                     pattern_accession = "ERS\d{7}"
-                    sraAccession = re.search(pattern_accession, error_to_parse).group()
+                    sraAccession = re.search(
+                        pattern_accession, error_to_parse).group()
 
                     accession = self.retrieve_accession_from_ena(sraAccession)
 
@@ -107,29 +115,37 @@ class Command(BaseCommand):
                         is entered as the default value in order for it to be consistent with an
                         actual value for the "submissionAccession" """
 
-                    da.Source().add_field("biosampleAccession", accession, source_object[0]["_id"])
-                    da.Source().add_field("sraAccession", sraAccession, source_object[0]["_id"])
-                    da.Source().add_field("submissionAccession", "ERA000000", source_object[0]["_id"])
-                    da.Source().add_field("error1", "Wrong submission accession entered manually for db consistency",
-                                          source_object[0]["_id"])
+                    da.Source().update_field("biosampleAccession",
+                                             accession, source_object[0]["_id"])
+                    da.Source().update_field("sraAccession",
+                                             sraAccession, source_object[0]["_id"])
+                    da.Source().update_field("submissionAccession",
+                                             "ERA000000", source_object[0]["_id"])
+                    da.Source().update_field("error1", "Wrong submission accession entered manually for db consistency",
+                                             source_object[0]["_id"])
 
-                    self.update_sample_relationship(command, sample, source_object)
+                    self.update_sample_relationship(
+                        command, sample, source_object)
 
                     """ Insert a note/comment field in the "SourcesCollection" and "SampleCollection" 
                         as a record to convey that the sample was updated with the script 
                     """
-                    da.Source().add_field("copo_admin_note", "Source was updated with the script, "
-                                                             "\"fix_missing_sample_relationships.py\"",
-                                          source_object[0]["_id"])
+                    da.Source().update_field("copo_admin_note", "Source was updated with the script, "
+                                             "\"fix_missing_sample_relationships.py\"",
+                                             source_object[0]["_id"])
 
-                    da.Sample().add_field("copo_admin_note", "Sample was updated with the script, "
-                                                             "\"fix_missing_sample_relationships.py\"",
-                                          sample["_id"])
+                    da.Sample().update_field("copo_admin_note", "Sample was updated with the script, "
+                                             "\"fix_missing_sample_relationships.py\"",
+                                             sample["_id"])
                 else:
                     # If "error" field does not exist or the error is in a different format than expected
-                    print('\n****************************************************************************************')
-                    print('****************************************************************************************\n')
+                    print(
+                        '\n****************************************************************************************')
+                    print(
+                        '****************************************************************************************\n')
                     print(f"Look at the sample with biosampleAccession, {sample['biosampleAccession']}, to determine "
                           f"what the error could be.")
-                    print('\n****************************************************************************************')
-                    print('****************************************************************************************')
+                    print(
+                        '\n****************************************************************************************')
+                    print(
+                        '****************************************************************************************')

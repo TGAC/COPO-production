@@ -20,7 +20,7 @@ from bson import ObjectId
 import re
 from .copo_email import Email
 from pathlib import Path
-from django.conf import settings 
+from django.conf import settings
 
 
 with open(SRA_SETTINGS, "r") as settings_stream:
@@ -28,7 +28,8 @@ with open(SRA_SETTINGS, "r") as settings_stream:
 
 # logger = get_task_logger(__name__)
 l = Logger()
-exclude_from_sample_xml = []  # todo list of keys that shouldn't end up in the sample.xml file
+# todo list of keys that shouldn't end up in the sample.xml file
+exclude_from_sample_xml = []
 ena_service = get_env('ENA_SERVICE')
 ena_v2_service_async = get_env("ENA_V2_SERVICE_ASYNC")
 ena_v2_service_sync = get_env("ENA_V2_SERVICE_SYNC")
@@ -64,7 +65,8 @@ def process_pending_dtol_samples():
         # removing study for general case, will be useful for subset of submissions
         '''if not Submission().get_study(submission['_id']):
             create_study(submission['profile_id'], collection_id=submission['_id'])'''
-        file_subfix = str(uuid.uuid4())  # use this to recover bundle sample file
+        file_subfix = str(
+            uuid.uuid4())  # use this to recover bundle sample file
         build_bundle_sample_xml(file_subfix)
         s_ids = []
         specimenID_lst = list()  # list of specimen IDs
@@ -72,19 +74,24 @@ def process_pending_dtol_samples():
         public_name_list = list()
         rejected_sample = {}
         for s_id in submission["dtol_samples"]:
-            log_message(f"Dtol_submission : processing {s_id}", Loglvl.INFO, profile_id=profile_id)
+            log_message(
+                f"Dtol_submission : processing {s_id}", Loglvl.INFO, profile_id=profile_id)
             try:
                 sam = Sample().get_record(s_id)
                 if not sam:
-                    log_message("No sample found for id " + str(s_id), Loglvl.ERROR, profile_id=profile_id)
-                    Submission().dtol_sample_rejected(submission['_id'], sam_ids=[str(s_id)], submission_id=[])
+                    log_message("No sample found for id " + str(s_id),
+                                Loglvl.ERROR, profile_id=profile_id)
+                    Submission().dtol_sample_rejected(
+                        submission['_id'], sam_ids=[str(s_id)], submission_id=[])
                     # notify_frontend(data={"profile_id": profile_id}, msg="No sample found for id " + str(s_id), action="error",
                     #                html_id="dtol_sample_info")
                     # l.error("Dtol submission : 74 - no sample found for id " + str(s_id))
                     continue
             except:
-                log_message("No sample found for id " + str(s_id), Loglvl.ERROR, profile_id=profile_id)
-                Submission().dtol_sample_rejected(submission['_id'], sam_ids=[str(s_id)], submission_id=[])
+                log_message("No sample found for id " + str(s_id),
+                            Loglvl.ERROR, profile_id=profile_id)
+                Submission().dtol_sample_rejected(
+                    submission['_id'], sam_ids=[str(s_id)], submission_id=[])
 
                 # notify_frontend(data={"profile_id": profile_id}, msg="No sample found for id " + str(s_id), action="error",
                 #            html_id="dtol_sample_info")
@@ -92,14 +99,16 @@ def process_pending_dtol_samples():
                 continue
 
             if sam["status"] == "sending":
-                log_message(f"{s_id} is processing by another celery task", Loglvl.INFO, profile_id=profile_id)
+                log_message(f"{s_id} is processing by another celery task",
+                            Loglvl.INFO, profile_id=profile_id)
                 continue
             else:
-                Sample().add_field("status", "sending", s_id)
+                Sample().update_field("status", "sending", s_id)
 
             issymbiont = sam["species_list"][0].get("SYMBIONT", "TARGET")
             if issymbiont == "SYMBIONT":
-                targetsam = Sample().get_target_by_specimen_id(sam["SPECIMEN_ID"])
+                targetsam = Sample().get_target_by_specimen_id(
+                    sam["SPECIMEN_ID"])
                 try:
                     assert targetsam
                 except AssertionError:
@@ -137,7 +146,8 @@ def process_pending_dtol_samples():
                              "specimenId": targetsam["SPECIMEN_ID"],
                              "sample_id": str(sam["_id"])})
                 except ValueError:
-                    log_message(" Invalid tax id found ", Loglvl.ERROR, profile_id=profile_id)
+                    log_message(" Invalid tax id found ",
+                                Loglvl.ERROR, profile_id=profile_id)
                     # notify_frontend(data={"profile_id": profile_id}, msg="Invalid Taxon ID found", action="info",
                     #                html_id="dtol_sample_info")
                     # l.error("Dtol_submission : 105 - invalid taxon ID")
@@ -146,7 +156,8 @@ def process_pending_dtol_samples():
             s_ids.append(s_id)
 
             # check if specimen ID biosample was already registered, if not do it
-            specimen_sample = Source().get_specimen_biosample(sam["SPECIMEN_ID"])
+            specimen_sample = Source().get_specimen_biosample(
+                sam["SPECIMEN_ID"])
             try:
                 assert len(specimen_sample) <= 1
             except AssertionError:
@@ -156,7 +167,8 @@ def process_pending_dtol_samples():
                 break
             specimen_accession = ""
             if specimen_sample:
-                specimen_accession = specimen_sample[0].get("biosampleAccession", "")
+                specimen_accession = specimen_sample[0].get(
+                    "biosampleAccession", "")
                 l.log("Specimen accession at 119 is " + specimen_accession)
             else:
                 # create specimen object and submit
@@ -196,7 +208,8 @@ def process_pending_dtol_samples():
                         permit_filename_field.update(
                             {"NAGOYA_PERMITS_FILENAME": sam.get("NAGOYA_PERMITS_FILENAME", "")})
 
-                    obj_fields = {**specimen_obj_fields, **permit_filename_field}  # Merge dictionaries
+                    obj_fields = {**specimen_obj_fields, **
+                                  permit_filename_field}  # Merge dictionaries
                     Source().save_record(auto_fields={}, **obj_fields)  # Save source/specimen record
                     specimen_obj_fields = populate_source_fields(sam)
                 else:
@@ -220,7 +233,8 @@ def process_pending_dtol_samples():
                         permit_filename_field.update(
                             {"NAGOYA_PERMITS_FILENAME": targetsam.get("NAGOYA_PERMITS_FILENAME", "")})
 
-                    obj_fields = {**specimen_obj_fields, **permit_filename_field}  # Merge dictionaries
+                    obj_fields = {**specimen_obj_fields, **
+                                  permit_filename_field}  # Merge dictionaries
                     Source().save_record(auto_fields={}, **obj_fields)  # Save source/specimen record
                     specimen_obj_fields = populate_source_fields(targetsam)
 
@@ -239,12 +253,13 @@ def process_pending_dtol_samples():
                 # l.log("retrieving specimen level sample biosampleAccession for " + sam["SPECIMEN_ID"])
                 sour = Source().get_by_specimen(sam["SPECIMEN_ID"])
                 try:
-                    assert len(sour) == 1, "more than one source for SPECIMEN_ID " + sam["SPECIMEN_ID"]
+                    assert len(
+                        sour) == 1, "more than one source for SPECIMEN_ID " + sam["SPECIMEN_ID"]
                 except AssertionError:
                     log_message("AssertionError: more than one source for SPECIMEN_ID " + sam[
                         "SPECIMEN_ID" + ". Please contact COPO"], Loglvl.ERROR, profile_id=profile_id)
                     # l.error("AssertionError: more than one source for SPECIMEN_ID " + sam["SPECIMEN_ID"])
-                    Sample().mark_processing(sample_ids = s_ids)
+                    Sample().mark_processing(sample_ids=s_ids)
                     break
                 sour = sour[0]
                 if not sour['public_name']:
@@ -256,25 +271,30 @@ def process_pending_dtol_samples():
                     try:
                         assert len(spec_tolid) == 1
                     except AssertionError:
-                        log_message("Cannot retrieve public name", Loglvl.ERROR, profile_id=profile_id)
+                        log_message("Cannot retrieve public name",
+                                    Loglvl.ERROR, profile_id=profile_id)
                         # l.error("AssertionError: line 170 dtol submission")
-                        Sample().mark_processing(sample_ids = s_ids)
+                        Sample().mark_processing(sample_ids=s_ids)
                         break
                     if not spec_tolid[0].get("tolId", ""):
                         # hadle failure to get public names and halt submission
                         if spec_tolid[0].get("status", "") == "Rejected":
                             # halt submission and reject sample
-                            toliderror = "public name error - " + spec_tolid[0].get("reason", "")
+                            toliderror = "public name error - " + \
+                                spec_tolid[0].get("reason", "")
                             status = {}
                             status["msg"] = toliderror
-                            Source().add_field("error", toliderror, sour["_id"])
+                            Source().update_field(
+                                "error", toliderror, sour["_id"])
                             Sample().add_rejected_status(status, s_id)
                             s_ids.remove(s_id)
-                            Submission().dtol_sample_rejected(submission['_id'], sam_ids=[s_id], submission_id=[])
+                            Submission().dtol_sample_rejected(
+                                submission['_id'], sam_ids=[s_id], submission_id=[])
                             rejected_sample[sam["rack_tube"]] = toliderror
 
                             msg = "A public name request was rejected, some submissions were halted -" + toliderror
-                            log_message(msg, Loglvl.ERROR, profile_id=profile_id)
+                            log_message(msg, Loglvl.ERROR,
+                                        profile_id=profile_id)
                             # notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
                             #                html_id="dtol_sample_info")
                             continue
@@ -284,8 +304,9 @@ def process_pending_dtol_samples():
                         log_message(msg, Loglvl.INFO, profile_id=profile_id)
                         # notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
                         #                html_id="dtol_sample_info")
-                        Submission().make_dtol_status_awaiting_tolids(submission['_id'])
-                        Sample().mark_processing(sample_ids = s_ids)
+                        Submission().make_dtol_status_awaiting_tolids(
+                            submission['_id'])
+                        Sample().mark_processing(sample_ids=s_ids)
                         tolidflag = False
                         break
                     Source().update_public_name(spec_tolid[0])
@@ -312,9 +333,11 @@ def process_pending_dtol_samples():
                         status["msg"] = msg
                         Sample().add_rejected_status(status, s_id)
                         s_ids.remove(s_id)
-                        Submission().dtol_sample_rejected(submission['_id'], sam_ids=[s_id], submission_id=[])
+                        Submission().dtol_sample_rejected(
+                            submission['_id'], sam_ids=[s_id], submission_id=[])
                         rejected_sample[sam["rack_tube"]] = msg
-                        Source().get_collection_handle().remove({"_id": sour['_id']})
+                        Source().get_collection_handle().remove(
+                            {"_id": sour['_id']})
                         # Submission().make_dtol_status_pending(submission['_id'])
                         continue
                 specimen_accession = Source().get_specimen_biosample(sam["SPECIMEN_ID"])[0].get("biosampleAccession",
@@ -328,16 +351,18 @@ def process_pending_dtol_samples():
                 # notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
                 #                html_id="dtol_sample_info")
                 Submission().make_dtol_status_pending(submission['_id'])
-                Sample().mark_processing(sample_ids = s_ids)
+                Sample().mark_processing(sample_ids=s_ids)
                 break
 
             # Transfer permit files to b2drop
-            sample_permits_directory = os.path.join(sample_permits_directory_path, profile_id)
-            
+            sample_permits_directory = os.path.join(
+                sample_permits_directory_path, profile_id)
+
             # Check if sample permits directory exists and if specimen accession is not in the list of specimen IDs
             if not sam["SPECIMEN_ID"] in specimenID_lst and os.path.exists(
                     sample_permits_directory):  # Check if sample permits directory exists
-                taxonID_directory = os.path.join(b2drop_permits_directory_path, sam["TAXON_ID"])
+                taxonID_directory = os.path.join(
+                    b2drop_permits_directory_path, sam["TAXON_ID"])
                 for col_name in PERMIT_FILENAME_COLUMN_NAMES:
                     # Skip if permit filename column is empty
                     b2drop_filename = sam.get(col_name, "")
@@ -345,9 +370,12 @@ def process_pending_dtol_samples():
                         continue
 
                     # Get actual permit filename
-                    permit_file = b2drop_filename.replace(f"_{b2drop_filename.split('_')[-1]}", ".pdf")
-                    permit_file_path = os.path.join(sample_permits_directory, permit_file)
-                    permit_type = col_name.replace("_PERMITS_FILENAME", " Permit").title()
+                    permit_file = b2drop_filename.replace(
+                        f"_{b2drop_filename.split('_')[-1]}", ".pdf")
+                    permit_file_path = os.path.join(
+                        sample_permits_directory, permit_file)
+                    permit_type = col_name.replace(
+                        "_PERMITS_FILENAME", " Permit").title()
 
                     # Copy permit file from COPO 'media/sample_permits' directory to b2drop directory
                     try:
@@ -367,8 +395,10 @@ def process_pending_dtol_samples():
                         with open(os.path.join(b2drop_permits_directory_path, sam["TAXON_ID"], 'readme.txt'),
                                   'a+') as readmeFile:
                             # Check if the file is empty
-                            readmeFile.seek(0)  # Traverse to the start of the file
-                            first_character = readmeFile.read(1)  # Get the first character in the file
+                            # Traverse to the start of the file
+                            readmeFile.seek(0)
+                            # Get the first character in the file
+                            first_character = readmeFile.read(1)
 
                             if not first_character:
                                 # Add a line to the readme if file is empty
@@ -377,7 +407,8 @@ def process_pending_dtol_samples():
                                 readmeFile.write(
                                     "SPECIMEN_ID" + "  " + "Permit_Type" + "  " + "Permit_Filename" + "\n")
                             else:
-                                readmeFile.seek(0, os.SEEK_END)  # Traverse to the end of the file
+                                # Traverse to the end of the file
+                                readmeFile.seek(0, os.SEEK_END)
 
                             # Add a line to the readme file
                             readmeFile.write(
@@ -392,15 +423,19 @@ def process_pending_dtol_samples():
                         l.exception(error)
 
             # set appropriate relationship to specimen level sample
-            l.log("setting relationship to specimen level sample for " + sam["SPECIMEN_ID"])
+            l.log("setting relationship to specimen level sample for " +
+                  sam["SPECIMEN_ID"])
             if issymbiont == "SYMBIONT":
-                Sample().add_field("sampleSymbiontOf", specimen_accession, sam['_id'])
+                Sample().update_field("sampleSymbiontOf",
+                                      specimen_accession, sam['_id'])
                 sam["sampleSymbiontOf"] = specimen_accession
             elif sam.get('ORGANISM_PART', '') == "WHOLE_ORGANISM":
-                Sample().add_field("sampleSameAs", specimen_accession, sam['_id'])
+                Sample().update_field("sampleSameAs",
+                                      specimen_accession, sam['_id'])
                 sam["sampleSameAs"] = specimen_accession
             else:
-                Sample().add_field("sampleDerivedFrom", specimen_accession, sam['_id'])
+                Sample().update_field("sampleDerivedFrom",
+                                      specimen_accession, sam['_id'])
                 sam["sampleDerivedFrom"] = specimen_accession
 
             # making sure relationship between sample and specimen level sample is set
@@ -414,7 +449,8 @@ def process_pending_dtol_samples():
                 Submission().make_dtol_status_pending(submission['_id'])
                 break
 
-            log_message(f"Adding to Sample {s_id} Batch: " + sam["SPECIMEN_ID"], Loglvl.INFO, profile_id=profile_id)
+            log_message(f"Adding to Sample {s_id} Batch: " +
+                        sam["SPECIMEN_ID"], Loglvl.INFO, profile_id=profile_id)
             # notify_frontend(data={"profile_id": profile_id}, msg="Adding to Sample Batch: " + sam["SPECIMEN_ID"],
             #                action="info",
             #                html_id="dtol_sample_info")
@@ -432,7 +468,7 @@ def process_pending_dtol_samples():
                 if all(public_names[x].get("status", "") == "Rejected" for x in range(len(public_names))):
                     Submission().dtol_sample_rejected(submission['_id'], sam_ids=[submission["dtol_samples"]],
                                                       submission_id=[])
-                    rejected_sample["All"] =  "all missing tolid request were rejected"
+                    rejected_sample["All"] = "all missing tolid request were rejected"
                     log_message(msg, Loglvl.ERROR, profile_id=profile_id)
                     tolidflag = False
                 else:
@@ -443,10 +479,11 @@ def process_pending_dtol_samples():
                     log_message(msg, Loglvl.INFO, profile_id=profile_id)
                     # notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
                     #                html_id="dtol_sample_info")
-                    Submission().make_dtol_status_awaiting_tolids(submission['_id'])
-                    Sample().mark_processing(sample_ids = s_ids)
+                    Submission().make_dtol_status_awaiting_tolids(
+                        submission['_id'])
+                    Sample().mark_processing(sample_ids=s_ids)
                     notify_frontend(data={"profile_id": profile_id}, msg=msg, action="info",
-                            html_id="dtol_sample_info")
+                                    html_id="dtol_sample_info")
                     tolidflag = False
 
             for name in public_names:
@@ -454,21 +491,24 @@ def process_pending_dtol_samples():
                 if name.get("tolId", ""):
                     Sample().update_public_name(name)
                 if name.get("status", "") == "Rejected":
-                    Sample().add_rejected_status_for_tolid(name['specimen']["specimenId"])
+                    Sample().add_rejected_status_for_tolid(
+                        name['specimen']["specimenId"])
                     processed = Sample().get_by_profile_and_field(submission["profile_id"], "SPECIMEN_ID",
                                                                   [name['specimen']["specimenId"]])
                     processedids = [str(x) for x in processed]
                     # for sampleid in processedids:
-                    Submission().dtol_sample_rejected(submission['_id'], sam_ids=processedids, submission_id=[])
-                    rejected_sample[name['specimen']["specimenId"]] = "all missing tolid request were rejected"
+                    Submission().dtol_sample_rejected(
+                        submission['_id'], sam_ids=processedids, submission_id=[])
+                    rejected_sample[name['specimen']["specimenId"]
+                                    ] = "all missing tolid request were rejected"
 
             if rejected_sample:
                 profile = Profile().get_record(profile_id)
                 if profile:
                     Email().notify_sample_rejected_after_approval(project=get_profile_type(profile["type"]),
-                                                                    title=profile["title"],
-                                                                    description=profile["description"],
-                                                                    rejected_sample=rejected_sample)
+                                                                  title=profile["title"],
+                                                                  description=profile["description"],
+                                                                  rejected_sample=rejected_sample)
             # if tolid missing for specimen skip
             if not tolidflag:
                 l.log("missing tolid, removing draft xml", type=Logtype.FILE)
@@ -542,19 +582,22 @@ def query_awaiting_tolids():
                     l.log("line 295", type=Logtype.FILE)
                     Sample().update_public_name(name)
                 elif name.get("status", "") == "Rejected":
-                    toliderror = "public name error - " + name.get("reason", "")
+                    toliderror = "public name error - " + \
+                        name.get("reason", "")
                     status = {}
                     status["msg"] = toliderror
                     toreject = Sample().get_target_by_field("SPECIMEN_ID",
                                                             name.get("specimen", "").get("specimenId", ""))
                     for rejsam in toreject:
-                        Sample().add_field("error", toliderror, rejsam["_id"])
+                        Sample().update_field(
+                            "error", toliderror, rejsam["_id"])
                         Sample().add_rejected_status(status, rejsam["_id"])
                         # remove samples from submissionlist
                         print(str(rejsam["_id"]))
                         Submission().dtol_sample_rejected(submission['_id'], sam_ids=[str(rejsam["_id"])],
                                                           submission_id=[])
-                        rejected_sample[name.get("specimen", "").get("specimenId", "")] = toliderror
+                        rejected_sample[name.get("specimen", "").get(
+                            "specimenId", "")] = toliderror
                 else:
                     l.log("Still no tolId identified for " + str(name))
                     return
@@ -564,9 +607,9 @@ def query_awaiting_tolids():
             profile = Profile().get_record(profile_id)
             if profile:
                 Email().notify_sample_rejected_after_approval(project=get_profile_type(profile["type"]),
-                                                                  title=profile["title"],
-                                                                  description=profile["description"],
-                                                                  rejected_sample=rejected_sample)
+                                                              title=profile["title"],
+                                                              description=profile["description"],
+                                                              rejected_sample=rejected_sample)
 
 
 def populate_source_fields(sampleobj):
@@ -616,8 +659,10 @@ def update_bundle_sample_xml(sample_list, bundlefile, is_modify=False):
             continue
         is_found = True
         sample_alias = ET.SubElement(root, 'SAMPLE')
-        sample_alias.set('alias', str(sample['_id']))  # updated to copo id to retrieve it when getting accessions
-        sample_alias.set('center_name', 'EarlhamInstitute')  # mandatory for broker account
+        # updated to copo id to retrieve it when getting accessions
+        sample_alias.set('alias', str(sample['_id']))
+        # mandatory for broker account
+        sample_alias.set('center_name', 'EarlhamInstitute')
         title = str(uuid.uuid4()) + "-" + project.lower()
 
         title_block = ET.SubElement(sample_alias, 'TITLE')
@@ -629,7 +674,8 @@ def update_bundle_sample_xml(sample_list, bundlefile, is_modify=False):
         collection_location = sample.get("COLLECTION_LOCATION", "")
         collection_country = collection_location.split("|")[0].strip()
         if collection_country:
-            statement = DTOL_SAMPLE_COLLECTION_LOCATION_STATEMENT.get(collection_country.upper(), "")
+            statement = DTOL_SAMPLE_COLLECTION_LOCATION_STATEMENT.get(
+                collection_country.upper(), "")
             if statement:
                 description = ET.SubElement(sample_alias, "DESCRIPTION")
                 description.text = statement
@@ -649,7 +695,8 @@ def update_bundle_sample_xml(sample_list, bundlefile, is_modify=False):
         value.text = project
         # if project is ASG add symbiont
         if project == "ASG":
-            sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+            sample_attribute = ET.SubElement(
+                sample_attributes, 'SAMPLE_ATTRIBUTE')
             tag = ET.SubElement(sample_attribute, 'TAG')
             tag.text = 'SYMBIONT'
             value = ET.SubElement(sample_attribute, 'VALUE')
@@ -661,14 +708,14 @@ def update_bundle_sample_xml(sample_list, bundlefile, is_modify=False):
                 value.text = "Y"
             else:
                 value.text = "N"
-        ##### for item in obj_id: if item in checklist (or similar according to some criteria).....
+        # for item in obj_id: if item in checklist (or similar according to some criteria).....
         for item in sample.items():
             if item[1]:
                 try:
                     # exceptional handling of fields that should only be present for certain projects
                     if project == "DTOL":
                         if item[0] == "PARTNER" or item[0] == "PARTNER_SAMPLE_ID" or item[
-                            0] == "SYMBIONT":  # TODO CHANGE IN SOP2.3
+                                0] == "SYMBIONT":  # TODO CHANGE IN SOP2.3
                             continue
                     elif project == "ASG":
                         if item[0] == "GAL" or item[0] == "GAL_SAMPLE_ID":
@@ -676,20 +723,23 @@ def update_bundle_sample_xml(sample_list, bundlefile, is_modify=False):
                     # exceptional handling of COLLECTION_LOCATION
                     if item[0] == 'COLLECTION_LOCATION':
                         attribute_name = DTOL_ENA_MAPPINGS['COLLECTION_LOCATION_1']['ena']
-                        sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                        sample_attribute = ET.SubElement(
+                            sample_attributes, 'SAMPLE_ATTRIBUTE')
                         tag = ET.SubElement(sample_attribute, 'TAG')
                         tag.text = attribute_name
                         value = ET.SubElement(sample_attribute, 'VALUE')
                         value.text = str(item[1]).split('|')[0].strip()
                         attribute_name = DTOL_ENA_MAPPINGS['COLLECTION_LOCATION_2']['ena']
-                        sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                        sample_attribute = ET.SubElement(
+                            sample_attributes, 'SAMPLE_ATTRIBUTE')
                         tag = ET.SubElement(sample_attribute, 'TAG')
                         tag.text = attribute_name
                         value = ET.SubElement(sample_attribute, 'VALUE')
                         value.text = '|'.join(str(item[1]).split('|')[1:])
                     elif item[0] in ["DATE_OF_COLLECTION", "DECIMAL_LATITUDE", "DECIMAL_LONGITUDE"]:
                         attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
-                        sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                        sample_attribute = ET.SubElement(
+                            sample_attributes, 'SAMPLE_ATTRIBUTE')
                         tag = ET.SubElement(sample_attribute, 'TAG')
                         tag.text = attribute_name
                         value = ET.SubElement(sample_attribute, 'VALUE')
@@ -698,20 +748,23 @@ def update_bundle_sample_xml(sample_list, bundlefile, is_modify=False):
                             try:
                                 value.text = str(round(float(item[1]), 8))
                             except ValueError:
-                                value.text = str(item[1]).lower().replace("_", " ")
+                                value.text = str(
+                                    item[1]).lower().replace("_", " ")
                         else:
                             value.text = str(item[1]).lower().replace("_", " ")
                     # handling annoying edge case below
                     elif item[0] == "LIFESTAGE" and item[1] == "SPORE_BEARING_STRUCTURE":
                         attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
-                        sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                        sample_attribute = ET.SubElement(
+                            sample_attributes, 'SAMPLE_ATTRIBUTE')
                         tag = ET.SubElement(sample_attribute, 'TAG')
                         tag.text = attribute_name
                         value = ET.SubElement(sample_attribute, 'VALUE')
                         value.text = "spore-bearing structure"
                     else:
                         attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
-                        sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                        sample_attribute = ET.SubElement(
+                            sample_attributes, 'SAMPLE_ATTRIBUTE')
                         tag = ET.SubElement(sample_attribute, 'TAG')
                         tag.text = attribute_name
                         value = ET.SubElement(sample_attribute, 'VALUE')
@@ -739,8 +792,10 @@ def build_specimen_sample_xml(sample):
     # from toni's code below
     # set sample attributes
     sample_alias = ET.SubElement(root, 'SAMPLE')
-    sample_alias.set('alias', str(sample['_id']))  # updated to copo id to retrieve it when getting accessions
-    sample_alias.set('center_name', 'EarlhamInstitute')  # mandatory for broker account
+    # updated to copo id to retrieve it when getting accessions
+    sample_alias.set('alias', str(sample['_id']))
+    # mandatory for broker account
+    sample_alias.set('center_name', 'EarlhamInstitute')
     title = str(uuid.uuid4()) + "-" + project + "-specimen"
 
     title_block = ET.SubElement(sample_alias, 'TITLE')
@@ -763,7 +818,7 @@ def build_specimen_sample_xml(sample):
     tag.text = 'project name'
     value = ET.SubElement(sample_attribute, 'VALUE')
     value.text = project
-    ##### for item in obj_id: if item in checklist (or similar according to some criteria).....
+    # for item in obj_id: if item in checklist (or similar according to some criteria).....
     for item in sample.items():
         if item[1]:
             try:
@@ -777,20 +832,23 @@ def build_specimen_sample_xml(sample):
                 # exceptional handling of COLLECTION_LOCATION
                 if item[0] == 'COLLECTION_LOCATION':
                     attribute_name = DTOL_ENA_MAPPINGS['COLLECTION_LOCATION_1']['ena']
-                    sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                    sample_attribute = ET.SubElement(
+                        sample_attributes, 'SAMPLE_ATTRIBUTE')
                     tag = ET.SubElement(sample_attribute, 'TAG')
                     tag.text = attribute_name
                     value = ET.SubElement(sample_attribute, 'VALUE')
                     value.text = str(item[1]).split('|')[0].strip()
                     attribute_name = DTOL_ENA_MAPPINGS['COLLECTION_LOCATION_2']['ena']
-                    sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                    sample_attribute = ET.SubElement(
+                        sample_attributes, 'SAMPLE_ATTRIBUTE')
                     tag = ET.SubElement(sample_attribute, 'TAG')
                     tag.text = attribute_name
                     value = ET.SubElement(sample_attribute, 'VALUE')
                     value.text = '|'.join(str(item[1]).split('|')[1:])
                 elif item[0] in ["DATE_OF_COLLECTION", "DECIMAL_LATITUDE", "DECIMAL_LONGITUDE"]:
                     attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
-                    sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                    sample_attribute = ET.SubElement(
+                        sample_attributes, 'SAMPLE_ATTRIBUTE')
                     tag = ET.SubElement(sample_attribute, 'TAG')
                     tag.text = attribute_name
                     value = ET.SubElement(sample_attribute, 'VALUE')
@@ -805,7 +863,8 @@ def build_specimen_sample_xml(sample):
                 # handling annoying edge case below
                 elif item[0] == "LIFESTAGE" and item[1] == "SPORE_BEARING_STRUCTURE":
                     attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
-                    sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                    sample_attribute = ET.SubElement(
+                        sample_attributes, 'SAMPLE_ATTRIBUTE')
                     tag = ET.SubElement(sample_attribute, 'TAG')
                     tag.text = attribute_name
                     value = ET.SubElement(sample_attribute, 'VALUE')
@@ -814,14 +873,16 @@ def build_specimen_sample_xml(sample):
                     attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
 
                     for val_text in item[1].split('|'):
-                        sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                        sample_attribute = ET.SubElement(
+                            sample_attributes, 'SAMPLE_ATTRIBUTE')
                         tag = ET.SubElement(sample_attribute, 'TAG')
                         tag.text = attribute_name
                         value = ET.SubElement(sample_attribute, 'VALUE')
                         value.text = val_text.strip()
                 else:
                     attribute_name = DTOL_ENA_MAPPINGS[item[0]]['ena']
-                    sample_attribute = ET.SubElement(sample_attributes, 'SAMPLE_ATTRIBUTE')
+                    sample_attribute = ET.SubElement(
+                        sample_attributes, 'SAMPLE_ATTRIBUTE')
                     tag = ET.SubElement(sample_attribute, 'TAG')
                     tag.text = attribute_name
                     value = ET.SubElement(sample_attribute, 'VALUE')
@@ -848,7 +909,8 @@ def build_submission_xml(sample_id, hold="", release=False, modify=""):
     root = tree.getroot()
     # from toni's code below
     # set submission attributes
-    root.set("submission_date", datetime.utcnow().replace(tzinfo=d_utils.simple_utc()).isoformat())
+    root.set("submission_date", datetime.utcnow().replace(
+        tzinfo=d_utils.simple_utc()).isoformat())
 
     # set SRA contacts
     contacts = root.find('CONTACTS')
@@ -856,8 +918,10 @@ def build_submission_xml(sample_id, hold="", release=False, modify=""):
     # set copo sra contacts
     copo_contact = ET.SubElement(contacts, 'CONTACT')
     copo_contact.set("name", sra_settings["sra_broker_contact_name"])
-    copo_contact.set("inform_on_error", sra_settings["sra_broker_inform_on_error"])
-    copo_contact.set("inform_on_status", sra_settings["sra_broker_inform_on_status"])
+    copo_contact.set("inform_on_error",
+                     sra_settings["sra_broker_inform_on_error"])
+    copo_contact.set("inform_on_status",
+                     sra_settings["sra_broker_inform_on_status"])
     if modify:
         actions = root.find('ACTIONS')
         action = actions.find('ACTION')
@@ -886,16 +950,20 @@ def build_validate_xml(sample_id):
     tree = ET.parse(SRA_SUBMISSION_TEMPLATE)
     root = tree.getroot()
     # set submission attributes
-    root.set("submission_date", datetime.utcnow().replace(tzinfo=d_utils.simple_utc()).isoformat())
+    root.set("submission_date", datetime.utcnow().replace(
+        tzinfo=d_utils.simple_utc()).isoformat())
     # set SRA contacts
     contacts = root.find('CONTACTS')
     # set copo sra contacts
     copo_contact = ET.SubElement(contacts, 'CONTACT')
     copo_contact.set("name", sra_settings["sra_broker_contact_name"])
-    copo_contact.set("inform_on_error", sra_settings["sra_broker_inform_on_error"])
-    copo_contact.set("inform_on_status", sra_settings["sra_broker_inform_on_status"])
+    copo_contact.set("inform_on_error",
+                     sra_settings["sra_broker_inform_on_error"])
+    copo_contact.set("inform_on_status",
+                     sra_settings["sra_broker_inform_on_status"])
     # set user contacts
-    sra_map = {"inform_on_error": "SRA Inform On Error", "inform_on_status": "SRA Inform On Status"}
+    sra_map = {"inform_on_error": "SRA Inform On Error",
+               "inform_on_status": "SRA Inform On Status"}
     # change ADD to VALIDATE
     root.find('ACTIONS').find('ACTION').clear()
     action = root.find('ACTIONS').find('ACTION')
@@ -942,7 +1010,8 @@ def submit_biosample_v2(subfix, sampleobj, collection_id, sample_ids, type="samp
     session.auth = (user_token, pass_word)
 
     try:
-        response = session.post(cmd, data={}, files={'file': open(save_path_file)})
+        response = session.post(cmd, data={}, files={
+                                'file': open(save_path_file)})
         receipt = response.text
         l.log("ENA RECEIPT " + receipt, type=Logtype.FILE)
         print(receipt)
@@ -955,7 +1024,8 @@ def submit_biosample_v2(subfix, sampleobj, collection_id, sample_ids, type="samp
                 return handle_submit_receipt(sampleobj, collection_id, tree, type)
         else:
             l.log("General Error " + response.status_code)
-            message = 'API call error ' + "Submitting project xml to ENA via CURL. CURL command is: " + cmd
+            message = 'API call error ' + \
+                "Submitting project xml to ENA via CURL. CURL command is: " + cmd
             notify_frontend(data={"profile_id": profile_id}, msg=message, action="error",
                             html_id="dtol_sample_info")
             Submission().reset_dtol_submission_status(collection_id, sample_ids)
@@ -992,20 +1062,22 @@ def poll_asyn_ena_submission():
 
     with requests.Session() as session:
         session.auth = (user_token, pass_word)
-        headers = {'Accept': 'application/xml' }
+        headers = {'Accept': 'application/xml'}
         for submission in submissions:
             for sub in submission["submission"]:
                 accessions = ""
-                response = session.get(sub["href"],headers=headers)
+                response = session.get(sub["href"], headers=headers)
                 if response.status_code == requests.codes.accepted:
                     continue
                 elif response.status_code == requests.codes.ok:
                     l.log("ENA RECEIPT " + response.text, type=Logtype.FILE)
                     try:
                         tree = ET.fromstring(response.text)
-                        accessions = handle_submit_receipt(Sample(), submission["_id"], tree)
+                        accessions = handle_submit_receipt(
+                            Sample(), submission["_id"], tree)
                     except ET.ParseError as e:
-                        l.log("Unrecognized response from ENA " + str(e), type=Logtype.FILE)
+                        l.log("Unrecognized response from ENA " +
+                              str(e), type=Logtype.FILE)
                         message = " Unrecognized response from ENA - " + str(
                             response.content) + " Please try again later, if it persists contact admins"
                         notify_frontend(data={"profile_id": submission["profile_id"]}, msg=message, action="error",
@@ -1013,7 +1085,9 @@ def poll_asyn_ena_submission():
                         continue
                     except Exception as e:
                         l.exception(e)
-                        message = 'API call error ' + "Submitting project xml to ENA via CURL. href is: " + sub["href"]
+                        message = 'API call error ' + \
+                            "Submitting project xml to ENA via CURL. href is: " + \
+                            sub["href"]
                         notify_frontend(data={"profile_id": submission["profile_id"]}, msg=message, action="error",
                                         html_id="dtol_sample_info")
                         continue
@@ -1029,19 +1103,24 @@ def poll_asyn_ena_submission():
                         "submission_accession"]  # + " - Biosample ID: " + accessions["biosample_accession"]
                     notify_frontend(data={"profile_id": submission["profile_id"]}, msg=msg, action="info",
                                     html_id="dtol_sample_info")
-                    sample_ids_bson = list(map(lambda id: ObjectId(id), sub["sample_ids"]))
+                    sample_ids_bson = list(
+                        map(lambda id: ObjectId(id), sub["sample_ids"]))
                     specimen_ids = Sample().get_collection_handle().distinct('SPECIMEN_ID',
                                                                              {"_id": {"$in": sample_ids_bson}})
                     specimens = [id for id in specimen_ids if
                                  not submission["dtol_specimen"] or id not in submission["dtol_specimen"]]
-                    Submission().update_dtol_specimen_for_bioimage_tosend(submission['_id'], specimens)
-                    Submission().dtol_sample_processed(sub_id=submission["_id"], submission_id=sub["id"])
+                    Submission().update_dtol_specimen_for_bioimage_tosend(
+                        submission['_id'], specimens)
+                    Submission().dtol_sample_processed(
+                        sub_id=submission["_id"], submission_id=sub["id"])
 
                 else:
-                    msg = "Submission Rejected: <p>" + accessions["msg"] + "</p>"
+                    msg = "Submission Rejected: <p>" + \
+                        accessions["msg"] + "</p>"
                     notify_frontend(data={"profile_id": submission["profile_id"]}, msg=msg, action="error",
                                     html_id="dtol_sample_info")
-                    Submission().dtol_sample_rejected(sub_id=submission["_id"], sam_ids=[], submission_id=sub["id"])
+                    Submission().dtol_sample_rejected(
+                        sub_id=submission["_id"], sam_ids=[], submission_id=sub["id"])
 
                 notify_frontend(data={"profile_id": submission["profile_id"]}, msg="", action="hide_sub_spinner",
                                 html_id="dtol_sample_info")
@@ -1072,9 +1151,9 @@ def handle_submit_receipt(sampleobj, collection_id, tree, type="sample"):
             profile = Profile().get_record(profile_id)
             if profile:
                 Email().notify_sample_rejected_after_approval(project=get_profile_type(profile["type"]),
-                                                                  title=profile["title"],
-                                                                  description=profile["description"],
-                                                                  rejected_sample=rejected_sample)
+                                                              title=profile["title"],
+                                                              description=profile["description"],
+                                                              rejected_sample=rejected_sample)
 
                 # print('error')
         l.log("Success False" + str(msg), type=Logtype.FILE)
@@ -1168,11 +1247,13 @@ def get_bundle_biosampleId(tree, collection_id, type="sample"):
             sra_accession = child.get('accession')
             biosample_accession = child.find('EXT_ID').get('accession')
             if type == "sample":
-                Sample().add_accession(biosample_accession, sra_accession, submission_accession, sample_id)
+                Sample().add_accession(biosample_accession,
+                                       sra_accession, submission_accession, sample_id)
                 Submission().add_accession(biosample_accession, sra_accession, submission_accession, sample_id,
                                            collection_id)
             elif type == "source":
-                Source().add_accession(biosample_accession, sra_accession, submission_accession, sample_id)
+                Source().add_accession(biosample_accession,
+                                       sra_accession, submission_accession, sample_id)
     accessions = {"submission_accession": submission_accession, "status": "ok"}
     return accessions
 
@@ -1187,7 +1268,8 @@ def get_studyId(receipt, collection_id):
     submission = tree.find('SUBMISSION')
     study_accession = submission.get('accession')
     # print(bioproject_accession, sra_study_accession, study_accession) ######
-    Submission().add_study_accession(bioproject_accession, sra_study_accession, study_accession, collection_id)
+    Submission().add_study_accession(bioproject_accession,
+                                     sra_study_accession, study_accession, collection_id)
     accessions = {"bioproject_accession": bioproject_accession, "sra_study_accession": sra_study_accession,
                   "study_accession": study_accession, "status": "ok"}
     return accessions
@@ -1207,7 +1289,8 @@ def create_study(profile_id, collection_id):
     project_description = ET.SubElement(project, 'DESCRIPTION')
     project_description.text = profile['description']
     submission_project = ET.SubElement(project, 'SUBMISSION_PROJECT')
-    sequencing_project = ET.SubElement(submission_project, 'SEQUENCING_PROJECT')
+    sequencing_project = ET.SubElement(
+        submission_project, 'SEQUENCING_PROJECT')
     ET.dump(tree)
     studyfile = "study_" + profile_id + ".xml"
     # print(studyfile)
@@ -1252,7 +1335,8 @@ def create_study(profile_id, collection_id):
     os.remove(studyfile)
     success_status = tree.get('success')
     if success_status == 'false':
-        msg = tree.find('MESSAGES').findtext('ERROR', default='Undefined error')
+        msg = tree.find('MESSAGES').findtext(
+            'ERROR', default='Undefined error')
         status = {"status": "error", "msg": msg}
         return status
     else:
@@ -1283,7 +1367,8 @@ def handle_common_ENA_error(error_to_parse, source_id):
                + accession
     try:
         receipt = subprocess.check_output(curl_cmd, shell=True)
-        l.log("ENA RECEIPT REGISTERED SAMPLE for sample " + accession + " " + str(receipt), type=Logtype.FILE)
+        l.log("ENA RECEIPT REGISTERED SAMPLE for sample " +
+              accession + " " + str(receipt), type=Logtype.FILE)
     except Exception as e:
         l.log("General Error " + str(e), type=Logtype.FILE)
         return False
@@ -1302,8 +1387,9 @@ def handle_common_ENA_error(error_to_parse, source_id):
     if not any([sra_accession, biosample_accession]):
         return False
     else:
-        Source().add_accession(biosample_accession, sra_accession, submission_accession, source_id)
-        Source().add_field("error1", error1, source_id)
+        Source().add_accession(biosample_accession,
+                               sra_accession, submission_accession, source_id)
+        Source().update_field("error1", error1, source_id)
         return True
 
     # on hold
@@ -1342,8 +1428,10 @@ def log_message(msg, loglvl=Loglvl.INFO, to_frontend=True, profile_id=profile_id
             action = "error"
         else:
             action = "info"
-        notify_frontend(data={"profile_id": profile_id}, msg=msg, action=action, html_id="dtol_sample_info")
-    l.log("Dtol submission for profile " + profile_id + " : " + msg, level=loglvl)
+        notify_frontend(data={"profile_id": profile_id},
+                        msg=msg, action=action, html_id="dtol_sample_info")
+    l.log("Dtol submission for profile " +
+          profile_id + " : " + msg, level=loglvl)
 
 
 def get_profile_type(profile_type):

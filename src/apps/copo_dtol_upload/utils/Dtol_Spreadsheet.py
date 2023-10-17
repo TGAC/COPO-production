@@ -623,7 +623,7 @@ class DtolSpreadsheet:
             s = make_species_list(s)
             sampl = Sample(profile_id=self.profile_id).save_record(
                 auto_fields={}, **s)
-            Sample().timestamp_dtol_sample_created(sampl["_id"])
+            Sample().timestamp_dtol_sample_created(sampl.get("_id", ""))
             # update permit filename in the database i.e. set unique filename as the permit filename
 
             if not sampl["species_list"][0]["SYMBIONT"] or sampl["species_list"][0]["SYMBIONT"] == "TARGET":
@@ -715,19 +715,13 @@ class DtolSpreadsheet:
                 if s[field] != recorded_sample.get(field, "") and s[field].strip() != recorded_sample["species_list"][
                         0].get(field, ""):
                     if field in lookup.SPECIES_LIST_FIELDS:
-                        # record change
-                        Sample().record_user_update(field, recorded_sample["species_list"][0][field], s[field],
-                                                    recorded_sample["_id"])
-                        # update sample
-                        Sample().add_field("species_list.0." + str(field),
+                        # update sample and record change in the 'AuditCollection'
+                        Sample().update_field("species_list.0." + str(field),
                                            s[field], recorded_sample["_id"])
                         is_updated = True
                     else:
-                        # record change
-                        Sample().record_user_update(
-                            field, recorded_sample[field], s[field], recorded_sample["_id"])
-                        # update sample
-                        Sample().add_field(
+                        # update sample and record change in the 'AuditCollection'
+                        Sample().update_field(
                             field, s[field], recorded_sample["_id"])
                         is_updated = True
 

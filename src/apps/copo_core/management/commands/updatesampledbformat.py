@@ -1,16 +1,15 @@
 from django.core.management import BaseCommand
-from common.dal.copo_da import  Sample
-
+from common.dal.copo_da import Sample
 
 
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
-    help="update old DTOL samples in db to move taxonomy metadata intospecies_list"
+    help = "update old DTOL samples in db to move taxonomy metadata intospecies_list"
 
     def __init__(self):
         self.TAXONOMY_FIELDS = ["TAXON_ID", "ORDER_OR_GROUP", "FAMILY", "GENUS",
-                               "SCIENTIFIC_NAME", "INFRASPECIFIC_EPITHET", "CULTURE_OR_STRAIN_ID",
-                               "COMMON_NAME", "TAXON_REMARKS"]
+                                "SCIENTIFIC_NAME", "INFRASPECIFIC_EPITHET", "CULTURE_OR_STRAIN_ID",
+                                "COMMON_NAME", "TAXON_REMARKS"]
 
     def handle(self, *args, **options):
         samples_to_update = self.identify_old_dtol_samples()
@@ -38,10 +37,8 @@ class Command(BaseCommand):
             out[field] = sam[field]
         topass = []
         topass.append(out)
-        Sample().add_field("species_list", topass, oid)
-        #now remove field from outside species_list
+        Sample().update_field("species_list", topass, oid)
+        # now remove field from outside species_list
         for field in self.TAXONOMY_FIELDS:
             Sample().remove_field(field, oid)
         return
-
-

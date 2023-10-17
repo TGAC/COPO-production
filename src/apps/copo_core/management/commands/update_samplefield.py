@@ -5,29 +5,29 @@ from src.apps.copo_dtol_submission.utils.Dtol_Submission import build_specimen_s
 import subprocess
 from common.utils import helpers
 import os
-from common.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
+from common.schema_versions.lookup.dtol_lookups import DTOL_ENA_MAPPINGS
 import common.dal.copo_da as da
-
 
 
 # The class must be named Command, and subclass BaseCommand
 class Command(BaseCommand):
-    help="update metadata of samples - " \
-         "provide comma separated biosamples:field:new_value"
-    Entrez.email = "copo@earlham.ac.uk"
+    help = "update metadata of samples - " \
+        "provide comma separated biosamples:field:new_value"
+    Entrez.email = "ei.copo@earlham.ac.uk"
 
     def __init__(self):
         self.TAXONOMY_FIELDS = ["TAXON_ID", "ORDER_OR_GROUP", "FAMILY", "GENUS",
-                               "SCIENTIFIC_NAME", "COMMON_NAME", "TAXON_REMARKS",
+                                "SCIENTIFIC_NAME", "COMMON_NAME", "TAXON_REMARKS",
                                 "INFRASPECIFIC_EPITHET"]
         self.rankdict = {
             "order": "ORDER_OR_GROUP",
-            "family" : "FAMILY",
-            "genus" :  "GENUS"
+            "family": "FAMILY",
+            "genus":  "GENUS"
         }
         self.pass_word = helpers.get_env('WEBIN_USER_PASSWORD')
         self.user_token = helpers.get_env('WEBIN_USER').split("@")[0]
-        self.ena_service = helpers.get_env('ENA_SERVICE')  # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        # 'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/'
+        self.ena_service = helpers.get_env('ENA_SERVICE')
         self.ena_sample_retrieval = self.ena_service[:-len(
             'submit/')] + "samples/"  # https://devwww.ebi.ac.uk/ena/submit/drop-box/samples/" \
 
@@ -40,7 +40,7 @@ class Command(BaseCommand):
         print(updates_to_make)
         d_updates = {}
         for update in updates_to_make:
-            assert len(update.split(":"))==3
+            assert len(update.split(":")) == 3
             sample = update.split(":")[0].strip()
             field = update.split(":")[1].strip()
             value = update.split(":")[2].strip()
@@ -52,21 +52,26 @@ class Command(BaseCommand):
         print(list(d_updates.keys()))
         samplesindb = da.Sample().get_by_biosample_ids(list(d_updates.keys()))
         if len(samplesindb) < len(list(d_updates.keys())):
-            print("**********************************************************************************")
+            print(
+                "**********************************************************************************")
             print("one or more samples couldn't be found")
-            found_accessions = [sample.get("biosampleAccession") for sample in samplesindb]
-            diff = [x for x in list(d_updates.keys()) if x not in found_accessions]
+            found_accessions = [sample.get("biosampleAccession")
+                                for sample in samplesindb]
+            diff = [x for x in list(d_updates.keys())
+                    if x not in found_accessions]
             for element in diff:
                 print(element, "may be a Source")
-            print("**********************************************************************************")
+            print(
+                "**********************************************************************************")
         for sample in samplesindb:
             for field in d_updates[sample['biosampleAccession']]:
                 value = d_updates[sample['biosampleAccession']][field]
                 oldvalue = da.Sample().get_record(sample['_id']).get(field, "")
-                da.Sample().record_manual_update(field, oldvalue, value, sample['_id'])
-                da.Sample().add_field(field, value, sample['_id'])
 
-            #if there's source update it
+                # Update sample and record change in the 'AuditCollection'
+                da.Sample().update_field(field, value, sample['_id'])
+
+            # if there's source update it
             if sample.get("sampleDerivedFrom", ""):
                 source_biosample = sample.get("sampleDerivedFrom")
             elif sample.get("sampleSameAs", ""):
@@ -75,18 +80,19 @@ class Command(BaseCommand):
                 source_biosample = ""
             if source_biosample:
                 sourceindb = da.Source().get_by_field("biosampleAccession", source_biosample)
-                assert len(sourceindb)==1
+                assert len(sourceindb) == 1
                 for field in d_updates[sample['biosampleAccession']]:
-                    #only update in source fields that are there -ENA submittable- and not organism part
-                    #unique handling of COLLECTION_LOCATION
+                    # only update in source fields that are there -ENA submittable- and not organism part
+                    # unique handling of COLLECTION_LOCATION
                     if field == "COLLECTION_LOCATION":
                         value = d_updates[sample['biosampleAccession']][field]
-                        da.Source().record_manual_update(field, oldvalue, value, sourceindb[0]['_id'])
                     elif field != "ORGANISM_PART" and DTOL_ENA_MAPPINGS.get(field, ""):
                         value = d_updates[sample['biosampleAccession']][field]
-                        da.Source().record_manual_update(field, oldvalue, value, sourceindb[0]['_id'])
-                    da.Source().add_field(field, value, sourceindb[0]['_id'])
-            #if fields are submitted to ENA update them
+
+                    # Update source and record change in the 'AuditCollection'
+                    da.Source().update_field(
+                        field, value, sourceindb[0]['_id'])
+            # if fields are submitted to ENA update them
             print(d_updates[sample['biosampleAccession']])
             print(list(d_updates[sample['biosampleAccession']].keys()))
             flag = False
@@ -99,22 +105,19 @@ class Command(BaseCommand):
                 if source_biosample:
                     self.update_source(sourceindb[0]['_id'])
 
-
-
-
-
     def update_sample(self, sample):
-        #update ENA record
+        # update ENA record
         updatedrecord = da.Sample().get_record(sample)
-        #retrieve submitted XML for sample
+        # retrieve submitted XML for sample
         curl_cmd = "curl -u " + self.user_token + \
                    ':' + self.pass_word + " " + self.ena_sample_retrieval \
                    + updatedrecord['biosampleAccession']
         registered_sample = subprocess.check_output(curl_cmd, shell=True)
 
-        #self.update_samplexml(registered_sample, updatedrecord['biosampleAccession'])
+        # self.update_samplexml(registered_sample, updatedrecord['biosampleAccession'])
         build_bundle_sample_xml(str(updatedrecord['_id']))
-        update_bundle_sample_xml([updatedrecord['_id']] , "bundle_" + str(updatedrecord['_id']) + ".xml")
+        update_bundle_sample_xml(
+            [updatedrecord['_id']], "bundle_" + str(updatedrecord['_id']) + ".xml")
         print(updatedrecord['_id'])
         self.modify_sample(updatedrecord['_id'])
 
@@ -127,12 +130,12 @@ class Command(BaseCommand):
                    + updatedrecord['biosampleAccession']
         registered_source = subprocess.check_output(curl_cmd, shell=True)
 
-        #self.update_samplexml(registered_source, updatedrecord['biosampleAccession'])
+        # self.update_samplexml(registered_source, updatedrecord['biosampleAccession'])
         build_specimen_sample_xml(updatedrecord)
         self.modify_sample(updatedrecord['_id'])
 
     def modify_sample(self, id):
-        fileis = "bundle_"+ str(id)+ ".xml"
+        fileis = "bundle_" + str(id) + ".xml"
         curl_cmd = 'curl -u ' + self.user_token + ':' + self.pass_word \
                    + ' -F "SUBMISSION=@modifysubmission.xml' \
                    + '" -F "SAMPLE=@' \
