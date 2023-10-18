@@ -300,6 +300,7 @@ function json2HtmlForm(data) {
   if (dialog_title.includes('Add Profile') && groups.length >= 1) {
     $dialogContent.find('.row:nth-child(4) > .col-sm-12').hide(); // Hide 'Associated Profile Type' field
     $dialogContent.find('.row:nth-child(5) > .col-sm-12').hide(); // Hide 'Sequencing Centre' field
+    $dialogContent.find('.row:nth-child(5) > .col-sm-12').find("select").removeAttr("required") 
   }
 
   // If user is in a manifest group, hide 'Associated profile type(s)' field on "Edit Profile" dialog launch
