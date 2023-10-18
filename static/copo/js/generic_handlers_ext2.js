@@ -4,7 +4,7 @@ var copoVisualsURL = "/copo/copo_visualize/";
 var server_side_select = {}; //holds selected ids for table data - needed in server-side processing
 
 $(document).ready(function () {
-
+    
     //dismiss alert
     $(document).on("click", ".alertdismissOK", function () {
         WebuiPopovers.hideAll();
@@ -576,6 +576,7 @@ function do_render_component_table(data, componentMeta) {
     if ($.fn.dataTable.isDataTable('#' + tableID)) {
         //if table instance already exists, then do refresh
         table = $('#' + tableID).DataTable();
+        table.columns.adjust().draw();
     }
  
     if (table) {
@@ -652,6 +653,7 @@ function do_render_component_table(data, componentMeta) {
                 refresh_tool_tips();
                 var event = jQuery.Event("posttablerefresh"); //individual compnents can trap and handle this event as they so wish
                 $('body').trigger(event);
+                
             },
             "columnDefs": [{
                 "targets": "_all",
@@ -791,16 +793,17 @@ function load_records(componentMeta,args_dict) {
             'X-CSRFToken': csrftoken
         },
         data: post_data,
-        success: function (data) {
-            do_render_component_table(data, componentMeta);
-
-            //remove loader
-            if (tableLoader) {
-                tableLoader.remove();
-            }
-        },
+        
         error: function () {
             alert("Couldn't retrieve " + componentMeta.component + " data!");
         }
-    });
+    }).done(function (data) {
+        do_render_component_table(data, componentMeta);
+
+        //remove loader
+        if (tableLoader) {
+            tableLoader.remove();
+        }
+        
+    })
 }

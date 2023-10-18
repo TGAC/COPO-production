@@ -286,8 +286,10 @@ $(document).ready(function () {
                     dt_options["columns"] = rows
                     dt_options["scrollCollapse"] = true
                     dt_options["scrollX"] = true
-                    dt_options["scrollY"] = 2000
-                    sample_table = $("#profile_samples").DataTable(dt_options);
+                    dt_options["scrollY"] = 1000
+                    dt_options["fixedHeader"] = true
+                    sample_table = $("#profile_samples").DataTable(dt_options).columns.adjust().draw();
+                    
                 }
         }
     })
@@ -393,6 +395,14 @@ function update_pending_samples_table() {
     //check whether we are getting my profiles or all profiles
     var which_profiles = $("#sequencing_centre_filter").find(".active").find("a").attr("href")
     console.log(which_profiles)
+    if (which_profiles == "my_profiles") {
+        $("#accept_reject_button").show()
+        $("#edit-buttons").show()
+    }
+    else{
+        $("#accept_reject_button").hide()
+        $("#edit-buttons").hide()
+    }
     $.ajax({
         url: "/copo/dtol_submission/update_pending_samples_table",
         method: "GET",

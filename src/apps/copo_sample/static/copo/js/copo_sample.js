@@ -3,6 +3,7 @@ var sampleDescriptionToken = '';
 var sampleTableInstance = null;
 
 $(document).ready(function () {
+
   //****************************** Event Handlers Block *************************//
 
   // test begins
@@ -1128,7 +1129,7 @@ $(document).ready(function () {
               columns: cols,
               dom: 'lfit<"row">rp',
             });
-
+            
             $('#' + tableID + '_wrapper')
               .find('.dataTables_filter')
               .find('input')
@@ -1258,6 +1259,8 @@ $(document).ready(function () {
     $.map(table.rows('.selected').data(), function (item) {
       records.push(item);
     });
+
+   
 
     //edit task
     if (task == 'edit') {

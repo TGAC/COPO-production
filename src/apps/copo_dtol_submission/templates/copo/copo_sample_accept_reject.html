@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}">
     <link rel="stylesheet" href="{% static 'copo/css/copo/sample.css' %}">
     <link rel="stylesheet" href="{% static 'copo/bootstrap-treeview-1.2.0/dist/bootstrap-treeview.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"
 
     <style>
         th {
@@ -165,7 +166,7 @@
                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Accept
                 </button>
             </div>
-            <span style="margin-left:20px">
+            <span style="margin-left:20px" id="edit-buttons">
                 <button class="select-all tiny ui basic button" tabindex="0" aria-controls="" type="button"><span>Select all visible</span></button>
                 <button class="select-none tiny ui basic button" tabindex="0" aria-controls="" type="button"><span>Select None</span></button>
                 <button class="delete-selected tiny ui red basic button" tabindex="0" aria-controls=""
@@ -196,7 +197,7 @@
             <!--<div class="table_viewport">-->
             <h4 class="h4"><small class="labelling">Click a Profile on the left to see Samples.</small></h4>
 
-            <table id="profile_samples" class="table table-hover table-bordered display compact nowrap">
+            <table id="profile_samples" class="table table-hover striped table-bordered display compact nowrap">
                 <thead></thead>
                 <tbody></tbody>
             </table>
@@ -221,6 +222,7 @@
     <script src="{% static 'copo/js/copo_parse_spreadsheet.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
     <script src="{% static 'copo_dtol_submission/js/copo_sample_accept_reject.js' %}"></script>
     <script>socket = undefined</script>
 
