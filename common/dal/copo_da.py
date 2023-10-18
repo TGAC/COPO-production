@@ -269,13 +269,8 @@ class DAComponent:
 
         # set system fields
         system_fields = dict(
-            date_modified=helpers.get_datetime(),
             deleted=helpers.get_not_deleted_flag()
         )
-
-        if not target_id:
-            system_fields["date_created"] = helpers.get_datetime()
-            system_fields["profile_id"] = self.profile_id
 
         # extend system fields
         for k, v in kwargs.items():
@@ -296,9 +291,16 @@ class DAComponent:
             if not target_id and f_id not in fields:
                 fields[f_id] = helpers.default_jsontype(f["type"])
 
+        if not target_id:
+            fields["date_created"] = helpers.get_datetime()
+            fields["created_by"] =  (helpers.get_user_id() if helpers.get_current_user()  else  "system" )
+            fields["profile_id"] = self.profile_id
+        else:
+            fields["updated_by"] =  (helpers.get_user_id() if helpers.get_current_user()  else  "system" )
+            fields["date_modified"] = helpers.get_datetime()
+
         # if True, then the database action (to save/update) is never performed, but validated 'fields' are returned
         validate_only = kwargs.pop("validate_only", False)
-        fields["date_modified"] = datetime.now()
         # check if there is attached profile then update date modified
         if "profile_id" in fields:
             self.update_profile_modified(fields["profile_id"])
@@ -718,9 +720,14 @@ class Source(DAComponent):
         # todo can this be find one
         return cursor_to_list(self.get_collection_handle().find({"SPECIMEN_ID": value}))
 
-    def get_sourcemap_by_specimens(self, value):
-        sources = cursor_to_list(self.get_collection_handle().find(
-            {"SPECIMEN_ID": {"$in": value}}))
+    def get_sourcemap_by_specimens(self, specimen_ids=[], profile_ids=[]):
+        condition = {}
+        if profile_ids:
+            condition["profile_id"] = profile_ids
+        if specimen_ids:
+            condition["SPECIMEN_ID"] = {"$in": specimen_ids}
+
+        sources = cursor_to_list(self.get_collection_handle().find(condition))
         source_map = {}
         for source in sources:
             source_map[source["SPECIMEN_ID"]] = source
@@ -2705,9 +2712,9 @@ class Profile(DAComponent):
     def get_num(self):
         return self.get_collection_handle().count_documents({})
 
-    def get_all_profiles(self, user=None, id_only=False):
-        mine = list(self.get_for_user(user, id_only))
-        shared = list(self.get_shared_for_user(user, id_only))
+    def get_all_profiles(self, user=None, id_only=False, dtol_only=False):
+        mine = list(self.get_for_user(user, id_only, dtol_only))
+        shared = list(self.get_shared_for_user(user, id_only, dtol_only))
         return shared + mine
 
     def get_type(self, profile_id):
@@ -2735,23 +2742,29 @@ class Profile(DAComponent):
         else:
             return False
 
-    def get_for_user(self, user=None, id_only=False):
+    def get_for_user(self, user=None, id_only=False, dtol_only=False):
         if not user:
             user = helpers.get_current_user().id
-
+        condition = {"deleted": helpers.get_not_deleted_flag()}
+        projection = {}
+        sort = []
         if id_only:
-            docs = self.get_collection_handle().find(
-                {"user_id": user, "deleted": helpers.get_not_deleted_flag()}, {"_id": 1})
+            projection["_id"] = 1
         else:
-            docs = self.get_collection_handle().find({"user_id": user, "deleted": helpers.get_not_deleted_flag()}).sort(
-                'date_modified', pymongo.DESCENDING)
+            sort= [("date_modified", pymongo.DESCENDING)]
 
-        if docs:
-            return docs
-        else:
-            return None
+        if dtol_only:
+            condition["type"] = {"$ne": "Stand-alone" }
 
-    def get_shared_for_user(self, user=None, id_only=False):
+        docs = self.get_collection_handle().find(condition, projection)
+        
+        if sort:
+            docs = docs.sort(sort)
+    
+        return docs
+    
+
+    def get_shared_for_user(self, user=None, id_only=False, dtol_only=False) :
         # get profiles shared with user
         if not user:
             user = helpers.get_current_user().id
@@ -2765,23 +2778,24 @@ class Profile(DAComponent):
         # remove duplicates
         # p_list = list(set(p_list))
 
+        condition = {"deleted": helpers.get_not_deleted_flag(), "_id": {"$in": p_list}}
+        projection = {}
+        sort = []
         if id_only:
-            docs = self.get_collection_handle().find({
-                "_id": {"$in": p_list},
-                "deleted": helpers.get_not_deleted_flag()
-            }, {"_id": 1, "type": 1})
+            projection["_id"] = 1
+            projection["type"] = 1
         else:
-            docs = self.get_collection_handle().find(
-                {
-                    "_id": {"$in": p_list},
-                    "deleted": helpers.get_not_deleted_flag()
-                }
-            ).sort("date_modified", pymongo.DESCENDING)
+            sort= [("date_modified", pymongo.DESCENDING)]
 
+        if dtol_only:
+            condition["type"] = {"$ne":"Stand-alone"}
+       
+        docs = self.get_collection_handle().find(condition, projection)
+        if sort:
+            docs = docs.sort(sort)
         out = list(docs)
         for d in out:
             d['shared'] = True
-
         return out
 
     def save_record(self, auto_fields=dict(), **kwargs):

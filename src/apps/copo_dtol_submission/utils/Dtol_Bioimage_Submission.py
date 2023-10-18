@@ -49,7 +49,7 @@ def process_bioimage_pending_submission():
         specimen_ids.extend(sub["dtol_specimen"])
         sub_ids.append(sub["_id"])
 
-    sources = Source().get_sourcemap_by_specimens(specimen_ids)
+    sources = Source().get_sourcemap_by_specimens(specimen_ids=specimen_ids)
     for specimenId in specimen_ids:
         source = sources[specimenId]
         seqno = 0

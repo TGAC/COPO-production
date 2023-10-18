@@ -78,6 +78,7 @@ PROJECT_APPS = [
     'src.apps.copo_file',
     'src.apps.copo_accession',
     'src.apps.copo_tol_dashboard',
+    'src.apps.copo_bioimage',
     'src.apps.copo_manifest_wizard',
     'src.apps.api',
     'allauth',

@@ -25,6 +25,7 @@ urlpatterns = [
     path('accounts/profile/', include('src.apps.copo_profile.urls', namespace='copo_account_profile_index')),
     path('copo/copo_accessions/', include('src.apps.copo_accession.urls', namespace='copo_accession')),
     path('copo/tol_dashboard/', include('src.apps.copo_tol_dashboard.urls', namespace='copo_tol_dashboard')),
+    path('copo/copo_bioimage/', include('src.apps.copo_bioimage.urls', namespace='copo_bioimage')),
     path('copo/', include('src.apps.copo_core.urls', namespace='copo')),
     #path('rest/', include('src.apps.copo_core.rest_urls', namespace='rest')),
 

@@ -194,6 +194,24 @@
     {
       "help_tip": "",
       "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "file_display_location"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Display Location",
+      "show_in_form": false,
+      "id": "copo.datafile.file_display_location",
+      "type": "string",
+      "show_in_table": false,
+      "control": "text"
+    },    
+    {
+      "help_tip": "",
+      "required": "false",
       "readonly": true,
       "default_value": "",
       "control_meta": {},
