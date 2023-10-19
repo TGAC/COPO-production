@@ -40,7 +40,7 @@ urlpatterns = [
     path('ebp/', TemplateView.as_view(template_name="ebp_resources.html"), name="ebp")
 ]
 
-handler404 = views.handler404
+#handler404 = views.handler404
 handler500 = views.handler500
 handler403 = views.handler403
 
