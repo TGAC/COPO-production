@@ -14,7 +14,7 @@ BIOIMAGE_UPLOAD_PATH = get_env("BIOIMAGE_PATH")  # "/.beta/91/31c15a-f0a0-4847-a
 BIOIMAGE_LOCAL_ARCHIVE_PATH = f"{get_env('MEDIA_PATH')}sample_images/archive/sent"
 BIOIMAGE_PATH = f"{settings.MEDIA_ROOT}sample_images"
 BIOIMAGE_ARCHIVE = f"{BIOIMAGE_PATH}/archive"
-BIOIMAGE_SENT = f"{BIOIMAGE_PATH}/sent"
+BIOIMAGE_SENT = f"{BIOIMAGE_PATH}/COPO"
 BIOIMAGE_THUMBNAIL = f"{BIOIMAGE_PATH}/thumbnail"
 
 ASPERA_PATH = get_env("ASPERA_PATH")  #"/root/.aspera/cli"
@@ -23,7 +23,7 @@ BIOIMAGE_ASPERA_CMD = f"{ASPERA_PATH}/bin/ascp -P33001 -l700M --move-after-trans
 
 def housekeeping_bioimage_archive():
     housekeep_timestamp = datetime.timestamp(datetime.now() + timedelta(days=-30))
-    with os.scandir(BIOIMAGE_ARCHIVE+"/sent") as ls:
+    with os.scandir(BIOIMAGE_ARCHIVE+"/COPO") as ls:
         for file in ls:
             if os.path.getctime(file) < housekeep_timestamp:
                 os.remove(file)

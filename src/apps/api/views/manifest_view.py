@@ -98,6 +98,7 @@ def get_common_value_dropdown_list(request):
 
 
 def get_manifest_filename(manifest_type):
+    manifest_type = manifest_type.upper()
     type = ""
     if "ASG" in manifest_type:
         type = "ASG"
@@ -111,7 +112,7 @@ def get_manifest_filename(manifest_type):
     version = settings.MANIFEST_VERSION.get(type, "")
     if version:
         version = "_v" + version
-    settings.MANIFEST_FILE_NAME.format(type, version) + ".xlsx"    
+    return settings.MANIFEST_FILE_NAME.format(type, version)    
 
 def generate_manifest_template(request):
     manifest_type = json_util.loads(request.body)["manifest_type"]
@@ -138,7 +139,7 @@ def generate_manifest_template(request):
     common_field_values_dataframe = pd.DataFrame(excel_data)
 
     # Get all worksheets from the blank manifest
-    blank_manifest_dataframe = pd.read_excel(manifest_template_path, sheet_name=None, index_col=0)
+    blank_manifest_dataframe = pd.read_excel(manifest_template_path, sheet_name=None, index_col=None)
 
     # Get Metadata Entry worksheet
     metadataEntry_worksheet = blank_manifest_dataframe['Metadata Entry']
@@ -170,40 +171,42 @@ def generate_manifest_template(request):
         ignore_index=True)
 
     bytesIO = BytesIO()
-    pandas_writer = pd.ExcelWriter(bytesIO, engine='xlsxwriter')
 
-    # Add Metadata Entry worksheet to the generated manifest
-    # worksheet using data from the blank manifest worksheet
-    metadataEntry_worksheet_concatenation.to_excel(pandas_writer, index=False, startrow=0, sheet_name='Metadata Entry')
+    with pd.ExcelWriter(bytesIO, engine='xlsxwriter' ) as pandas_writer:  
 
-    # Remove Unnamed columns
-    dataValidation_worksheet_dataframe = dataValidation_worksheet_dataframe.loc[:,
-                                         ~dataValidation_worksheet_dataframe.columns.str.startswith(
-                                             'Unnamed')]
-    # Remove NaNs columns
-    dataValidation_worksheet_dataframe.dropna(axis=0, how='all', inplace=True)
 
-    # Add Data Validation worksheet to the generated manifest
-    # worksheet using data from the blank manifest worksheet
-    dataValidation_worksheet.to_excel(pandas_writer, index=False, startrow=0, sheet_name='Data Validation')
+        # Add Metadata Entry worksheet to the generated manifest
+        # worksheet using data from the blank manifest worksheet
+        metadataEntry_worksheet_concatenation.to_excel(pandas_writer, index=False, startrow=0, sheet_name='Metadata Entry')
 
-    # Add OrganismPartDefinitions worksheet to the generated manifest
-    # worksheet using datafrom the blank manifest worksheet
-    organismPartDefinitions_worksheet.to_excel(pandas_writer, index=False, startrow=0,
-                                               sheet_name='OrganismPartDefinitions')
+        # Remove Unnamed columns
+        dataValidation_worksheet_dataframe = dataValidation_worksheet_dataframe.loc[:,
+                                            ~dataValidation_worksheet_dataframe.columns.str.startswith(
+                                                'Unnamed')]
+        # Remove NaNs columns
+        dataValidation_worksheet_dataframe.dropna(axis=0, how='all', inplace=True)
 
-    # Auto-adjust width of each column within the worksheet
-    autoAdjustExcelColumnWidth(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry')
+        # Add Data Validation worksheet to the generated manifest
+        # worksheet using data from the blank manifest worksheet
+        dataValidation_worksheet.to_excel(pandas_writer, index=False, startrow=0, sheet_name='Data Validation')
 
-    autoAdjustExcelColumnWidth(dataValidation_worksheet, pandas_writer, 'Data Validation')
+        # Add OrganismPartDefinitions worksheet to the generated manifest
+        # worksheet using datafrom the blank manifest worksheet
+        organismPartDefinitions_worksheet.to_excel(pandas_writer, index=False, startrow=0,
+                                                sheet_name='OrganismPartDefinitions')
 
-    autoAdjustExcelColumnWidth(organismPartDefinitions_worksheet, pandas_writer, 'OrganismPartDefinitions')
+        # Auto-adjust width of each column within the worksheet
+        autoAdjustExcelColumnWidth(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry')
 
-    # Apply a dropdown list to the desired columns
-    applyDropdownlist(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry',
-                      metadataEntry_worksheet_dataframe, dataValidation_worksheet_dataframe, manifest_type)
+        autoAdjustExcelColumnWidth(dataValidation_worksheet, pandas_writer, 'Data Validation')
 
-    pandas_writer.save()
+        autoAdjustExcelColumnWidth(organismPartDefinitions_worksheet, pandas_writer, 'OrganismPartDefinitions')
+
+        # Apply a dropdown list to the desired columns
+        applyDropdownlist(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry',
+                        metadataEntry_worksheet_dataframe, dataValidation_worksheet_dataframe, manifest_type)
+
+        #pandas_writer.save()
 
     bytesIO.seek(0)
     excel_workbook = bytesIO.getvalue()
@@ -391,3 +394,8 @@ def validate_common_value(request):
     else:
         return HttpResponse(json.dumps({'response': isCommonValueValid, 'error': error_message}))
 
+
+def _generate_manifest_template(type, initail_data):
+
+    
+    return
