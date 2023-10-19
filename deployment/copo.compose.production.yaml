@@ -158,7 +158,6 @@ services:
       - postgres 
       - mongo
     networks:
-      - copo-frontend-network
       - copo-backend-network
     deploy:
       replicas : 1
@@ -167,7 +166,7 @@ services:
         condition: any
       placement:
         constraints:
-          - "node.labels.backup-service==true"
+          - "node.labels.offline-service==true"
       resources:
         limits:
           cpus: '3'
@@ -226,7 +225,7 @@ services:
           memory: 1GB
 
   backup:
-    image: copo/copo-backup:v18.04_1
+    image: copo/copo-backup:v20.04_1
     command: >
       bash -c "printenv >> /etc/environment && cron && sleep infinity"       
     networks:
@@ -284,7 +283,7 @@ services:
         condition: any
       placement:
         constraints:
-          - "node.labels.backup-service==true"
+          - "node.labels.offline-service==true"
       update_config:
         parallelism: 1
         delay: 10s
@@ -353,7 +352,7 @@ services:
           memory: 1GB
 
   mongo:
-    image: copo/copo-mongo:v4.4.6_1
+    image: copo/copo-mongo:v7.0.1
     command: mongod --replSet rs0 --bind_ip_all --keyFile /data/replica.key
     entrypoint:
        - bash
