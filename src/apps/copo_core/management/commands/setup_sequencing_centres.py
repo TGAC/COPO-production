@@ -16,12 +16,70 @@ class Command(BaseCommand):
         self.stdout.write("Removing Existing Sequencing Centres")
         SequencingCentre().remove_all_sequencing_centres()
         self.stdout.write("Adding Sequencing Centres")
-        earlham = SequencingCentre().create_sequencing_centre(name="EARLHAM",
-                                                              description="Earlham Institute",
-                                                              label="Earlham Institute")
         sanger = SequencingCentre().create_sequencing_centre(name="SANGER",
-                                                             description="Sanger Institute",
-                                                             label="Wellcome Sanger Institute")
+                                                             description="SANGER INSTITUTE",
+                                                             label="SANGER INSTITUTE")
+        earlham = SequencingCentre().create_sequencing_centre(name="EI",
+                                                              description="EARLHAM INSTITUTE",
+                                                              label="EARLHAM INSTITUTE")
+
+        SequencingCentre().create_sequencing_centre(name="CNAG",
+                                                             description="CENTRO NACIONAL DE ANÁLISIS GENÓMICO ",
+                                                             label="CENTRO NACIONAL DE ANÁLISIS GENÓMICO ")
+
+        SequencingCentre().create_sequencing_centre(name="SCILIFE",
+                                                             description="SCILIFELAB",
+                                                             label="SCILIFELAB")
+        
+        SequencingCentre().create_sequencing_centre(name="WGGC",
+                                                             description="WEST GERMAN GENOME CENTRE",
+                                                             label="WEST GERMAN GENOME CENTRE")
+        SequencingCentre().create_sequencing_centre(name="NCCT",
+                                                             description="NGS COMPETENCE CENTER TÜBINGEN",
+                                                             label="NGS COMPETENCE CENTER TÜBINGEN")
+        SequencingCentre().create_sequencing_centre(name="FGCZ",
+                                                             description="FUNCTIONAL GENOMIC CENTER ZURICH",
+                                                             label="FUNCTIONAL GENOMIC CENTER ZURICH")
+        SequencingCentre().create_sequencing_centre(name="GENOSCOPE",
+                                                             description="GENOSCOPE",
+                                                             label="GENOSCOPE")
+        SequencingCentre().create_sequencing_centre(name="GTF",
+                                                             description="LAUSANNE GENOMIC TECHNOLOGIES FACILITY",
+                                                             label="LAUSANNE GENOMIC TECHNOLOGIES FACILITY")
+        SequencingCentre().create_sequencing_centre(name="BIDGEN",
+                                                             description="DNA SEQUENCING AND GENOMICS LABORATORY, HELSINKI GENOMICS CORE FACILITY",
+                                                             label="DNA SEQUENCING AND GENOMICS LABORATORY, HELSINKI GENOMICS CORE FACILITY")
+        SequencingCentre().create_sequencing_centre(name="NGS",
+                                                             description="NGS BERN",
+                                                             label="NGS BERN")
+        SequencingCentre().create_sequencing_centre(name="NCS",
+                                                             description="NORWEGIAN SEQUENCING CENTRE",
+                                                             label="NORWEGIAN SEQUENCING CENTRE")
+        SequencingCentre().create_sequencing_centre(name="BARI",
+                                                             description="UNIVERSITY OF BARI",
+                                                             label="UNIVERSITY OF BARI")
+        SequencingCentre().create_sequencing_centre(name="UNIFI",
+                                                             description="UNIVERSITY OF FLORENCE",
+                                                             label="UNIVERSITY OF FLORENCE")
+        SequencingCentre().create_sequencing_centre(name="NSF",
+                                                             description="NEUROMICS SUPPORT FACILITY, UANTWERP, VIB",
+                                                             label="NEUROMICS SUPPORT FACILITY, UANTWERP, VIB")
+        SequencingCentre().create_sequencing_centre(name="SVARDAL",
+                                                             description="SVARDAL LAB, ANTWERP",
+                                                             label="SVARDAL LAB, ANTWERP")
+        SequencingCentre().create_sequencing_centre(name="HANSEN",
+                                                             description="HANSEN LAB, DENMARK",
+                                                             label="HANSEN LAB, DENMARK")         
+        SequencingCentre().create_sequencing_centre(name="LIB",
+                                                             description="LEIBNIZ INSTITUTE FOR THE ANALYSIS OF BIODIVERSITY CHANGE, MUSEUM KOENIG, BONN",
+                                                             label="LEIBNIZ INSTITUTE FOR THE ANALYSIS OF BIODIVERSITY CHANGE, MUSEUM KOENIG, BONN")        
+        SequencingCentre().create_sequencing_centre(name="PARTNER",
+                                                             description="INDUSTRY PARTNER",
+                                                             label="INDUSTRY PARTNER")        
+        SequencingCentre().create_sequencing_centre(name="OTHER",
+                                                             description="Other_ERGA_Associated_GAL",
+                                                             label="Other_ERGA_Associated_GAL")                                     
+
         self.stdout.write("Sequencing Centres Added")
         records = SequencingCentre.objects.all()
 
