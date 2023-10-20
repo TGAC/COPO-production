@@ -3,17 +3,20 @@ __author__ = 'etuka'
 import copy
 import json
 import os
+import uuid
 import xml.etree.ElementTree as ET
 from collections import namedtuple
 from datetime import datetime, tzinfo, timedelta
 from common.utils.logger import Logger
 from bson.json_util import dumps
+from bson import ObjectId
 import common.lookup.lookup as lookup
 from common.lookup.resolver import RESOLVER
 from common.utils import helpers
 from .copo_isa_ena import ISAHelpers
 
 l = Logger()
+
 
 class simple_utc(tzinfo):
     def tzname(self, **kwargs):
@@ -32,13 +35,15 @@ def pretty_print(data, path=None):
                   indent=4, separators=(',', ': '))
         with open(path, 'w+') as file:
             file.write(s)
-            
-# Convert string boolean to boolean
+
+
 def convertStringToBoolean(string):
+    # Convert string boolean to boolean
     return str(string).lower() in ("yes", "true", "t", "1")
 
-# Convert given a string to title case/sentence case 
+
 def convertStringToTitleCase(str):
+    # Convert given a string to title case/sentence case
     return str.title() \
         .replace("_", " ") \
         .replace("Id", "ID") \
@@ -46,12 +51,31 @@ def convertStringToTitleCase(str):
         .replace("Sra", "SRA") \
         .replace("Seq", "Sequence")
 
-# converts a dictionary to object
+
 def json_to_object(data_object):
+    # converts a dictionary to object
     data = ""
     if isinstance(data_object, dict):
-        data = json.loads(json.dumps(data_object), object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
+        data = json.loads(json.dumps(data_object), object_hook=lambda d: namedtuple(
+            'X', d.keys())(*d.values()))
     return data
+
+
+def is_valid_uuid(value):
+    # Check if string is a valid uuid
+    try:
+        uuid.UUID(str(value))
+        return True
+    except ValueError:
+        return False
+
+
+def is_valid_ObjectId(value):
+    # Check if value is a valid ObjectId
+    if ObjectId.is_valid(value):
+        return True
+    else:
+        return False
 
 
 def get_label(value, list_of_elements, key_name):
@@ -73,7 +97,8 @@ def lookup_study_type_label(val):
 
 
 def get_copo_exception(key):
-    messages = json_to_pytype(lookup.MESSAGES_LKUPS["exception_messages"])["properties"]
+    messages = json_to_pytype(lookup.MESSAGES_LKUPS["exception_messages"])[
+        "properties"]
 
     return messages.get(key, str())
 
@@ -100,12 +125,14 @@ def get_sample_attributes():
 def get_isajson_refactor_type(key):
     out_dict = {}
     if key in json_to_pytype(lookup.X_FILES["ISA_JSON_REFACTOR_TYPES"]):
-        out_dict = json_to_pytype(lookup.X_FILES["ISA_JSON_REFACTOR_TYPES"])[key]
+        out_dict = json_to_pytype(
+            lookup.X_FILES["ISA_JSON_REFACTOR_TYPES"])[key]
     return out_dict
 
 
 def json_to_pytype(path_to_json, compatibility_mode=True):
-    return helpers.json_to_pytype(path_to_json,compatibility_mode )
+    return helpers.json_to_pytype(path_to_json, compatibility_mode)
+
 
 """
 def get_samples_options():
@@ -120,11 +147,15 @@ def get_samples_options():
 
     return option_values
 """
+
+
 def get_repo_type_options():
     return lookup.DROP_DOWNS['REPO_TYPE_OPTIONS']
 
+
 def get_dataverse_subject_dropdown():
     return lookup.DROP_DOWNS['DATAVERSE_SUBJECTS']
+
 
 """
 def get_existing_study_options():
@@ -292,6 +323,8 @@ def get_datafiles_json(target_id=None):
 
     return elem_json
 """
+
+
 def get_study_type_options():
     return lookup.DROP_DOWNS['STUDY_TYPES']
 
@@ -332,6 +365,7 @@ def get_nutrient_control_options():
 
 def get_watering_control_options():
     return lookup.DROP_DOWNS['WATERING_OPTIONS']
+
 
 '''
 def get_copo_id():
@@ -395,6 +429,7 @@ def get_deleted_flag():
     return "1"
 '''
 
+
 def get_button_templates():
     return copy.deepcopy(lookup.BUTTON_TEMPLATES)["templates"]
 
@@ -413,28 +448,42 @@ def get_db_json_schema(component):
     # ...set other paths accordingly depending on where the actual files reside or, conceptually, the schema provider
 
     schema_dict = dict(
-        publication=json_to_pytype(os.path.join(isa_path, 'publication_schema.json')).get("properties", dict()),
-        person=json_to_pytype(os.path.join(isa_path, 'person_schema.json')).get("properties", dict()),
-        datafile=json_to_pytype(os.path.join(isa_path, 'data_schema.json')).get("properties", dict()),
-        sample=json_to_pytype(os.path.join(isa_path, 'sample_schema.json')).get("properties", dict()),
-        source=json_to_pytype(os.path.join(isa_path, 'source_schema.json')).get("properties", dict()),
-        material=json_to_pytype(os.path.join(isa_path, 'material_schema.json')).get("properties", dict()),
-        comment=json_to_pytype(os.path.join(isa_path, 'comment_schema.json')).get("properties", dict()),
+        publication=json_to_pytype(os.path.join(
+            isa_path, 'publication_schema.json')).get("properties", dict()),
+        person=json_to_pytype(os.path.join(isa_path, 'person_schema.json')).get(
+            "properties", dict()),
+        datafile=json_to_pytype(os.path.join(
+            isa_path, 'data_schema.json')).get("properties", dict()),
+        sample=json_to_pytype(os.path.join(isa_path, 'sample_schema.json')).get(
+            "properties", dict()),
+        source=json_to_pytype(os.path.join(isa_path, 'source_schema.json')).get(
+            "properties", dict()),
+        material=json_to_pytype(os.path.join(
+            isa_path, 'material_schema.json')).get("properties", dict()),
+        comment=json_to_pytype(os.path.join(
+            isa_path, 'comment_schema.json')).get("properties", dict()),
         material_attribute_value=json_to_pytype(os.path.join(isa_path, 'material_attribute_value_schema.json')).get(
             "properties", dict()),
         material_attribute=json_to_pytype(os.path.join(isa_path, 'material_attribute_schema.json')).get("properties",
                                                                                                         dict()),
-        investigation=json_to_pytype(os.path.join(isa_path, 'investigation_schema.json')).get("properties", dict()),
+        investigation=json_to_pytype(os.path.join(
+            isa_path, 'investigation_schema.json')).get("properties", dict()),
         ontology_annotation=json_to_pytype(os.path.join(isa_path, 'ontology_annotation_schema.json')).get("properties",
                                                                                                           dict()),
-        study=json_to_pytype(os.path.join(isa_path, 'study_schema.json')).get("properties", dict()),
-        assay=json_to_pytype(os.path.join(isa_path, 'assay_schema.json')).get("properties", dict()),
-        protocol=json_to_pytype(os.path.join(isa_path, 'protocol_schema.json')).get("properties", dict()),
+        study=json_to_pytype(os.path.join(isa_path, 'study_schema.json')).get(
+            "properties", dict()),
+        assay=json_to_pytype(os.path.join(isa_path, 'assay_schema.json')).get(
+            "properties", dict()),
+        protocol=json_to_pytype(os.path.join(
+            isa_path, 'protocol_schema.json')).get("properties", dict()),
         protocol_parameter=json_to_pytype(os.path.join(isa_path, 'protocol_parameter_schema.json')).get("properties",
                                                                                                         dict()),
-        factor=json_to_pytype(os.path.join(isa_path, 'factor_schema.json')).get("properties", dict()),
-        factor_value=json_to_pytype(os.path.join(isa_path, 'factor_value_schema.json')).get("properties", dict()),
-        process=json_to_pytype(os.path.join(isa_path, 'process_schema.json')).get("properties", dict()),
+        factor=json_to_pytype(os.path.join(isa_path, 'factor_schema.json')).get(
+            "properties", dict()),
+        factor_value=json_to_pytype(os.path.join(
+            isa_path, 'factor_value_schema.json')).get("properties", dict()),
+        process=json_to_pytype(os.path.join(
+            isa_path, 'process_schema.json')).get("properties", dict()),
         process_parameter_value=json_to_pytype(os.path.join(isa_path, 'process_parameter_value_schema.json')).get(
             "properties", dict()),
         ontology_source_reference=json_to_pytype(os.path.join(isa_path, 'ontology_source_reference_schema.json')).get(
@@ -460,6 +509,7 @@ def get_isa_schema_xml(file_name):
 
     return output_dict
 
+
 '''
 def get_ena_remote_path(submission_token):
     """
@@ -471,6 +521,7 @@ def get_ena_remote_path(submission_token):
 
     return remote_path
 '''
+
 
 def get_ena_submission_url(user_name, password):
     """
@@ -498,17 +549,26 @@ def get_copo_schema(component, as_object=False):
         datafile=schema_base.get("datafile").get("fields", list()),
         sample=schema_base.get("sample").get("fields", list()),
         source=schema_base.get("source").get("fields", list()),
-        ontology_annotation=schema_base.get("ontology_annotation").get("fields", list()),
+        ontology_annotation=schema_base.get(
+            "ontology_annotation").get("fields", list()),
         comment=schema_base.get("comment").get("fields", list()),
-        material_attribute_value=schema_base.get("material_attribute_value").get("fields", list()),
+        material_attribute_value=schema_base.get(
+            "material_attribute_value").get("fields", list()),
         duration=schema_base.get("duration").get("fields", list()),
-        miappe_rooting_greenhouse=schema_base.get('miappe').get('rooting').get('greenhouse').get("fields", list()),
-        miappe_rooting_field=schema_base.get('miappe').get('rooting').get('field').get("fields", list()),
-        hydroponics=schema_base.get('miappe').get('nutrients').get('hydroponics').get('fields', list()),
-        soil=schema_base.get('miappe').get('nutrients').get('soil').get('fields', list()),
-        phenotypic_variables=schema_base.get("miappe").get("phenotypic_variables").get("fields", list()),
-        environment_variables=schema_base.get("miappe").get("environment_variables").get("fields", list()),
-        metadata_template=schema_base.get("metadata_template").get("fields", list())
+        miappe_rooting_greenhouse=schema_base.get('miappe').get(
+            'rooting').get('greenhouse').get("fields", list()),
+        miappe_rooting_field=schema_base.get('miappe').get(
+            'rooting').get('field').get("fields", list()),
+        hydroponics=schema_base.get('miappe').get(
+            'nutrients').get('hydroponics').get('fields', list()),
+        soil=schema_base.get('miappe').get(
+            'nutrients').get('soil').get('fields', list()),
+        phenotypic_variables=schema_base.get("miappe").get(
+            "phenotypic_variables").get("fields", list()),
+        environment_variables=schema_base.get("miappe").get(
+            "environment_variables").get("fields", list()),
+        metadata_template=schema_base.get(
+            "metadata_template").get("fields", list())
     )
 
     schema = schema_dict.get(component, list())
@@ -537,12 +597,16 @@ def object_type_control_map():
 
 def get_object_array_schema():
     control_dict = dict()
-    control_dict["copo-characteristics"] = get_copo_schema("material_attribute_value")
+    control_dict["copo-characteristics"] = get_copo_schema(
+        "material_attribute_value")
     control_dict["copo-comment"] = get_copo_schema("comment")
-    control_dict["copo-environmental-characteristics"] = get_copo_schema("environment_variables")
-    control_dict["copo-phenotypic-characteristics"] = get_copo_schema("phenotypic_variables")
+    control_dict["copo-environmental-characteristics"] = get_copo_schema(
+        "environment_variables")
+    control_dict["copo-phenotypic-characteristics"] = get_copo_schema(
+        "phenotypic_variables")
 
     return control_dict
+
 
 '''
 def default_jsontype(type):
@@ -557,6 +621,7 @@ def default_jsontype(type):
 
     return d_type
 '''
+
 
 def get_studies():
     return lookup.DROP_DOWNS['OMICS_TYPE']
@@ -630,7 +695,8 @@ class DecoupleFormSubmission:
                         comp_key = f.id + "." + o_f.id.split(".")[-1]
 
                         # and even the field may, also, very well be of type object, decouple further...
-                        decoupled_list = self.decouple_object(comp_key, list(), o_f)
+                        decoupled_list = self.decouple_object(
+                            comp_key, list(), o_f)
 
                         # match decoupled elements
                         key_list = list()
@@ -639,22 +705,28 @@ class DecoupleFormSubmission:
                         for key in decoupled_list:
                             if key in self.auto_fields.keys():
 
-                                c = [k for k in self.auto_fields.keys() if k.startswith(key + self.global_key_split)]
+                                c = [k for k in self.auto_fields.keys() if k.startswith(
+                                    key + self.global_key_split)]
                                 if c:
                                     secondary_data_list.append(c)
 
-                                key_split = (key.split(f.id + ".")[-1]).split(".")
+                                key_split = (key.split(f.id + ".")
+                                             [-1]).split(".")
                                 if len(key_split) == 1:
-                                    primary_data[key_split[0]] = self.auto_fields[key]
+                                    primary_data[key_split[0]
+                                                 ] = self.auto_fields[key]
                                 else:
                                     key_list.append(key_split[:-1])
-                                    key_value_list.append(dict(keys=key_split, value=self.auto_fields[key]))
+                                    key_value_list.append(
+                                        dict(keys=key_split, value=self.auto_fields[key]))
 
                         if key_list:
-                            object_model = self.form_object_model(dict(), key_list)
+                            object_model = self.form_object_model(
+                                dict(), key_list)
 
                             for kvl in key_value_list:
-                                object_model = self.set_object_fields(object_model, kvl["keys"], kvl["value"])
+                                object_model = self.set_object_fields(
+                                    object_model, kvl["keys"], kvl["value"])
 
                             for kk, vv in object_model.items():
                                 primary_data[kk] = vv
@@ -697,20 +769,25 @@ class DecoupleFormSubmission:
                             for key in g_i:
                                 if key in self.auto_fields.keys():
 
-                                    key_split = (key.split(f.id + ".")[-1]).split(".")
+                                    key_split = (
+                                        key.split(f.id + ".")[-1]).split(".")
                                     if len(key_split) == 1:
                                         primary_data[(key_split[0]).rsplit(self.global_key_split, 1)[0]] = \
                                             self.auto_fields[key]
                                     else:
                                         key_list.append(key_split[:-1])
-                                        key_split[-1] = key_split[-1].rsplit(self.global_key_split, 1)[0]
-                                        key_value_list.append(dict(keys=key_split, value=self.auto_fields[key]))
+                                        key_split[-1] = key_split[-1].rsplit(
+                                            self.global_key_split, 1)[0]
+                                        key_value_list.append(
+                                            dict(keys=key_split, value=self.auto_fields[key]))
 
                             if key_list:
-                                object_model = self.form_object_model(dict(), key_list)
+                                object_model = self.form_object_model(
+                                    dict(), key_list)
 
                                 for kvl in key_value_list:
-                                    object_model = self.set_object_fields(object_model, kvl["keys"], kvl["value"])
+                                    object_model = self.set_object_fields(
+                                        object_model, kvl["keys"], kvl["value"])
 
                                 for kk, vv in object_model.items():
                                     primary_data[kk] = vv
@@ -721,7 +798,8 @@ class DecoupleFormSubmission:
 
                             if self.object_has_value:
                                 # sanitise schema: make it compliant with schema provider's specifications
-                                target_schema = get_db_json_schema(object_type_control)
+                                target_schema = get_db_json_schema(
+                                    object_type_control)
 
                                 if target_schema:
                                     for kx in target_schema:
@@ -767,7 +845,8 @@ class DecoupleFormSubmission:
                         comp_key = f.id + "." + o_f.id.split(".")[-1]
 
                         # and even the field may, also, very well be of type object, decouple further...
-                        decoupled_list = self.decouple_object(comp_key, list(), o_f)
+                        decoupled_list = self.decouple_object(
+                            comp_key, list(), o_f)
 
                         # match decoupled elements
                         key_list = list()
@@ -776,18 +855,23 @@ class DecoupleFormSubmission:
                         for key in decoupled_list:
                             if key in self.auto_fields.keys():
 
-                                key_split = (key.split(f.id + ".")[-1]).split(".")
+                                key_split = (key.split(f.id + ".")
+                                             [-1]).split(".")
                                 if len(key_split) == 1:
-                                    primary_data[key_split[0]] = self.auto_fields[key]
+                                    primary_data[key_split[0]
+                                                 ] = self.auto_fields[key]
                                 else:
                                     key_list.append(key_split[:-1])
-                                    key_value_list.append(dict(keys=key_split, value=self.auto_fields[key]))
+                                    key_value_list.append(
+                                        dict(keys=key_split, value=self.auto_fields[key]))
 
                         if key_list:
-                            object_model = self.form_object_model(dict(), key_list)
+                            object_model = self.form_object_model(
+                                dict(), key_list)
 
                             for kvl in key_value_list:
-                                object_model = self.set_object_fields(object_model, kvl["keys"], kvl["value"])
+                                object_model = self.set_object_fields(
+                                    object_model, kvl["keys"], kvl["value"])
 
                             for kk, vv in object_model.items():
                                 primary_data[kk] = vv
@@ -811,7 +895,6 @@ class DecoupleFormSubmission:
                         auto_dict[f.id.split(".")[-1]] = target_schema
                     else:
                         auto_dict[f.id.split(".")[-1]] = primary_data
-
 
                 else:
                     # not an object type control
@@ -852,7 +935,8 @@ class DecoupleFormSubmission:
                         comp_key = f_id + "." + o_f['id'].split(".")[-1]
 
                         # and even the field may very well be of type object, decouple further...
-                        decoupled_list = self.decouple_object_dict(comp_key, list(), o_f)
+                        decoupled_list = self.decouple_object_dict(
+                            comp_key, list(), o_f)
 
                         # match decoupled elements
                         key_list = list()
@@ -861,22 +945,28 @@ class DecoupleFormSubmission:
                         for key in decoupled_list:
                             if key in self.auto_fields.keys():
 
-                                c = [k for k in self.auto_fields.keys() if k.startswith(key + self.global_key_split)]
+                                c = [k for k in self.auto_fields.keys() if k.startswith(
+                                    key + self.global_key_split)]
                                 if c:
                                     secondary_data_list.append(c)
 
-                                key_split = (key.split(f_id + ".")[-1]).split(".")
+                                key_split = (key.split(f_id + ".")
+                                             [-1]).split(".")
                                 if len(key_split) == 1:
-                                    primary_data[key_split[0]] = self.auto_fields[key]
+                                    primary_data[key_split[0]
+                                                 ] = self.auto_fields[key]
                                 else:
                                     key_list.append(key_split[:-1])
-                                    key_value_list.append(dict(keys=key_split, value=self.auto_fields[key]))
+                                    key_value_list.append(
+                                        dict(keys=key_split, value=self.auto_fields[key]))
 
                         if key_list:
-                            object_model = self.form_object_model(dict(), key_list)
+                            object_model = self.form_object_model(
+                                dict(), key_list)
 
                             for kvl in key_value_list:
-                                object_model = self.set_object_fields(object_model, kvl["keys"], kvl["value"])
+                                object_model = self.set_object_fields(
+                                    object_model, kvl["keys"], kvl["value"])
 
                             for kk, vv in object_model.items():
                                 primary_data[kk] = vv
@@ -919,20 +1009,25 @@ class DecoupleFormSubmission:
                             for key in g_i:
                                 if key in self.auto_fields.keys():
 
-                                    key_split = (key.split(f_id + ".")[-1]).split(".")
+                                    key_split = (
+                                        key.split(f_id + ".")[-1]).split(".")
                                     if len(key_split) == 1:
                                         primary_data[(key_split[0]).rsplit(self.global_key_split, 1)[0]] = \
                                             self.auto_fields[key]
                                     else:
                                         key_list.append(key_split[:-1])
-                                        key_split[-1] = key_split[-1].rsplit(self.global_key_split, 1)[0]
-                                        key_value_list.append(dict(keys=key_split, value=self.auto_fields[key]))
+                                        key_split[-1] = key_split[-1].rsplit(
+                                            self.global_key_split, 1)[0]
+                                        key_value_list.append(
+                                            dict(keys=key_split, value=self.auto_fields[key]))
 
                             if key_list:
-                                object_model = self.form_object_model(dict(), key_list)
+                                object_model = self.form_object_model(
+                                    dict(), key_list)
 
                                 for kvl in key_value_list:
-                                    object_model = self.set_object_fields(object_model, kvl["keys"], kvl["value"])
+                                    object_model = self.set_object_fields(
+                                        object_model, kvl["keys"], kvl["value"])
 
                                 for kk, vv in object_model.items():
                                     primary_data[kk] = vv
@@ -943,7 +1038,8 @@ class DecoupleFormSubmission:
 
                             if self.object_has_value:
                                 # sanitise schema: make it compliant with schema provider's specifications
-                                target_schema = get_db_json_schema(object_type_control)
+                                target_schema = get_db_json_schema(
+                                    object_type_control)
 
                                 if target_schema:
                                     for kx in target_schema:
@@ -972,7 +1068,8 @@ class DecoupleFormSubmission:
                             secondary_data_list.sort()
 
                             for sdl in secondary_data_list:
-                                tmp_val = self.auto_fields.get(sdl, str()).strip()
+                                tmp_val = self.auto_fields.get(
+                                    sdl, str()).strip()
                                 if tmp_val:
                                     value_list.append(tmp_val)
 
@@ -993,7 +1090,8 @@ class DecoupleFormSubmission:
                         comp_key = f_id + "." + o_f['id'].split(".")[-1]
 
                         # and even the field may, also, very well be of type object, decouple further...
-                        decoupled_list = self.decouple_object_dict(comp_key, list(), o_f)
+                        decoupled_list = self.decouple_object_dict(
+                            comp_key, list(), o_f)
 
                         # match decoupled elements
                         key_list = list()
@@ -1002,18 +1100,23 @@ class DecoupleFormSubmission:
                         for key in decoupled_list:
                             if key in self.auto_fields.keys():
 
-                                key_split = (key.split(f_id + ".")[-1]).split(".")
+                                key_split = (key.split(f_id + ".")
+                                             [-1]).split(".")
                                 if len(key_split) == 1:
-                                    primary_data[key_split[0]] = self.auto_fields[key]
+                                    primary_data[key_split[0]
+                                                 ] = self.auto_fields[key]
                                 else:
                                     key_list.append(key_split[:-1])
-                                    key_value_list.append(dict(keys=key_split, value=self.auto_fields[key]))
+                                    key_value_list.append(
+                                        dict(keys=key_split, value=self.auto_fields[key]))
 
                         if key_list:
-                            object_model = self.form_object_model(dict(), key_list)
+                            object_model = self.form_object_model(
+                                dict(), key_list)
 
                             for kvl in key_value_list:
-                                object_model = self.set_object_fields(object_model, kvl["keys"], kvl["value"])
+                                object_model = self.set_object_fields(
+                                    object_model, kvl["keys"], kvl["value"])
 
                             for kk, vv in object_model.items():
                                 primary_data[kk] = vv
@@ -1038,7 +1141,6 @@ class DecoupleFormSubmission:
                     else:
                         auto_dict[f_id.split(".")[-1]] = primary_data
 
-
                 else:
                     # not an object type control
 
@@ -1057,7 +1159,8 @@ class DecoupleFormSubmission:
 
             for o_f in object_fields:
                 comp_key = base_key + "." + o_f.id.split(".")[-1]
-                decoupled_list = self.decouple_object(comp_key, decoupled_list, o_f)
+                decoupled_list = self.decouple_object(
+                    comp_key, decoupled_list, o_f)
         else:
             decoupled_list.append(comp_key)
 
@@ -1073,14 +1176,16 @@ class DecoupleFormSubmission:
         """
         base_key = comp_key
 
-        object_type_control = object_type_control_map().get(field['control'].lower(), str())
+        object_type_control = object_type_control_map().get(
+            field['control'].lower(), str())
 
         if object_type_control:  # handle object type controls e.g., ontology term, comment
             object_fields = get_copo_schema(object_type_control)
 
             for o_f in object_fields:
                 comp_key = base_key + "." + o_f['id'].split(".")[-1]
-                decoupled_list = self.decouple_object_dict(comp_key, decoupled_list, o_f)
+                decoupled_list = self.decouple_object_dict(
+                    comp_key, decoupled_list, o_f)
         else:
             decoupled_list.append(comp_key)
 

@@ -27,6 +27,7 @@ servers:
     description: Local Server 2
 
 paths:
+  # Section: API key
   /apiKey/:
     post:
       tags:
@@ -51,6 +52,279 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthBody'
 
+  # Section: Audit
+  /audit/sample/{from}/{to}:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for sample records between dates
+      description: >
+        Returns an array of sample objects updated between dates {from} / {to}
+      parameters:
+        - name: from
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, samples updated greater than or equal to this date will be matched, e.g. 2023-09-01T00:00:00+00:00
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: path
+          required: true
+          description: ISO 8601 formatted full date-time, samples updated less than this date will be matched, e.g. 2023-09-30T00:00:00+00:00
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: return_type
+          schema:
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        '200': # status code
+          description: A JSON array of sample objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleAudit'
+        '400':
+          description: \'from\' must be earlier than \'to\'
+        '500':
+          description: No audits found
+
+  /audit/sample/manifest_id/{manifest_id}:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for sample records
+      description: >
+        Get a list of sample update records in COPO. </br></br>
+        If no parameters are provided, COPO will return a list of all sample updates.
+      parameters:
+        - name: manifest_id
+          in: path
+          description: If known, provide a uuid 'manifest_id'. To query multiple 'manifest_id', separate them with a comma.
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        '200': # status code
+          description: A JSON array sample update objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleAudit'
+
+  /audit/sample/copo_id/{copo_id}:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for sample records
+      description: >
+        Get a list of sample update records in COPO. </br></br>
+        If no parameters are provided, COPO will return a list of all sample updates.
+      parameters:
+        - name: copo_id
+          in: path
+          description: If known, provide a hexadecimal 'copo_id'. To query multiple 'copo_id', separate them with a comma.
+          required: true
+          schema:
+            type: string
+            minimum: 1
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        '200': # status code
+          description: A JSON array sample update objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleAudit'
+
+  /audit/sample/update_type/{update_type}:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for samples by 'update_type'
+      description: >
+        Get sample update audit records based on the type of person who performed the audit. </br></br>
+        If no 'sample_type' is provided, COPO will return a list of sample updates for all sample types.
+      parameters:
+        - name: sample_type
+          in: query
+          description: To query multiple sample types, separate them with a comma. Supported sample types - ASG, DTOL, ERGA
+          schema:
+            type: string
+            pattern: '^([a-zA-Z_,]+)+$'
+            format:
+            minimum: 1
+        - name: update_type
+          in: path
+          required: true
+          description: The type of person who performed the audit
+          schema:
+            type: string
+            enum: [system, user]
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        '200': # status code
+          description: A JSON array sample update objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleAudit'
+        '400':
+          description: Invalid sample type found in request
+
+  /audit/sample/{field}/{field_value}:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for samples by 'RACK_OR_PLATE_ID', 'SPECIMEN_ID', 'TUBE_OR_WELL_ID', 'biosampleAccession', 'public_name' or 'sraAccession' field
+      description: >
+        Get sample update audit records by 'RACK_OR_PLATE_ID' field, 'SPECIMEN_ID' field, 'TUBE_OR_WELL_ID' field, 'biosampleAccession' field, 'public_name' field or 'sraAccession' field. </br></br>
+        COPO will return a list of sample updates if updates were done a sample that matches the desired field with the value provided.
+      parameters:
+        - name: field
+          in: path
+          required: true
+          description: A list of field options to query sample updates by
+          schema:
+            $ref: '#/components/schemas/SampleAudit_field_query_options'
+        - name: field_value
+          in: path
+          required: true
+          description: The value of the field to query sample updates by
+          schema:
+            type: string
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        '200': # status code
+          description: A JSON array sample update objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleAudit'
+        '400':
+          description: Invalid value found in request
+
+  /audit/sample/asg:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for 'ASG' sample records by an updatable field
+      description: >
+        If no 'copo_id' is provided, COPO will return a list of updates for the 'ASG' sample type for all updatable fields if an update was done on it
+      parameters:
+        - name: copo_id
+          in: query
+          description: If known, provide a hexadecimal 'copo_id'. To query multiple 'copo_id', separate them with a comma
+          schema:
+            type: string
+            minimum: 1
+        - in: query
+          name: updatable_field
+          required: true
+          schema:
+            $ref: '#/components/schemas/UpdatableFields_ASG'
+          description: A list of fields that can be updated for 'ASG' sample types
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        200:
+          description: A JSON array of the latest manifest version for a given project type
+
+  /audit/sample/dtol:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for 'DTOL' sample records by an updatable field
+      description: >
+        If no 'copo_id' is selected, COPO will return a list of updates for the 'DTOL' sample type for all updatable fields if an update was done on it
+      parameters:
+        - name: copo_id
+          in: query
+          description: If known, provide a hexadecimal 'copo_id'. To query multiple 'copo_id', separate them with a comma
+          schema:
+            type: string
+            minimum: 1
+        - in: query
+          name: updatable_field
+          required: true
+          schema:
+            $ref: '#/components/schemas/UpdatableFields_DTOL'
+          description: A list of fields that can be updated for 'DTOL' sample types
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        200:
+          description: A JSON array of the latest manifest version for a given project type
+
+  /audit/sample/erga:
+    get:
+      tags:
+        - Audit
+      summary: Get update audit for 'ERGA' sample records by an updatable field
+      description: >
+        If no 'copo_id' is provided, COPO will return a list of updates for the 'ERGA' sample type for the desired field if an update was done on it
+      parameters:
+        - name: copo_id
+          in: query
+          description: If known, provide a hexadecimal 'copo_id'. To query multiple 'copo_id', separate them with a comma
+          schema:
+            type: string
+            minimum: 1
+        - in: query
+          name: updatable_field
+          required: true
+          schema:
+            $ref: '#/components/schemas/UpdatableFields_ERGA'
+          description: A list of fields that can be updated for 'ERGA' sample types
+        - name: copo_id
+          in: query
+          description: A hexadecimal 'copo_id'
+          schema:
+            type: string
+            minimum: 1
+        - in: query
+          name: return_type
+          schema:
+            type: string
+            enum: [json, csv]
+          description: Export data into selected format
+      responses:
+        200:
+          description: A JSON array of the latest manifest version for a given project type
+
+  # Section: Manifest
   /manifest:
     get:
       tags:
@@ -134,14 +408,14 @@ paths:
         - name: from
           in: path
           required: true
-          description: ISO 8601 formatted full date-time, manifests greater than or equal to this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          description: ISO 8601 formatted full date-time, manifests greater than or equal to this will be matched, e.g. 2023-09-01T00:00:00+00:00
           schema:
             type: string
             format: date-time
         - name: to
           in: path
           required: true
-          description: ISO 8601 formatted full date-time, manifests less than this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          description: ISO 8601 formatted full date-time, manifests less than this will be matched, e.g. 2023-09-30T00:00:00+00:00
           schema:
             type: string
             format: date-time
@@ -177,14 +451,14 @@ paths:
         - name: from
           in: path
           required: true
-          description: ISO 8601 formatted full date-time, manifests greater than or equal to this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          description: ISO 8601 formatted full date-time, manifests greater than or equal to this will be matched, e.g. 2023-09-01T00:00:00+00:00
           schema:
             type: string
             format: date-time
         - name: to
           in: path
           required: true
-          description: ISO 8601 formatted full date-time, manifests less than this will be matched, e.g. 2020-09-24T17:00:22+00:00
+          description: ISO 8601 formatted full date-time, manifests less than this will be matched, e.g. 2023-09-30T00:00:00+00:00
           schema:
             type: string
             format: date-time
@@ -233,6 +507,7 @@ paths:
         '400':
           description: invalid manifest_id
 
+  # Section: Sample
   /sample/{project}:
     get:
       tags:
@@ -303,7 +578,7 @@ paths:
     get:
       tags:
         - Sample
-      summary: Fetch project fields by manifest version
+      summary: Get project fields by manifest version
       description: >
         Get a list of fields of a project for a given manifest version.</br></br>
         If project type is provided and no manifest version is provided, COPO will return a list of fields for the given project type according to the latest manifest version for that project.</br></br>
@@ -349,14 +624,14 @@ paths:
         - name: from
           in: path
           required: true
-          description: ISO 8601 formatted full date-time, samples created greater than or equal to this date will be matched, e.g. 2020-09-24T17:00:22+00:00
+          description: ISO 8601 formatted full date-time, samples created greater than or equal to this date will be matched, e.g. 2023-09-01T00:00:00+00:00
           schema:
             type: string
             format: date-time
         - name: to
           in: path
           required: true
-          description: ISO 8601 formatted full date-time, samples created less than this date will be matched, e.g. 2020-09-24T17:00:22+00:00
+          description: ISO 8601 formatted full date-time, samples created less than this date will be matched, e.g. 2023-09-30T00:00:00+00:00
           schema:
             type: string
             format: date-time
@@ -558,6 +833,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SampleAccessionList'
 
+  # Section: Statistics
   /stats/number_of_users/:
     get:
       tags:
@@ -615,6 +891,7 @@ paths:
         '500':
           description: No samples exist for given project(s)
 
+  # Section: Profile
   /profile/make_profile/:
     post:
       tags:
@@ -826,6 +1103,56 @@ components:
           items:
             $ref: '#/components/schemas/SampleAccession'
 
+    SampleAudit_field_query_options:
+      type: string
+      enum:
+        [
+          RACK_OR_PLATE_ID,
+          SPECIMEN_ID,
+          TUBE_OR_WELL_ID,
+          biosampleAccession,
+          public_name,
+          sraAccession,
+        ]
+
+    SampleAudit_update_log:
+      type: object
+      properties:
+        field:
+          type: string
+        outdated_value:
+          type: string
+        updated_value:
+          type: string
+        updated_by:
+          type: string
+          format: email
+        update_type:
+          type: string
+          format: string
+        time_updated:
+          type: string
+          format: date-time
+        biosampleAccession:
+          type: string
+        copo_id:
+          type: string
+        manifest_id:
+          type: string
+          format: uuid
+        public_name:
+          type: string
+        sample_type:
+          type: string
+        sraAccession:
+          type: string
+        RACK_OR_PLATE_ID:
+          type: string
+        SPECIMEN_ID:
+          type: string
+        TUBE_OR_WELL_ID:
+          type: string
+
     SampleList:
       type: object
       properties:
@@ -893,6 +1220,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Sample_short'
+
+    SampleTypes:
+      type: string
+      enum: [asg, dtol, dtol_env, erga]
+      description: Sample types brokered through COPO
 
     Sample_long:
       type: object
@@ -1164,3 +1496,165 @@ components:
           type: array
           items:
             type: string
+
+    UpdatableFields_ASG:
+      type: string
+      enum:
+        [
+          BARCODE_HUB,
+          BARCODE_PLATE_PRESERVATIVE,
+          COLLECTOR_SAMPLE_ID,
+          CULTURE_OR_STRAIN_ID,
+          DATE_OF_PRESERVATION,
+          DEPTH,
+          DIFFICULT_OR_HIGH_PRIORITY_SAMPLE,
+          ELEVATION,
+          HAZARD_GROUP,
+          IDENTIFIED_BY,
+          IDENTIFIED_HOW,
+          IDENTIFIER_AFFILIATION,
+          INFRASPECIFIC_EPITHET,
+          LIFESTAGE,
+          PARTNER_SAMPLE_ID,
+          PLATE_ID_FOR_BARCODING,
+          PRESERVED_BY,
+          PRESERVER_AFFILIATION,
+          PURPOSE_OF_SPECIMEN,
+          RELATIONSHIP,
+          SEX,
+          SIZE_OF_TISSUE_IN_TUBE,
+          SPECIMEN_ID_RISK,
+          TIME_ELAPSED_FROM_COLLECTION_TO_PRESERVATION,
+          TIME_OF_COLLECTION,
+          TISSUE_FOR_BARCODING,
+          TISSUE_REMOVED_FOR_BARCODING,
+          TUBE_OR_WELL_ID_FOR_BARCODING,
+          VOUCHER_ID,
+        ]
+      description: Fields that can be updated for 'ASG' projects brokered through COPO
+
+    UpdatableFields_DTOL:
+      type: string
+      enum:
+        [
+          BARCODE_HUB,
+          BARCODE_PLATE_PRESERVATIVE,
+          COLLECTOR_SAMPLE_ID,
+          CULTURE_OR_STRAIN_ID,
+          DATE_OF_PRESERVATION,
+          DEPTH,
+          DIFFICULT_OR_HIGH_PRIORITY_SAMPLE,
+          ELEVATION,
+          GAL_SAMPLE_ID,
+          HAZARD_GROUP,
+          IDENTIFIED_BY,
+          IDENTIFIED_HOW,
+          IDENTIFIER_AFFILIATION,
+          INFRASPECIFIC_EPITHET,
+          LIFESTAGE,
+          PLATE_ID_FOR_BARCODING,
+          PRESERVED_BY,
+          PRESERVER_AFFILIATION,
+          PURPOSE_OF_SPECIMEN,
+          RELATIONSHIP,
+          SEX,
+          SIZE_OF_TISSUE_IN_TUBE,
+          SPECIMEN_IDENTITY_RISK,
+          TIME_ELAPSED_FROM_COLLECTION_TO_PRESERVATION,
+          TIME_OF_COLLECTION,
+          TISSUE_FOR_BARCODING,
+          TISSUE_REMOVED_FOR_BARCODING,
+          TUBE_OR_WELL_ID_FOR_BARCODING,
+          VOUCHER_ID,
+        ]
+      description: Fields that can be updated for 'DTOL' projects brokered through COPO
+
+    UpdatableFields_ERGA:
+      type: string
+      enum:
+        [
+          ASSOCIATED_TRADITIONAL_KNOWLEDGE_CONTACT,
+          ASSOCIATED_TRADITIONAL_KNOWLEDGE_OR_BIOCULTURAL_PROJECT_ID,
+          ASSOCIATED_TRADITIONAL_KNOWLEDGE_OR_BIOCULTURAL_RIGHTS_APPLICABLE,
+          BARCODE_HUB,
+          BARCODING_STATUS,
+          BARCODE_PLATE_PRESERVATIVE,
+          BIOBANKED_TISSUE_PRESERVATIVE,
+          COLLECTED_BY,
+          COLLECTION_LOCATION,
+          COLLECTOR_AFFILIATION,
+          COLLECTOR_SAMPLE_ID,
+          COMMON_NAME,
+          CULTURE_OR_STRAIN_ID,
+          DATE_OF_COLLECTION,
+          DATE_OF_PRESERVATION,
+          DECIMAL_LATITUDE,
+          DECIMAL_LONGITUDE,
+          DEPTH,
+          DESCRIPTION_OF_COLLECTION_METHOD,
+          DIFFICULT_OR_HIGH_PRIORITY_SAMPLE,
+          DNA_REMOVED_FOR_BIOBANKING,
+          DNA_VOUCHER_FOR_BIOBANKING,
+          ELEVATION,
+          ETHICS_PERMITS_DEF,
+          ETHICS_PERMITS_FILENAME,
+          ETHICS_PERMITS_REQUIRED,
+          FAMILY,
+          GAL,
+          GAL_SAMPLE_ID,
+          GENUS,
+          GRID_REFERENCE,
+          HABITAT,
+          HAZARD_GROUP,
+          IDENTIFIED_BY,
+          IDENTIFIED_HOW,
+          IDENTIFIER_AFFILIATION,
+          IDENTIFIER_AFFILIATION,
+          INDIGENOUS_RIGHTS_APPLICABLE,
+          INDIGENOUS_RIGHTS_DEF,
+          INDIGENOUS_RIGHTS_DEF,
+          INFRASPECIFIC_EPITHET,
+          LIFESTAGE,
+          NAGOYA_PERMITS_DEF,
+          NAGOYA_PERMITS_FILENAME,
+          NAGOYA_PERMITS_REQUIRED,
+          ORDER_OR_GROUP,
+          ORGANISM_PART,
+          ORIGINAL_COLLECTION_DATE,
+          ORIGINAL_GEOGRAPHIC_LOCATION,
+          OTHER_INFORMATION,
+          PRESERVATION_APPROACH,
+          PRESERVATIVE_SOLUTION,
+          PRESERVED_BY,
+          PRESERVER_AFFILIATION,
+          PROXY_TISSUE_VOUCHER_ID_FOR_BIOBANKING,
+          PROXY_VOUCHER_ID,
+          PROXY_VOUCHER_LINK,
+          PURPOSE_OF_SPECIMEN,
+          REGULATORY_COMPLIANCE,
+          RELATIONSHIP,
+          SAMPLE_COORDINATOR,
+          SAMPLE_COORDINATOR_AFFILIATION,
+          SAMPLE_COORDINATOR_ORCID_ID,
+          SAMPLING_PERMITS_FILENAME,
+          SAMPLING_PERMITS_REQUIRED,
+          SCIENTIFIC_NAME,
+          SEX,
+          SIZE_OF_TISSUE_IN_TUBE,
+          SPECIMEN_IDENTITY_RISK,
+          TAXON_ID,
+          TAXON_REMARKS,
+          TIME_ELAPSED_FROM_COLLECTION_TO_PRESERVATION,
+          TIME_OF_COLLECTION,
+          TISSUE_FOR_BARCODING,
+          TISSUE_FOR_BIOBANKING,
+          TISSUE_REMOVED_FOR_BARCODING,
+          TISSUE_REMOVED_FOR_BIOBANKING,
+          TISSUE_REMOVED_FROM_BARCODING,
+          TISSUE_VOUCHER_ID_FOR_BIOBANKING,
+          TUBE_OR_WELL_ID_FOR_BARCODING,
+          VOUCHER_ID,
+          VOUCHER_INSTITUTION,
+          VOUCHER_LINK,
+        ]
+      description: Fields that can be updated for 'ERGA' projects brokered through COPO

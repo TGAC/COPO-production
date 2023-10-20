@@ -31,6 +31,7 @@ PubCollection = 'PublicationCollection'
 PersonCollection = 'PersonCollection'
 DataCollection = 'DataCollection'
 SampleCollection = 'SampleCollection'
+AuditCollection = 'AuditCollection'
 SubmissionCollection = 'SubmissionCollection'
 SourceCollection = 'SourceCollection'
 DataFileCollection = 'DataFileCollection'
@@ -59,7 +60,8 @@ EnaChecklistCollection = "EnaChecklistCollection"
 EnaObectCollection = "EnaObjectCollection"
 ReadObjectCollection = "SampleCollection"
 
-handle_dict = dict(publication=get_collection_ref(PubCollection),
+handle_dict = dict(audit=get_collection_ref(AuditCollection),
+                   publication=get_collection_ref(PubCollection),
                    person=get_collection_ref(PersonCollection),
                    sample=get_collection_ref(SampleCollection),
                    accessions=get_collection_ref(SampleCollection),
@@ -363,6 +365,74 @@ class DAComponent:
             query_dict["profile_id"] = self.profile_id
 
         return cursor_to_list(self.get_collection_handle().find(query_dict))
+
+
+class Audit(DAComponent):
+    def __init__(self, profile_id=None):
+        super(Audit, self).__init__(profile_id, 'audit')
+        self.projection = {'_id': 0, 'update_log': 1}
+
+    def get_sample_update_audits_field_value_lst(self, value_lst, key):
+        filter = {'action': 'update', 'update_log': {
+            '$elemMatch': {key: {'$in': value_lst}}}}
+
+        return cursor_to_list(
+            self.get_collection_handle().find(filter,  self.projection))
+
+    def get_sample_update_audits_by_field_and_value(self, field, value):
+        filter = {'action': 'update', 'update_log': {
+            '$elemMatch': {field: value}}}
+
+        return cursor_to_list(
+            self.get_collection_handle().find(filter,  self.projection))
+
+    def get_sample_update_audits_by_field_updated(self, sample_type, sample_id_list, updatable_field):
+        filter = {'action': 'update', 'update_log': {
+            '$elemMatch': {'sample_type': sample_type, 'field': updatable_field}}}
+
+        if sample_id_list:
+            filter['update_log'] = {
+                '$elemMatch': {'sample_type': sample_type, 'copo_id': {'$in': sample_id_list}, 'field': updatable_field}}
+
+        cursor = self.get_collection_handle().find(filter,  self.projection)
+
+        # Filter data in the 'update_log' by the field provided
+        lst = list()
+        out = list()
+        data = dict()
+
+        for element in list(cursor):
+            for x in element['update_log']:
+                if x['field'] == updatable_field:
+                    lst.append(x)
+
+            data['update_log'] = lst
+            out.append(data)
+
+        return out
+
+    def get_sample_update_audits_by_update_type(self, sample_type_list, update_type):
+        filter = {'action': 'update'}
+
+        if sample_type_list:
+            filter['update_log'] = {
+                '$elemMatch': {'update_type': update_type, 'sample_type': {'$all': sample_type_list}}}
+        else:
+            filter['update_log'] = {'$elemMatch': {'update_type': update_type}}
+
+        return cursor_to_list(
+            self.get_collection_handle().find(filter,  self.projection))
+
+    def get_sample_update_audits_by_date(self, d_from, d_to):
+        return cursor_to_list(self.get_collection_handle().aggregate(
+            [
+                {'$match': {'update_log': {'$elemMatch': {
+                    'time_updated': {'$gte': d_from, '$lt': d_to}}, '$elemMatch': {
+                    'sample_type': {'$in': TOL_PROFILE_TYPES}}}}},
+                {'$sort': {'time_updated': -1}},
+                {'$project':  self.projection}
+
+            ]))
 
 
 class TestObjectType(DAComponent):
@@ -762,7 +832,7 @@ class Source(DAComponent):
             },
             {"$set":
                 {field: value, 'date_modified': datetime.now(timezone.utc).replace(microsecond=0), 'time_updated': datetime.now(
-                    timezone.utc).replace(microsecond=0), 'updated_by': 'ei.copo@earlham.ac.uk', 'update_type': 'system'}
+                    timezone.utc).replace(microsecond=0), 'update_type': 'system'}
              })
 
     def update_public_name(self, name):
@@ -1118,12 +1188,19 @@ class Sample(DAComponent):
             email = ThreadLocal.get_current_user().email
         except:
             email = "copo@earlham.ac.uk"
+
+        # Determine if the update is being done by a user or by the system
+        set_update_data = {"time_updated": datetime.now(timezone.utc).replace(
+            microsecond=0),  "date_modified": datetime.now(timezone.utc).replace(microsecond=0)}
+
+        if "copo@earlham.ac.uk" in email:
+            set_update_data['update_type'] = 'system'
+        else:
+            set_update_data['update_type'] = 'user'
+            set_update_data['updated_by'] = email
+
         self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}},
-                                                 {"$set": {"time_updated": datetime.now(timezone.utc).replace(
-                                                     microsecond=0),
-                                                     "date_modified": datetime.now(timezone.utc).replace(
-                                                     microsecond=0),
-                                                     "updated_by": email}})
+                                                 {"$set": set_update_data})
 
     def mark_forced(self, sample_id, reason):
         u = ThreadLocal.get_current_user()
@@ -1148,7 +1225,6 @@ class Sample(DAComponent):
                         microsecond=0),
                     'date_modified': datetime.now(timezone.utc).replace(
                         microsecond=0),
-                    'updated_by': 'ei.copo@earlham.ac.uk',
                     'update_type': 'system'
                 }
              })
