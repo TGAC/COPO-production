@@ -22,10 +22,20 @@
 
         .plus-color {
             color: #0ec36b;
+            cursor: pointer;
         }
+
+        .edit-color {
+            color: #0096FF;
+        }
+
 
         .minus-color {
             color: #d34e22;
+        }
+        
+        #myModalLabel{
+            color: white;
         }
 
         .custom-header {
@@ -101,8 +111,17 @@
             opacity: .2;
         }
 
+        #edit_group_button,
+        #delete_group_button{
+           cursor: pointer;
+        }
+
         .fade.in {
             opacity: 1;
+        }
+        
+        .modal-backdrop.in {
+            opacity: .5;
         }
 
     </style>
@@ -155,9 +174,10 @@
                 </ul>
             </div>
             <i data-toggle="modal" data-target="#add_group_modal"
-               class="fa fa-plus-square fa-2x group-button plus-color"></i>
+               class="fa fa-plus-square fa-2x group-button plus-color" title="Add a group"></i>
+            <i data-toggle="modal" style="visibility:hidden" id="edit_group_button" class="fa fa-pencil-square-o fa-2x group-button edit-color" title="Edit group"></i>
             <i data-toggle="modal" style="visibility:hidden" id="delete_group_button"
-               class="fa fa-minus-square fa-2x group-button minus-color"></i>
+               class="fa fa-minus-square fa-2x group-button minus-color" title="Delete group"></i>
             <span class="lead pull-right">Selected Group: <span id="selected_group" class="label label-default">Choose Group</span>
             </span>
 
@@ -210,7 +230,7 @@
     <div class="modal fade" id="add_group_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background-color: #337ab7;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Create New Group</h4>
@@ -218,15 +238,15 @@
                 <div class="modal-body">
                     <form id="group_form" data-toggle="validator" role="form">
                         <div class="form-group">
-                            <label for="groupName">Group Name</label>
+                            <label class='groupNamelLabel' for="groupName">Group Name</label>
                             <input type="text" class="form-control" id="groupName" placeholder="Name" required>
                         </div>
                         <div class="form-group">
-                            <label for="exampleInputEmail1">Description</label>
+                            <label class='groupDescriptionlLabel' for="groupDescription">Description</label>
                             <textarea type="textarea" rows="2" class="form-control" id="groupDescription"
                                       placeholder="Short Description"></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group submitFormGroupDiv">
                             <button type="submit" id="submit_group" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
@@ -239,20 +259,22 @@
 {% endblock %}
 
 {% block help_section %}
-
-    {#    <div id="copo-sidebar-help" class="tab-pane fade in active  copo-sidebar-help">#}
-    {#        <div class="row">#}
-    {#            <div class="col-sm-12 col-md-12 col-lg-12">#}
-    {#                <div class="panel panel-dtables">#}
-    {#                    <div class="panel-body collapse in" id="page_context_help_panel">#}
-    {#                        <table id="page-context-help" class="table hover copo-noborders-table"#}
-    {#                               cellspacing="0"#}
-    {#                               width="100%"></table>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
+    <ul class="nav nav-tabs copo-sidebar-tabs">
+        <li class="active copo-sidebar-info"><a data-toggle="tab" href="#copo-sidebar-info"
+                data-copo-tour-id="page_alert_panel">Info</a></li>
+    </ul>
+    <div class="tab-content"></div>
+        <div id="copo-sidebar-info" class="tab-pane fade in active copo-sidebar-info">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="panel panel-dtables">
+                        <div id="page_alert_panel" class="panel-body collapse in" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 

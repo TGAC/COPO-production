@@ -3021,17 +3021,35 @@ class CopoGroup(DAComponent):
         group_fields['owner_id'] = owner_id
         group_fields['name'] = name
         group_fields['description'] = description
-        group_fields['data_created'] = datetime.now().strftime(
+        group_fields['date_created'] = datetime.now().strftime(
             "%d-%m-%Y %H:%M:%S")
-        uid = self.Group.insert(group_fields)
+        # Get inserted document ID
+        uid = self.Group.insert_one(group_fields).inserted_id
         if uid:
             return uid
         else:
             return False
 
+    def edit_group(self, group_id, name, description):
+        group_fields = helpers.json_to_pytype(DB_TEMPLATES['COPO_GROUP'])
+        group_fields['name'] = name
+        group_fields['description'] = description
+        group_fields['date_modified'] = datetime.now().strftime(
+            "%d-%m-%Y %H:%M:%S")
+        # Update document
+        return self.Group.update_one({"_id": ObjectId(group_id)}, {"$set": group_fields})
+
     def delete_group(self, group_id):
         result = self.Group.delete_one({'_id': ObjectId(group_id)})
         return result.deleted_count > 0
+
+    def view_shared_group(self, group_id):
+        group = cursor_to_list(self.Group.find({"_id": ObjectId(group_id)}))
+
+        if group:
+            return group[0]
+        else:
+            return False
 
     def add_profile(self, group_id, profile_id):
         return self.Group.update_one({'_id': ObjectId(group_id)}, {'$push': {'shared_profile_ids': ObjectId(profile_id)}})
@@ -3447,11 +3465,12 @@ class EnaFileTransfer(DAComponent):
         result_list = []
         result = self.get_collection_handle().find(
             {"transfer_status": {"$ne": 2}, "status": "pending"})
+
         if result:
             result_list = list(result)
         # at most download 2 files at the sametime
-        count = self.get_collection_handle().find(
-            {"transfer_status": 2, "status": "processing"}).count()
+        count = self.get_collection_handle().count_documents(
+            {"transfer_status": 2, "status": "processing"})
         if count <= 1:
             result = self.get_collection_handle().find_one(
                 {"transfer_status": 2, "status": "pending"})

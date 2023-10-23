@@ -28,7 +28,9 @@ urlpatterns = [
 
     path('groups/', views.view_groups, name='groups'),
     path('create_group/', views.create_group, name='create_group'),
+    path('edit_group/', views.edit_group, name='edit_group'),
     path('delete_group/', views.delete_group, name='delete_group'),
+    path('view_group/', views.view_group, name='view_group'),
     path('add_profile_to_group/', views.add_profile_to_group, name='add_profile_to_group'),
     path('remove_profile_from_group/', views.remove_profile_from_group,
          name='remove_profile_from_group'),
