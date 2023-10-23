@@ -60,7 +60,7 @@ $(document).ready(function () {
     }
   }
 
-  //display empty profile message for potential first time users
+  // Display empty profile message for potential first time users
   set_empty_component_message(profiles_total);
 
   // No profile records exist
@@ -120,11 +120,6 @@ $(document).ready(function () {
   set_profile_grid_heading(div_grid); // Set profile grid heading
 
   showMoreProfileInfoPopover(div_grid); // Initialise 'show more' information popover for profile records
-
-  // Adjust margin-bottom for associated types when profile description appears on 2 lines
-  //set_associated_types_marginBottom();
-
-  //set_mediaQueries(); // Set media queries for profile records
 
   $('#sortProfilesBtn').on('change', function () {
     const option_selected = this.value;
@@ -288,10 +283,7 @@ $(document).ready(function () {
 
           set_profile_grid_heading(content); // Set profile grid heading
           showMoreProfileInfoPopover(content) // Initialise 'show more' information popover for profile records
-          // Adjust margin-bottom for associated types when profile description appears on 2 lines
-          //set_associated_types_marginBottom();
 
-          //set_mediaQueries(); // Set media queries for profile records
           grid_count.text($('.grid').length); // Increment the number of profile records displayed
           tableLoader.remove(); // Remove loading .gif
         },
@@ -1245,19 +1237,6 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
 }
 
 function showMoreProfileInfoPopover(grids) {
-  // Initialise the popover to view more profile information for each profile record
-//   $('#showMoreProfileInfoBtn[rel="popover"]').popover({
-//     html: true,
-//     trigger: 'hover',
-//     sanitize: false,
-//     content: function (e) {
-//       return $(this)
-//         .closest('.grid-panel-body')
-//         .find('#showMoreProfileInfoContent')
-//         .children('.popover-content')
-//         .html();
-//     },
-//   });
   grids.each(function () {
     let showMoreProfileInfoBtn = $(this).closest('.grid').find('#showMoreProfileInfoBtn[rel="popover"]');
 
