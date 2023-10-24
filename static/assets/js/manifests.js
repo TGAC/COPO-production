@@ -523,7 +523,7 @@ function generateManifestTemplate(event) {
 
     });
 
-    xhr.open('POST', 'generate_manifest_template/');
+    xhr.open('POST', 'prefill_manifest_template/');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
             let link = document.createElement('a');

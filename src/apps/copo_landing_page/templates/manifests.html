@@ -1,6 +1,6 @@
 {% extends "secondary.html" %}
 {% load static %}
-
+{% load web_tags %}
 {% block title %}Manifests{% endblock %}
 
 {% block topbanner %}
@@ -41,7 +41,7 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <li><a href="{% static 'assets/manifests/ASG_MANIFEST_TEMPLATE_v2.4.1.xlsx' %}">
+                            <li><a href="{{ 'ASG'|get_blank_manifest_url  }}">
                                 Blank template</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a id="asg_prefilled_template_option" class="wizard-link" href="javascript:"
@@ -63,7 +63,7 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href="{% static 'assets/manifests/DTOL_MANIFEST_TEMPLATE_v2.4.1.xlsx' %}">
+                            <li><a href="{{  'DTOL'|get_blank_manifest_url  }}">
                                 Blank template</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a id="dtol_prefilled_template_option" class="wizard-link" href="javascript:"
@@ -84,7 +84,7 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
-                            <li><a href="{% static 'assets/manifests/ERGA_MANIFEST_TEMPLATE_v2.4.2.xlsx' %}">
+                            <li><a href="{{'ERGA'|get_blank_manifest_url }}">
                                 Blank template</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a id="erga_prefilled_template_option" class="wizard-link" href="javascript:"

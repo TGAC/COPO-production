@@ -9,9 +9,12 @@ import os
 from openpyxl.utils import cell
 from bson import json_util
 import pandas as pd
+import numpy   as np
 from io import BytesIO
 import re
 import common.schema_versions.lookup.dtol_lookups as lkup
+from django.contrib.auth.decorators import login_required
+from common.dal.copo_da import Profile, Sample
 
 def get_latest_manifest_versions(request):
     return HttpResponse(json.dumps({'current_asg_manifest_version': settings.MANIFEST_VERSION.get("ASG", ""),
@@ -114,7 +117,7 @@ def get_manifest_filename(manifest_type):
         version = "_v" + version
     return settings.MANIFEST_FILE_NAME.format(type, version)    
 
-def generate_manifest_template(request):
+def prefill_manifest_template(request):
     manifest_type = json_util.loads(request.body)["manifest_type"]
     number_of_samples = int(
         json_util.loads(request.body)["row_count"])  # Convert to int
@@ -138,6 +141,9 @@ def generate_manifest_template(request):
 
     common_field_values_dataframe = pd.DataFrame(excel_data)
 
+    bytesIO = generate_manifest_template(manifest_type, manifest_template_path, common_field_values_dataframe)
+
+    """    
     # Get all worksheets from the blank manifest
     blank_manifest_dataframe = pd.read_excel(manifest_template_path, sheet_name=None, index_col=None)
 
@@ -206,7 +212,7 @@ def generate_manifest_template(request):
         applyDropdownlist(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry',
                         metadataEntry_worksheet_dataframe, dataValidation_worksheet_dataframe, manifest_type)
 
-        #pandas_writer.save()
+        #pandas_writer.save() """
 
     bytesIO.seek(0)
     excel_workbook = bytesIO.getvalue()
@@ -395,7 +401,131 @@ def validate_common_value(request):
         return HttpResponse(json.dumps({'response': isCommonValueValid, 'error': error_message}))
 
 
-def _generate_manifest_template(type, initail_data):
+@login_required
+def download_manifest(request, manifest_id):
+    manifest_type = None
+    profile = None
+    samples = Sample().get_all_records_columns(filter_by={"manifest_id": manifest_id})
+    if samples is None:
+        return HttpResponse(status=404, content="Manifest not found")
+    else:
+        manifest_type = samples[0].get("sample_type")
+        profile = Profile().get_record(samples[0].get("profile_id"))
 
-    
-    return
+    #if not sampl["species_list"][0]["SYMBIONT"] or sampl["species_list"][0]["SYMBIONT"] == "TARGET":
+    #special handling for species_list 
+    for sample in samples:
+        if sample.get("species_list", []):
+            sample["SYMBIONT"] = sample["species_list"][0].get('SYMBIONT', "TARGET")
+        else:
+            sample["SYMBIONT"] = "TARGET"
+
+    #special handling for popgenomic
+    for associated_type in  profile.get("associated_type", []) :
+        if associated_type.get("value", "") == "POP_GENOMICS":
+            for sample in samples:
+                if sample.get("PURPOSE_OF_SPECIMEN", []) == "RESEQUENCING":
+                    sample["PURPOSE_OF_SPECIMEN"] = "SHORT_READ_SEQUENCING"
+          
+    #special handling for permit file
+    sample_df = pd.DataFrame.from_records(samples)
+    for prefix in lkup.PERMIT_COLUMN_NAMES_PREFIX:
+        if f"{prefix}_REQUIRED" in sample_df.columns :
+            filename_column = f"{prefix}_FILENAME"
+            if filename_column in sample_df.columns:
+                sample_df[filename_column] = np.where (sample_df[f"{prefix}_REQUIRED"] == "Y", sample_df[filename_column].apply(lambda x: x.split("_")[0]+ ".pdf" if "_" in x else x), "NOT_APPLICABLE")
+            else :
+                sample_df[filename_column] = np.where (sample_df[f"{prefix}_REQUIRED"] == "Y", "", "NOT_APPLICABLE")
+
+    manifests_dir = os.path.join("static", "assets", "manifests")
+
+    # Set the path to the blank manifest template based on the manifest type
+    filename = get_manifest_filename(manifest_type)
+
+    manifest_template_path = os.path.join(manifests_dir, filename)
+
+    bytesIO = generate_manifest_template( manifest_type , manifest_template_path, sample_df)
+
+    bytesIO.seek(0)
+    excel_workbook = bytesIO.getvalue()
+
+    response = HttpResponse(excel_workbook,
+                            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+
+    return response
+
+def generate_manifest_template(manifest_type, manifest_template_path, initail_data):
+
+        # Get all worksheets from the blank manifest
+    blank_manifest_dataframe = pd.read_excel(manifest_template_path, sheet_name=None, index_col=None)
+
+    # Get Metadata Entry worksheet
+    metadataEntry_worksheet = blank_manifest_dataframe['Metadata Entry']
+
+    # Get Data Validation worksheet
+    dataValidation_worksheet = blank_manifest_dataframe['Data Validation']
+
+    # Get OrganismPartDefinitions worksheet
+    organismPartDefinitions_worksheet = blank_manifest_dataframe['OrganismPartDefinitions']
+
+    # Get only the column names from the blank manifest
+    # Convert the list of column names into a dataframe
+    metadataEntry_worksheet_dataframe = pd.DataFrame(columns=metadataEntry_worksheet.columns)
+
+    # Remove Unnamed columns
+    metadataEntry_worksheet_dataframe = metadataEntry_worksheet_dataframe.loc[:,
+                                        ~metadataEntry_worksheet_dataframe.columns.str.startswith(
+                                            'Unnamed')]
+    # Remove NaNs columns
+    metadataEntry_worksheet_dataframe.dropna(axis=0, how='all', inplace=True)
+
+    # Get column names from the "Data Validation" worksheet from the blank manifest
+    dataValidation_worksheet_dataframe = pd.DataFrame(columns=dataValidation_worksheet.columns, index=[0])
+
+    # Concatenate the common field and its common values with the respective column names
+    # from the blank manifest template
+    initail_data.drop(columns=initail_data.columns.difference(metadataEntry_worksheet_dataframe.columns), axis=1, inplace=True)
+    metadataEntry_worksheet_concatenation = pd.concat(
+        [metadataEntry_worksheet_dataframe, initail_data],
+        ignore_index=True)
+
+    bytesIO = BytesIO()
+
+    with pd.ExcelWriter(bytesIO, engine='xlsxwriter' ) as pandas_writer:  
+
+
+        # Add Metadata Entry worksheet to the generated manifest
+        # worksheet using data from the blank manifest worksheet
+        metadataEntry_worksheet_concatenation.to_excel(pandas_writer, index=False, startrow=0, sheet_name='Metadata Entry')
+
+        # Remove Unnamed columns
+        dataValidation_worksheet_dataframe = dataValidation_worksheet_dataframe.loc[:,
+                                            ~dataValidation_worksheet_dataframe.columns.str.startswith(
+                                                'Unnamed')]
+        # Remove NaNs columns
+        dataValidation_worksheet_dataframe.dropna(axis=0, how='all', inplace=True)
+
+        # Add Data Validation worksheet to the generated manifest
+        # worksheet using data from the blank manifest worksheet
+        dataValidation_worksheet.to_excel(pandas_writer, index=False, startrow=0, sheet_name='Data Validation')
+
+        # Add OrganismPartDefinitions worksheet to the generated manifest
+        # worksheet using datafrom the blank manifest worksheet
+        organismPartDefinitions_worksheet.to_excel(pandas_writer, index=False, startrow=0,
+                                                sheet_name='OrganismPartDefinitions')
+
+        # Auto-adjust width of each column within the worksheet
+        autoAdjustExcelColumnWidth(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry')
+
+        autoAdjustExcelColumnWidth(dataValidation_worksheet, pandas_writer, 'Data Validation')
+
+        autoAdjustExcelColumnWidth(organismPartDefinitions_worksheet, pandas_writer, 'OrganismPartDefinitions')
+
+        # Apply a dropdown list to the desired columns
+        applyDropdownlist(metadataEntry_worksheet_concatenation, pandas_writer, 'Metadata Entry',
+                        metadataEntry_worksheet_dataframe, dataValidation_worksheet_dataframe, manifest_type)
+
+        #pandas_writer.save()
+
+    return bytesIO
