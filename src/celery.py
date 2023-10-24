@@ -45,6 +45,10 @@ app.conf.beat_schedule = {
         'task': 'src.apps.copo_dtol_submission.tasks.process_bioimage_submission',
         'schedule': timedelta(seconds=30)
     },    
+    'process_bioimage_housekeeping': {
+        'task': 'src.apps.copo_dtol_submission.tasks.process_bioimage_housekeeping',
+        'schedule': timedelta(days=1)
+    },    
     'find_incorrectly_rejected_samples': {
         'task': 'src.apps.copo_dtol_submission.tasks.find_incorrectly_rejected_samples',
         'schedule': timedelta(seconds=60)
