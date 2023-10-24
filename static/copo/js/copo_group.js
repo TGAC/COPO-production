@@ -290,7 +290,6 @@ $(document).ready(function () {
               dataType: 'json',
             })
               .done(function (data) {
-                console.log(data);
                 // Show success alert in the 'Info' panel
                 const alertType = 'success';
                 const alertMessage = 'Group updated!';
