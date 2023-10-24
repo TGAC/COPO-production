@@ -449,26 +449,38 @@ def search_copo_components(request, data_source):
 
 
 def create_group(request):
-    name = request.GET['group_name']
-    description = request.GET['description']
+    name = request.POST['group_name']
+    description = request.POST['description']
+
+    if not name or not description:
+        return HttpResponseBadRequest(
+            'Error Creating Group - Form field(s) cannot be empty!')
+
     uid = CopoGroup().create_shared_group(name=name, description=description)
 
     if uid:
         return HttpResponse(json.dumps({'id': str(uid), 'name': name}))
     else:
-        return HttpResponseBadRequest('Error Creating Group - Try Again')
+        return HttpResponseBadRequest('Forbidden - Group with the same name already exists!')
 
 
 def edit_group(request):
-    group_id = request.GET['group_id']
-    name = request.GET['group_name']
-    description = request.GET['description']
-    uid = CopoGroup().edit_group(group_id=group_id, name=name, description=description)
+    group_id = request.POST['group_id']
+    name = request.POST['group_name']
+    description = request.POST['description']
 
-    if uid:
-        return HttpResponse(json.dumps({'id': str(uid), 'name': name}))
-    else:
-        return HttpResponseBadRequest('Error Editing Group - Try Again')
+    if not name or not description:
+        return HttpResponseBadRequest(
+            'Error Updating Group - Form field(s) cannot be empty!')
+
+    if name and description:
+        document = CopoGroup().edit_group(
+            group_id=group_id, name=name, description=description)
+
+        if document:
+            return HttpResponse(json.dumps({'id': str(group_id), 'name': name}))
+        else:
+            return HttpResponseBadRequest('Forbidden - Group with the same name already exists!')
 
 
 def delete_group(request):

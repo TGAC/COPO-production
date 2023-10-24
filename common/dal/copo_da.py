@@ -3014,30 +3014,61 @@ class CopoGroup(DAComponent):
             return list()
         return doc
 
-    def create_shared_group(self, name, description, owner_id=None):
-        group_fields = helpers.json_to_pytype(DB_TEMPLATES['COPO_GROUP'])
+    def get_group_names(self, owner_id=None, with_id=False):
         if not owner_id:
             owner_id = helpers.get_user_id()
-        group_fields['owner_id'] = owner_id
-        group_fields['name'] = name
-        group_fields['description'] = description
-        group_fields['date_created'] = datetime.now().strftime(
-            "%d-%m-%Y %H:%M:%S")
-        # Get inserted document ID
-        uid = self.Group.insert_one(group_fields).inserted_id
-        if uid:
-            return uid
+
+        projection = {'_id': 1, 'name': 1} if with_id else {
+            '_id': 0, 'name': 1}
+
+        doc = list(self.Group.find(
+            {'owner_id': owner_id}, projection))
+        if not doc:
+            return list()
+        return doc
+
+    def create_shared_group(self, name, description, owner_id=None):
+        group_names = self.get_group_names()
+        group_fields = helpers.json_to_pytype(DB_TEMPLATES['COPO_GROUP'])
+
+        if not owner_id:
+            owner_id = helpers.get_user_id()
+
+        if any(x['name'] == name for x in group_names):
+            return False  # Group name already exists
         else:
-            return False
+            group_fields['owner_id'] = owner_id
+            group_fields['name'] = name
+            group_fields['description'] = description
+            group_fields['date_created'] = datetime.now().strftime(
+                "%d-%m-%Y %H:%M:%S")
+            # Get inserted document ID
+            return self.Group.insert_one(group_fields).inserted_id
 
     def edit_group(self, group_id, name, description):
-        group_fields = helpers.json_to_pytype(DB_TEMPLATES['COPO_GROUP'])
-        group_fields['name'] = name
-        group_fields['description'] = description
-        group_fields['date_modified'] = datetime.now().strftime(
+        update_info = {}
+        group_names = self.get_group_names(with_id=True)
+
+        update_info['name'] = name
+        update_info['description'] = description
+        update_info['date_modified'] = datetime.now().strftime(
             "%d-%m-%Y %H:%M:%S")
-        # Update document
-        return self.Group.update_one({"_id": ObjectId(group_id)}, {"$set": group_fields})
+
+        if any(str(x['_id']) == group_id and x['name'] != name for x in group_names):
+            # If edited group name is not equal to the exisiting group name
+            # but the group ID is the matchES the current group ID, update the document
+            self.Group.find_one_and_update({"_id": ObjectId(group_id)}, {
+                "$set": update_info})
+            return True
+        elif any(str(x['_id']) != group_id and x['name'] == name for x in group_names):
+            # If edited group name is equal to an exisiting group name
+            # and the group ID does not match the current group ID, return an error
+            return False  # Group name already exists
+        else:
+            # Update document
+            self.Group.find_one_and_update({"_id": ObjectId(group_id)}, {
+                "$set": update_info})
+            return True
 
     def delete_group(self, group_id):
         result = self.Group.delete_one({'_id': ObjectId(group_id)})
