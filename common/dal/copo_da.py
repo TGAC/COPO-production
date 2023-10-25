@@ -1193,12 +1193,12 @@ class Sample(DAComponent):
         set_update_data = {"time_updated": datetime.now(timezone.utc).replace(
             microsecond=0),  "date_modified": datetime.now(timezone.utc).replace(microsecond=0)}
 
-        if email is None or "copo@earlham.ac.uk" in email:
+        if "copo@earlham.ac.uk" in email:
             set_update_data['update_type'] = 'system'
         else:
             set_update_data['updated_by'] = email
             set_update_data['update_type'] = 'user'
-            
+
         self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}},
                                                  {"$set": set_update_data})
 
@@ -1230,13 +1230,16 @@ class Sample(DAComponent):
              })
 
     def update_field(self, field, value, oid):
-        email = ThreadLocal.get_current_user().email
+        try:
+            email = ThreadLocal.get_current_user().email
+        except:
+            email = "copo@earlham.ac.uk"
 
         # Determine if the update is being done by a user or by the system
         set_update_data = {field: value, 'date_modified': datetime.now(timezone.utc).replace(microsecond=0), 'time_updated': datetime.now(timezone.utc).replace(
             microsecond=0)}
 
-        if email is None or "copo@earlham.ac.uk" in email:
+        if "copo@earlham.ac.uk" in email:
             set_update_data['update_type'] = 'system'
         else:
             set_update_data['updated_by'] = email
