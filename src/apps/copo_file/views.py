@@ -6,9 +6,11 @@ import jsonpickle
 from django.http import HttpResponse
 from .utils.CopoFiles import generate_files_record
 from common.utils import helpers
+from src.apps.copo_core.views import web_page_access_checker
 import json
 
 
+@web_page_access_checker
 @login_required()
 def copo_files(request, profile_id):
     request.session["profile_id"] = profile_id
@@ -17,6 +19,7 @@ def copo_files(request, profile_id):
     return render(request, "copo/copo_files.html", {"profile_id": profile_id, "profile_title": profile_title, "profile_type": profile_type})
 
 
+@web_page_access_checker
 @login_required()
 def process_urls(request):
     profile_id = helpers.get_current_request().session['profile_id']
@@ -48,6 +51,7 @@ def process_urls(request):
     return HttpResponse(json.dumps(urls_list))
 
 
+@web_page_access_checker
 @login_required()
 def upload_ecs_files(request, profile_id):
     channels_group_name = "s3_" + profile_id

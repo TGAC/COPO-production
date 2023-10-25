@@ -107,7 +107,7 @@ stats_api_patterns = [
     re_path(r'^stats/number_of_datafiles', stats.get_number_of_datafiles,
             name='get_number_of_datafiles'),
     re_path(r'^stats/combined_stats_json', stats.combined_stats_json,
-            name='combined_stats_csv'),
+            name='combined_stats_json'),
     re_path(r'^stats/sample_stats_csv', stats.samples_stats_csv,
             name='samples_stats_csv'),
     re_path(r'^stats/histogram_metric/(?P<metric>[A-Za-z0-9_]+)', stats.samples_hist_json,
