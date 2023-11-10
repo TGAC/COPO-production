@@ -243,7 +243,7 @@ function populate_pie_chart(el) {
                 if (current_gal_name) $('#current_gal_name').text(`GAL: ${current_gal_name}`)
             }
         }
-    }).error(function (error) {
+    }).fail(function (error) {
         console.log(`Error: ${error.message}`)
     })
 }
@@ -384,7 +384,7 @@ function get_gal_names() {
         table.row(':eq(0)', {page: 'current'}).select()
 
         get_selected_gal_name_in_row(table)
-    }).error(function (error) {
+    }).fail(function (error) {
         console.log(`Error: ${error.message}`)
     })
 }

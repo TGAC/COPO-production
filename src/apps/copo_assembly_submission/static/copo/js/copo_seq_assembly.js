@@ -135,7 +135,7 @@ $(document).ready(function () {
                 };
                 return xhr;
             }                
-        }).error(function (data) {
+        }).fail(function (data) {
             dialog.enableButtons(true);
             dialog.getButton('submit_assembly_button').stopSpin();
             $(".modal-dialog").find("#assembly_form input, textarea, select").prop("disabled", false)

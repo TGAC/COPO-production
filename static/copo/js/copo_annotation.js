@@ -87,7 +87,7 @@ function submit() {
             {
                 "X-CSRFToken": csrftoken
             },
-    }).error(function (data) {
+    }).fail(function (data) {
         $("#annotation_form input, textarea, select").prop("disabled", false)
         $("#id_study").prop("disabled", true)
         $("#loading_span").fadeOut()

@@ -91,7 +91,7 @@ function dropHandler(ev, ui) {
             refresh_spreadsheet_display()
         }
 
-    }).error(function (d) {
+    }).fail(function (d) {
         console.error("error: " + d)
     })
 }
@@ -158,7 +158,7 @@ $(document).on("input propertychange", "#search_term_text_box, [id^=annotator-fi
             $(".search-term-div").removeClass("loading")
         }
 
-    }).error(function (data) {
+    }).fail(function (data) {
         console.log("error")
         $(".search-term-div").removeClass("loading")
         $("#search_results").empty()
@@ -356,7 +356,7 @@ function refresh_spreadsheet_display() {
             console.log("refresh display")
         })
 
-    }).error(function (data) {
+    }).fail(function (data) {
         console.error(data)
     })
 }
@@ -560,7 +560,7 @@ $(document).on("click", ".delete_annotation", function (ev) {
         if ($("#file_type").val() == "ss" || $("#file_type").val() == "csv" || $("#file_type").val() == "txt" || $("#file_type").val() == "tab") {
             refresh_spreadsheet_display()
         }
-    }).error(function (data) {
+    }).fail(function (data) {
         console.error(data)
     })
 })

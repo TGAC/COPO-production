@@ -77,7 +77,7 @@ function upload_assembly_files() {
             {
                 "X-CSRFToken": csrftoken
             },
-    }).error(function (data) {
+    }).fail(function (data) {
         $("#assembly_form input, textarea, select").prop("disabled", false)
         $("#id_study").prop("disabled", true)
         $("#loading_span").fadeOut()

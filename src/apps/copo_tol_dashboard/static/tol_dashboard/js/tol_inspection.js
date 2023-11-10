@@ -55,19 +55,20 @@ $(document).ready(function () {
         highlight_empty_cells_in_selected_row()
 
         $.ajax({
-            url: "/copo/get_sample_details/",
-            method: "POST",
-            headers: {'X-CSRFToken': csrftoken},
-            dataType: "json",
-            data: {
-                'sample_id': sample_id,
-            },
-            success: function (data) {
-                if (!window.location.href.endsWith('tol_dashboard/tol')) json2HtmlForm_SampleDetails(data)
-            },
-            error: function () {
-                alert(errorMsg);
-            }
+          url: '/copo/tol_dashboard/get_sample_details/',
+          method: 'POST',
+          headers: { 'X-CSRFToken': csrftoken },
+          dataType: 'json',
+          data: {
+            sample_id: sample_id,
+          },
+          success: function (data) {
+            if (!window.location.href.endsWith('tol_dashboard/tol'))
+              json2HtmlForm_SampleDetails(data);
+          },
+          error: function () {
+            alert(errorMsg);
+          },
         });
     })
 
@@ -213,7 +214,7 @@ function get_profile_titles_nav_tabs() {
         data: {
             'queryUserProfileRecords': queryUserProfileRecordsCheckBox
         }
-    }).error(function (e) {
+    }).fail(function (e) {
         console.log(`Error: ${e.message}`);
     }).done(function (data) {
         // Populate the nav bar/tab of the profile titles table on the left of the web page
@@ -836,7 +837,7 @@ function get_samples(row, project) {
 
             $("#spinner").fadeOut("fast")
         }
-    ).error(function (error) {
+    ).fail(function (error) {
         console.log(`Error: ${error.message}`)
     })
 }
@@ -902,7 +903,7 @@ function get_profile_titles(data) {
             "searchByFaceting": searchByFaceting,
             "getProjectTitlesForUserOnly": getProjectTitlesForUserOnly
         }
-    }).error(function (e) {
+    }).fail(function (e) {
         console.log(`Error: ${e.message}`);
     }).done(function (data) {
         let profile_titlesID = $("#profile_titles")

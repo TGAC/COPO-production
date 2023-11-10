@@ -611,7 +611,7 @@ function row_select(ev) {
         data: d,
         method: "GET",
         dataType: "json"
-    }).error(function (data) {
+    }).fail(function (data) {
         console.error("ERROR: " + data)
     }).done(function (data) {
             sample_table.clear();

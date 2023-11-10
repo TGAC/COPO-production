@@ -219,7 +219,7 @@ function upload_files(files) {
             return xhr;
         }
 
-    }).error(function (data) {
+    }).fail(function (data) {
         $('#upload_local_files_button').fadeIn()
         $("#ss_upload_spinner").fadeOut("fast")
         BootstrapDialog.show({

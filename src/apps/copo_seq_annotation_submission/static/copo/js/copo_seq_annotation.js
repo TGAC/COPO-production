@@ -35,7 +35,7 @@ $(document).ready(function () {
                         {
                             "X-CSRFToken": csrftoken
                         },
-                }).error(function (data) {
+                }).fail(function (data) {
                     BootstrapDialog.show({
                         title: 'Error',
                         message: "Error " + data.responseText
@@ -199,7 +199,7 @@ $(document).ready(function () {
                 {
                     "X-CSRFToken": csrftoken
                 },
-        }).error(function (data) {
+        }).fail(function (data) {
             dialog.enableButtons(true);
             //dialog.setClosable(true);
             dialog.getButton('submit_annotation_button').stopSpin();
@@ -316,7 +316,7 @@ $(document).ready(function () {
                             {
                                 "X-CSRFToken": csrftoken
                             },
-                    }).error(function (data) {
+                    }).fail(function (data) {
                         BootstrapDialog.show({
                             title: 'Error',
                             message: "Error " + data.responseText

@@ -35,7 +35,7 @@ $(document).ready(function () {
             $("#num_profiles").html(data.profiles)
             $("#num_users").html(data.users)
             $("#num_uploads").html(data.datafiles)
-        }).error(function (error) {
+        }).fail(function (error) {
         console.log(`Error: ${error.message}`)
     })
 
@@ -194,7 +194,7 @@ $(document).ready(function () {
                 });
             }
 
-        }).error(function (error) {
+        }).fail(function (error) {
         console.log(`Error: ${error.message}`)
     })
 
@@ -296,7 +296,7 @@ $(document).ready(function () {
 
             spinner.fadeOut("fast")
             spinner_div.hide();
-        }).error(function (error) {
+        }).fail(function (error) {
         console.log(`Error: ${error.message}`)
     })
 });
