@@ -11,11 +11,11 @@ jobs:
     docker:
       - image: cimg/base:2023.12
       - image: copo/copo-new-web:v2.0.4
-        name: copo_web
+        name: copo-new.cyverseuk.org
         environment:
           ENVIRONMENT_TYPE: demo
           ASPERA_PLUGIN_DIRECTORY: aspera_linux_plugin
-          SECRET_KEY: /run/secrets/copo_web_secret_key
+          SECRET_KEY: ${SECRET_KEY}
           MEDIA_PATH: media/
           DEBUG: true
           REDIS_HOST: copo_redis
@@ -78,7 +78,7 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
-      - run: "sleep 30 && curl -vL http://copo_web:8000/copo"
+      - run: "sleep 30 && curl -vL http://copo-new.cyverseuk.org':8000/copo"
           
 
 # Orchestrate jobs using workflows
