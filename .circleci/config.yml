@@ -78,7 +78,7 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
-      - run: "sleep 30 && curl -vL http://127.0.0.1:8000/copo"
+      - run: "sleep 30 && curl -vL http://copo_web:8000/copo"
           
 
 # Orchestrate jobs using workflows
