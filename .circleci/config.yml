@@ -21,7 +21,7 @@ jobs:
           REDIS_HOST: copo_redis
           REDIS_PORT: 6379
           WEBIN_USER: ${WEBIN_USER}
-          WEBIN_USER_PASSWORD: /run/secrets/copo_webin_user_password
+          WEBIN_USER_PASSWORD: $WEBIN_USER_PASSWORD
           ENA_SERVICE: https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/
           MONGO_USER: copo_user
           MONGO_USER_PASSWORD: password
@@ -34,11 +34,11 @@ jobs:
           POSTGRES_PORT: 5432
           POSTGRES_SERVICE: copo_postgres
           POSTGRES_PASSWORD: password
-          ORCID_SECRET: /run/secrets/copo_orcid_secret_key
-          ORCID_CLIENT: run/secrets/copo_orcid_client_id
-          NIH_API_KEY: /run/secrets/copo_nih_api_key
-          PUBLIC_NAME_SERVICE_API_KEY: /run/secrets/copo_public_name_service_api_key
-          MAIL_PASSWORD: /run/secrets/copo_mail_password
+          ORCID_SECRET: $ORCID_SECRET 
+          ORCID_CLIENT: $ORCID_CLIENT
+          NIH_API_KEY: $NIH_API_KEY
+          PUBLIC_NAME_SERVICE_API_KEY: $PUBLIC_NAME_SERVICE_API_KEY
+          MAIL_PASSWORD: $MAIL_PASSWORD
           MAIL_PORT: 587
           MAIL_ADDRESS: data@earlham.ac.uk
           MAIL_SERVER: outlook.office365.com
@@ -48,7 +48,7 @@ jobs:
           ASPERA_PATH: /root/.aspera/cli
           BIOIMAGE_PATH: /run/secrets/copo_bioimage_path
           BIOIMAGE_SERVER: bsaspera_w@hx-fasp-1.ebi.ac.uk
-          ECS_SECRET_KEY: /run/secrets/ecs_secret_key
+          ECS_SECRET_KEY: $ECS_SECRET_KEY
           ECS_ACCESS_KEY_ID: copo@nbi.ac.uk
           ECS_ENDPOINT: http://ei-copo.obj-data.nbi.ac.uk
           ENA_V2_SERVICE_SYNC: https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit
