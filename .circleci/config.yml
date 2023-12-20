@@ -5,11 +5,76 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
+  build:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
-      - image: cimg/base:stable
+      - image: copo/copo-new-web:v2.0.4
+        name: copo_web
+        environment:
+          ENVIRONMENT_TYPE: demo
+          ASPERA_PLUGIN_DIRECTORY: aspera_linux_plugin
+          SECRET_KEY_FILE: /run/secrets/copo_web_secret_key
+          MEDIA_PATH: media/
+          DEBUG: true
+          REDIS_HOST: copo_redis
+          REDIS_PORT: 6379
+          WEBIN_USER_FILE: /run/secrets/copo_webin_user
+          WEBIN_USER_PASSWORD_FILE: /run/secrets/copo_webin_user_password
+          ENA_SERVICE: https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/
+          MONGO_USER: copo_user
+          MONGO_USER_PASSWORD: password
+          MONGO_DB: copo_mongo
+          MONGO_HOST: copo_mongo
+          MONGO_PORT: 27017
+          MONGO_MAX_POOL_SIZE: 100
+          POSTGRES_DB: copo
+          POSTGRES_USER: copo_user
+          POSTGRES_PORT: 5432
+          POSTGRES_SERVICE: copo_postgres
+          POSTGRES_PASSWORD: password
+          ORCID_SECRET_FILE: /run/secrets/copo_orcid_secret_key
+          ORCID_CLIENT_FILE: run/secrets/copo_orcid_client_id
+          NIH_API_KEY_FILE: /run/secrets/copo_nih_api_key
+          PUBLIC_NAME_SERVICE_API_KEY_FILE: /run/secrets/copo_public_name_service_api_key
+          MAIL_PASSWORD_FILE: /run/secrets/copo_mail_password
+          MAIL_PORT: 587
+          MAIL_ADDRESS: data@earlham.ac.uk
+          MAIL_SERVER: outlook.office365.com
+          MAIL_USERNAME: eidata@nbi.ac.uk
+          PUBLIC_NAME_SERVICE: https://id.tol.sanger.ac.uk/api/v2/
+          ENA_ENDPOINT_REPORT: https://wwwdev.ebi.ac.uk/ena/submit/report/samples
+          ASPERA_PATH: /root/.aspera/cli
+          BIOIMAGE_PATH_FILE: /run/secrets/copo_bioimage_path
+          BIOIMAGE_SERVER: bsaspera_w@hx-fasp-1.ebi.ac.uk
+          ECS_SECRET_KEY_FILE: /run/secrets/ecs_secret_key
+          ECS_ACCESS_KEY_ID: copo@nbi.ac.uk
+          ECS_ENDPOINT: http://ei-copo.obj-data.nbi.ac.uk
+          ENA_V2_SERVICE_SYNC: https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit
+          ENA_V2_SERVICE_ASYNC: https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit/queue
+          B2DROP_PERMITS: /copo/b2drop/permits
+
+      - image: copo/copo-redis:redis-v6.2.6.18
+        name: copo_redis
+
+      - image: postgres:15-bullseye
+        name: copo_postgres
+        environment:
+          POSTGRES_DB: copo
+          POSTGRES_USER: copo_user
+          POSTGRES_PASSWORD: password
+
+      - image: copo/copo-mongo:v7.0.1
+        name: copo_mongo
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: copo_admin
+          MONGO_INITDB_ROOT_PASSWORD: password
+          MONGO_USER: copo_user
+          MONGO_USER_PASSWORD: password
+          MONGO_DB: copo_mongo 
+
+
+      
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
@@ -21,6 +86,6 @@ jobs:
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build_and_test:
     jobs:
-      - say-hello
+      - build
