@@ -14,13 +14,13 @@ jobs:
         environment:
           ENVIRONMENT_TYPE: demo
           ASPERA_PLUGIN_DIRECTORY: aspera_linux_plugin
-          SECRET_KEY_FILE: /run/secrets/copo_web_secret_key
+          SECRET_KEY: /run/secrets/copo_web_secret_key
           MEDIA_PATH: media/
           DEBUG: true
           REDIS_HOST: copo_redis
           REDIS_PORT: 6379
-          WEBIN_USER_FILE: /run/secrets/copo_webin_user
-          WEBIN_USER_PASSWORD_FILE: /run/secrets/copo_webin_user_password
+          WEBIN_USER: /run/secrets/copo_webin_user
+          WEBIN_USER_PASSWORD: /run/secrets/copo_webin_user_password
           ENA_SERVICE: https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/
           MONGO_USER: copo_user
           MONGO_USER_PASSWORD: password
@@ -33,11 +33,11 @@ jobs:
           POSTGRES_PORT: 5432
           POSTGRES_SERVICE: copo_postgres
           POSTGRES_PASSWORD: password
-          ORCID_SECRET_FILE: /run/secrets/copo_orcid_secret_key
-          ORCID_CLIENT_FILE: run/secrets/copo_orcid_client_id
-          NIH_API_KEY_FILE: /run/secrets/copo_nih_api_key
-          PUBLIC_NAME_SERVICE_API_KEY_FILE: /run/secrets/copo_public_name_service_api_key
-          MAIL_PASSWORD_FILE: /run/secrets/copo_mail_password
+          ORCID_SECRET: /run/secrets/copo_orcid_secret_key
+          ORCID_CLIENT: run/secrets/copo_orcid_client_id
+          NIH_API_KEY: /run/secrets/copo_nih_api_key
+          PUBLIC_NAME_SERVICE_API_KEY: /run/secrets/copo_public_name_service_api_key
+          MAIL_PASSWORD: /run/secrets/copo_mail_password
           MAIL_PORT: 587
           MAIL_ADDRESS: data@earlham.ac.uk
           MAIL_SERVER: outlook.office365.com
@@ -45,9 +45,9 @@ jobs:
           PUBLIC_NAME_SERVICE: https://id.tol.sanger.ac.uk/api/v2/
           ENA_ENDPOINT_REPORT: https://wwwdev.ebi.ac.uk/ena/submit/report/samples
           ASPERA_PATH: /root/.aspera/cli
-          BIOIMAGE_PATH_FILE: /run/secrets/copo_bioimage_path
+          BIOIMAGE_PATH: /run/secrets/copo_bioimage_path
           BIOIMAGE_SERVER: bsaspera_w@hx-fasp-1.ebi.ac.uk
-          ECS_SECRET_KEY_FILE: /run/secrets/ecs_secret_key
+          ECS_SECRET_KEY: /run/secrets/ecs_secret_key
           ECS_ACCESS_KEY_ID: copo@nbi.ac.uk
           ECS_ENDPOINT: http://ei-copo.obj-data.nbi.ac.uk
           ENA_V2_SERVICE_SYNC: https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit
@@ -72,8 +72,6 @@ jobs:
           MONGO_USER: copo_user
           MONGO_USER_PASSWORD: password
           MONGO_DB: copo_mongo 
-
-
       
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
