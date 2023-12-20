@@ -9,6 +9,7 @@ jobs:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
+      - image: cimg/base:2023.12
       - image: copo/copo-new-web:v2.0.4
         name: copo_web
         environment:
@@ -77,8 +78,7 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
-      - run: |
-          "bash","-c","rsync -avhW --no-compress --progress /code/ /copo/ &&  rm -rf /code/ && python manage.py makemigrations && python manage.py makemigrations allauth && python manage.py migrate && python manage.py social_accounts && python manage.py setup_groups && python manage.py setup_schemas && python manage.py createcachetable && python manage.py setup_sequencing_centres && python manage.py collectstatic --noinput && supervisord -c src/celery.conf && supervisorctl -c src/celery.conf start all && /usr/local/bin/daphne -b 0.0.0.0 -p 8000 src.main_config.asgi:application"
+      - run: "echo http://127.0.0.1:8000"
           
 
 # Orchestrate jobs using workflows
