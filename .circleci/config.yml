@@ -11,7 +11,7 @@ jobs:
     docker:
       - image: cimg/base:2023.12
       - image: copo/copo-new-web:v2.0.4
-        name: copo-new.cyverseuk.org
+        #name: copo-new.cyverseuk.org
         environment:
           ENVIRONMENT_TYPE: demo
           ASPERA_PLUGIN_DIRECTORY: aspera_linux_plugin
@@ -54,6 +54,11 @@ jobs:
           ENA_V2_SERVICE_SYNC: https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit
           ENA_V2_SERVICE_ASYNC: https://wwwdev.ebi.ac.uk/ena/submit/webin-v2/submit/queue
           B2DROP_PERMITS: /copo/b2drop/permits
+        entrypoint:
+          bash
+          -c
+          |
+            rsync -avhW --no-compress --progress --exclude 'media' /code/ /copo/ && rm -rf /code/ &&  python manage.py makemigrations && python manage.py makemigrations allauth  && python manage.py migrate && python manage.py social_accounts && python manage.py setup_groups && python manage.py setup_schemas && python manage.py createcachetable && python manage.py collectstatic --noinput && supervisord -c src/celery.conf && supervisorctl -c src/celery.conf start all && /usr/local/bin/daphne -b 0.0.0.0 -p 8000 src.main_config.asgi:application
 
       - image: copo/copo-redis:redis-v6.2.6.18
         name: copo_redis
@@ -78,8 +83,8 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
-      - run: "sleep 30 && curl -vL http://copo-new.cyverseuk.org:8000/copo"
-          
+      #- run: "sleep 30 && curl -vL http://copo-new.cyverseuk.org:8000/copo"
+      - run: "sleep 30 && curl -vL http://127.0.0.1:8000/copo"    
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
