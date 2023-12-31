@@ -587,6 +587,22 @@ $(document).ready(function () {
     // Reset carousel on tab change
     $('#imageCarousel').carousel({ pause: true, interval: false }).carousel(0);
   });
+
+  $(document).on('click', '#clearStatusLogBtn', function () {
+    $('.status_content').remove();
+    $('.status_log').hide();
+    $('.status_div').hide();
+  });
+
+  $('#dtol_sample_info').bind('DOMSubtreeModified', function (e) {
+    create_info_log(e);
+    $('#dtol_sample_info').hide();
+  });
+
+  $(document).on('change', '#dtol_sample_info', function (e) {
+    create_info_log(e);
+    $('#dtol_sample_info').hide();
+  });
 });
 
 var fadeSpeed = 'fast';
@@ -913,4 +929,19 @@ function update_profile_table() {
     $('#non_erga').show();
   }
   update_pending_samples_table();
+}
+
+function create_info_log(e) {
+  let status_log_div = $('.status_log');
+  let status_content = $('<p/>', {
+    class: 'status_content',
+  });
+
+  status_content.text($('#dtol_sample_info').text());
+
+  if (status_content.text()) {
+    status_log_div.prepend(status_content);
+    status_log_div.show();
+    $('.status_div').show();
+  }
 }

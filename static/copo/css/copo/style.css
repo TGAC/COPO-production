@@ -191,6 +191,7 @@ div.dataTables_processing.ui.segment {
     font-weight: 300;
     font-size: 21px;
     line-height: 1.4;
+    margin-top: 20px;
 }
 
 .global-notifications-title {
@@ -1259,6 +1260,7 @@ th {
         position: fixed;
         border-radius: 6px 6px 0px 0px;
         top: 55px;
+        margin-top: 20px;
     }
 }
 
@@ -1274,6 +1276,7 @@ th {
         padding: 5px;
         border-radius: 6px 6px 0px 0px;
         top: 55px;
+        margin-top: 20px;
     }
 }
 

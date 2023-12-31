@@ -20,107 +20,10 @@
               href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui-noscript.css' %}">
     </noscript>
     <link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}">
+    <link rel="stylesheet" href="{% static 'copo_dtol_submission/css/copo_sample_accept_reject.css' %}">
     <link rel="stylesheet" href="{% static 'copo/css/copo/sample.css' %}">
     <link rel="stylesheet" href="{% static 'copo/bootstrap-treeview-1.2.0/dist/bootstrap-treeview.min.css' %}">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
-
-    <style>
-        th {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 0;
-            z-index: 9;
-            background-color: rgba(255, 255, 255, 1);
-
-        }
-
-        td {
-            z-index: 1;
-        }
-
-        .confirm {
-            border: 1px solid rgba(221, 221, 221, 0.95);
-            border-radius: 11px;
-            padding: 10px;
-            width: 400px;
-            margin-bottom: 20px;
-        }
-
-        .selected {
-            background-color: #e1e1e1 !important;
-        }
-
-        #profile_titles .selected a{
-            color: #e1e1e1 !important;
-        }
-
-        .na_color {
-            background-color: #eee;
-        }
-
-        .empty_color {
-            background-color: #f7eded;
-        }
-
-        .selectable_row {
-            cursor: pointer;
-        }
-
-        /* Truncate profile title when it is too long */
-        .profile_title_header_my_profiles {
-            max-height: 4em; /* fallback */
-            max-width: 200px;
-            -webkit-line-clamp: 3; /* number of lines to show */
-            -webkit-box-orient: vertical; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            -o-text-overflow: ellipsis;
-            -ms-text-overflow: ellipsis;
-            -moz-binding: url('ellipsis.xml#ellipsis');
-            display: -webkit-box;
-            text-align: left;
-        }
-        
-        .profile_title_header_all_profiles {
-            max-height: 4em; /* fallback */
-            max-width: 150px;
-            -webkit-line-clamp: 3; /* number of lines to show */
-            -webkit-box-orient: vertical; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            -o-text-overflow: ellipsis;
-            -ms-text-overflow: ellipsis;
-            -moz-binding: url('ellipsis.xml#ellipsis');
-            text-align: left;
-        }
-
-        .table_viewport {
-            max-height: 600px;
-            overflow: scroll;
-        }
-
-        .tickbox {
-            vertical-align: middle !important;
-        }
-
-        .processing_row {
-            background-color: rgba(0, 52, 255, 0.16);
-        }
-
-        .table_viewport {
-            padding-left: 20px
-        }
-
-        .selected_row {
-            background-color: #fff3ce !important;
-        }
-
-        .filter_margin {
-            margin-top: 46px
-        }
-
-
-    </style>
 {% endblock %}
 
 
@@ -154,11 +57,13 @@
         <h3 class="h3"><small>Note clicking accept will immediately send sample info to ENA/Biosamples</small></h3>
 
     </div>
-    <div class="col-lg-3 col-sm-3 col-md-3">
+    <div class="col-lg-3 col-sm-3 col-md-3 status_div">
         <h4 class="h4">Status</h4>
-        <div class="alert alert-info" style="min-width: 400px; min-height: 55px; max-height: 100px; overflow:auto " role="alert">
-            <span id="spinner" style="display:none" class="pull-right ui tiny active inline loader"></span>
-            <div id="sub_spinner" class="pull-right ui tiny indeterminate inline loader"></div>
+        <div class="status_log">
+            <button id="clearStatusLogBtn" type="button" title='Clear status log' aria-label="Clear">
+                &times;
+            </button>
+            <div id="spinner" style="display:none" class="pull-right ui tiny active inline loader"></div>
             <p id="dtol_sample_info">Idle</p>
         </div>
     </div>

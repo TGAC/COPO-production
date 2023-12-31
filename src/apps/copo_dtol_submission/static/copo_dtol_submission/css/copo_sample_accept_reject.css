@@ -1,0 +1,199 @@
+/* Table CSS styles */
+th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    background-color: rgba(255, 255, 255, 1);
+
+}
+
+td {
+    z-index: 1;
+}
+
+.confirm {
+    border: 1px solid rgba(221, 221, 221, 0.95);
+    border-radius: 11px;
+    padding: 10px;
+    width: 400px;
+    margin-bottom: 20px;
+}
+
+.selected {
+    background-color: #e1e1e1 !important;
+}
+
+#profile_titles .selected a {
+    color: #e1e1e1 !important;
+}
+
+.na_color {
+    background-color: #eee;
+}
+
+.empty_color {
+    background-color: #f7eded;
+}
+
+.selectable_row {
+    cursor: pointer;
+}
+
+/* Truncate profile title when it is too long */
+.profile_title_header_my_profiles {
+    max-height: 4em;
+    /* fallback */
+    max-width: 200px;
+    -webkit-line-clamp: 3;
+    /* number of lines to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+    -moz-binding: url('ellipsis.xml#ellipsis');
+    display: -webkit-box;
+    text-align: left;
+}
+
+.profile_title_header_all_profiles {
+    max-height: 4em;
+    /* fallback */
+    max-width: 150px;
+    -webkit-line-clamp: 3;
+    /* number of lines to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+    -moz-binding: url('ellipsis.xml#ellipsis');
+    text-align: left;
+}
+
+.table_viewport {
+    max-height: 600px;
+    overflow: scroll;
+}
+
+.tickbox {
+    vertical-align: middle !important;
+}
+
+.processing_row {
+    background-color: rgba(0, 52, 255, 0.16);
+}
+
+.table_viewport {
+    padding-left: 20px
+}
+
+.selected_row {
+    background-color: #fff3ce !important;
+}
+
+.filter_margin {
+    margin-top: 46px
+}
+
+/* Status CSS styles*/
+/*  clearStatusLogBtn CSS styles */
+#clearStatusLogBtn {
+    cursor: pointer;
+    border-radius: 50%;
+    /* top right bottom left */
+    padding: 0 0 0.5em 0;
+    width: 25px;
+    height: 25px;
+    border: 2px solid #000;
+    position: absolute;
+    float: right;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: 0.5;
+    top: 0;
+    right: 0;
+    margin: 5px 12px 5px 5px;
+    /* top right bottom left */
+}
+
+#clearStatusLogBtn:hover {
+    border: 2px solid #000;
+    background-color: #b94a48;
+    color: #ffffff;
+    opacity: 1;
+}
+
+/* Status log CSS styles*/
+.status_div {
+    display: none;
+}
+
+.status_log {
+    position: relative;
+    display: none;
+    min-width: 400px;
+    min-height: 55px;
+    max-height: 100px;
+    overflow: auto;
+    border: 1px solid rgb(184, 190, 193);
+    padding-top: 10px;
+}
+
+.status_log .status_content {
+    /* Ensures the content is not revealed until the animation */
+    border-right: .15em solid orange;
+    font-family: "Courier";
+    font-size: 14px;
+    overflow: hidden;
+    padding-left: 10px;
+    width: 370px;
+    -webkit-animation: type 2s steps(500, end);
+    animation: type 1s steps(10, end);
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+/* The typing effect */
+@keyframes type {
+    0% {
+        width: 0;
+    }
+
+    99.9% {
+        border-right: .15em solid orange;
+    }
+
+    100% {
+        border: none;
+    }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+@-webkit-keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+/* Loading spinner CSS styles*/
+#spinner {
+    left: revert;
+    right: 0;
+    position: absolute;
+    margin: 10px 47px 20px 0
+}
+
+#dtol_sample_info {
+    display: none;
+}
