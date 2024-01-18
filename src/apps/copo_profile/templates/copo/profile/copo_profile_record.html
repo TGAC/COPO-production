@@ -1,30 +1,30 @@
 {% load static %}
 {% load web_tags %}
 <div class="grid">
-    <div class="copo-records-panel" profile_type="{{ profile.type }}" shared_profile_type="{{ profile.shared_type }}"  study_status="{{ profile.study_status | get_first_value_from_array }}" study_release_date="{{ profile.study_release_date | get_first_value_from_array }}">
-        <!--Panel -->
-        <div class="panel">
-            <!--Panel heading -->
-            <div class="panel-heading">
+    <div class="copo-records-card" profile_type="{{ profile.type }}" shared_profile_type="{{ profile.shared_type }}"  study_status="{{ profile.study_status | get_first_value_from_array }}" study_release_date="{{ profile.study_release_date | get_first_value_from_array }}">
+        <!--Card -->
+        <div class="card">
+            <!--Card heading -->
+            <div class="card-header">
                 <div class="row">
-                    <div class="col-sm-10 col-md-10 col-lg-10 row-title">
+                    <div class="col-sm-10 col-md-10 col-lg-10 row-title card-title">
                         <span id="{{ profile.id }}" class=showEllipsisFor1TextLine>{{ profile.title }}&nbsp;</span>
                     </div>
                     <div class="col-sm-2 col-md-2 col-lg-2 row-ellipsis" title="View profile options">
-                        <div id="{{ profile.id }}" class="pull-right ellipsisDiv">
-                            <i id="ellipsisID" class="fa fa-ellipsis-v" data-toggle="popover"
+                        <div id="{{ profile.id }}" class="float-end ellipsisDiv">
+                            <i id="ellipsisID" class="fa fa-ellipsis-v" data-bs-toggle="popover"
                                data-html="true" role="button"
-                               title='<i id="profileOptionsPopoverCloseBtn" class="fa fa-times pull-right"></i>'></i>
+                               title='<i id="profileOptionsPopoverCloseBtn" class="fa fa-times float-end"></i>'></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--Panel body -->
-            <div class="grid-panel-body">
+            <!--Card body -->
+            <div class="grid-card-body card-body">
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12"
                          style="height:fit-content;">
-                        <!--Panel content -->
+                        <!--Card content -->
                         <!-- Row: Profile information-->
                         <div class="profile-info-row">
                             <div class="date_createdDiv" style="display:inline; margin-bottom: 10px;" date_created="{{ profile.date_created }}"><span class="boldText">Created: </span> {{ profile.date_created }}</div>
@@ -33,7 +33,7 @@
                             
                             {% if profile.study_status or profile.associated_type or profile.sequencing_centre|is_list_empty %}
                                 <a id="showMoreProfileInfoBtn" class="btn {% if profile.description.strip|length < 56 %}showMoreProfileInfoBtn_margin{% elif profile.description.strip|length >= 56 %}showMoreProfileInfoBtn_2LineDescriptionText{% endif %}" href="#" rel="popover"
-                                    data-popover-content="#showMoreProfileInfoContent" data-placement="right">View more...</a>                         
+                                    data-popover-content="#showMoreProfileInfoContent" data-bs-placement="right">View more...</a>                         
                             {% endif %}
 
                             <!-- Content for 'showMoreProfileInfo' popover -->
@@ -82,7 +82,7 @@
                                 </div>
                             </div>                  
                         </div>
-                        <!--Panel expanding menu -->
+                        <!--Card expanding menu -->
                         <!-- Row: Profile menu-->
                         <div class="{% if profile.study_status or profile.associated_type or profile.sequencing_centre|is_list_empty %}menu-row{% else %}menu-no-addtl-info-row{% endif %}">
                             <span class="ui compact menu expanding_menu" id="expanding_menu">
@@ -101,7 +101,7 @@
                                         <a class="item action" profile_component="erga" anchor_type="sample" data-action_type="sample">Submit ERGA Manifest</a>                            
                                         <a class="item action" profile_component="all" anchor_type="reads" data-action_type="read">Submit Reads</a>
                                         <a class="item action" profile_component="all" anchor_type="files" data-action_type="files">Upload Files</a>
-                                        <a class="item action ui divider" profile_component="all" anchor_type="all" data-action_type="release_study" style="margin: 1em 0;">Release Study</a>
+                                        <a class="item action ui dropdown-divide" profile_component="all" anchor_type="all" data-action_type="release_study" style="margin: 1em 0;">Release Study</a>
                                     </div>
                                 </div>
                                 <div class="ui up pointing dropdown link item" tabindex="0">

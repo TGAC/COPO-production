@@ -199,14 +199,14 @@
                         <div class="card-body">
                             <div id="world_map" style="height: 500px" class="jvectormap jvectormap-merc"
                                  data-projection="merc" data-name="world_merc">
-                                    <span id="world_map_spinner_div" class="pull-right"
+                                    <span id="world_map_spinner_div" class="float-end"
                                           style="font-size:12px; font-weight:normal">
                                             <div class="alert alert-info" style="min-width: 400px; min-height: 55px;"
                                                  role="alert">
                                                 <span id="world_map_spinner" style="margin-top:10px"
-                                                      class="pull-right ui tiny active inline loader"></span>
+                                                      class="float-end ui tiny active inline loader"></span>
                                                 <div id="world_map_sub_spinner" style="margin-top:10px"
-                                                     class="pull-right ui tiny indeterminate inline loader"></div>
+                                                     class="float-end ui tiny indeterminate inline loader"></div>
                                                 <p id="worldMapStatus" style="color:#3a87ad !important; font-size:20px !important;">
                                                     World map is loading...</p>
                                             </div>
@@ -289,7 +289,7 @@
                                 <p class="text-sm "> View the metadata of GAL according to its taxonomy </p>
                             </div>
                             <div class="col-lg-4 mt-4 mb-3">
-                                <span id='current_gal_name' class="text-sm mb-0 pull-left ms-1"></span>
+                                <span id='current_gal_name' class="text-sm mb-0 float-start ms-1"></span>
                             </div>
                             <hr class="dark horizontal">
                         </div>
@@ -344,7 +344,7 @@
                                 <p class="text-sm "> View sample details based on profile type</p>
                             </div>
                             <div class="col-lg-5 mt-4 mb-3">
-                                <span id='current_sample_profile' class="text-sm mb-0 pull-left ms-1"></span>
+                                <span id='current_sample_profile' class="text-sm mb-0 float-start ms-1"></span>
                             </div>
                             <hr class="dark horizontal">
                         </div>
@@ -364,14 +364,14 @@
                         <div class="card-body">
                             <div id="world_map" style="height: 500px" class="jvectormap jvectormap-merc"
                                  data-projection="merc" data-name="world_merc">
-                                    <span id="world_map_spinner_div" class="pull-right"
+                                    <span id="world_map_spinner_div" class="float-end"
                                           style="font-size:12px; font-weight:normal">
                                             <div class="alert alert-info" style="min-width: 400px; min-height: 55px;"
                                                  role="alert">
                                                 <span id="world_map_spinner" style="margin-top:10px"
-                                                      class="pull-right ui tiny active inline loader"></span>
+                                                      class="float-end ui tiny active inline loader"></span>
                                                 <div id="world_map_sub_spinner" style="margin-top:10px"
-                                                     class="pull-right ui tiny indeterminate inline loader"></div>
+                                                     class="float-end ui tiny indeterminate inline loader"></div>
                                                 <p id="worldMapStatus" style="color:#3a87ad !important; font-size:20px !important;">
                                                     World map is loading...</p>
                                             </div>
@@ -482,14 +482,13 @@
 {% block help_section %}{% endblock %}
 
 {% block js_block %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.0/chart.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script src="{% static 'copo/js/chartjs/chart-4.4.1.umd.js' %}"></script>
+    <script src="{% static 'copo/datatables/js/moment-2.30.1.js' %}"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script src="{% static 'tol_dashboard/js/copo_tol_dashboard.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/tol_inspection.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/tol_inspection_by_gal.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/jquery-jvectormap-2.05.min.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/jquery-jvectormap-world-mill.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>
+    <script src="{% static 'copo/datatables/js/datetime.moment-1.13.7.js' %}"></script>
 {% endblock js_block %}

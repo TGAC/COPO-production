@@ -83,19 +83,19 @@
         <div class="col-sm-5 col-md-5 col-lg-9 copo-page-headers"></div>
         <div class="col-sm-7 col-md-7 col-lg-3 copo-page-icons">
             <button id="accept_reject_shortcut" style="display:none"
-                    class="big circular ui icon teal button pull-right accept_reject_samples copo-tooltip"
+                    class="big circular ui icon teal button float-end accept_reject_samples copo-tooltip"
                     title="Accept/Reject TOL Samples">
                 <i class="icon tasks sign"></i>
             </button>
             <button id="copo_tol_dashboard_shortcut"
                     style="display: none"
-                    class="big circular ui icon yellow button pull-right copo_tol_dashboard copo-tooltip"
+                    class="big circular ui icon yellow button float-end copo_tol_dashboard copo-tooltip"
                     title="View COPO Tree of Life Dashboard">
                 <i class="icon chart line"></i>
             </button>
             <button id="copo_accessions_dashboard_shortcut"
                     style="display: none" title="View COPO Accessions' Dashboard"
-                    class="big circular ui icon pink button pull-right copo_accessions copo-tooltip">
+                    class="big circular ui icon pink button float-end copo_accessions copo-tooltip">
                 <i class="icon sitemap"></i>
             </button>
         </div>
@@ -179,18 +179,18 @@
     <!-- Sort Work Profiles button-->
     {% if profiles %}
         <div class="row">
-            <div class="col-xs-2 col-md-3 col-lg-4">
-                <div class="pull-right" style="padding-top: 9px;"> Sort by:</div>
+            <div class="col-lg-9">
+                <div class="float-end" style="padding-top: 9px;"> Sort by:</div>
             </div>
-            <div class="col-xs-2 col-md-2 col-lg-2">
-                <select id="sortProfilesBtn" class="form-control" style="padding-bottom:10px">
+            <div class="col-lg-2">
+                <select id="sortProfilesBtn" class="form-select" style="padding-bottom:10px">
                     <option value="date_created">Date Created</option>
                     <option value="title">Profile Title</option>
                     <option value="type">Profile Type</option>
                 </select>
             </div>
-            <div class="col-xs-0 col-md-0 col-lg-0">
-                <div class="pull-left"><i id="sortIconID" class="sort-down fa fa-sort-down sort-icon"></i></div>
+            <div class="col-lg-1">
+                <div class="float-start"><i id="sortIconID" class="sort-down fa fa-sort-down sort-icon"></i></div>
 
             </div>
         </div>

@@ -499,7 +499,7 @@ function get_form_title(data) {
 function get_help_ctrl() {
   var helpCtrl = $('<div/>', {
     html: '<span style="padding:6px;">Help tips</span><input class="copo-help-chk" type="checkbox" name="helptips-chk">',
-    class: 'tips-switch-form-div form-group pull-right',
+    class: 'tips-switch-form-div form-group float-end',
   });
 
   return helpCtrl;
@@ -924,7 +924,7 @@ var dispatchFormControl = {
 
     //build select
     var selectCtrl = $('<select/>', {
-      class: 'form-control input-copo copo-select-control',
+      class: 'form-select input-copo copo-select-control',
       id: formElem.id,
       name: formElem.id,
     });
@@ -1010,7 +1010,7 @@ var dispatchFormControl = {
 
     //build select
     var selectCtrl = $('<select/>', {
-      class: 'form-control input-copo onto-select',
+      class: 'form-select input-copo onto-select',
       id: formElem.id,
       name: formElem.id,
       placeholder: formElem.label,
@@ -1431,7 +1431,7 @@ var dispatchFormControl = {
 
     //generate element controls
     var ctrl = $('<select/>', {
-      class: 'copo-lookup2 input-copo form-control',
+      class: 'copo-lookup2 input-copo form-select',
       style: 'width: 100%',
       multiple: 'multiple',
       id: formElem.id,
@@ -1686,7 +1686,7 @@ var dispatchFormControl = {
 
     //generate element controls
     var ctrl = $('<select/>', {
-      class: 'input-copo form-control copo-single-select',
+      class: 'input-copo form-select copo-single-select',
       style: 'width: 100%',
       id: formElem.id,
       name: formElem.id,
@@ -2278,7 +2278,7 @@ function create_attachable_component(formElem) {
 
   var helpCtrl = $('<div/>', {
     html: '<span style="padding:6px;">Help tips</span><input class="copo-help-chk" type="checkbox" name="helptips-chk-sub">',
-    class: 'tips-switch-form-div form-group pull-right',
+    class: 'tips-switch-form-div form-group float-end',
   });
 
   var helpDivRow = $('<div/>', {
@@ -2610,7 +2610,7 @@ function do_array_ctrls(ctrlsDiv, counter, formElem) {
 
   var addBtn = $('<button/>', {
     style: 'border-radius:0;',
-    class: 'btn btn-xs btn-success',
+    class: 'btn btn-sm btn-success',
     type: 'button',
     html: '<i class="fa fa-plus-circle"></i> Add ' + formElem.label,
     click: function (event) {
@@ -2865,7 +2865,7 @@ function get_ontology_span_2(ontologySpan, formElem) {
 
   //build select; basis for auto-completion
   var selectCtrl = $('<select/>', {
-    class: 'form-control input-copo onto-select',
+    class: 'form-select input-copo onto-select',
     'data-url': localolsURL,
     'data-element': formElem.id,
     'data-validate': true,
@@ -2925,7 +2925,7 @@ function get_general_ontologyselect_span(ontologySpan, formElem) {
 
   //build select; basis for auto-completion
   var selectCtrl = $('<select/>', {
-    class: 'form-control input-copo general-onto general-onto-select',
+    class: 'form-select input-copo general-onto general-onto-select',
     'data-element': formElem.id,
     'data-validate': false,
     'data-eventname': event_name,
@@ -3009,7 +3009,7 @@ function get_general_ontology_span(ontologySpan, formElem) {
 
   //build select; basis for auto-completion
   var selectCtrl = $('<select/>', {
-    class: 'form-control input-copo general-onto general-onto-search',
+    class: 'form-select input-copo general-onto general-onto-search',
     'data-url': localolsURL,
     'data-element': formElem.id,
     'data-validate': false,

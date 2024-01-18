@@ -159,9 +159,9 @@
 {% block page_tile %}
     <div class="row">
         <div class="page-title-custom" style="margin-left:10px;">Groups
-            <span class="pull-right saving_status">
+            <span class="float-end saving_status">
                 <span class="lead label label-default">Accessing</span>
-                <img height="20px" src="{% static "copo/img/ajax.gif" %}"/>
+                <img height="20px" src="{% static 'copo/img/ajax.gif' %}"/>
             </span>
         </div>
     </div>
@@ -174,22 +174,22 @@
 
     <div class="row" style="margin-top: 20px">
         <div class="col-lg-12">
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <div class="dropdown btn-group">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                     <span id="group_name_button" class="selection">Choose Group&nbsp</span><span class="caret"></span>
                 </button>
                 <ul id="group_dropdown_ul" class="dropdown-menu" role="menu">
                     {% for g in group_list %}
-                        <li><a href="#" data-group-id="{{ g|mongo_id }}">{{ g.name }}</a></li>
+                        <li><a class="dropdown-item" href="#" data-group-id="{{ g|mongo_id }}">{{ g.name }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
-            <i data-toggle="modal" data-target="#add_group_modal"
+            <i data-bs-toggle="modal" data-bs-target="#add_group_modal"
                class="fa fa-plus-square fa-2x group-button plus-color" title="Add a group"></i>
-            <i data-toggle="modal" style="visibility:hidden" id="edit_group_button" class="fa fa-pencil-square-o fa-2x group-button edit-color" title="Edit group"></i>
-            <i data-toggle="modal" style="visibility:hidden" id="delete_group_button"
+            <i data-bs-toggle="modal" style="visibility:hidden" id="edit_group_button" class="fa fa-pencil-square-o fa-2x group-button edit-color" title="Edit group"></i>
+            <i data-bs-toggle="modal" style="visibility:hidden" id="delete_group_button"
                class="fa fa-minus-square fa-2x group-button minus-color" title="Delete group"></i>
-            <span class="lead pull-right">Selected Group: <span id="selected_group" class="label label-default">Choose Group</span>
+            <span class="lead float-end">Selected Group: <span id="selected_group" class="label label-default">Choose Group</span>
             </span>
 
         </div>
@@ -242,7 +242,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="background-color: #337ab7;">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Create New Group</h4>
                 </div>
@@ -250,7 +250,7 @@
                     <div class="row helpDivRow" style="margin-bottom:10px">
                         <div class="helpDivRowMessage col-sm-9 col-md-9 col-lg-9"></div>
                     </div>
-                    <form id="group_form" data-toggle="validator" role="form">
+                    <form id="group_form" class="needs-validated" role="form">
                         <div class="form-group">
                             <label class='groupNamelLabel' for="groupName">Group Name</label>
                             <input type="text" class="form-control" id="groupName" placeholder="Name" required>
@@ -273,16 +273,19 @@
 {% endblock %}
 
 {% block help_section %}
-    <ul class="nav nav-tabs copo-sidebar-tabs">
-        <li class="active copo-sidebar-info"><a data-toggle="tab" href="#copo-sidebar-info"
-                data-copo-tour-id="page_alert_panel">Info</a></li>
+    <ul class="nav nav-tabs copo-sidebar-tabs pt-3" role="tablist">
+        <li class="nav-item copo-sidebar-info" role="presentation">
+            <a class="nav-link active" data-bs-toggle="tab" href="#copo-sidebar-info"
+                data-copo-tour-id="page_alert_card" role="tab">Info
+            </a>
+        </li>
     </ul>
-    <div class="tab-content"></div>
-        <div id="copo-sidebar-info" class="tab-pane fade in active copo-sidebar-info">
+    <div class="tab-content">
+        <div id="copo-sidebar-info" class="tab-pane fade show active copo-sidebar-info" role="tabpanel" aria-labelledby="copo-sidebar-info">
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
-                    <div class="panel panel-dtables">
-                        <div id="page_alert_panel" class="panel-body collapse in" >
+                    <div class="card panel-dtables">
+                        <div id="page_alert_card" class="card-body collapse show" >
                         </div>
                     </div>
                 </div>

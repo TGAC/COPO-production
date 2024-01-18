@@ -82,17 +82,17 @@ div.shown span.summary-details-control:before {
     color: #fff;
 }
 
-.work-profiles-nav.navbar-default .navbar-toggle:hover,
-.work-profiles-nav.navbar-default .navbar-toggle:focus {
+.work-profiles-nav.navbar-default .navbar-toggler:hover,
+.work-profiles-nav.navbar-default .navbar-toggler:focus {
     background-color: transparent;
 }
 
-.work-profiles-nav.navbar-default .navbar-toggle .icon-bar {
+.work-profiles-nav.navbar-default .navbar-toggler .icon-bar {
     background-color: transparent;
 }
 
-.work-profiles-nav.navbar-default .navbar-toggle:hover .icon-bar,
-.work-profiles-nav.navbar-default .navbar-toggle:focus .icon-bar {
+.work-profiles-nav.navbar-default .navbar-toggler:hover .icon-bar,
+.work-profiles-nav.navbar-default .navbar-toggler:focus .icon-bar {
     background-color: transparent;
 }
 

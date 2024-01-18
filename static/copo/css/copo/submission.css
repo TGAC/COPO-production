@@ -1,12 +1,12 @@
-.panel-body {
+.card-body {
     height: 600px
 }
 
-#bandwidth_chart {
+/* #bandwidth_chart {
 }
 
 #completed_chart {
-}
+} */
 
 .submission_pending {
     background-color: #0E9D57;
@@ -74,7 +74,7 @@ small {
     color: lightgrey;
 }
 
-.panel-body {
+.card-body {
       height: auto !important;
 }
 

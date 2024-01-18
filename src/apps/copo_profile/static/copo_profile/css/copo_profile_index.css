@@ -57,13 +57,13 @@
 }
 
 /* Popover: Ellipsis */
-.popover-title {
+.popover-header {
     background: #ffffff !important;
     color: black !important;
     border-bottom: none !important;
 }
 
-.popover-content {
+.popover-body {
     background: #ffffff !important;
     color: black !important;
 }
@@ -91,25 +91,26 @@
 }
 
 
-/* Profile panels */
-.panel {
+/* Profile cards */
+.card {
     border-color: rgba(17, 70, 110, 0.1) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
 }
 
-.panel-heading {
+.card-header {
     color: white;
 }
 
-.panel-body {
+.card-body {
     height: fit-content; /* Auto adjusts the height of the div according to its contents */
 }
 
-.grid-panel-body {
+.grid-card-body {
     padding: 15px;
     height: 356px !important;
 }
 
-.grid-panel-body-selected {
+.grid-card-body-selected {
     background-color: #ff8c8c !important;
     color: white !important;
     font-weight: bolder !important;
@@ -597,7 +598,7 @@ ul.sequencing_centre_ulTag {
 
 
 @media only screen and (max-width: 776px) {
-    .grid-panel-body {
+    .grid-card-body {
         height: 335px !important
     }
 

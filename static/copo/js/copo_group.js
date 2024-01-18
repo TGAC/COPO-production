@@ -270,7 +270,7 @@ $(document).ready(function () {
         {
           id: 'editBtnID',
           label: 'Save',
-          cssClass: 'tiny ui btn btn-primary pull-left',
+          cssClass: 'tiny ui btn btn-primary float-start',
           action: function (dialogRef) {
             let editedGroupName = $('#editGroupName').val();
             let editGroupDescription = $('#editGroupDescription').val();

@@ -80,7 +80,7 @@ function do_crud_action_feedback(meta) {
     feedbackClass = 'alert-info';
   }
 
-  var infoPanelElement = trigger_global_notification();
+  var infoCardElement = trigger_global_notification();
 
   var feedback = get_alert_control();
   feedback
@@ -89,7 +89,7 @@ function do_crud_action_feedback(meta) {
     .addClass('page-notifications-node');
 
   feedback.find('.alert-message').html(meta.message);
-  infoPanelElement.prepend(feedback);
+  infoCardElement.prepend(feedback);
 }
 
 function format_feedback_message(message, messageClass, messageTitle) {
@@ -127,11 +127,11 @@ function do_table_buttons_events() {
       var btntype = elem.attr('data-btntype'); //type of button: single, multi, all
       var title = elem.find('.action-label').html();
       var message = elem.attr('data-error-message');
-      
+
       if (!title) {
-          title = 'Record action';
+        title = 'Record action';
       }
-      
+
       if (!message) {
         message = 'No records selected for ' + title + ' action';
       }
@@ -186,11 +186,11 @@ function do_table_buttons_events_server_side(component) {
       var btntype = elem.attr('data-btntype'); //type of button: single, multi, all
       var title = elem.find('.action-label').html();
       var message = elem.attr('data-error-message');
-      
+
       if (!title) {
-          title = 'Record action';
+        title = 'Record action';
       }
-      
+
       if (!message) {
         message = 'No records selected for ' + title + ' action';
       }
@@ -250,12 +250,12 @@ function display_copo_alert(alertType, alertMessage, displayDuration) {
   //alertMessage: the actual message to be displayed to the user
   //displayDuration: how long should the alert be displayed for before taking it down
 
-  // Strangely, calling the 'Info' tab with the ID, '#page_alert_panel' doesn't work,
+  // Strangely, calling the 'Info' tab with the ID, '#page_alert_card' doesn't work,
   // so the class, '.copo-sidebar-info' is used instead.
   let info_sidebar_tab = $('.copo-sidebar-info');
-  let infoPanelElement = info_sidebar_tab.find('.panel-body'); // $('#page_alert_panel');
+  let infoCardElement = info_sidebar_tab.find('.panel-body'); // $('#page_alert_card');
 
-  if (infoPanelElement.length) {
+  if (infoCardElement.length) {
     //reveal tab if not already shown
     $('.copo-sidebar-tabs a[href="#copo-sidebar-info"]').tab('show');
 
@@ -275,7 +275,7 @@ function display_copo_alert(alertType, alertMessage, displayDuration) {
 
     alertElement.find('.alert-message').html(alertMessage);
 
-    infoPanelElement.prepend(alertElement);
+    infoCardElement.prepend(alertElement);
 
     // adjust the margin-top between sidebar (info) tab content and the profiles legend
     $('.profiles-legend').css('margin-top', '0');
@@ -442,7 +442,7 @@ function do_render_server_side_table(componentMeta) {
       .buttons()
       .nodes()
       .each(function (value) {
-        $(this).removeClass('btn btn-default').addClass('tiny ui button');
+        $(this).removeClass('btn btn-secondary').addClass('tiny ui button');
       });
 
     place_task_buttons(componentMeta); //this will place custom buttons on the table for executing tasks on records
@@ -727,7 +727,9 @@ function do_render_component_table(data, componentMeta) {
       .buttons()
       .nodes()
       .each(function (value) {
-        $(this).removeClass('btn btn-default').addClass('tiny ui basic button');
+        $(this)
+          .removeClass('btn btn-secondary')
+          .addClass('tiny ui basic button');
       });
 
     place_task_buttons(componentMeta); //this will place custom buttons on the table for executing tasks on records

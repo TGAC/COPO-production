@@ -178,8 +178,8 @@ $(document).ready(function () {
   });
 
   // Close the alert message once the close button is clicked
-  // since the boostrap event is strangely not registered to do so
-  $(document).on('click', '#page_alert_panel .alert .close', function () {
+  // since the bootstrap event is strangely not registered to do so
+  $(document).on('click', '#page_alert_card .alert .close', function () {
     $(this).closest('.alert').remove();
   });
 
@@ -359,30 +359,30 @@ function save_read_data() {
   $.ajax({
     url: '/copo/copo_read/save_ena_records',
   })
-  .fail(function (data) {
-    dialog.getButton('upload_read_manifest_button').enable();
-    dialog.setClosable(true);
-    dialog.getButton('upload_read_manifest_button').stopSpin();
-    console.log(data);
-    responseText = data.responseText;
-    if (responseText != '') {
-      BootstrapDialog.show({
-        title: 'Error',
-        message: 'Error ' + data.status + ': ' + data.responseText,
-      });
-    }
-  })
-  .done(function (data) {
-    result_dict = {};
-    result_dict['status'] = 'success';
-    result_dict['message'] = 'Read records are saved';
-    do_crud_action_feedback(result_dict);
-    dialog.close();
-    globalDataBuffer = data;
+    .fail(function (data) {
+      dialog.getButton('upload_read_manifest_button').enable();
+      dialog.setClosable(true);
+      dialog.getButton('upload_read_manifest_button').stopSpin();
+      console.log(data);
+      responseText = data.responseText;
+      if (responseText != '') {
+        BootstrapDialog.show({
+          title: 'Error',
+          message: 'Error ' + data.status + ': ' + data.responseText,
+        });
+      }
+    })
+    .done(function (data) {
+      result_dict = {};
+      result_dict['status'] = 'success';
+      result_dict['message'] = 'Read records are saved';
+      do_crud_action_feedback(result_dict);
+      dialog.close();
+      globalDataBuffer = data;
 
-    if (data.hasOwnProperty('table_data')) {
-      var event = jQuery.Event('refreshtable');
-      $('body').trigger(event);
-    }
-  });
+      if (data.hasOwnProperty('table_data')) {
+        var event = jQuery.Event('refreshtable');
+        $('body').trigger(event);
+      }
+    });
 }

@@ -442,13 +442,16 @@ function render_accessions_table(data) {
     .buttons()
     .nodes()
     .each(function (value) {
-      $(this).removeClass('btn btn-default').addClass('tiny ui basic button');
+      $(this).removeClass('btn btn-secondary').addClass('tiny ui basic button');
     });
 
-  // Show task buttons for accessions' dashboard only
-  if ($(document).data('showAllCOPOAccessions'))
+  if ($(document).data('showAllCOPOAccessions')) {
+    // Show task buttons for accessions' dashboard only
     place_accessions_task_buttons(componentMeta);
-  // }
+
+    // Hide the page icons on accessions' dashboard only
+    $('.copo-page-icons').hide();
+  }
 
   // Get accession types
   let accession_types = [];
@@ -491,7 +494,7 @@ function render_accessions_table(data) {
     .attr('size', 30);
 
   // Add css to align the buttons to the right
-  table_wrapper.find('.dt-buttons').addClass('pull-right');
+  table_wrapper.find('.dt-buttons').addClass('float-end');
   table_wrapper.find('.info-rw').hide(); // Hide showing 'x' of 'x' row
 
   // Insert breakpoints after the toggle button
@@ -612,7 +615,7 @@ function toggle_accessions_view() {
     $(this).find('.btn').toggleClass('btn-success');
   }
 
-  $(this).find('.btn').toggleClass('btn-default');
+  $(this).find('.btn').toggleClass('btn-secondary');
 
   if ($(this).find('.active').text().includes('Stand-alone')) {
     $(document).data('isSampleProfileTypeStandalone', true);
@@ -626,5 +629,5 @@ function toggle_accessions_view() {
 function set_toggle_button() {
   $('.toggle-view').find('.btn').toggleClass('active');
   $('.toggle-view').find('.btn').toggleClass('btn-success');
-  $('.toggle-view').find('.btn').toggleClass('btn-default');
+  $('.toggle-view').find('.btn').toggleClass('btn-secondary');
 }

@@ -132,7 +132,7 @@ $(document).ready(function () {
   function show_submission_status_codes() {
     var message = $('<div class="webpop-content-div"></div>');
 
-    var infoPanelElement = trigger_global_notification();
+    var infoCardElement = trigger_global_notification();
 
     var codeList =
       '<div style="margin-top: 10px;"><ul class="list-group">\n' +
@@ -144,7 +144,7 @@ $(document).ready(function () {
       '</ul></div>';
 
     message.append(codeList);
-    infoPanelElement.prepend(message);
+    infoCardElement.prepend(message);
   }
 
   function get_table_dataset(dtd) {
@@ -405,7 +405,7 @@ $(document).ready(function () {
         .nodes()
         .each(function (value) {
           $(this)
-            .removeClass('btn btn-default')
+            .removeClass('btn btn-secondary')
             .addClass('tiny ui basic button');
         });
     }
@@ -859,7 +859,7 @@ $(document).ready(function () {
                       .remove()
                       .draw();
 
-                    var infoPanelElement = trigger_global_notification();
+                    var infoCardElement = trigger_global_notification();
 
                     let feedback = get_alert_control();
                     feedback
@@ -870,7 +870,7 @@ $(document).ready(function () {
                     feedback
                       .find('.alert-message')
                       .html('Successfully deleted submission!');
-                    infoPanelElement.prepend(feedback);
+                    infoCardElement.prepend(feedback);
                   }
                   dialogRef.close();
                 } else if (
@@ -1488,7 +1488,7 @@ $(document).ready(function () {
           .buttons()
           .nodes()
           .each(function (value) {
-            $(this).removeClass('btn btn-default').addClass('tiny ui button');
+            $(this).removeClass('btn btn-secondary').addClass('tiny ui button');
           });
 
         refresh_tool_tips();
@@ -1630,7 +1630,7 @@ $(document).ready(function () {
           .buttons()
           .nodes()
           .each(function (value) {
-            $(this).removeClass('btn btn-default').addClass('tiny ui button');
+            $(this).removeClass('btn btn-secondary').addClass('tiny ui button');
           });
 
         refresh_tool_tips();

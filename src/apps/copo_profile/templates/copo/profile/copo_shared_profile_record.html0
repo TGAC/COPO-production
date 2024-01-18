@@ -1,10 +1,10 @@
 {% load web_tags %}
 <div class="grid">
-    <div class="copo-records-panel" profile_type="{{ profile.type }} " study_status="{{ profile.study_status | get_first_value_from_array }}" study_release_date="{{ profile.study_release_date | get_first_value_from_array }}">
-        <!--Panel -->
-        <div class="panel">
-            <!--Panel heading -->
-            <div class="panel-heading" style="background-color: {{ profile.heading_bgColour }}">
+    <div class="copo-records-card" profile_type="{{ profile.type }} " study_status="{{ profile.study_status | get_first_value_from_array }}" study_release_date="{{ profile.study_release_date | get_first_value_from_array }}">
+        <!--Card -->
+        <div class="card">
+            <!--Card header -->
+            <div class="card-header" style="background-color: {{ profile.heading_bgColour }}">
                 <div class="row">
                     <div class="col-sm-10 col-md-10 col-lg-10 row-title">
                         <span id={{ profile.id }}>{{ profile.title }}&nbsp;<small>{{ profile.title_smallText }}</small></span>
@@ -12,7 +12,7 @@
                     <div class="col-sm-2 col-md-2 col-lg-2 row-ellipsis">
                         <div id="{{ profile.id }}" class="pull-right ellipsisDiv"
                              title="View profile options">
-                            <a id="ellipsisID" href="#" data-width=220 data-animation="pop" data-placement="right"><i
+                            <a id="ellipsisID" href="#" data-width=220 data-animation="pop" data-bs-placement="right"><i
                                     class="fa fa-ellipsis-v"
                                     style="font-size:14px" onclick="set_selected_profile_record(this)"></i></a>
                             <div class="webui-popover-content">
@@ -30,12 +30,12 @@
                     </div>
                 </div>
             </div>
-            <!--Panel body -->
-            <div class="panel-body">
+            <!--Card body -->
+            <div class="card-body">
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12"
                          style="padding-top: {{ profile.panel_content_paddingTop }}">
-                        <!--Panel content -->
+                        <!--Card content -->
                         <div>Created:</div>
                         <div style="margin-bottom: 10px;">{{ profile.date_created }}</div>
                         <div>Description:</div>
@@ -57,7 +57,7 @@
                                 </ul>
                             </div>
                         {% endif %}
-                        <!--Panel menu -->
+                        <!--Card menu -->
                         <span class="ui compact menu expanding_menu" id="menu_{{ profile.id }}">
                             <div class="ui up pointing dropdown link item" tabindex="0">
                                 Actions

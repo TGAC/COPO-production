@@ -564,7 +564,7 @@ div.dataTables_processing.ui.segment {
 
 /* CUSTOM POPOVERS */
 
-.copo-popover-title1 {
+.copo-popover-header1 {
     background-color: #D4E4ED !important;
     color: #202D38 !important;
     font-size: 16px;
@@ -579,7 +579,7 @@ div.dataTables_processing.ui.segment {
     max-width: 400px !important;
 }
 
-.popover-content {
+.popover-body {
     word-wrap: break-word !important;
 }
 
@@ -609,7 +609,7 @@ div.dataTables_processing.ui.segment {
     font-size: 12px;
 }
 
-.popover1-title {
+.popover1-header {
     padding: 7px 2px;
     margin: 0;
     font-size: 16px;
@@ -732,14 +732,14 @@ hr {
 
 /*custom panel */
 
-.copo-panel {
+.copo-card {
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
     border-radius: 4px !important;
     padding: 0.1em;
     margin-bottom: 20px;
 }
 
-.copo-panel-title {
+.copo-card-title {
     color: #fff;
     line-height: 40px;
     padding: 10px;
@@ -748,7 +748,7 @@ hr {
     border-radius: 4px !important;
 }
 
-.copo-panel-sub-title {
+.copo-card-sub-title {
     color: #ccc;
     line-height: 20px;
     padding: 10px;
@@ -758,7 +758,7 @@ hr {
     background-color: transparent;
 }
 
-.copo-panel-body {
+.copo-card-body {
     padding: 10px 25px;
 }
 
@@ -999,147 +999,143 @@ th {
 
 #copo-global-nav{
     background-color: rgba(255, 255, 255, 0.95) !important;
-    /* background: rgba(38, 38, 38, 0.95); */
     height: 10px !important;
     min-height: 59px;
 }
 
-#copo-global-nav.navbar-default .navbar-brand {
+#copo-global-nav.navbar-light .navbar-brand {
     color: rgba(119, 119, 119, 1);
 }
 
 
-#copo-global-nav.navbar-default {
-    /* border: none; */
+#copo-global-nav.navbar-light {
     background: transparent;
-    border-bottom-color: rgba(38, 38, 38, 0.95);
-    border-bottom-width: thin;
 }
 
-#copo-global-nav.navbar-default .navbar-nav > li > a {
+#copo-global-nav.navbar-light .navbar-nav > li > a {
     color: black;
     background: transparent;
     height: 50px !important;
 }
 
-#copo-global-nav.navbar-default .navbar-nav > li > a:hover,
-#copo-global-nav.navbar-default .navbar-nav > li > a:focus {
+#copo-global-nav.navbar-light .navbar-nav > li > a:hover,
+#copo-global-nav.navbar-light .navbar-nav > li > a:focus {
     color: white;
     background-color: black;
 }
 
-#copo-global-nav.navbar-default .navbar-nav > .active > a,
-#copo-global-nav.navbar-default .navbar-nav > .active > a:hover,
-#copo-global-nav.navbar-default .navbar-nav > .active > a:focus {
+#copo-global-nav.navbar-light .navbar-nav > .active > a,
+#copo-global-nav.navbar-light .navbar-nav > .active > a:hover,
+#copo-global-nav.navbar-light .navbar-nav > .active > a:focus {
     color: rgba(85, 85, 85, 1);
     background-color: transparent;
 }
 
-#copo-global-nav.navbar-default .navbar-nav .dropdown-menu li > a:hover,
-#copo-global-nav.navbar-default .navbar-nav.dropdown-menu li > a:focus,
-#copo-global-nav.navbar-default .navbar-nav.dropdown-submenu:hover > a {
+#copo-global-nav.navbar-light .navbar-nav .dropdown-menu li > a:hover,
+#copo-global-nav.navbar-light .navbar-nav.dropdown-menu li > a:focus,
+#copo-global-nav.navbar-light .navbar-nav.dropdown-submenu:hover > a {
     background-image: none;
     background-color: rgba(0, 0, 0, 0.8);
     color: #fff;
 }
 
-#copo-global-nav.navbar-default .navbar-toggle:hover,
-#copo-global-nav.navbar-default .navbar-toggle:focus {
+#copo-global-nav.navbar-light .navbar-toggle:hover,
+#copo-global-nav.navbar-light .navbar-toggle:focus {
     background-color: transparent;
 }
 
-#copo-global-nav.navbar-default .navbar-toggle .icon-bar {
+#copo-global-nav.navbar-light .navbar-toggle .icon-bar {
     background-color: transparent;
 }
 
-#copo-global-nav.navbar-default .navbar-toggle:hover .icon-bar,
-#copo-global-nav.navbar-default .navbar-toggle:focus .icon-bar {
+#copo-global-nav.navbar-light .navbar-toggle:hover .icon-bar,
+#copo-global-nav.navbar-light .navbar-toggle:focus .icon-bar {
     background-color: transparent;
 }
 
 
-#copo-global-nav.navbar-inverse .navbar-brand {
+#copo-global-nav.navbar-dark .navbar-brand {
     color: rgba(119, 119, 119, 1);
 }
 
 
-#copo-global-nav.navbar-inverse {
+#copo-global-nav.navbar-dark {
     /* border: none; */
     background: transparent;
     border-bottom-color: rgba(38, 38, 38, 0.95);
     border-bottom-width: thin;
 }
 
-#copo-global-nav.navbar-inverse .navbar-nav>li>a {
+#copo-global-nav.navbar-dark .navbar-nav>li>a {
     color: black;
     background: transparent;
     height: 50px !important;
 }
 
-#copo-global-nav.navbar-inverse .navbar-nav>li>a:hover,
-#copo-global-nav.navbar-inverse .navbar-nav>li>a:focus {
+#copo-global-nav.navbar-dark .navbar-nav>li>a:hover,
+#copo-global-nav.navbar-dark .navbar-nav>li>a:focus {
     color: #D1B37F;
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-#copo-global-nav.navbar-inverse .navbar-nav>.active>a,
-#copo-global-nav.navbar-inverse .navbar-nav>.active>a:hover,
-#copo-global-nav.navbar-inverse .navbar-nav>.active>a:focus {
+#copo-global-nav.navbar-dark .navbar-nav>.active>a,
+#copo-global-nav.navbar-dark .navbar-nav>.active>a:hover,
+#copo-global-nav.navbar-dark .navbar-nav>.active>a:focus {
     color: rgba(85, 85, 85, 1);
     background-color: transparent;
 }
 
-#copo-global-nav.navbar-inverse .navbar-nav .dropdown-menu li>a:hover,
-#copo-global-nav.navbar-inverse .navbar-nav.dropdown-menu li>a:focus,
-#copo-global-nav.navbar-inverse .navbar-nav.dropdown-submenu:hover>a {
+#copo-global-nav.navbar-dark .navbar-nav .dropdown-menu li>a:hover,
+#copo-global-nav.navbar-dark .navbar-nav.dropdown-menu li>a:focus,
+#copo-global-nav.navbar-dark .navbar-nav.dropdown-submenu:hover>a {
     background-image: none;
     background-color: rgba(0, 0, 0, 0.8);
     color: #fff;
 }
 
-#copo-global-nav.navbar-inverse .navbar-toggle:hover,
-#copo-global-nav.navbar-inverse .navbar-toggle:focus {
+#copo-global-nav.navbar-dark .navbar-toggle:hover,
+#copo-global-nav.navbar-dark .navbar-toggle:focus {
     background-color: transparent;
 }
 
-#copo-global-nav.navbar-inverse .navbar-toggle .icon-bar {
+#copo-global-nav.navbar-dark .navbar-toggle .icon-bar {
     background-color: transparent;
 }
 
-#copo-global-nav.navbar-inverse .navbar-toggle:hover .icon-bar,
-#copo-global-nav.navbar-inverse .navbar-toggle:focus .icon-bar {
+#copo-global-nav.navbar-dark .navbar-toggle:hover .icon-bar,
+#copo-global-nav.navbar-dark .navbar-toggle:focus .icon-bar {
     background-color: transparent;
 }
 
-.navbar-default .dropdown-menu {
+.navbar-light .dropdown-menu {
     background-color: white !important;
 }
 
-.navbar-default .dropdown-menu>li>a:focus,
-.navbar-default .dropdown-menu>li>a:hover {
+.navbar-light .dropdown-menu>li>a:focus,
+.navbar-light .dropdown-menu>li>a:hover {
     background-color: black !important;
     text-decoration: none;
     color: white !important;
 }
 
-.navbar-default .dropdown-menu>li>a {
+.navbar-light .dropdown-menu>li>a {
     font-weight: bold;
     color: black !important;
     font-size: 14px !important;
 }
 
-.navbar-inverse .dropdown-menu {
+.navbar-dark .dropdown-menu {
     background-color: #101010 !important;
 }
 
-.navbar-inverse .dropdown-menu>li>a:focus,
-.navbar-inverse.dropdown-menu>li>a:hover {
+.navbar-dark .dropdown-menu>li>a:focus,
+.navbar-dark.dropdown-menu>li>a:hover {
     background-color: #d9d9d9 !important;
     text-decoration: none;
     color: #0a0a0a !important;
 }
 
-.navbar-inverse .dropdown-menu>li>a {
+.navbar-dark .dropdown-menu>li>a {
     font-weight: bold;
     color: white !important;
     font-size: 14px !important;
@@ -1568,7 +1564,7 @@ input[data-autocomplete] {
 
 /*information panel styling*/
 
-.info-panel-div {
+.info-card-div {
     line-height: 20px;
     font-size: 13px;
 }

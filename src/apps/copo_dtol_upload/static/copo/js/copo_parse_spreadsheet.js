@@ -176,28 +176,28 @@ function create_header_info_icon(iconID) {
   return $('<i></i>')
     .attr('class', 'fa fa-info-circle header-info-icon')
     .attr('id', `${iconID}`)
-    .attr('data-toggle', 'popover');
+    .attr('data-bs-toggle', 'popover');
 }
 
 function initialise_header_info_icon_popover(popoverID, info_type) {
-  $(`#${popoverID}[data-toggle="popover"]`)
-    .popover({
-      sanitize: false,
-      trigger: 'focus',
-      placement: 'right',
-      html: true,
-      content: function () {
-        let $popover_content = '<p class="header-info-icon-popover">';
-        $popover_content += `To view more ${info_type}, scroll downwards within the area containing the ${info_type}`;
-        $popover_content += '</p>';
+  new bootstrap.Popover(document.querySelector(`#${popoverID}`), {
+    popperConfig: function (defaultBsPopperConfig) {
+      return { placement: 'right' };
+    },
+    sanitize: false,
+    trigger: 'focus',
+    html: true,
+    content: function () {
+      let $popover_content = '<p class="header-info-icon-popover">';
+      $popover_content += `To view more ${info_type}, scroll downwards within the area containing the ${info_type}`;
+      $popover_content += '</p>';
 
-        return $popover_content;
-      },
-    })
-    .click(function (e) {
-      e.stopPropagation();
-      $(this).popover('toggle');
-    });
+      return $popover_content;
+    },
+  }).click(function (e) {
+    e.stopPropagation();
+    bootstrap.Popover.getInstance(`#${popoverID}`).toggle();
+  });
 }
 
 $(document).ready(function () {
@@ -875,13 +875,19 @@ $(document).on('click', '#code_cancel', function (event) {
 $(document).on('click', 'body', function (e) {
   // Hide opened popovers when outside the
   // popover or anywhere is clicked
-  // NB: This is a workaround for the data-trigger="focus"
+  // NB: This is a workaround for the data-bs-trigger="focus"
   // which does not work as a parameter to initialise the popover
   if (
-    $(e.target).data('toggle') !== 'popover' &&
-    $(e.target).parents('.popover.in').length === 0
+    $(e.target).data('bs-toggle') !== 'popover' &&
+    $(e.target).parents('.popover.show').length === 0
   ) {
-    $('[data-toggle="popover"]').popover('hide');
+    let popoverTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="popover"]')
+    );
+
+    popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl).hide();
+    });
   }
 });
 

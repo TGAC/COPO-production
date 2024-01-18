@@ -20,8 +20,7 @@
         <link rel="stylesheet"
               href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui-noscript.css' %}">
     </noscript>
-    <link rel="stylesheet" href="{% static 'copo/treeview/bootstrap-treeview.min.css' %}">
-
+    <link rel="stylesheet" href="{% static 'copo/bootstrap/css/bootstrap-treeview-1.2.0.min.css' %}">
     <style>
         .check-icon {
             margin-right: 20px !important;
@@ -79,7 +78,7 @@
         </div>
         <div class="ui attached fluid segment" style="font-size: inherit;">
             <div class="col-sm-12 col-md-12 col-lg-12">
-                <div class="pull-right" style="margin-bottom: 15px;">
+                <div class="float-end" style="margin-bottom: 15px;">
                     <!-- exit description button -->
                     <div id="exit_wizard" class="big ui basic orange button"
                          tabindex="0">
@@ -133,11 +132,11 @@
         <div class="col-sm-6 col-md-6 col-lg-6" id="datafile_col_table_div">
             <!-- datafile table section -->
 
-            <div class="panel panel-default">
-                <div class="panel-heading" style="background-image: none; border: none;">
+            <div class="card">
+                <div class="card-header" style="background-image: none; border: none;">
                     <h4>Datafiles</h4>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="webpop-content-div">
                         Use the upload button to add one or more datafiles.
                     </div>
@@ -185,11 +184,11 @@
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6">
             <!-- description bundle section -->
-            <div class="panel panel-default">
-                <div class="panel-heading" style="background-image: none; border: none;">
+            <div class="card">
+                <div class="card-header" style="background-image: none; border: none;">
                     <h4>Bundles</h4>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="webpop-content-div">
                         Use the create button to add a new bundle. Drag and drop datafiles to a bundle, and select
                         <strong>Add/Edit metadata</strong> action from the bundle actions menu to describe.
@@ -229,7 +228,7 @@
     <script src="{% static 'copo/js/copo_data.js' %}"></script>
     <script src="{% static 'copo/js/copo_data_bundle.js' %}"></script>
     <script src="{% static 'copo/js/jquery.form.js' %}"></script>
-    <script src="{% static 'copo/js/bootstrapValidator.js' %}"></script>
+    <!-- <script src="{% static 'copo/js/bootstrapValidator.js' %}"></script> -->
     <script src="{% static 'copo/jQuery-File-Upload-master/js/vendor/jquery.ui.widget.js' %}"></script>
     <script src="{% static 'copo/jQuery-File-Upload-master/js/jquery.iframe-transport.js' %}"></script>
     <script src="{% static 'copo/jQuery-File-Upload-master/js/jquery.fileupload.js' %}"></script>
@@ -239,6 +238,6 @@
     <script src="{% static 'copo/js/uploader_old/bootstrap_panel.js' %}"></script>
     <script src="{% static 'copo/js/uploader_old/upload_util.js' %}"></script>
     <script src="{% static 'copo/js/progressbar.js' %}"></script>
-    <script src="{% static 'copo/treeview/bootstrap-treeview.min.js' %}"></script>
+    <script src="{% static 'copo/bootstrap/bootstrap/bootstrap-treeview-1.2.0.min.js' %}"></script>
 
 {% endblock %}

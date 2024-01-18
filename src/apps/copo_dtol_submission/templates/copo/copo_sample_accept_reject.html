@@ -22,8 +22,8 @@
     <link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}">
     <link rel="stylesheet" href="{% static 'copo_dtol_submission/css/copo_sample_accept_reject.css' %}">
     <link rel="stylesheet" href="{% static 'copo/css/copo/sample.css' %}">
-    <link rel="stylesheet" href="{% static 'copo/bootstrap-treeview-1.2.0/dist/bootstrap-treeview.min.css' %}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
+    <link rel="stylesheet" href="{% static 'copo/bootstrap/css/bootstrap-treeview-1.2.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/datatables/css/fixedHeader.dataTables-3.4.0.css' %}">
 
     <style>
     </style>
@@ -53,13 +53,13 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-9 col-sm-9 col-md-9">
-            <h3 class="h3">Choose to Accept or Reject  &nbsp; &nbsp; <select id='group_id' class="form-control" style="display: inline-block; width: fit-content;" name='group' title="Type of manifest to accept/reject samples for">{% for group in sample_manager_groups %}<option value='{{ group }}' title='{{group}}' >{{ group }}</option>{% endfor %}</select>  </h3>
+            <h3 class="h3">Choose to Accept or Reject  &nbsp; &nbsp; <select id='group_id' class="form-select" style="display: inline-block; width: fit-content;" name='group' title="Type of manifest to accept/reject samples for">{% for group in sample_manager_groups %}<option value='{{ group }}' title='{{group}}' >{{ group }}</option>{% endfor %}</select>  </h3>
             <h3 class="h3"><small>Note clicking accept will immediately send sample info to ENA/Biosamples</small></h3>
 
         </div>
         <div class="col-lg-3 col-sm-3 col-md-3">
             <h4 class="h4">Status</h4>
-            <div id="spinner" class="pull-right ui tiny active inline loader status-spinner"></div>
+            <div id="spinner" class="float-end ui tiny active inline loader status-spinner"></div>
             <div class="status_log status_log_collapse">
                 <button id="clearStatusLogBtn" type="button" aria-label="Clear" disabled>
                     &times;
@@ -73,18 +73,18 @@
 
     <div class="row">
         <div class="col-lg-3 col-md-3 col-sm-3">
-            <ul hidden class="nav nav-tabs profile-filter" id="erga">
-                <li class="hot_tab_profile in active">
-                    <a data-toggle="tab" href="my_profiles">Profiles for My Sequencing Centre</a>
+            <ul hidden class="nav nav-tabs profile-filter" id="erga" role="tablist">
+                <li class="nav-item hot_tab_profile in" role="presentation">
+                    <a class="nav-link active" data-bs-toggle="tab" href="my_profiles" role="tab">Profiles for My Sequencing Centre</a>
                 </li>
-                <li class="hot_tab_profile in">
-                    <a data-toggle="tab" href="all_profiles">All profiles</a>
+                <li class="nav_item hot_tab_profile in">
+                    <a class="nav-link" data-bs-toggle="tab" href="all_profiles" role="tab">All profiles</a>
                 </li>  
             </ul>
 
             <ul hidden class="nav nav-tabs profile-filter" id="non_erga">
-                <li class="hot_tab_profile in active">
-                    <a data-toggle="tab" href="my_profiles">All profiles</a>
+                <li class="nav_item hot_tab_profile in">
+                    <a class="nav-link active" data-bs-toggle="tab" href="my_profiles" role="tab">All profiles</a>
                 </li>
             </ul>
 
@@ -125,32 +125,32 @@
             </span>
 
 
-            <ul class="nav nav-tabs" id="sample_filter">
+            <ul class="nav nav-tabs" id="sample_filter" tab="tablist">
 
                 {% if is_bge_checker %}
-                <li class="hot_tab in active">
-                    <a data-toggle="tab" href="bge_pending">Pending BGE Checker Samples</a>
+                <li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link active" data-bs-toggle="tab" href="bge_pending" role="tab">Pending BGE Checker Samples</a>
                 </li>
-                <li class="hot_tab in ">
-                    <a data-toggle="tab" href="pending">Pending Samples</a>
+                <li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link" data-bs-toggle="tab" href="pending" role="tab">Pending Samples</a>
                 </li>
                 {% else %}
-                <li class="hot_tab in active">
-                    <a data-toggle="tab" href="pending">Pending Samples</a>
+                <li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link active" data-bs-toggle="tab" href="pending" role="tab">Pending Samples</a>
                 </li>
                 {% endif %}
 
-                <li class="hot_tab in">
-                    <a data-toggle="tab" href="processing">Processing Samples</a>
+                <li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link" data-bs-toggle="tab" href="processing" role="tab">Processing Samples</a>
                 </li>
-                <li class="hot_tab in">
-                    <a data-toggle="tab" href="accepted">Accepted Samples</a>
+                <li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link" data-bs-toggle="tab" href="accepted" role="tab">Accepted Samples</a>
                 </li>
-                <li class="hot_tab in">
-                    <a data-toggle="tab" href="rejected">Rejected Samples</a>
+                <li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link" data-bs-toggle="tab" href="rejected" role="tab">Rejected Samples</a>
                 </li>
-                <!--li class="hot_tab in" >
-                    <a data-toggle="tab" href="private">Private Samples</a>
+                <!--li class="nav_item hot_tab in" role="presentation">
+                    <a class="nav-link" data-bs-toggle="tab" href="private" role="tab">Private Samples</a>
                 </li-->
             </ul>
 
@@ -185,9 +185,9 @@
     <script src="{% static 'copo/js/filesaver.js' %}"></script>
     <script src="{% static 'copo/js/jszip-utils.min.js' %}"></script>
     <script src="{% static 'copo/js/jszip.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>
-    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+    <script src="{% static 'copo/datatables/js/moment-2.30.1.js' %}"></script>
+    <script src="{% static 'copo/datatables/js/datetime.moment-1.13.7.js' %}"></script>
+    <script src="{% static 'copo/datatables/js/fixedHeader.dataTables-3.4.0.min.js' %}"></script>
     <script src="{% static 'copo_dtol_submission/js/copo_sample_accept_reject.js' %}"></script>
     <script>socket = undefined</script>
 {% endblock %}

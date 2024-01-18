@@ -585,7 +585,7 @@ blockquote {
     overflow-y: scroll;
 }
 
-.info-panel {
+.info-card {
     position: relative;
     z-index: 2;
     overflow: hidden;
@@ -601,16 +601,16 @@ blockquote {
     text-justify: inter-word;
 }
 
-.info-panel i {
+.info-card i {
     color: #444;
 }
 
-.info-panel-header {
+.info-card-header {
     text-align: center;
     padding-bottom: 12px;
 }
 
-.info-panel .icon-text {
+.info-card .icon-text {
     line-height: 40px;
     font-weight: 900;
     font-size: 30px;
@@ -720,11 +720,11 @@ blockquote {
         margin-bottom: 0px;
     }
 
-    #about .info-panel {
+    #about .info-card {
         min-height: 100%;
     }
 
-    .info-panel .icon-text {
+    .info-card .icon-text {
         line-height: 26px;
         font-size: 24px;
         margin-top: 0px;
@@ -765,11 +765,11 @@ blockquote {
         margin-bottom: 20px;
     }
 
-    #about .info-panel {
+    #about .info-card {
         min-height: 100%;
     }
 
-    .info-panel .icon-text {
+    .info-card .icon-text {
         line-height: 30px;
         font-size: 26px;
         margin-top: 2px;
@@ -846,7 +846,7 @@ blockquote {
         margin-bottom: 0px;
     }
 
-    #about .info-panel {
+    #about .info-card {
         min-height: 100%;
     }
 
@@ -854,7 +854,7 @@ blockquote {
         margin-bottom: 20px;
     }
 
-    .info-panel .icon-text {
+    .info-card .icon-text {
         line-height: 36px;
         font-size: 34px;
         margin-top: 6px;
@@ -930,7 +930,7 @@ blockquote {
         margin-bottom: 50px;
     }
 
-    .info-panel .icon-text {
+    .info-card .icon-text {
         line-height: 32px;
         font-size: 21px;
         margin-top: 5px;
@@ -1006,7 +1006,7 @@ blockquote {
         margin-bottom: 80px;
     }
 
-    .info-panel .icon-text {
+    .info-card .icon-text {
         line-height: 36px;
         font-size: 28px;
         margin-top: 6px;

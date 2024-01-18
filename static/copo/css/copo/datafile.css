@@ -126,7 +126,7 @@
 }
 
 #helpCentreMenu.btn,
-#helpCentreMenu.btn-default {
+#helpCentreMenu.btn-secondary {
     border-radius: 0;
     background-image: none;
     background-repeat: no-repeat;

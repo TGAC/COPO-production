@@ -418,7 +418,6 @@ function get_gal_names() {
     .done(function (data) {
       if (data.length == 0) {
         // Set piechart component to empty if no data is found in the 'gal_names' table
-        // !$('#gal_names').DataTable().data().any()
         let sample_panel_tol_inspect_gal = $('#sample_panel_tol_inspect_gal');
         sample_panel_tol_inspect_gal
           .find('.labelling')

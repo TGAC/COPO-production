@@ -461,12 +461,12 @@ function set_up_form_show_all_fields_checkbox_div() {
   });
 
   const showAllFieldsCheckBoxLabel = $('<label/>', {
-    class: 'pull-right showFieldsLabel',
+    class: 'float-end showFieldsLabel',
     style: 'padding-right:60px;',
   });
 
   const querySamplesCheckBoxLabel = $('<label/>', {
-    class: 'pull-left showSamplesQueryLabel',
+    class: 'float-start showSamplesQueryLabel',
     style: 'padding-left:25px;',
   });
 

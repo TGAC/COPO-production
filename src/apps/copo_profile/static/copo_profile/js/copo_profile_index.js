@@ -73,38 +73,7 @@ $(document).ready(function () {
 
   // Profile records exist
   // Initialise the popover 'View profile options' for each profile record
-  let popover = $('#ellipsisID[data-toggle="popover"]')
-    .popover({
-      sanitize: false,
-    })
-    .click(function (e) {
-      $(this).popover('toggle');
-      $('#ellipsisID[data-toggle="popover"]').not(this).popover('hide');
-      e.stopPropagation();
-    })
-    .on('show.bs.popover', function (e) {
-      $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
-    })
-    .on('show.bs.popover', function (e) {
-      // Set content of the popover
-      const $content = $('<div></div>');
-      const $editButton = $(
-        '<button id="editProfileBtn" class="btn btn-sm btn-success" title="Edit record"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit</button>'
-      );
-      const $deleteButton = $(
-        '<button id="deleteProfileBtn" class="btn btn-sm btn-danger" title="Delete record"><i class="fa fa-trash-can"></i>&nbsp;Delete</button>'
-      );
-
-      $deleteButton.css('margin-left', '15px');
-      $content.append($editButton);
-      $content.append($deleteButton);
-
-      // Apply the content to the popover
-      popover.attr('data-content', $content.html());
-    })
-    .on('shown.bs.popover', function (e) {
-      $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
-    });
+  initialise_ellipsisID_popover();
 
   $('#sortProfilesBtn')[0].selectedIndex = 0; // Set first option of sort menu
 
@@ -136,9 +105,9 @@ $(document).ready(function () {
   $(document).on('click', '.expanding_menu > div', function (e) {
     const el = $(e.currentTarget);
     el.closest('.grid').removeClass('grid-selected');
-    el.closest('.panel-heading')
-      .next('.grid-panel-body')
-      .removeClass('grid-panel-body-selected');
+    el.closest('.card-header')
+      .next('.grid-card-body')
+      .removeClass('grid-card-body-selected');
   });
 
   $(document).on('click', '.item a', function (e) {
@@ -358,15 +327,15 @@ function appendRecordComponents(grids) {
     let profile_type =
       $(this)
         .closest('.grid')
-        .find('.copo-records-panel')
+        .find('.copo-records-card')
         .attr('profile_type') === ''
         ? $(this)
             .closest('.grid')
-            .find('.copo-records-panel')
+            .find('.copo-records-card')
             .attr('shared_profile_type')
         : $(this)
             .closest('.grid')
-            .find('.copo-records-panel')
+            .find('.copo-records-card')
             .attr('profile_type');
 
     if (profile_type) {
@@ -384,8 +353,9 @@ function appendRecordComponents(grids) {
 function editProfileRecord(profileRecordID) {
   const component = 'profile';
   let csrftoken = $.cookie('csrftoken');
-
-  $('#ellipsisID[data-toggle="popover"]').popover('hide'); // Hides the popover
+  
+  // Hides the popover
+  new bootstrap.Popover.getInstance('#ellipsisID').hide();
 
   $.ajax({
     url: copoFormsURL,
@@ -459,7 +429,7 @@ function deleteProfileRecord(profileRecordID) {
               setTimeout(function () {
                 document
                   .getElementById(profileRecordID)
-                  .closest('.copo-records-panel').style.display = 'none';
+                  .closest('.copo-records-card').style.display = 'none';
 
                 window.location.reload();
               }, 1000);
@@ -521,7 +491,7 @@ function sort_profile_records(option) {
     case 'type':
       selector = (element) =>
         element
-          .querySelector('.copo-records-panel')
+          .querySelector('.copo-records-card')
           .getAttribute('profile_type');
       break;
     default:
@@ -602,7 +572,7 @@ function display_profiles_legend(legend_data) {
 }
 
 function set_copo_sidebar_info_padding() {
-  if ($('#page_alert_panel').text().trim() === '') {
+  if ($('#page_alert_card').text().trim() === '') {
     $('.copo-sidebar-tabs')
       .find('#profilesLegendDivID')
       .css('padding-top', '100px');
@@ -699,7 +669,7 @@ function append_component_buttons(record_id, profile_type) {
 }
 
 function filter_action_menu() {
-  $('.copo-records-panel').each(function (idx, el) {
+  $('.copo-records-card').each(function (idx, el) {
     let t = $(el).attr('profile_type');
     let shared_t = $(el).attr('shared_profile_type');
     let s = $(el).attr('study_status');
@@ -711,11 +681,6 @@ function filter_action_menu() {
 
     if (shared_t && !t) {
       t = shared_t;
-      //if($(el).attr("profile_type")) $(el).removeAttr("profile_type")
-    }
-
-    if (t && !shared_t) {
-      //if($(el).attr("shared_profile_type")) $(el).removeAttr("shared_profile_type")
     }
 
     if (t.includes('ERGA')) {
@@ -738,31 +703,12 @@ function filter_action_menu() {
   });
 }
 
-// function set_mediaQueries() {
-//   // Add responsiveness to profile grids once web page screen size is changed
-//   const screenSize_lst = [
-//     window.matchMedia('(max-width: 1908px)'),
-//     window.matchMedia('(max-width: 1901px)'),
-//     window.matchMedia('(max-width: 1893px)'),
-//     window.matchMedia('(max-width: 1818px)'),
-//     window.matchMedia('(max-width: 1564px)'),
-//     window.matchMedia('(max-width: 1703px)'),
-//   ];
-
-//   // Attach listener function on state changes
-//   $.each(screenSize_lst, function (index, element) {
-//     element.addEventListener('change', (e) => {
-//       set_associated_types_marginBottom();
-//     });
-//   });
-// }
-
 function set_profile_grid_heading(grids) {
   let profiles_legend_lst = [];
 
   grids.each(function () {
     $(this)
-      .find('.copo-records-panel')
+      .find('.copo-records-card')
       .each(function (idx, el) {
         const profile_type = $(el).attr('profile_type');
         let colour;
@@ -780,51 +726,51 @@ function set_profile_grid_heading(grids) {
             acronym = 'DTOL-ENV';
             colour = '#fb7d0d';
             $(el)
-              .find('.panel-heading')
+              .find('.card-header')
               .find('.row-title span')
               .append('<small>(DTOL-ENV)</small>');
-            $(el).find('.panel-heading').css('background-color', colour);
+            $(el).find('.card-header').css('background-color', colour);
           } else if (profile_type.includes('DTOL')) {
             acronym = 'DTOL';
             colour = '#16ab39';
             $(el)
-              .find('.panel-heading')
+              .find('.card-header')
               .find('.row-title span')
               .append('<small>(DTOL)</small>');
-            $(el).find('.panel-heading').css('background-color', colour);
+            $(el).find('.card-header').css('background-color', colour);
           } else if (profile_type.includes('ASG')) {
             acronym = 'ASG';
             colour = '#5829bb';
             $(el)
-              .find('.panel-heading')
+              .find('.card-header')
               .find('.row-title span')
               .append('<small>(ASG)</small>');
-            $(el).find('.panel-heading').css('background-color', colour);
+            $(el).find('.card-header').css('background-color', colour);
           } else if (profile_type.includes('ERGA')) {
             acronym = 'ERGA';
             colour = '#E61A8D';
             $(el)
-              .find('.panel-heading')
+              .find('.card-header')
               .find('.row-title span')
               .append('<small>(ERGA)</small>');
-            $(el).find('.panel-heading').css('background-color', colour);
+            $(el).find('.card-header').css('background-color', colour);
           } else if (profile_type.includes('Stand-alone')) {
             acronym = 'Standalone';
             colour = '#009c95';
             $(el)
-              .find('.panel-heading')
+              .find('.card-header')
               .find('.row-title span')
               .append('<small>(Standalone)</small>');
-            $(el).find('.panel-heading').css('background-color', colour);
+            $(el).find('.card-header').css('background-color', colour);
           }
         } else {
           acronym = 'Shared';
           colour = '#f26202';
           $(el)
-            .find('.panel-heading')
+            .find('.card-header')
             .find('.row-title span')
             .append('<small>(Shared With Me)</small>');
-          $(el).find('.panel-heading').css('background-color', colour);
+          $(el).find('.card-header').css('background-color', colour);
 
           // Remove 'profile_type' attribute if it exists since
           if ($(el).attr('profile_type') === '')
@@ -852,126 +798,6 @@ function set_profile_grid_heading(grids) {
   display_profiles_legend(profiles_legend_lst);
   set_copo_sidebar_info_padding();
 }
-
-// function set_associated_types_marginBottom() {
-//   // Set the margin bottom once a profile description is displayed on two lines
-//   // NB: If line height is 21 or 24, then, profile description is displayed on one line
-//   // NB: If line height is 42 or 48 then, profile description is displayed on two lines
-
-//   $('div.profileDescription').each(function () {
-//     // Study release status div
-//     let studyStatusDiv = $(this).prev().prev().prev();
-
-//     if ($(this).height() === 42 || $(this).height() === 48) {
-//       // No associated types
-//       if ($(this).hasClass('no_associatedTypes_marginBottom')) {
-//         // Has study release details
-//         $(this)
-//           .removeClass('no_associatedTypes_marginBottom')
-//           .addClass('no_associatedTypes_marginBottom_2LineDescriptionText');
-//       } else if ($(this).hasClass('no_associatedTypes_marginBottom_release')) {
-//         // Does not have study release details
-//         $(this)
-//           .removeClass('no_associatedTypes_marginBottom_release')
-//           .addClass(
-//             'no_associatedTypes_marginBottom_2LineDescriptionText_release'
-//           );
-//       } else {
-//         // Associated types
-//         let associated_type_div_value = $(this).next().next();
-//         if ($(this).hasClass('associatedTypes_marginBottom')) {
-//           if (studyStatusDiv.hasClass('studyStatusDiv')) {
-//             // Has study release details
-//             if (
-//               associated_type_div_value.hasClass(
-//                 'one_associatedType_marginBottom_release'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('one_associatedType_marginBottom_release')
-//                 .addClass(
-//                   'one_associatedType_marginBottom_2LineDescriptionText_release'
-//                 );
-//             } else if (
-//               associated_type_div_value.hasClass(
-//                 'two_associatedTypes_marginBottom_release'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('two_associatedTypes_marginBottom_release')
-//                 .addClass(
-//                   'two_associatedTypes_marginBottom_2LineDescriptionText_release'
-//                 );
-//             } else if (
-//               associated_type_div_value.hasClass(
-//                 'three_associatedTypes_marginBottom_release'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('three_associatedTypes_marginBottom_release')
-//                 .addClass(
-//                   'three_associatedTypes_marginBottom_2LineDescriptionText_release'
-//                 );
-//             } else if (
-//               associated_type_div_value.hasClass(
-//                 'several_associatedTypes_marginBottom_release'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('several_associatedTypes_marginBottom_release')
-//                 .addClass(
-//                   'several_associatedTypes_marginBottom_2LineDescriptionText_release'
-//                 );
-//             }
-//           } else {
-//             // Does not have study release details
-//             if (
-//               associated_type_div_value.hasClass(
-//                 'one_associatedType_marginBottom'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('one_associatedType_marginBottom')
-//                 .addClass(
-//                   'one_associatedType_marginBottom_2LineDescriptionText'
-//                 );
-//             } else if (
-//               associated_type_div_value.hasClass(
-//                 'two_associatedTypes_marginBottom'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('two_associatedTypes_marginBottom')
-//                 .addClass(
-//                   'two_associatedTypes_marginBottom_2LineDescriptionText'
-//                 );
-//             } else if (
-//               associated_type_div_value.hasClass(
-//                 'three_associatedTypes_marginBottom'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('three_associatedTypes_marginBottom')
-//                 .addClass(
-//                   'three_associatedTypes_marginBottom_2LineDescriptionText'
-//                 );
-//             } else if (
-//               associated_type_div_value.hasClass(
-//                 'several_associatedTypes_marginBottom'
-//               )
-//             ) {
-//               associated_type_div_value
-//                 .removeClass('several_associatedTypes_marginBottom')
-//                 .addClass(
-//                   'several_associatedTypes_marginBottom_2LineDescriptionText'
-//                 );
-//             }
-//           }
-//         }
-//       }
-//     }
-//   });
-// }
 
 function initialise_loaded_records(
   copoVisualsURL,
@@ -1006,9 +832,9 @@ function initialise_loaded_records(
   $('.expanding_menu > div').click(function (e) {
     const el = $(e.currentTarget);
     el.closest('.grid').removeClass('grid-selected');
-    el.closest('.panel-heading')
-      .next('.grid-panel-body')
-      .removeClass('grid-panel-body-selected');
+    el.closest('.card-header')
+      .next('.grid-card-body')
+      .removeClass('grid-card-body-selected');
   });
 
   $('#editProfileBtn').click(function (e) {
@@ -1022,43 +848,15 @@ function initialise_loaded_records(
   });
 
   $('#profileOptionsPopoverCloseBtn').click(function () {
-    $('#ellipsisID[data-toggle="popover"]').popover('hide');
+    new bootstrap.Popover.getInstance('#ellipsisID').hide();
   });
 
   $('#showMoreProfileInfoCloseBtn').click(function () {
-    $('#showMoreProfileInfoBtn[rel="popover"]').popover('hide');
+    new bootstrap.Popover.getInstance('#showMoreProfileInfoBtn').hide();
   });
 
   // Initialise the popover 'View profile options' for each profile record
-  let popover = $('#ellipsisID[data-toggle="popover"]')
-    .popover({
-      sanitize: false,
-    })
-    .click(function (e) {
-      $(this).popover('toggle');
-      $('#ellipsisID').not(this).popover('hide');
-      e.stopPropagation();
-    })
-    .on('show.bs.popover', function (e) {
-      // Set content of the popover
-      const $content = $('<div></div>');
-      const $editButton = $(
-        '<button id="editProfileBtn" class="btn btn-sm btn-success" title="Edit record"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit</button>'
-      );
-      const $deleteButton = $(
-        '<button id="deleteProfileBtn" class="btn btn-sm btn-danger" title="Delete record"><i class="fa fa-trash-can"></i>&nbsp;Delete</button>'
-      );
-
-      $deleteButton.css('margin-left', '15px');
-      $content.append($editButton);
-      $content.append($deleteButton);
-
-      // Apply the content to the popover
-      popover.attr('data-content', $content.html());
-    })
-    .on('shown.bs.popover', function (e) {
-      $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
-    });
+  initialise_ellipsisID_popover();
 }
 
 function contact_COPO_popup_dialog() {
@@ -1224,55 +1022,64 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
 }
 
 function showMoreProfileInfoPopover(grids) {
-  grids.each(function () {
-    let showMoreProfileInfoBtn = $(this)
-      .closest('.grid')
-      .find('#showMoreProfileInfoBtn[rel="popover"]');
+  let popoverTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="popover"]')
+  );
 
-    showMoreProfileInfoBtn
-      .popover({
-        html: true,
-        trigger: 'click',
-        sanitize: false,
-        title: function () {
-          let $showMoreProfileInfoCloseBtn =
-            '<i id="showMoreProfileInfoCloseBtn" class="fa fa-times pull-right"></i>';
-          return $showMoreProfileInfoCloseBtn;
-        },
-        content: function (e) {
-          return $(this)
-            .closest('.grid-panel-body')
-            .find('#showMoreProfileInfoContent')
-            .children('.popover-content')
-            .html();
-        },
-      })
-      .click(function (e) {
-        e.preventDefault(); // Prevents one from being automatically redirected to the top of the page
-        $(this).popover('toggle');
-        $('#showMoreProfileInfoBtn[rel="popover"]').not(this).popover('hide');
-        e.stopPropagation();
-
-        // Initialise the tooltip for the associated type info icon
-        // if the profile has associated types to display
-        if (
-          $(this).popover().is(':visible') &&
-          $(this).popover().find('.associated_type_info_icon')
-        ) {
-          $('.associated_type_info_icon').tooltip();
-        }
-
-        // Initialise the tooltip for the sequencing centre info icon
-        // if the profile has sequencing centres to display
-        if (
-          $(this).popover().is(':visible') &&
-          $(this).popover().find('.sequencing_centre_info_icon')
-        ) {
-          $('.sequencing_centre_info_icon').tooltip();
-        }
-      });
+  popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
+      popperConfig: function (defaultBsPopperConfig) {},
+      html: true,
+      trigger: 'click',
+      sanitize: false,
+      title: function () {
+        let $showMoreProfileInfoCloseBtn =
+          '<i id="showMoreProfileInfoCloseBtn" class="fa fa-times float-end"></i>';
+        return $showMoreProfileInfoCloseBtn;
+      },
+      content: function (e) {
+        // Set content of the popover
+        return $(this)
+          .closest('.grid-card-body')
+          .find('#showMoreProfileInfoContent')
+          .children('.popover-content')
+          .html();
+      },
+    });
   });
+
+  // Initialise the tooltip for the associated type info icon
+  // if the profile has associated types to display
+
+  const associated_type_popover = bootstrap.Popover.getInstance(
+    document.getElementsByClassName('.associated_type_info_icon')
+  );
+
+  const is_associated_type_popover_showing =
+    associated_type_popover &&
+    associated_type_popover.tip &&
+    associated_type_popover.tip.classList.contains('show');
+
+  if (is_associated_type_popover_showing) {
+    new bootstrap.Tooltip(associated_type_popover, options);
+  }
+
+  // Initialise the tooltip for the sequencing centre info icon
+  // if the profile has sequencing centres to display
+  const sequencing_centre_popover = bootstrap.Popover.getInstance(
+    document.getElementsByClassName('.associated_type_info_icon')
+  );
+
+  const is_sequencing_centre_popover_showing =
+    sequencing_centre_popover &&
+    sequencing_centre_popover.tip &&
+    sequencing_centre_popover.tip.classList.contains('show');
+
+  if (is_sequencing_centre_popover_showing) {
+    new bootstrap.Tooltip(associated_type_popover, options);
+  }
 }
+
 function get_acronym(txt) {
   // Retrieve the parentheses and the enclosed string from the
   // selected profile type
@@ -1296,4 +1103,35 @@ function get_acronym(txt) {
   }
 
   return select_value;
+}
+
+function initialise_ellipsisID_popover() {
+  new bootstrap.Popover(document.querySelector('#ellipsisID'), {
+    popperConfig: function (defaultBsPopperConfig) {
+      return { placement: 'right' };
+    },
+    sanitize: false,
+    html: true,
+    trigger: 'focus',
+    content: function () {
+      // Hide 'View profile options' title from appearing in the popover on hover
+      $('.row-ellipsis').attr('title', '');
+
+      // Set content of the popover
+      const $content = $('<div></div>');
+      const $editButton = $(
+        '<button id="editProfileBtn" class="btn btn-sm btn-success" title="Edit record"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit</button>'
+      );
+      const $deleteButton = $(
+        '<button id="deleteProfileBtn" class="btn btn-sm btn-danger" title="Delete record"><i class="fa fa-trash-can"></i>&nbsp;Delete</button>'
+      );
+
+      $deleteButton.css('margin-left', '15px');
+      $content.append($editButton);
+      $content.append($deleteButton);
+
+      // Apply the content to the popover
+      return $content.html();
+    },
+  });
 }

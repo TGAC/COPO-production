@@ -76,7 +76,7 @@ td.table-header-labeled {
     cursor: pointer
 }
 
-.panel-body {
+.card-body {
     padding: 10px !important;
 }
 

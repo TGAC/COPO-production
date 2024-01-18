@@ -655,9 +655,9 @@ VOCAB = {
 HTML_TAGS = {
     #"oauth_required": '<a href="/rest/forward_to_figshare/"> Grant COPO access to your Figshare account </a>',   deprecated
     "bootstrap_button": '<button type="button" id="{btn_id!s}" class="btn btn-{btn_type!s}">{btn_text!s}</button>',
-    "bootstrap_button_right": '<button type="button" id="{btn_id!s}" class="btn btn-{btn_type!s} pull-right">{btn_text!s}</button>',
+    "bootstrap_button_right": '<button type="button" id="{btn_id!s}" class="btn btn-{btn_type!s} float-end">{btn_text!s}</button>',
     "bootstrap_button_small": '<button type="button" id="{btn_id!s}" class="btn btn-{btn_type!s} btn-sm">{btn_text!s}</button>',
-    "bootstrap_button_small_right": '<button type="button" id="{btn_id!s}" class="btn btn-{btn_type!s} btn-sm pull-right">{btn_text!s}</button>',
+    "bootstrap_button_small_right": '<button type="button" id="{btn_id!s}" class="btn btn-{btn_type!s} btn-sm float-end">{btn_text!s}</button>',
 
     "action_buttons": ''
 

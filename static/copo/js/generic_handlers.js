@@ -58,14 +58,14 @@ function setup_collapsible_event() {
   $(document)
     .on('show.bs.collapse', '.copo-details-coll.collapse', function (event) {
       $(this)
-        .prev('.panel-heading')
+        .prev('.card-header')
         .find('.fa')
         .removeClass('fa-plus')
         .addClass('fa-minus');
     })
     .on('hide.bs.collapse', '.copo-details-coll.collapse', function () {
       $(this)
-        .prev('.panel-heading')
+        .prev('.card-header')
         .find('.fa')
         .removeClass('fa-minus')
         .addClass('fa-plus');
@@ -740,7 +740,7 @@ function do_render_table(data) {
               bTns[i].text +
               '" class="' +
               bTns[i].className +
-              ' btn-xs"><i class="' +
+              ' btn-sm"><i class="' +
               bTns[i].iconClass +
               '"> </i><span></span></a>&nbsp;';
           }
@@ -922,7 +922,7 @@ function do_render_table(data) {
             }
           }
 
-          $(this).removeClass('btn-default'); //remove default class
+          $(this).removeClass('btn-secondary'); //remove default class
           $(this).addClass(this.className); //attach supplied class
           $(this).attr('data-record-action', btnImage.btnAction); //data attribute to signal action type
           $(this).attr('data-action-target', 'rows'); //data attribute to signal batch action
@@ -968,8 +968,24 @@ function do_render_table(data) {
 } //end of function
 
 function refresh_tool_tips() {
-  $("[data-toggle='tooltip']").tooltip();
-  $("[data-toggle='popover']").popover();
+  // Initialise all tooltip components
+  let tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  );
+
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+
+  // Initialise all popover components
+  let popoverTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="popover"]')
+  );
+
+  popoverTriggerList.map(function (popoverTriggerEl) {
+    new bootstrap.Popover(popoverTriggerEl);
+  });
+
   $('.ui.dropdown').dropdown();
   $('.copo-tooltip').popup();
 
@@ -2290,7 +2306,7 @@ function get_data_list_panel(itemData, link) {
   });
 
   var listGroupPanel = $('<div/>', {
-    class: 'list-group panel',
+    class: 'list-group card',
     style: 'margin-bottom: 0px; border: 0 solid transparent;',
   });
 
@@ -2327,7 +2343,7 @@ function get_data_list_panel(itemData, link) {
         ctrlElemLink.html(
           '<span>Item ' +
             (key + 1) +
-            '</span><i class="fa fa-caret-down pull-right"></i>'
+            '</span><i class="fa fa-caret-down float-end"></i>'
         );
 
         listGroupPanel.append(ctrlElemLink);
@@ -2412,7 +2428,7 @@ function get_data_item_collapse(link, itemData, itemCount) {
   }
   var collapseBtn = $('<a></a>')
     .attr({
-      class: 'btn btn-xs btn-info',
+      class: 'btn btn-sm btn-info',
       'data-toggle': 'collapse',
       'data-target': '#' + link,
       style:
@@ -2511,83 +2527,85 @@ function build_attributes_display(data) {
   return contentHtml;
 }
 
-function get_collapsible_panel(panelType) {
-  if (!panelType) {
-    panelType = 'default';
+function get_collapsible_card(cardType) {
+  var cardClass;
+
+  if (!cardType) {
+    cardClass = 'card';
+  } else {
+    cardClass = 'card ' + cardType;
   }
 
-  var panelGroup = $('<div/>', {
-    class: 'panel-group',
+  var card = $('<div/>', {
+    class: cardClass,
   });
 
-  var panelClass = 'panel panel-' + panelType;
-  var panel = $('<div/>', {
-    class: panelClass,
+  var cardHeader = $('<div/>', {
+    class: 'card-header',
   });
 
-  var panelHeading = $('<div/>', {
-    class: 'panel-heading',
+  var cardTitle = $('<div/>', {
+    class: 'card-title',
   });
 
-  var panelTitle = $('<div/>', {
-    class: 'panel-title',
+  var cardTitleAnchor = $('<a/>', {
+    'data-bs-toggle': 'collapse',
+    href: '#collapseExample',
   });
 
-  var panelTitleAnchor = $('<a/>', {
-    'data-toggle': 'collapse',
+  cardTitle.append(cardTitleAnchor);
+  cardHeader.append(cardTitle);
+
+  card.append(cardHeader);
+
+  var cardCollapse = $('<div/>', {
+    class: 'collapse',
+    id: 'collapseExample',
   });
 
-  panelTitle.append(panelTitleAnchor);
-  panelHeading.append(panelTitle);
-
-  panel.append(panelHeading);
-
-  var panelCollapse = $('<div/>', {
-    class: 'panel-collapse collapse',
+  var cardBody = $('<div/>', {
+    class: 'card-body',
   });
 
-  var panelBody = $('<div/>', {
-    class: 'panel-body',
-  });
+  cardCollapse.append(cardBody);
 
-  panelCollapse.append(panelBody);
+  card.append(cardCollapse);
 
-  panel.append(panelCollapse);
-
-  panelGroup.append(panel);
-
-  return $('<div/>').append(panelGroup).clone();
+  return $('<div/>').append(card).clone();
 }
 
-function get_panel(panelType) {
-  if (!panelType) {
-    panelType = 'default';
+function get_panel(cardType) {
+  var cardClass;
+
+  if (!cardType) {
+    cardClass = 'card';
+  } else {
+    cardClass = 'card ' + cardType;
   }
 
-  var panelClass = 'panel panel-' + panelType;
-  var panel = $('<div/>', {
-    class: panelClass,
+  var card = $('<div/>', {
+    class: cardClass,
   });
 
-  var panelHeading = $('<div/>', {
-    class: 'panel-heading',
+  var cardHeader = $('<div/>', {
+    class: 'card-header',
     style: 'background-image: none;',
   });
 
-  panel.append(panelHeading);
+  card.append(cardHeader);
 
-  var panelBody = $('<div/>', {
-    class: 'panel-body',
+  var cardBody = $('<div/>', {
+    class: 'card-body',
   });
 
-  panel.append(panelBody);
+  card.append(cardBody);
 
-  var panelFooter = $('<div/>', {
-    class: 'panel-footer',
+  var cardFooter = $('<div/>', {
+    class: 'card-footer',
     style: 'background-color: #fff;',
   });
 
-  panel.append(panelFooter);
+  card.append(cardFooter);
 
   return $('<div/>').append(panel).clone();
 }
@@ -3449,7 +3467,7 @@ function update_quick_tour_flag() {
 function quick_tour_event() {
   $('.takeatour').on('click', function (e) {
     var dismissTour =
-      '<a class="dismisstouralert pull-right" href="#" role="button" ' +
+      '<a class="dismisstouralert float-end" href="#" role="button" ' +
       'style="text-decoration: none; color:  #c93c00;" aria-haspopup="true" aria-expanded="false">' +
       '<i class="fa fa-times-circle " aria-hidden="true">' +
       '</i>&nbsp; Dismiss Tour</a>';
@@ -3521,7 +3539,7 @@ function quick_tour_select() {
   var itemMessage = quickTourMessages[item.attr('data-copo-tour-id')];
 
   var endTour =
-    '<a class="endcopotour pull-right" href="#" role="button" ' +
+    '<a class="endcopotour float-end" href="#" role="button" ' +
     'style="text-decoration: none; color:  #c93c00;" aria-haspopup="true" aria-expanded="false">' +
     '<i class="fa fa-times-circle " aria-hidden="true">' +
     '</i>&nbsp; End Tour</a>';
@@ -3624,7 +3642,7 @@ function quick_tour_messages() {
         content:
           'View a profile details here having selected a profile record.',
       },
-      // "page_context_help_panel": {
+      // "page_context_help_card": {
       //     "title": "Help",
       //     "content": "Interact with the help pane to find help topics relevant to the page and/or current task."
       // },
@@ -3709,7 +3727,7 @@ function get_description_bundle_panel() {
       '                        </div>\n' +
       '                    </div>\n' +
       '                    <div class="col-sm-2 col-md-2 col-lg-2">\n' +
-      '                        <div class="pull-right">\n' +
+      '                        <div class="float-end">\n' +
       '                            <i title="" class="big icon copo-tooltip bundle-status"></i>\n' +
       '                        </div>\n' +
       '                    </div>\n' +
@@ -3752,7 +3770,7 @@ function get_card_panel() {
       '                        </div>\n' +
       '                    </div>\n' +
       '                    <div class="col-sm-2 col-md-2 col-lg-2">\n' +
-      '                        <div class="pull-right">\n' +
+      '                        <div class="float-end">\n' +
       '                            <i title="" class="big icon copo-tooltip bundle-status"></i>\n' +
       '                        </div>\n' +
       '                    </div>\n' +
@@ -3800,30 +3818,28 @@ function get_ajax_loader() {
   return loader.clone();
 }
 
-function get_collapsible_panel() {
-  let panel = $(
-    '<div class="panel-group" style="margin-top: 15px;">\n' +
-      '        <div class="panel panel-dtables">\n' +
-      '            <div class="panel-heading" style="background-image: none; border: none;">\n' +
-      '                <h4 class="panel-title">\n' +
-      '                    <div class="row">\n' +
-      '                        <div class="col-sm-8 col-md-8 col-lg-8 copo-details-header"></div>\n' +
-      '                        <div class="col-sm-2 col-md-2 col-lg-2 pull-right">\n' +
-      '                            <div class="pull-right">\n' +
+function get_collapsible_card() {
+  let card = $(
+    '<div class="card panel-dtables" style="margin-top: 15px;">\n' +
+      '   <div class="card-header" style="background-image: none; border: none;">\n' +
+      '        <h4 class="card-title">\n' +
+      '            <div class="row">\n' +
+      '                 <div class="col-sm-8 col-md-8 col-lg-8 copo-details-header"></div>\n' +
+      '                      <div class="col-sm-2 col-md-2 col-lg-2 float-end">\n' +
+      '                           <div class="float-end">\n' +
       '                                <i data-toggle="collapse" href="" class="fa fa-plus text-primary copo-details-icon"\n' +
       '                                   style="cursor: pointer; display: block;"\n' +
       '                                   aria-hidden="true"></i>\n' +
-      '                            </div>\n' +
-      '                        </div>\n' +
-      '                    </div>\n' +
-      '                </h4>\n' +
+      '                           </div>\n' +
+      '                      </div>\n' +
       '            </div>\n' +
-      '            <div id="" class="panel-collapse collapse copo-details-coll">\n' +
-      '                <div class="panel-body pbody"></div>\n' +
-      '            </div>\n' +
-      '        </div>\n' +
-      '    </div>'
+      '       </h4>\n' +
+      '  </div>\n' +
+      '  <div id="" class="collapse copo-details-coll">\n' +
+      '       <div class="card-body pbody"></div>\n' +
+      '  </div>\n' +
+      '</div>'
   );
 
-  return panel.clone();
+  return card.clone();
 }

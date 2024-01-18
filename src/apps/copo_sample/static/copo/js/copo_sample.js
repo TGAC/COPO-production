@@ -386,7 +386,7 @@ $(document).ready(function () {
         var spinnerElem = $('<button/>',
             {
                 type: "button",
-                class: "btn btn-default",
+                class: "btn btn-secondary",
                 html: '<i class="fa fa-spinner fa-pulse fa-1x"></i>'
             });
 
@@ -473,7 +473,7 @@ $(document).ready(function () {
 
     var spinnerElem = $('<button/>', {
       type: 'button',
-      class: 'btn btn-default spinner-element',
+      class: 'btn btn-secondary spinner-element',
       html: '<i class="fa fa-spinner fa-pulse fa-1x"></i>',
     });
 
@@ -1696,7 +1696,7 @@ $(document).ready(function () {
         var label = '<label for="dtol_type_select">Select Sample Sub Type</label>'
         var dd = $("<select/>", {
             id: "dtol_type_select",
-            class: "form-control",
+            class: "form-select",
             "style": "margin-bottom:30px"
         })
         // the values of these options point to json files in wizards/sample/dtol_manifests
@@ -1730,12 +1730,12 @@ $(document).ready(function () {
 
 
         for (var title in grouped_fields) {
-            var header = '<hr/><div hidden class="panel panel-default" id="section_' + title.replace(" ", "_") + '">' +
-                '<div class="panel-heading" role="tab" id="heading_' + title.replace(" ", "_") + '">' +
-                '<h4 class="panel-title">' +
+            var header = '<hr/><div hidden class="card" id="section_' + title.replace(" ", "_") + '">' +
+                '<div class="card-header" role="tab" id="heading_' + title.replace(" ", "_") + '">' +
+                '<h4 class="card-title">' +
                 '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#' + title.replace(" ", "_") + '" aria-expanded="true" aria-controls="' + title.replace(" ", "_") + '">' + title + '</a></h4></div>'
             var body = '<div id="' + title.replace(" ", "_") + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_"' + title.replace(" ", "_") + '>' +
-                '<div class="panel-body">'
+                '<div class="card-body">'
             for (var control in grouped_fields[title]) {
                 var formElem = grouped_fields[title][control]
                 var elemValue = null;
@@ -1785,11 +1785,11 @@ $(document).ready(function () {
         var message = $('<div/>', {class: "webpop-content-div"});
         message.append(stage.message);
 
-        var panel = get_panel('info');
-        panel.addClass('edit-sample-badge');
-        panel.find('.panel-body').append(message);
-        panel.find('.panel-heading').remove();
-        panel.find(".panel-footer").remove();
+        var card = get_card('info');
+        card.addClass('edit-sample-badge');
+        card.find('.card-body').append(message);
+        card.find('.card-header').remove();
+        card.find(".card-footer").remove();
 
         var messageDivContent = $('<div/>',
             {
@@ -1798,7 +1798,7 @@ $(document).ready(function () {
             }
         );
 
-        messageDivContent.append(panel);
+        messageDivContent.append(card);
 
 
         // refresh dynamic content
@@ -1917,7 +1917,7 @@ $(document).ready(function () {
                     .nodes()
                     .each(function (value) {
                         $(this)
-                            .removeClass("btn btn-default")
+                            .removeClass("btn btn-secondary")
                             .addClass('tiny ui basic button');
                     });
 
@@ -2269,7 +2269,7 @@ $(document).ready(function () {
             },
             success: function (data) {
                 if (data.pending.length) {
-                    var infoPanelElement = trigger_global_notification();
+                    var infoCardElement = trigger_global_notification();
 
                     for (var i = 0; i < data.pending.length; ++i) {
                         var rec = data.pending[i];
@@ -2285,7 +2285,7 @@ $(document).ready(function () {
                         message.append("<div style='margin-top: 5px;'></div>");
                         message.append("<div style='margin-top: 5px;'></div>");
 
-                        var deletedesc = '<a class="delete-description-i pull-right" href="#" role="button" ' +
+                        var deletedesc = '<a class="delete-description-i float-end" href="#" role="button" ' +
                             'style="text-decoration: none; color:  #c93c00;" data-target="' + rec._id + '" title="delete description" aria-haspopup="true" aria-expanded="false">' +
                             '<i class="fa fa-times-circle" aria-hidden="true">' +
                             '</i>&nbsp; Delete</a>';
@@ -2296,14 +2296,14 @@ $(document).ready(function () {
                             '</i>&nbsp; Reload</a>';
 
 
-                        var panel = get_panel('info');
-                        panel.addClass('inc-desc-badge');
-                        panel.find('.panel-body').append(message);
-                        panel.find('.panel-footer').append(deletedesc);
-                        panel.find('.panel-footer').append(reloaddesc);
-                        panel.find('.panel-heading').append('Incomplete description');
+                        var card = get_card('info');
+                        card.addClass('inc-desc-badge');
+                        card.find('.card-body').append(message);
+                        card.find('.card-footer').append(deletedesc);
+                        card.find('.card-footer').append(reloaddesc);
+                        card.find('.card-heading').append('Incomplete description');
 
-                        infoPanelElement.prepend(panel);
+                        infoCardElement.prepend(card);
                     }
                 }
             },
