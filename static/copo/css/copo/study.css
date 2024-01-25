@@ -164,17 +164,17 @@ div.study-component-table-div {
     overflow: scroll;
 }
 
-.carousel-control.left {
+.carousel-control-prev {
     background-image: none;
 }
 
-.carousel-control.right {
+.carousel-control-next {
     background-image: none;
 }
 
-.carousel-indicators {
-    /*bottom:-50px;*/
-}
+/*.carousel-indicators {
+    bottom:-50px;
+}*/
 
 .carousel-indicators li {
     border-color: #999;

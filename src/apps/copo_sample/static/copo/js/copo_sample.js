@@ -939,7 +939,7 @@ $(document).ready(function () {
   }
 
   function initiate_description(parameters) {
-    $('[data-toggle="tooltip"]').tooltip('destroy');
+    $('[data-bs-toggle="tooltip"]').tooltip('destroy');
 
     if (!$('#wizard_toggle').is(':visible')) {
       var $dialogContent = $('<div/>');
@@ -1055,7 +1055,7 @@ $(document).ready(function () {
       });
     }
 
-    $("[data-toggle='tooltip']").tooltip();
+    $("[data-bs-toggle='tooltip']").tooltip();
   }
 
   function show_sample_source() {
@@ -1366,12 +1366,12 @@ $(document).ready(function () {
               let image_caption = `Image: ${filename}; SPECIMEN_ID: ${specimen_id}`;
 
               let carousel_indicator = $('<li/>', {
-                'data-target': '#imageCarousel',
-                'data-slide-to': index.toString(),
+                'data-bs-target': '#imageCarousel',
+                'data-bs-slide-to': index.toString(),
               });
 
               let carousel_inner_item = $('<div/>', {
-                class: 'item',
+                class: 'carousel-item',
               });
 
               if (index === 0) {
@@ -1380,8 +1380,11 @@ $(document).ready(function () {
               }
 
               // Create a clickable image that opens in a new tab
-              let figcaption = $('<figcaption/>');
-              figcaption.text(image_caption);
+              let carousel_caption = $('<div/>', {
+                class: 'carousel-caption d-none d-md-block',
+              });
+
+              carousel_caption.append(`<p>${image_caption}</p>`);
 
               let image = $('<img/>', {
                 class: 'd-block w-100',
@@ -1402,7 +1405,7 @@ $(document).ready(function () {
                 $('.carousel-inner').children().length < urls.length &&
                 $('.carousel-indicators').children().length < urls.length
               ) {
-                figcaption.appendTo(figure);
+                carousel_caption.appendTo(figure);
                 figure.appendTo(carousel_inner_item);
 
                 // Append the carousel indicators to the carousel 'ol' tag
@@ -1496,7 +1499,7 @@ $(document).ready(function () {
             try {
                 formDiv.append(dispatchFormControl[controlsMapping[control.toLowerCase()]](formElem, elemValue));
             } catch (err) {
-                formDiv.append('<div class="form-group copo-form-group"><span class="text-danger">Form Control Error</span> (' + formElem.label + '): Cannot resolve form control!</div>');
+                formDiv.append('<div class="mb-3 copo-form-group"><span class="text-danger">Form Control Error</span> (' + formElem.label + '): Cannot resolve form control!</div>');
             }
 
         }
@@ -1733,7 +1736,7 @@ $(document).ready(function () {
             var header = '<hr/><div hidden class="card" id="section_' + title.replace(" ", "_") + '">' +
                 '<div class="card-header" role="tab" id="heading_' + title.replace(" ", "_") + '">' +
                 '<h4 class="card-title">' +
-                '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#' + title.replace(" ", "_") + '" aria-expanded="true" aria-controls="' + title.replace(" ", "_") + '">' + title + '</a></h4></div>'
+                '<a role="button" data-bs-toggle="collapse" data-parent="#accordion" href="#' + title.replace(" ", "_") + '" aria-expanded="true" aria-controls="' + title.replace(" ", "_") + '">' + title + '</a></h4></div>'
             var body = '<div id="' + title.replace(" ", "_") + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_"' + title.replace(" ", "_") + '>' +
                 '<div class="card-body">'
             for (var control in grouped_fields[title]) {
@@ -1778,7 +1781,7 @@ $(document).ready(function () {
                 class: "text-info",
                 style: "line-height: 150%; display:none;",
                 href: "#attributes-edit",
-                "data-toggle": "collapse"
+                "data-bs-toggle": "collapse"
             });
 
         //add info for user

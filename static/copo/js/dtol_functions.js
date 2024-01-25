@@ -19,7 +19,7 @@ var dt_options = {
     {
       className: 'tickbox',
       render: function (data, type, row) {
-        var filter = $('#sample_filter').find('.active').find('a').attr('href');
+        var filter = $('#sample_filter').find('a.active').attr('href');
         if (
           filter == 'pending' ||
           filter == 'rejected' ||
@@ -57,7 +57,7 @@ var dt_options = {
     data: function (d) {
       return {
         profile_id: $('#profile_id').val(),
-        filter: $('#sample_filter').find('.active').find('a').attr('href'),
+        filter: $('#sample_filter').find('a.active').attr('href'),
         draw: d.draw,
         order: d.order,
         length: d.length,
@@ -332,12 +332,12 @@ $(document).ready(function () {
             let image_caption = `Image: ${filename}; SPECIMEN_ID: ${specimen_id}`;
 
             let carousel_indicator = $('<li/>', {
-              'data-target': '#imageCarousel',
-              'data-slide-to': index.toString(),
+              'data-bs-target': '#imageCarousel',
+              'data-bs-slide-to': index.toString(),
             });
 
             let carousel_inner_item = $('<div/>', {
-              class: 'item',
+              class: 'carousel-item',
             });
 
             if (index === 0) {
@@ -346,8 +346,11 @@ $(document).ready(function () {
             }
 
             // Create a clickable image that opens in a new tab
-            let figcaption = $('<figcaption/>');
-            figcaption.text(image_caption);
+            let carousel_caption = $('<div/>', {
+              class: 'carousel-caption d-none d-md-block',
+            });
+
+            carousel_caption.text(`<p>${image_caption}</p>`);
 
             let image = $('<img/>', {
               class: 'd-block w-100',
@@ -368,7 +371,7 @@ $(document).ready(function () {
               $('.carousel-inner').children().length < urls.length &&
               $('.carousel-indicators').children().length < urls.length
             ) {
-              figcaption.appendTo(figure);
+              carousel_caption.appendTo(figure);
               figure.appendTo(carousel_inner_item);
 
               // Append the carousel indicators to the carousel 'ol' tag
@@ -585,7 +588,10 @@ $(document).ready(function () {
     }
 
     // Reset carousel on tab change
-    $('#imageCarousel').carousel({ pause: true, interval: false }).carousel(0);
+    new bootstrap.Carousel(document.querySelector('#imageCarousel'), {
+      pause: true,
+      interval: false,
+    });
   });
 
   $(document).on('click', '#clearStatusLogBtn', function () {
@@ -690,7 +696,7 @@ function row_select(ev) {
   }
 
   if (sample_table != undefined) {
-    var filter = $('#sample_filter').find('.active').find('a').attr('href');
+    var filter = $('#sample_filter').find('a.active').attr('href');
     if (row == undefined) {
       $('#profile_id').val('');
     } else {
@@ -789,8 +795,7 @@ function update_pending_samples_table() {
   // get profiles with samples needing looked at and populate left hand column
   //check whether we are getting my profiles or all profiles
   var which_profiles = $('.profile-filter:visible')
-    .find('.active')
-    .find('a')
+    .find('a.active')
     .attr('href');
   //console.log(which_profiles)
   let columnDefs = [];
@@ -873,6 +878,9 @@ function update_pending_samples_table() {
           }
         },
       });
+
+      // Add padding to the 'Search' box for the profiles table
+      $('#profile_titles_filter').addClass('pt-3 pb-3');
 
       $(document).removeData('selected_row');
       if (data.length) {
@@ -993,12 +1001,11 @@ function update_profile_table() {
   }
   group = get_group_id();
   if (group == 'erga') {
-    $('#erga').show();
-
-    $('#non_erga').hide();
+    $('#erga').removeAttr('hidden');
+    $('#non_erga').prop('hidden', true);
   } else {
-    $('#erga').hide();
-    $('#non_erga').show();
+    $('#erga').prop('hidden', true);
+    $('#non_erga').removeAttr('hidden');
   }
   update_pending_samples_table();
 }

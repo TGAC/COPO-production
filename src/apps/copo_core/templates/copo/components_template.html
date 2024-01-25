@@ -60,21 +60,21 @@
             <!--
             <div class="col-sm-6 col-md-6 col-lg-6">
                 <h5>Dataverse Details</h5>
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="dvName">Name</label>
                     <input type="text" class="form-control" name="dvName" id="dvName">
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6" style="padding-left:0">
+                    <div class="mb-3 col-md-6" style="padding-left:0">
                         <label for="dvContactFirstname">Primary Contact Firstname</label>
                         <input type="text" class="form-control" name="dvContactFirstname" id="dvContactFirstname">
                     </div>
-                    <div class="form-group col-md-6" style="padding-left:0">
+                    <div class="mb-3 col-md-6" style="padding-left:0">
                         <label for="dvContactLastname">Primary Contact Lastname</label>
                         <input type="text" class="form-control" name="dvContactLastname" id="dvContactLastname">
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="dvType">Dataverse Type</label>
                     <select class="form-select" id="dvType" name="dvType">
                         <option value="UNCATEGORIZED">Uncategorized</option>
@@ -91,39 +91,39 @@
             </div>
             <div class="col-sm-6 col-md-6 col-lg-6">
                 <h5>Dataset Details</h5>
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="dsTitle">Dataset Title</label>
                     <input type="text" class="form-control" name="dsTitle" id="dsTitle">
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="dsDescription">Dataset Descripion</label>
                     <textarea class="form-control" rows="5" name="dsDescription" id="dsDescription"></textarea>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6" style="padding-left:0">
+                    <div class="mb-3 col-md-6" style="padding-left:0">
                         <label for="dsAuthorFirstname">Author Firstname</label>
                         <input type="text" class="form-control" name="dsAuthorFirstname" id="dsAuthorFirstname">
                     </div>
-                    <div class="form-group col-md-6" style="padding-left:0">
+                    <div class="mb-3 col-md-6" style="padding-left:0">
                         <label for="dsAuthorLastname">Author Lastname</label>
                         <input type="text" class="form-control" name="dsAuthorLastname" id="dsAuthorLastname">
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="dsAffiliation">Author Affiliation</label>
                     <input type="text" class="form-control" name="dsAffiliation" id="dsAffiliation">
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6" style="padding-left:0">
+                    <div class="mb-3 col-md-6" style="padding-left:0">
                         <label for="dsContactFirstname">Contact Firstname</label>
                         <input type="text" class="form-control" name="dsContactFirstname" id="dsContactFirstname">
                     </div>
-                    <div class="form-group col-md-6" style="padding-left:0">
+                    <div class="mb-3 col-md-6" style="padding-left:0">
                         <label for="dsContactLastname">Contact Lastname</label>
                         <input type="text" class="form-control" name="dsContactLastname" id="dsContactLastname">
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                     <label for="dsContactEmail">Contact Email</label>
                     <input type="text" class="form-control" name="dsContactEmail" id="dsContactEmail">
                 </div>
@@ -218,7 +218,7 @@
     <div class="record-action-templates">
 
         <div class="add_record_all tiny ui basic dtables-dbuttons  blue button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="add"
              data-error-message=""
              data-btntype="all"
@@ -229,7 +229,7 @@
         </div>
 
         <div class="describe_record_all tiny ui basic dtables-dbuttons  blue button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="describe"
              data-error-message=""
              data-btntype="all"
@@ -240,7 +240,7 @@
         </div>
 
         <div class="show_sample_source tiny ui basic dtables-dbuttons olive button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="sample-source"
              data-error-message=""
              data-btntype="all"
@@ -252,7 +252,7 @@
 
 
         <div class="describe_record_multi tiny ui basic dtables-dbuttons  blue button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="describe"
              data-error-message="Please select one or more datafiles to describe"
              data-btntype="multi"
@@ -263,7 +263,7 @@
         </div>
 
         <div class="undescribe_record_multi tiny ui basic dtables-dbuttons red button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="discard"
              data-error-message="Please select target datafiles to discard metadata"
              data-btntype="multi"
@@ -274,7 +274,7 @@
         </div>
 
         <div class="undescribe_record_multi tiny ui basic dtables-dbuttons red button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="annotate"
              data-error-message="Annotate File Level Metadata"
              data-btntype="multi"
@@ -285,7 +285,7 @@
         </div>
 
         <div class="unbundle_record_multi tiny ui basic dtables-dbuttons red button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="unbundle"
              data-error-message="Please select target datafiles to [un]bundle"
              data-btntype="multi"
@@ -296,7 +296,7 @@
         </div>
 
         <div class="edit_record_single tiny ui basic dtables-dbuttons  green button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="edit"
              data-error-message="Please select a record to edit"
              data-btntype="single"
@@ -308,7 +308,7 @@
         </div>
 
         <div class="delete_record_multi tiny ui basic dtables-dbuttons  red button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="validate_and_delete"
              data-error-message="Please select one or more records to delete"
              data-btntype="multi"
@@ -320,7 +320,7 @@
         </div>
 
         <div class="delete_datafiles_multi tiny ui basic dtables-dbuttons  red button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="delete"
              data-error-message="Please select one or more datafiles to delete"
              data-btntype="multi"
@@ -331,7 +331,7 @@
         </div>
 
         <div class="summarise_record_single tiny ui basic dtables-dbuttons  teal button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="summarise"
              data-error-message="Please select a single record to summarise"
              data-btntype="single"
@@ -342,7 +342,7 @@
         </div>
 
         <div class="submit_assembly_multi tiny ui basic dtables-dbuttons  teal button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="submit_assembly"
              data-error-message="Please select one or more record to submit"
              data-btntype="multi"
@@ -353,7 +353,7 @@
         </div>
 
         <div class="submit_annotation_multi tiny ui basic dtables-dbuttons  teal button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="submit_annotation"
              data-error-message="Please select one or more record to submit"
              data-btntype="multi"
@@ -364,7 +364,7 @@
         </div>
 
         <div class="submit_read_multi tiny ui basic dtables-dbuttons  teal button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="submit_read"
              data-error-message="Please select one or more record to submit"
              data-btntype="multi"
@@ -375,7 +375,7 @@
         </div>
 
         <div class="delete_read_multi tiny ui basic dtables-dbuttons  red button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="delete_read"
              data-error-message="Please select one or more record to delete"
              data-btntype="multi"
@@ -386,7 +386,7 @@
         </div>
 
         <div class="add_local_all tiny ui basic dtables-dbuttons  blue button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="add_files_locally"
              data-error-message=""
              data-btntype="all"
@@ -397,7 +397,7 @@
         </div>
 
         <div class="add_terminal_all tiny ui basic dtables-dbuttons  blue button copo-dt copo-tooltip"
-             data-container="body"
+             data-bs-container="body"
              data-action="add_files_by_terminal"
              data-error-message=""
              data-btntype="all"
@@ -408,7 +408,7 @@
         </div>       
 
         <div class="submit_tagged_seq_multi tiny ui basic dtables-dbuttons  teal button copo-dt copo-tooltip"
-            data-container="body"
+            data-bs-container="body"
             data-action="submit_tagged_seq"
             data-error-message="Please select one or more record to submit"
             data-btntype="multi"
@@ -419,7 +419,7 @@
         </div>
 
         <div class="download_sample_manifest_single tiny ui basic dtables-dbuttons blue button copo-dt copo-tooltip" 
-            data-container="body"
+            data-bs-container="body"
             data-action="download-sample-manifest"
             data-error-message="Please select one of samples in the manifest to download"
             data-btntype="single"
@@ -428,7 +428,7 @@
             <i class="fa fa-download"></i>
             <span class="action-label" style="padding-left: 3px;">Download sample manifest</span>
         </div>
-        <div class="view_images_multiple tiny ui basic dtables-dbuttons teal button copo-dt copo-tooltip" data-container="body"
+        <div class="view_images_multiple tiny ui basic dtables-dbuttons teal button copo-dt copo-tooltip" data-bs-container="body"
             data-action="view-images" data-bs-toggle="modal"
             data-error-message="Please select one or more sample records from the table shown to view images for"
             data-btntype="multi" title="View Images" tabindex="0">
@@ -437,7 +437,7 @@
         </div>
         
         <div class="download_permits_multiple tiny ui basic dtables-dbuttons orange button copo-dt copo-tooltip"
-            data-container="body" data-action="download-permits"
+            data-bs-container="body" data-action="download-permits"
             data-error-message="Please select one or more sample records from the table shown to download permits for"
             data-btntype="multi" title="Download Permits" tabindex="0">
             <i class="fa fa-download"></i>

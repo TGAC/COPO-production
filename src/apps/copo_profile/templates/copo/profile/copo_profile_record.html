@@ -11,11 +11,11 @@
                         <span id="{{ profile.id }}" class=showEllipsisFor1TextLine>{{ profile.title }}&nbsp;</span>
                     </div>
                     <div class="col-sm-2 col-md-2 col-lg-2 row-ellipsis" title="View profile options">
-                        <div id="{{ profile.id }}" class="float-end ellipsisDiv">
-                            <i id="ellipsisID" class="fa fa-ellipsis-v" data-bs-toggle="popover"
-                               data-html="true" role="button"
-                               title='<i id="profileOptionsPopoverCloseBtn" class="fa fa-times float-end"></i>'></i>
-                        </div>
+                      <div id="{{ profile.id }}" class="float-end ellipsisDiv">
+                        <a id="ellipsisID" class="fa fa-ellipsis-v link-light" tabindex="0" data-bs-toggle="popover"
+                           role="button">
+                        </a>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -32,14 +32,15 @@
                             <div class="showEllipsisFor2TextLines profileDescription">{{ profile.description }}</div>
                             
                             {% if profile.study_status or profile.associated_type or profile.sequencing_centre|is_list_empty %}
-                                <a id="showMoreProfileInfoBtn" class="btn {% if profile.description.strip|length < 56 %}showMoreProfileInfoBtn_margin{% elif profile.description.strip|length >= 56 %}showMoreProfileInfoBtn_2LineDescriptionText{% endif %}" href="#" rel="popover"
-                                    data-popover-content="#showMoreProfileInfoContent" data-bs-placement="right">View more...</a>                         
+                                <a id="showMoreProfileInfoBtn" class="btn {% if profile.description.strip|length < 56 %}showMoreProfileInfoBtn_margin{% elif profile.description.strip|length >= 56 %}showMoreProfileInfoBtn_2LineDescriptionText{% endif %}" 
+                                  tabindex="0" data-bs-toggle="popover" role="button">View more...</a>                         
                             {% endif %}
 
                             <!-- Content for 'showMoreProfileInfo' popover -->
                             <div id="showMoreProfileInfoContent" class="hidden">
-                                <div class="popover-heading"></div>
-                                <div class="popover-content showMoreProfileInfoPopover-content-div">
+                                <div class="popover-arrow" style="position: absolute; top: 0px; transform: translate3d(0px, 47px, 0px);"></div>
+                                <div class="popover-header"></div>
+                                <div class="popover-body showMoreProfileInfoPopover-content-div">
                                     {% if profile.study_status %}
                                         <div class="studyStatusDiv" style="margin-top: 10px;">
                                             <span class="boldText">Release Status: </span> 
@@ -85,23 +86,68 @@
                         <!--Card expanding menu -->
                         <!-- Row: Profile menu-->
                         <div class="{% if profile.study_status or profile.associated_type or profile.sequencing_centre|is_list_empty %}menu-row{% else %}menu-no-addtl-info-row{% endif %}">
-                            <span class="ui compact menu expanding_menu" id="expanding_menu">
+                            <div id="expanding_menu" class="btn-group expanding_menu compact" role="group">
+                                <button class="btn btn-light dropdown-toggle dropdown-toggle-split border-secondary-subtle bg-transparent" data-bs-toggle="dropdown"
+                                    tabindex="0" type="button" aria-expanded="false">Actions
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu menu" tabindex="-1">
+                                    <li><a class="dropdown-item action" profile_component="all" anchor_type="seq_annotation" data-action_type="seq_annotation">Submit Annotation</a></li>
+                                    
+                                    <li><a class="dropdown-item action" profile_component="all" anchor_type="assembly" data-action_type="assembly">Submit Assembly</a></li>
+
+                                    <li><a class="dropdown-item action" profile_component="erga" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding Manifest</a></li>
+                                    
+                                    <li><a class="dropdown-item action" profile_component="dtol" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding Manifest</a></li>
+
+                                    <li><a class="dropdown-item action" profile_component="dtol" anchor_type="sample" data-action_type="sample">Submit DTOL/ASG manifest</a></li>
+
+                                    <li><a class="dropdown-item action" profile_component="erga" anchor_type="sample" data-action_type="sample">Submit ERGA Manifest</a></li>
+                                    
+                                    <li><a class="dropdown-item action" profile_component="all" anchor_type="reads" data-action_type="read">Submit Reads</a></li>
+
+                                    <li><a class="dropdown-item action" profile_component="all" anchor_type="files" data-action_type="files">Upload Files</a></li>
+
+                                    <li><a class="dropdown-item action dropdown-divider" profile_component="all" anchor_type="all" data-action_type="release_study" style="margin: 1em 0;">Release Study</a></li>
+                                </ul>
+
+                                <!-- <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split border-secondary-subtle" data-bs-toggle="dropdown"
+                                        aria-expanded="false">Components
+                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu menu comp" tabindex="-1">
+                                    </ul>
+                                </div> -->
+                                <div class="btn-group" role="group"></div>
+                                    <button class="btn btn-light dropdown-toggle dropdown-toggle-split border-secondary-subtle bg-transparent" 
+                                    data-bs-toggle="dropdown" tabindex="0" type="button" aria-expanded="false">
+                                        Components
+                                        <!-- <i class="dropdown icon"></i> -->
+                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu menu comp" tabindex="-1"></ul>
+                                   
+                                </div>
+                            </div>
+
+                            <!-- <span class="ui compact menu expanding_menu" id="expanding_menu">
                                 <div class="ui up pointing dropdown link item" tabindex="0">
                                     Actions
                                     <i class="dropdown icon"></i>
                                     <div class="menu" tabindex="-1">
-                                        <a class="item action" profile_component="all" anchor_type="seq_annotation" data-action_type="seq_annotation">Submit
+                                        <a class="dropdown-item action" profile_component="all" anchor_type="seq_annotation" data-action_type="seq_annotation">Submit
                                             Annotation</a>
-                                        <a class="item action" profile_component="all" anchor_type="assembly" data-action_type="assembly">Submit Assembly</a>
-                                        <a class="item action" profile_component="erga" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding
+                                        <a class="dropdown-item action" profile_component="all" anchor_type="assembly" data-action_type="assembly">Submit Assembly</a>
+                                        <a class="dropdown-item action" profile_component="erga" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding
                                             Manifest</a>
-                                        <a class="item action" profile_component="dtol" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding
+                                        <a class="dropdown-item action" profile_component="dtol" anchor_type="taggedseq" data-action_type="taggedseq">Submit Barcoding
                                             Manifest</a>
-                                        <a class="item action" profile_component="dtol" anchor_type="sample" data-action_type="sample">Submit DTOL/ASG manifest</a>
-                                        <a class="item action" profile_component="erga" anchor_type="sample" data-action_type="sample">Submit ERGA Manifest</a>                            
-                                        <a class="item action" profile_component="all" anchor_type="reads" data-action_type="read">Submit Reads</a>
-                                        <a class="item action" profile_component="all" anchor_type="files" data-action_type="files">Upload Files</a>
-                                        <a class="item action ui dropdown-divide" profile_component="all" anchor_type="all" data-action_type="release_study" style="margin: 1em 0;">Release Study</a>
+                                        <a class="dropdown-item action" profile_component="dtol" anchor_type="sample" data-action_type="sample">Submit DTOL/ASG manifest</a>
+                                        <a class="dropdown-item action" profile_component="erga" anchor_type="sample" data-action_type="sample">Submit ERGA Manifest</a>                            
+                                        <a class="dropdown-item action" profile_component="all" anchor_type="reads" data-action_type="read">Submit Reads</a>
+                                        <a class="dropdown-item action" profile_component="all" anchor_type="files" data-action_type="files">Upload Files</a>
+                                        <a class="dropdown-item action ui dropdown-divide" profile_component="all" anchor_type="all" data-action_type="release_study" style="margin: 1em 0;">Release Study</a>
                                     </div>
                                 </div>
                                 <div class="ui up pointing dropdown link item" tabindex="0">
@@ -109,7 +155,7 @@
                                     <i class="dropdown icon"></i>
                                     <div class="menu comp" tabindex="-1"></div>
                                 </div>
-                            </span>
+                            </span> -->
                         </div>
                     </div>
                 </div>

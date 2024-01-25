@@ -12,10 +12,10 @@
 
 {% block css_block %}
     .dot-color{
-    color: #eaf0f0 !important;
+        color: #eaf0f0 !important;
     }
     .navbar-brand > img {
-    margin-top: -10px !important;
+        margin-top: -10px !important;
     }
 {% endblock %}
 
@@ -23,7 +23,7 @@
 {% block baseblock %}
 
 
-
+    {% include "nav_dropdown.html" %}
     <section>
         <div class="row">
 
@@ -39,9 +39,6 @@
 
             </div>
             <div class="col-sm-5 col-md-5 col-lg-5 zero-padding">
-                <div class="float-end">
-                    {% include "nav_dropdown.html" %}
-                </div>
             </div>
         </div>
 

@@ -306,7 +306,7 @@ function get_profile_titles_nav_tabs() {
           }
         }
 
-        a.attr('data-toggle', 'tab');
+        a.attr('data-bs-toggle', 'tab');
         a.attr('data-type', 'tab');
         a.attr('href', profile_type);
         a.text(profile_type);
@@ -325,7 +325,7 @@ function build_form_body_sample_Details(data, form) {
   Object.entries(data).forEach(([field, value]) => {
     // Create field div
     const fieldDiv = document.createElement('div');
-    fieldDiv.setAttribute('class', 'form-group fieldDiv');
+    fieldDiv.setAttribute('class', 'mb-3 fieldDiv');
     fieldDiv.setAttribute('id', `${field}_div`);
 
     // Field; Create field label
@@ -1089,7 +1089,7 @@ function get_profile_titles(data) {
             $(li).addClass('active');
           }
 
-          a.attr('data-toggle', 'tab');
+          a.attr('data-bs-toggle', 'tab');
           a.attr('data-type', 'tab');
           a.attr('href', profile_type);
           a.text(profile_type);

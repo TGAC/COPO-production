@@ -8,80 +8,89 @@
 {% block stylesheet_block %}
 
     <style> /* set the CSS */
-    .wrapper {
-        position: relative;
-    }
+        .wrapper {
+            position: relative;
+        }
 
-    .freezing {
-        fill: #e0f3f3;
-    }
+        .freezing {
+            fill: #e0f3f3;
+        }
 
-    .line {
-        fill: none;
-        stroke: #af9358;
-        stroke-width: 2;
-    }
+        .line {
+            fill: none;
+            stroke: #af9358;
+            stroke-width: 2;
+        }
 
-    .y-axis-label {
-        fill: black;
-        font-size: 1.4em;
-        text-anchor: middle;
-        transform: rotate(-90deg);
-    }
+        .y-axis-label {
+            fill: black;
+            font-size: 1.4em;
+            text-anchor: middle;
+            transform: rotate(-90deg);
+        }
 
-    .listening-rect {
-        fill: transparent;
-    }
+        .listening-rect {
+            fill: transparent;
+        }
 
-    body {
-        display: flex;
-        justify-content: center;
-        padding: 5em 1em;
-        font-family: sans-serif;
-    }
+        body {
+            /*display: flex;
+            justify-content: center;
+            padding: 5em 1em;*/
+            font-family: sans-serif;
+        } 
 
-    .tooltip {
-        opacity: 0;
-        position: absolute;
-        top: -14px;
-        left: 0;
-        padding: 0.6em 1em;
-        background: #fff;
-        text-align: center;
-        line-height: 1.4em;
-        font-size: 0.9em;
-        border: 1px solid #ddd;
-        z-index: 10;
-        transition: all 0.1s ease-out;
-        pointer-events: none;
-    }
+        .tooltip {
+            opacity: 0;
+            position: absolute;
+            top: -14px;
+            left: 0;
+            padding: 0.6em 1em;
+            background: #fff;
+            text-align: center;
+            line-height: 1.4em;
+            font-size: 0.9em;
+            border: 1px solid #ddd;
+            z-index: 10;
+            transition: all 0.1s ease-out;
+            pointer-events: none;
+        }
 
-    .tooltip:before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 12px;
-        height: 12px;
-        background: white;
-        border: 1px solid #ddd;
-        border-top-color: transparent;
-        border-left-color: transparent;
-        transform: translate(-50%, 50%) rotate(45deg);
-        transform-origin: center center;
-        z-index: 10;
-    }
+        .tooltip:before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-top-color: transparent;
+            border-left-color: transparent;
+            transform: translate(-50%, 50%) rotate(45deg);
+            transform-origin: center center;
+            z-index: 10;
+        }
 
-    .tooltip-date {
-        margin-bottom: 0.2em;
-        font-weight: 600;
-        font-size: 1.1em;
-        line-height: 1.4em;
-    }
+        .tooltip-date {
+            margin-bottom: 0.2em;
+            font-weight: 600;
+            font-size: 1.1em;
+            line-height: 1.4em;
+        }
 
-    .navbar-brand > img {
-        margin-top: -9px !important;
-    }
+        .navbar-brand > img {
+            margin-top: -9px !important;
+        }
+        
+        ul {
+            list-style: none;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        .h4 {
+            font-size: 1.5rem;
+        }
 
     </style>
 
@@ -93,7 +102,7 @@
 
 
 
-{% block title_block %} Index {% endblock %}
+{% block title_block %} Variable Histogram Statistics {% endblock %}
 
 {% block tagline_block %}
 
@@ -144,7 +153,7 @@
             <div id="graph"></div>
 
             <label for="changeChartMetric">Change Element</label>
-            <select autocomplete="off" class="form-control" id="changeHistMetric" style="width: 200px">
+            <select autocomplete="off" class="form-select" id="changeHistMetric" style="width: 200px">
                 <option value="DATE_OF_COLLECTION" selected>Date of Collection</option>
                 <option value="SEX">Sex</option>
                 <option value="LIFESTAGE">Lifestage</option>

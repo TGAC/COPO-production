@@ -259,7 +259,7 @@ $(document).ready(function () {
     });
     */
 
-  //$(".new-reads-spreadsheet-template").addClass("btn btn-info").attr("data-toggle", "modal").attr("data-target", "#uploadModal")
+  //$(".new-reads-spreadsheet-template").addClass("btn btn-info").attr("data-bs-toggle", "modal").attr("data-target", "#uploadModal")
 
   //******************************Functions Block******************************//
 

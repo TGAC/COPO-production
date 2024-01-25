@@ -30,14 +30,11 @@
 
         {% endif %}
 
-        <section>
-            <!-- include navbar html -->
-            <div class="float-end">
-                {% include "nav_dropdown.html" %}
-            </div>
-            
-            <br><br><br><br><br>
-            
+        <!-- include navbar html -->
+        {% include "nav_dropdown.html" %}
+
+        <br><br>
+        <section>  
             <!--<div id="copo-icon">
                <img src="{% static 'assets/img/COPO-logo-full-CMYK-black.png' %}" alt="copo_black image">
             </div>
@@ -61,58 +58,53 @@
             </div>
         </section>
 
-        <section class="shade">
+        <section class="row mt-5">
             <!-- main content block -->
             {% block content %}
             {% endblock %}
-            <div class="col-md-3"></div>
-            <div id="contact-sec" class="col-md-6">
+            <div class="col-3"></div>
+            <div id="contact-sec" class="col-6">
                 <div>
                     <h2 id="contact-title" class="big_button">Contact Us</h2>
                 </div>
                 <div style="padding-top: 10px;">
-                    <form id="email_form" action="mailto:ei.copo@earlham.ac.uk?subject=I'm interested in COPO!"
-                          method="post"
-                          enctype="text/plain">
+                    <form id="email_form" class="needs-validation" action="mailto:ei.copo@earlham.ac.uk?subject=I'm interested in COPO!" method="post"
+                        enctype="text/plain">
                         <div class="row">
-                            <div class="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" required="required" placeholder="Name"/>
-                                </div>
+                            <div class="col">
+                                <input type="text" class="form-control" required="required"
+                                    placeholder="Name">                    
                             </div>
-                            <div class="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" required="required"
-                                           placeholder="Email address">
-                                </div>
+                            <div class="col">
+                                <input type="text" class="form-control" required="required" placeholder="Email address">
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="form-group">
-                                    <textarea name="message" id="message" required="required" class="form-control"
-                                              rows="3"
-                                              placeholder="Message"></textarea>
+                            <div class="col">
+                                <div class="mb-3 mt-3">
+                                    <textarea name="message" id="message" required="required" class="form-control" rows="3"
+                                        placeholder="Message" style="min-height: 63px !important;"></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <button id="email_submit" type="submit" class="btn btn-secondary" style="font-weight: bold;">Submit Request
+                                <div class="mb-3">
+                                    <button id="email_submit" type="submit" class="btn btn-secondary" style="font-weight: bold;">Submit
+                                        Request
                                     </button>
-
                                 </div>
                             </div>
                         </div>
                     </form>
-                    <br/>
+                    
                 </div>
                 <div class="col-md-3"></div>
             </div>
+            <div class="col-3"></div>
         </section>
     </div>
-    </br></br></br></br></br>
-    <footer id="footer" class="for-full-back" style="background-color: white; min-height: 100px; padding:20px 50px 0 0; margin-top: 1.5px;">
+    <br><br><br><br>
+    <footer id="footer" class="front-page-footer">
         <div class="float-end">
             <a href="https://www.earlham.ac.uk/">
-                <img class="img-responsive" src="{% static 'assets/img/ei.png' %}" width="200" height="200" alt="Earlham Institute logo"/>
+                <img class="img-responsive" src="{% static 'assets/img/ei.png' %}" width="250" height="105" alt="Earlham Institute logo" style="padding: 15px 50px 15px 0;"/>
             </a>
         </div>
     </footer>

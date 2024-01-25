@@ -1140,6 +1140,12 @@ th {
     color: white !important;
     font-size: 14px !important;
 }
+
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
 /*end custom nav items*/
 
 /*custom buttons*/
@@ -1864,11 +1870,6 @@ div.shown span.side-help-trigger:before {
 
 .ui.popup {
     font-size: 12px;
-}
-
-
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    padding: 15px !important;
 }
 
 .ontol-span {

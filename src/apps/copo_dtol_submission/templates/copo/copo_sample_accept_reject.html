@@ -9,21 +9,21 @@
 {% block stylesheet_block %}
     <link rel="stylesheet" href="https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-    <link rel="stylesheet" href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload.css' %}">
-    <link rel="stylesheet" href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/jquery_file_upload/css/jquery.fileupload.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/jquery_file_upload/css/jquery.fileupload-ui.css' %}">
     <!-- CSS adjustments for browsers with JavaScript disabled -->
     <noscript>
-        <link rel="stylesheet" href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-noscript.css' %}">
+        <link rel="stylesheet" href="{% static 'copo/jquery_file_upload/css/jquery.fileupload-noscript.css' %}">
     </noscript>
     <noscript>
         <link rel="stylesheet"
-              href="{% static 'copo/jQuery-File-Upload-master/css/jquery.fileupload-ui-noscript.css' %}">
+              href="{% static 'copo/jquery_file_upload/css/jquery.fileupload-ui-noscript.css' %}">
     </noscript>
     <link rel="stylesheet" href="{% static 'copo/css/copo/copo_wizard.css' %}">
     <link rel="stylesheet" href="{% static 'copo_dtol_submission/css/copo_sample_accept_reject.css' %}">
     <link rel="stylesheet" href="{% static 'copo/css/copo/sample.css' %}">
     <link rel="stylesheet" href="{% static 'copo/bootstrap/css/bootstrap-treeview-1.2.0.min.css' %}">
-    <link rel="stylesheet" href="{% static 'copo/datatables/css/fixedHeader.dataTables-3.4.0.css' %}">
+    <link rel="stylesheet" href="{% static 'copo/datatables/css/fixedHeader.dataTables-3.4.0.min.css' %}">
 
     <style>
     </style>
@@ -156,7 +156,7 @@
 
 
             <!--<div class="table_viewport">-->
-            <h4 class="h4"><small class="labelling">Click a Profile on the left to see Samples.</small></h4>
+            <h4 class="h4 pt-3 mb-4"><small class="labelling">Click a Profile on the left to see Samples.</small></h4>
 
             <table id="profile_samples" class="table table-hover striped table-bordered display compact nowrap">
                 <thead></thead>

@@ -16,7 +16,7 @@ function get_upload_box_html(box_id, panel_id) {
     '<form id="ena_ff" class="form-inline">' +
     '<div class="col-lg-4 col-md-4 col-sm-4">' +
     '<input type="hidden" value="1bjfdDlnVmicd1QULojIs0yzd9TpAJ3a" name="csrfmiddlewaretoken">' +
-    '<div class="form-group">' +
+    '<div class="mb-3">' +
     '<label for="select_file_type">File Type</label>' +
     '<select id="select_file_type" name="select_file_type" class="form-select upload_input">' +
     '<option selected="" value=""></option>' +
@@ -36,13 +36,13 @@ function get_upload_box_html(box_id, panel_id) {
     '</select>' +
     '</div></div>' +
     '<div class="col-lg-4 col-md-4 col-sm-4">' +
-    '<div class="form-group">' +
+    '<div class="mb-3">' +
     '<label for="input_library_name">Library Name</label>' +
     '<input type="text" placeholder="Library Name" id="input_library_name" name="input_library_name" class="form-control upload_input">' +
     '</div>' +
     '</div>' +
     '<div class="col-lg-4 col-md-4 col-sm-4">' +
-    '<div class="form-group">' +
+    '<div class="mb-3">' +
     '<label for="select_sample_ref">Sample Type</label>' +
     '<select placeholder="Sample Type" type="text" id="select_sample_ref" name="select_sample_ref" class="form-select upload_input"></select>' +
     '</div>' +

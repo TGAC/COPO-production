@@ -1,7 +1,14 @@
+var current = 0;
+var tabs = $('.tab');
+var tabs_pill = $('.tab-pills');
+
 $(document).ready(function () {
   $('#spinner_div').hide(); // Hide "Manifest is generating" spinner
-  $('.dropdown-toggle').dropdown(); // Facilitate the display of the manifest template dropdown menu options
-  $.fn.datepicker.noConflict(); // Does not conflict with other scripts that also have datepicker defined
+  // Facilitate the display of the manifest template dropdown menu options
+  [...document.querySelectorAll('.dropdown-toggle')].map(
+    (dropdownToggleEl) => new bootstrap.Dropdown(dropdownToggleEl)
+  );
+  //$.fn.datepicker.noConflict(); // Does not conflict with other scripts that also have datepicker defined
 
   $(document).data('manifest_type', '');
 
@@ -82,7 +89,7 @@ $(document).ready(function () {
   });
 
   //$(document).on("change", "#manifestType", get_common_fields_handler);
-
+  loadFormData(current);
   wizard_handler();
   get_current_manifest_version(); // Populate the table with the current version of each manifest type
 });
@@ -127,7 +134,7 @@ function resetManifestWizard() {
   );
   document.getElementById('numberOfSamples').value = 1; // Preload with default number of samples
 
-  $('#formID .form-group').remove(); // Remove/clear all existing divs from the form
+  $('#formID .mb-3').remove(); // Remove/clear all existing divs from the form
   $('.btn-prev').hide(); // Hide previous button
 
   // Remove error information if it is shown
@@ -247,7 +254,7 @@ function get_common_value_dropdown_list_handler(common_field, commonValueDiv) {
     },
   })
     .done(function (data) {
-      if (data['dropdownlist'] !== [] && data['dropdownlist'].length !== 0) {
+      if (data['dropdownlist'].length !== 0) {
         const value_input = document.createElement('select');
         value_input.setAttribute('id', 'commonValueID');
         value_input.setAttribute('class', 'form-control');
@@ -354,7 +361,7 @@ function insertFormDiv(common_field) {
 
   // Create common field div
   const commonFieldDiv = document.createElement('div');
-  commonFieldDiv.setAttribute('class', 'form-group has-feedback');
+  commonFieldDiv.setAttribute('class', 'mb-3 has-feedback');
   commonFieldDiv.setAttribute('id', `${common_field.value}_div`);
 
   // Error message field cell
@@ -418,7 +425,7 @@ function insertFormDiv(common_field) {
   disableSelectedOption(common_field.value);
 
   // Make the form scrollable once it contains at least 6 divs
-  let divs_in_form = document.querySelectorAll('#formID .form-group');
+  let divs_in_form = document.querySelectorAll('#formID .mb-3');
 
   if (divs_in_form.length >= 6) {
     $(formDiv).css({ overflow: 'scroll' });
@@ -431,10 +438,10 @@ function insertFormDiv(common_field) {
 // noinspection JSUnusedGlobalSymbols
 function removeFormDiv(div) {
   const formDiv = document.getElementById('formDiv');
-  let divs_in_form = document.querySelectorAll('#formID .form-group');
+  let divs_in_form = document.querySelectorAll('#formID .mb-3');
 
   // Get the common field name from the div within the form
-  let common_field = $(div).closest('div .form-group').find('.cfID').text();
+  let common_field = $(div).closest('div .mb-3').find('.cfID').text();
 
   // Enable the common field name that is disabled in the dropdown list by removing the disable attribute
   $('#commonfields option:contains(' + common_field + ')').removeAttr(
@@ -454,7 +461,7 @@ function removeFormDiv(div) {
 
 function validateCommonValue(e, data) {
   function validateFormDivData() {
-    $('#formID .form-group').each(function () {
+    $('#formID .mb-3').each(function () {
       let element = $(this);
       let common_field = element.find('.cfID').text();
       let error_message_tag = element.find('#errorMessageID');
@@ -523,7 +530,7 @@ function validateCommonValue(e, data) {
 
   if (data.step === 1 && data.direction === 'next') {
     e.preventDefault(); // Prevent navigating to the next step of the manifest wizard
-    let divs_in_form = document.querySelectorAll('#formID .form-group');
+    let divs_in_form = document.querySelectorAll('#formID .mb-3');
     let commonFieldErrorMessageID = document.getElementById(
       'commonFieldErrorMessageID'
     );
@@ -568,7 +575,7 @@ function generateManifestTemplate(event) {
   let common_fields_list = [];
   let common_values_list = [];
 
-  $('#formID .form-group').each(function () {
+  $('#formID .mb-3').each(function () {
     let common_value;
     let element = $(this);
     let common_field = element.find('.cfID').text();
@@ -624,11 +631,11 @@ function showWizardBasedOnManifestType(manifest_type) {
   let manifest_wizard = $('#manifest-wizard');
   // let manifestTypeID = document.getElementById('manifestType')
   $('#modal-placeholder').modal('show');
-  manifest_wizard.wizard();
+  // manifest_wizard.wizard();
   // Automatically navigate to step 1 when the modal is launched
   // since step 0 is about selecting the manifest which has been done indirectly
-  manifest_wizard.wizard('selectedItem', { step: 1 });
-  $('#formID .form-group').remove(); // Remove/clear all existing divs from the form
+  // manifest_wizard.wizard('selectedItem', { step: 1 });
+  $('#formID .mb-3').remove(); // Remove/clear all existing divs from the form
   document.getElementById('numberOfSamples').value = 1; // Preload with default number of samples
   // $('.btn-prev').hide(); // Hide previous button
   get_common_fields_handler(); // Preload with the common fields dropdown list
@@ -705,4 +712,31 @@ function get_manifest_filename(manifest_type) {
       filename = '.xlsx';
   }
   return filename;
+}
+function loadFormData(n) {
+  $(tabs_pill[n]).addClass('active');
+  $(tabs[n]).removeClass('d-none');
+  $('#back_button').attr('disabled', n == 0 ? true : false);
+  n == tabs.length - 1
+    ? $('#next_button').text('Finish').removeAttr('onclick')
+    : $('#next_button')
+        .attr('type', 'button')
+        .text('Next')
+        .attr('onclick', 'next()');
+}
+
+function next() {
+  $(tabs[current]).addClass('d-none');
+  $(tabs_pill[current]).removeClass('active');
+
+  current++;
+  loadFormData(current);
+}
+
+function back() {
+  $(tabs[current]).addClass('d-none');
+  $(tabs_pill[current]).removeClass('active');
+
+  current--;
+  loadFormData(current);
 }

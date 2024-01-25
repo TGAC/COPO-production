@@ -1,61 +1,61 @@
 {% load web_tags %}
 {% load static %}
-<nav class="navbar navbar-expand-lg bg-light navbar-light" style="height: 10px !important; min-height: 59px;"
+<nav id="frontpage-navbar" class="navbar navbar-expand-lg bg-light navbar-light border-bottom border-black"
      role="navigation">
     <div class="container-fluid">
-            <a class="navbar-brand"
-               href="{% if user.is_authenticated %} {% url 'copo_profile_index:index' %} {% else %}{% url 'copo_profile_index:index' %}{% endif %}">
-                <img style="height: 45px; margin-left: 12px; margin-top: -8px; padding: 2px;"
-                     src="{% static 'assets/img/COPO-logo-full-CMYK-black.png' %}"
-                     alt="COPO's logo">
-            </a>
-        <div class="collapse navbar-collapse" id="frontpage-navbar">
-            <ul class="navbar-nav justify-content-end">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item dropdown" role="presentation">
-                    <a class="nav-link" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Analytics 
-                       <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="/copo/tol_dashboard/stats">Statistics
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="/copo/tol_dashboard/tol">Tree of Life Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="/copo/copo_accessions/dashboard">Accessions' Dashboard
+        <a class="navbar-brand"
+            href="{% if user.is_authenticated %} {% url 'copo_profile_index:index' %} {% else %}{% url 'copo_profile_index:index' %}{% endif %}">
+            <img style="height: 45px; margin-left: 12px; margin-top: -8px; padding: 2px;"
+                    src="{% static 'assets/img/COPO-logo-full-CMYK-black.png' %}"
+                    alt="COPO's logo">
+        </a>
+
+        <ul class="nav navbar-nav justify-content-end collapse navbar-collapse">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item dropdown" role="presentation">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false">Analytics 
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/copo/tol_dashboard/stats">Statistics
                         </a>
                     </li>
-                    </ul>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="/about">About</a>
-                </li>
-                <li class="nav-item dropdown" role="presentation">
-                    <a class="nav-link" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">Help 
-                       <span class="caret"></span>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/copo/tol_dashboard/tol">Tree of Life Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/copo/copo_accessions/dashboard">Accessions' Dashboard
                     </a>
-                    <ul class="dropdown-menu">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="/ebp">Earth Biogenome Project Resources
-                                
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="/#contact-sec">Contact Us
-
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-            </ul>
-        </div> <!-- /.navbar-collapse -->
+                </ul>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" href="/about">About</a>
+            </li>
+            <li class="nav-item dropdown" role="presentation">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false">Help 
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/ebp">Earth Biogenome Project Resources
+                            
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/#contact-sec">Contact Us
+
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        </div> <!-- /.nav .navbar-nav -->
     </div><!-- /.container-fluid -->
 </nav>

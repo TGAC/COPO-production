@@ -736,7 +736,7 @@ function do_render_table(data) {
               bTns[i].btnAction +
               '" data-record-id="' +
               rdata[rdata.length - 1] +
-              '" data-toggle="tooltip" data-container="body" style="display: inline-block; white-space: normal;" title="' +
+              '" data-bs-toggle="tooltip" data-bs-container="body" style="display: inline-block; white-space: normal;" title="' +
               bTns[i].text +
               '" class="' +
               bTns[i].className +
@@ -835,7 +835,7 @@ function do_render_table(data) {
           var descFlagSpan = $('<i></i>').attr({
             class: 'fa fa-tags inDescription-flag',
             'data-record-id': rdata[rdata.length - 1],
-            'data-toggle': 'tooltip',
+            'data-bs-toggle': 'tooltip',
             style: 'padding-left: 5px; display: none;',
             title: 'Currently being described',
           });
@@ -969,25 +969,25 @@ function do_render_table(data) {
 
 function refresh_tool_tips() {
   // Initialise all tooltip components
-  let tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  const tooltipTriggerList = document.querySelectorAll(
+    '[data-bs-toggle="tooltip"]'
   );
 
-  tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-  });
+  [...tooltipTriggerList].map(
+    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+  );
 
   // Initialise all popover components
-  let popoverTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="popover"]')
+  const popoverTriggerList = document.querySelectorAll(
+    '[data-bs-toggle="popover"]'
   );
 
-  popoverTriggerList.map(function (popoverTriggerEl) {
-    new bootstrap.Popover(popoverTriggerEl);
-  });
+  [...popoverTriggerList].map(
+    (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl)
+  );
 
-  $('.ui.dropdown').dropdown();
-  $('.copo-tooltip').popup();
+  // $('.ui.dropdown').dropdown();
+  // $('.copo-tooltip').popup();
 
   apply_color();
   refresh_selectbox();
@@ -2313,7 +2313,7 @@ function get_data_list_panel(itemData, link) {
   var topLevelLink = $('<a></a>').attr({
     href: '#demo3',
     class: 'list-group-item',
-    'data-toggle': 'collapse',
+    'data-bs-toggle': 'collapse',
     'data-parent': '#MainMenu',
     style: 'background: #ebf0fa;',
   });
@@ -2429,7 +2429,7 @@ function get_data_item_collapse(link, itemData, itemCount) {
   var collapseBtn = $('<a></a>')
     .attr({
       class: 'btn btn-sm btn-info',
-      'data-toggle': 'collapse',
+      'data-bs-toggle': 'collapse',
       'data-target': '#' + link,
       style:
         'margin-left:1px; margin-bottom:0px; border-radius:0; background-image:none; border-color:transparent; ',
@@ -3677,7 +3677,7 @@ function get_menu_control() {
       '</div>' +
       '</div>' +
       '<div class="text" style="color: #35637e; padding-left: 5px;"></div>' +
-      '<i data-html="Please note that some items in the menu may be unavailable depending on the status"' +
+      '<i data-bs-html="Please note that some items in the menu may be unavailable depending on the status"' +
       'class="info circle grey icon copo-tooltip"></i>' +
       '<div class="menu component-menu">' +
       '</div>' +
@@ -3707,7 +3707,7 @@ function get_description_bundle_panel() {
       '                                </div>\n' +
       '                            </div>\n' +
       '                            <div class="text" style="color: #35637e;"></div>\n' +
-      '                            <i data-html="Please note that some items in the menu may be unavailable depending on the status."\n' +
+      '                            <i data-bs-html="Please note that some items in the menu may be unavailable depending on the status."\n' +
       '                               class="info circle grey icon copo-tooltip"></i>\n' +
       '                            <div class="menu component-menu">\n' +
       '                                <div data-task="add_datafiles" class="item bundlemenu">Add datafiles</div>\n' +
@@ -3764,7 +3764,7 @@ function get_card_panel() {
       '                                </div>\n' +
       '                            </div>\n' +
       '                            <div class="text" style="color: #35637e;"></div>\n' +
-      '                            <i data-html="Please note that some items in the menu may be unavailable depending on the status."\n' +
+      '                            <i data-bs-html="Please note that some items in the menu may be unavailable depending on the status."\n' +
       '                               class="info circle grey icon copo-tooltip"></i>\n' +
       '                            <div class="menu component-menu"> </div>\n' +
       '                        </div>\n' +
@@ -3827,7 +3827,7 @@ function get_collapsible_card() {
       '                 <div class="col-sm-8 col-md-8 col-lg-8 copo-details-header"></div>\n' +
       '                      <div class="col-sm-2 col-md-2 col-lg-2 float-end">\n' +
       '                           <div class="float-end">\n' +
-      '                                <i data-toggle="collapse" href="" class="fa fa-plus text-primary copo-details-icon"\n' +
+      '                                <i data-bs-toggle="collapse" href="" class="fa fa-plus text-primary copo-details-icon"\n' +
       '                                   style="cursor: pointer; display: block;"\n' +
       '                                   aria-hidden="true"></i>\n' +
       '                           </div>\n' +

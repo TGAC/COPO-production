@@ -9,9 +9,11 @@
 
     <style> /* set the CSS */
     .ul_style {
-        list-style-type: none;
-        padding-left: 0;
+        list-style: none;
+        /* padding-left: 0; */
         cursor: pointer;
+        margin-top: 0;
+        margin-bottom: 1rem;   
     }
 
     #graph {
@@ -64,6 +66,9 @@
     .navbar-brand > img {
         margin-top: -9px !important;
     }
+    .h4 {
+        font-size: 1.5rem;
+    }
     </style>
 
 
@@ -74,7 +79,7 @@
 
 
 
-{% block title_block %} Index {% endblock %}
+{% block title_block %} Time Series Statistics {% endblock %}
 
 {% block tagline_block %}
 

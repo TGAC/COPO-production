@@ -96,7 +96,7 @@ $(document).ready(function () {
         title: 'Create New Template',
         message:
           '<form id="template_name_form" role="form" class="needs-validated"">' +
-          '<div class="form-group">\n' +
+          '<div class="mb-3">\n' +
           '<label for="template_name">Template Name</label>\n' +
           '<input type="text" class="form-control" id="template_name" placeholder="" data-error="Template Name is Required" required>\n' +
           '<div class="help-block with-errors"></div>\n' +

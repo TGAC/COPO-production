@@ -91,7 +91,7 @@ function do_display_manifest_submissions(data) {
               target_repository = ' (' + rowdata.repository_type + ')';
             } /*else {
                             disabled_items.push('view_repo_details');
-                            target_repository = 'N/A <i data-html="A destination repository is yet to be assigned. Please select <strong>submit</strong> from the tasks menu to assign a repository and submit the record." class="info circle white icon copo-tooltip"></i>';
+                            target_repository = 'N/A <i data-bs-html="A destination repository is yet to be assigned. Please select <strong>submit</strong> from the tasks menu to assign a repository and submit the record." class="info circle white icon copo-tooltip"></i>';
                         } */
 
             attrHTML.find('.attr-value').html(target_repository);

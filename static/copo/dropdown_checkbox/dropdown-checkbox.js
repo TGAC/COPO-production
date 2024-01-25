@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-(function(root, factory) {
+(function (root, factory) {
   // CommonJS support
   if (typeof exports === 'object') {
     module.exports = factory();
@@ -33,14 +33,13 @@ SOFTWARE.
   else {
     factory(root.jQuery);
   }
-}(this, function($) {
+})(this, function ($) {
   'use strict';
 
   var defer = function defer(fn) {
     if (window.requestAnimationFrame) {
       window.requestAnimationFrame(fn);
-    }
-    else {
+    } else {
       setTimeout(fn, 0);
     }
   };
@@ -54,8 +53,9 @@ SOFTWARE.
   // **********************************
   // Templates
   // **********************************
-  var template = '\
-    <button class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">Dropdown trigger </button>\
+  var template =
+    '\
+    <button class="dropdown-checkbox-toggle" data-bs-toggle="dropdown" href="#">Dropdown trigger </button>\
     <div class="dropdown-checkbox-content">\
       <div class="dropdown-checkbox-header">\
         <input class="checkbox-all" type="checkbox"><input type="text" placeholder="Search" class="search"/>\
@@ -63,15 +63,19 @@ SOFTWARE.
       <ul class="dropdown-checkbox-menu"></ul>\
     </div>';
 
-  var templateOption = '<li><div class="layout"><input type="checkbox"/><label></label></div></li>';
-  var templateNoResult = '<li><div class="layout"><label>No results.</label></div></li>';
-  var templateNbSelected = ' <span class="dropdown-checkbox-nbselected"></span>';
-  var templateMaxResults = 'Showing {limit} of {total} items<br>Use search to filter your results.';
+  var templateOption =
+    '<li><div class="layout"><input type="checkbox"/><label></label></div></li>';
+  var templateNoResult =
+    '<li><div class="layout"><label>No results.</label></div></li>';
+  var templateNbSelected =
+    ' <span class="dropdown-checkbox-nbselected"></span>';
+  var templateMaxResults =
+    'Showing {limit} of {total} items<br>Use search to filter your results.';
 
   // **********************************
   // Constructor
   // **********************************
-  var DropdownCheckbox = function(element, options) {
+  var DropdownCheckbox = function (element, options) {
     $(element).html(template);
     $(element).addClass('dropdown-checkbox dropdown');
 
@@ -93,16 +97,18 @@ SOFTWARE.
       this.data = options.data || [];
       this._sort = options.sort || this._sort;
       this.sortOptions = options.sortOptions;
-      this.hideHeader = options.hideHeader || options.hideHeader === undefined ? true : false;
+      this.hideHeader =
+        options.hideHeader || options.hideHeader === undefined ? true : false;
       this.templateButton = options.templateButton;
       this.showNbSelected = options.showNbSelected || false;
       this.maxItems = options.maxItems || false;
       this._query = options.query || this._query;
       this._queryMethod = options.httpMethod || 'GET';
       this._queryParse = options.queryParse || this._queryParse;
-      this._queryError = options.queryError || function() {};
+      this._queryError = options.queryError || function () {};
       this._queryUrl = options.queryUrl;
-      this.templateMaxResults = options.templateMaxResults || templateMaxResults;
+      this.templateMaxResults =
+        options.templateMaxResults || templateMaxResults;
       this.alternate = !!options.alternate;
     }
 
@@ -115,60 +121,81 @@ SOFTWARE.
     }
 
     // Add toggle for dropdown
-    this.$element.attr('data-toggle', 'dropdown');
+    this.$element.attr('data-bs-toggle', 'dropdown');
 
     // Hide searchbox if needs
-    if (this.hideHeader) this.$parent.find('.dropdown-checkbox-header').remove();
+    if (this.hideHeader)
+      this.$parent.find('.dropdown-checkbox-header').remove();
 
     // Prevent clicks on content
-    this.$parent.find('.dropdown-checkbox-content').on('click.dropdown-checkbox.data-api', function(e) {
-      e.stopPropagation();
-    });
+    this.$parent
+      .find('.dropdown-checkbox-content')
+      .on('click.dropdown-checkbox.data-api', function (e) {
+        e.stopPropagation();
+      });
 
     // Open panel when the link is clicked
-    this.$element.on('click.dropdown-checkbox.data-api', $.proxy(function() {
-      // Remember current state
-      var isOpened = this.$parent.hasClass('open');
+    this.$element.on(
+      'click.dropdown-checkbox.data-api',
+      $.proxy(function () {
+        // Remember current state
+        var isOpened = this.$parent.hasClass('open');
 
-      // Close all dropdown (bootstrap include)
-      $('.dropdown').removeClass('open');
+        // Close all dropdown (bootstrap include)
+        $('.dropdown').removeClass('open');
 
-      // Reset last state
-      if (isOpened) this.$parent.addClass('open');
+        // Reset last state
+        if (isOpened) this.$parent.addClass('open');
 
-      // Switch to next state
-      this.$parent.toggleClass('open');
+        // Switch to next state
+        this.$parent.toggleClass('open');
 
-      // Notify changes on close
-      if (this.hasChanges) this.$parent.trigger('change:dropdown-checkbox');
+        // Notify changes on close
+        if (this.hasChanges) this.$parent.trigger('change:dropdown-checkbox');
 
-      this.hasChanges = false;
-      return false;
-    }, this));
+        this.hasChanges = false;
+        return false;
+      }, this)
+    );
 
     // Check or uncheck all checkbox
-    this.$parent.find('.checkbox-all').on('change.dropdown-checkbox.data-api', $.proxy(function(event) {
-      this.onChangeCheckboxAll(event);
-      this._showNbSelected();
-    }, this));
+    this.$parent.find('.checkbox-all').on(
+      'change.dropdown-checkbox.data-api',
+      $.proxy(function (event) {
+        this.onChangeCheckboxAll(event);
+        this._showNbSelected();
+      }, this)
+    );
 
     // Events on document
     // - Close panel when click out
     // - Catch keyup events in search box
     // - Catch click on checkbox
-    $(document).on('click.dropdown-checkbox.data-api', $.proxy(function() {
-      this.$parent.removeClass('open');
+    $(document).on(
+      'click.dropdown-checkbox.data-api',
+      $.proxy(function () {
+        this.$parent.removeClass('open');
 
-      // Notify changes on close
-      if (this.hasChanges) this.$parent.trigger('change:dropdown-checkbox');
-      this.hasChanges = false;
-    }, this));
+        // Notify changes on close
+        if (this.hasChanges) this.$parent.trigger('change:dropdown-checkbox');
+        this.hasChanges = false;
+      }, this)
+    );
 
-    this.$parent.find('.dropdown-checkbox-header').on('keyup.dropdown-checkbox.data-api', $.proxy(DropdownCheckbox.prototype.onKeyup, this));
-    this.$parent.find('ul').delegate('li input[type=checkbox]', 'change.dropdown-checkbox.data-api', $.proxy(function(event) {
-      this.onChangeCheckbox(event);
-      this._showNbSelected();
-    }, this));
+    this.$parent
+      .find('.dropdown-checkbox-header')
+      .on(
+        'keyup.dropdown-checkbox.data-api',
+        $.proxy(DropdownCheckbox.prototype.onKeyup, this)
+      );
+    this.$parent.find('ul').delegate(
+      'li input[type=checkbox]',
+      'change.dropdown-checkbox.data-api',
+      $.proxy(function (event) {
+        this.onChangeCheckbox(event);
+        this._showNbSelected();
+      }, this)
+    );
 
     this._reset(this.data);
     this._showNbSelected();
@@ -181,11 +208,11 @@ SOFTWARE.
     // ----------------------------------
     // Methods to override
     // ----------------------------------
-    _sort: function(elements) {
+    _sort: function (elements) {
       return elements;
     },
 
-    _query: function(type, url, success, error) {
+    _query: function (type, url, success, error) {
       return $.ajax({
         type: type,
         url: url + '?q=' + this.word,
@@ -193,17 +220,17 @@ SOFTWARE.
         cache: false,
         contentType: 'application/json',
         success: $.proxy(success, this),
-        error: error
+        error: error,
       });
     },
 
-    _querySuccess: function(data) {
+    _querySuccess: function (data) {
       var results = this._queryParse(data);
-      if (results.length  > 0) return this._reset(results);
+      if (results.length > 0) return this._reset(results);
       return this.$list.html(templateNoResult);
     },
 
-    _queryParse: function(data) {
+    _queryParse: function (data) {
       return data;
     },
 
@@ -216,7 +243,7 @@ SOFTWARE.
      * @param  {Array<Number>} ids [description]
      * @chained
      */
-    _removeElements: function(ids) {
+    _removeElements: function (ids) {
       this._isValidArray(ids);
       var tmp = [],
         toAdd = true;
@@ -237,7 +264,7 @@ SOFTWARE.
      * @param  {Boolean} isAll     True to return all items.
      * @return {Array<Object>}
      */
-    _getCheckbox: function(isChecked, isAll) {
+    _getCheckbox: function (isChecked, isAll) {
       var results = [];
 
       for (var i = 0; i < this.data.length; i++) {
@@ -252,7 +279,7 @@ SOFTWARE.
      * Validates that arr is an array, or throws.
      * @param  {Any}  arr Hopefully an array
      */
-    _isValidArray: function(arr) {
+    _isValidArray: function (arr) {
       if (!$.isArray(arr)) throw '[DropdownCheckbox] Requires array.';
     },
 
@@ -262,7 +289,7 @@ SOFTWARE.
      * @param  {Array<Object>} data  The array of data items
      * @return {Array<Object>} The data items matching the search
      */
-    _findMatch: function(word, data) {
+    _findMatch: function (word, data) {
       var results = [];
       for (var i = 0; i < data.length; i++) {
         if (data[i].label.toLowerCase().search(word.toLowerCase()) !== -1) {
@@ -272,7 +299,7 @@ SOFTWARE.
       return results;
     },
 
-    _findById: function(id) {
+    _findById: function (id) {
       for (var i = 0; i < this.data.length; i++) {
         if (id === this.data[i].id) {
           return this.data[i];
@@ -286,10 +313,10 @@ SOFTWARE.
      * @param {Boolean} isChecked True or false, to check or uncheck
      * @param {Number}  id Data item id
      */
-    _setCheckbox: function(isChecked, id) {
+    _setCheckbox: function (isChecked, id) {
       var item = this._findById(id);
       if (item) {
-          item.isChecked = isChecked;
+        item.isChecked = isChecked;
       }
     },
 
@@ -298,7 +325,7 @@ SOFTWARE.
      * @param  {Object}  item Data item
      * @return {Boolean}
      */
-    _isDataItemChecked: function(item) {
+    _isDataItemChecked: function (item) {
       return !!item.isChecked;
     },
 
@@ -306,7 +333,7 @@ SOFTWARE.
      * Returns true when some data items are checked
      * @return {Boolean}
      */
-    _anyChecked: function() {
+    _anyChecked: function () {
       return this.data.some(this._isDataItemChecked);
     },
 
@@ -314,7 +341,7 @@ SOFTWARE.
      * Returns true when all data items are checked
      * @return {Boolean}
      */
-    _allChecked: function() {
+    _allChecked: function () {
       return this.data.every(this._isDataItemChecked);
     },
 
@@ -322,7 +349,7 @@ SOFTWARE.
      * Guess what this does
      * @return {Boolean}
      */
-    _noneChecked: function() {
+    _noneChecked: function () {
       return !this._anyChecked();
     },
 
@@ -330,35 +357,37 @@ SOFTWARE.
      * Returns how many items are checked in the data
      * @return {Number}
      */
-    _checkedLength: function() {
+    _checkedLength: function () {
       return this.data.filter(this._isDataItemChecked).length;
     },
 
     /**
      * Refreshes the state of the "Check all" checkbox, based on the data array
      */
-    _refreshCheckboxAll: function() {
+    _refreshCheckboxAll: function () {
       var state = this._anyChecked();
 
       if (this.alternate) {
         // If all the items are checked, or none are checked, show the checkbox
         if (this._allChecked() || this._noneChecked()) {
           state = true;
-        }
-        else {
+        } else {
           // Otherwise, don't show the checkbox if any data is checked.
           state = !this._anyChecked();
         }
       }
 
-      this.$element.parents('.dropdown-checkbox').find('.checkbox-all').prop('checked', state);
+      this.$element
+        .parents('.dropdown-checkbox')
+        .find('.checkbox-all')
+        .prop('checked', state);
     },
 
     /**
      * Removes the search criteria and re-renders the widget using the current data
      * @chained
      */
-    _resetSearch: function() {
+    _resetSearch: function () {
       this.$parent.find('.search').val('');
       this._reset(this.data);
       return this;
@@ -369,19 +398,20 @@ SOFTWARE.
      * @param  {Object} item Data item
      * @return {Element} The new list item element
      */
-    _createListItem: function(item) {
+    _createListItem: function (item) {
       var id = item.id,
-          label = item.label,
-          isChecked = item.isChecked,
-          uuid = new Date().getTime() * Math.random(),
-          allChecked = this._allChecked();
+        label = item.label,
+        isChecked = item.isChecked,
+        uuid = new Date().getTime() * Math.random(),
+        allChecked = this._allChecked();
 
       var node = this.listItemPrototype.cloneNode(true);
       var container = node.firstChild;
 
       $(node).data('id', id);
       container.firstChild.id = uuid;
-      container.firstChild.checked = this.alternate && allChecked ? false : isChecked;
+      container.firstChild.checked =
+        this.alternate && allChecked ? false : isChecked;
       container.lastChild.textContent = label;
       container.lastChild.setAttribute('for', uuid);
       return node;
@@ -393,32 +423,32 @@ SOFTWARE.
      * @param  {Object} item Data item to add. Should be in this.data already.
      * @chained
      */
-    _appendOne: function(item) {
+    _appendOne: function (item) {
       this.$list.append(this._createListItem(item));
       return this;
     },
-
 
     /**
      * Refreshes the state of the "check all", and the state of all the checkboxes
      * @return {[type]} [description]
      */
-    _refresh: function() {
-
-    },
+    _refresh: function () {},
 
     /**
      * Appends one or many list elements to the drop down list for the given data items.
      * @param  {Array<Object>, Object} data Data element(s) to add
      * @chained
      */
-    _append: function(data) {
+    _append: function (data) {
       // Create a list element we can clone
-      if (!this.listItemPrototype) this.listItemPrototype = $(templateOption)[0];
+      if (!this.listItemPrototype)
+        this.listItemPrototype = $(templateOption)[0];
 
       if (!$.isArray(data)) data = [data];
 
-      var len = this.maxItems ? Math.min(this.maxItems, data.length) : data.length;
+      var len = this.maxItems
+        ? Math.min(this.maxItems, data.length)
+        : data.length;
       var remainder = data.length - this.maxItems;
       var maxItems = this.maxItems;
       var batchsize = 100;
@@ -438,10 +468,11 @@ SOFTWARE.
         $list[0].appendChild(fragment);
         if (i < len) {
           defer(appendBatch.bind(null, i));
-        }
-        else {
+        } else {
           if (remainder > 0 && maxItems) {
-            $container.append(wrapMaxItems(templateMaxResults, maxItems, data.length));
+            $container.append(
+              wrapMaxItems(templateMaxResults, maxItems, data.length)
+            );
           }
         }
       })(0);
@@ -455,10 +486,10 @@ SOFTWARE.
      * @param  {Array<Object>} items Data items
      * @chained
      */
-    _reset: function(items) {
+    _reset: function (items) {
       // In bizarro world mode, if not of the items are checked, they all are
       if (this.alternate && this._noneChecked()) {
-        this.data.forEach(function(item) {
+        this.data.forEach(function (item) {
           item.isChecked = true;
         });
       }
@@ -475,10 +506,12 @@ SOFTWARE.
      * Updates the "number of selected items" element
      * @chained
      */
-    _showNbSelected: function() {
+    _showNbSelected: function () {
       if (!this.showNbSelected) return;
 
-      this.$element.find('.dropdown-checkbox-nbselected').html('(' + this._checkedLength() + ')');
+      this.$element
+        .find('.dropdown-checkbox-nbselected')
+        .html('(' + this._checkedLength() + ')');
       return this;
     },
 
@@ -490,9 +523,9 @@ SOFTWARE.
      * Handles keyUp events triggered by the search box
      * @param  {Event} event
      */
-    onKeyup: function(event) {
+    onKeyup: function (event) {
       var keyCode = event.keyCode,
-        word = this.word = $(event.target).val();
+        word = (this.word = $(event.target).val());
 
       if (word.length < 1 && keyCode === 8) {
         this.$parent.find('.checkbox-all').show();
@@ -511,13 +544,15 @@ SOFTWARE.
 
       if (this.autosearch || keyCode === 13) {
         if (this._queryUrl) {
-          this._query(this._queryMethod,
-                      this._queryUrl,
-                      this._querySuccess,
-                      this._queryError);
+          this._query(
+            this._queryMethod,
+            this._queryUrl,
+            this._querySuccess,
+            this._queryError
+          );
         } else {
           var results = this._findMatch(word, this.data);
-          if (results.length  > 0) return this._reset(results);
+          if (results.length > 0) return this._reset(results);
           return this.$list.html(templateNoResult);
         }
       }
@@ -527,7 +562,7 @@ SOFTWARE.
      * Handles a click on "select all" checkbox.
      * @param  {Event} event
      */
-    onChangeCheckboxAll: function(event) {
+    onChangeCheckboxAll: function (event) {
       var isChecked = $(event.target).is(':checked');
 
       // In alternate mode, when the "check all" check box is checked, none
@@ -545,36 +580,37 @@ SOFTWARE.
         if (isChecked) {
           checkboxState = false;
           modelState = true;
-        }
-        else {
+        } else {
           checkboxState = false;
           modelState = false;
         }
       }
 
-      $elements.each(function() {
+      $elements.each(function () {
         $(this).find('input[type=checkbox]').prop('checked', checkboxState);
         self._setCheckbox(modelState, $(this).data('id'));
       });
 
       // Make sure we select all the items, not just the visible ones.
       if (alternate && isChecked) {
-        this.data.forEach(function(item){
+        this.data.forEach(function (item) {
           item.isChecked = true;
         });
       }
 
       this.$parent.trigger('checked:all', isChecked);
-      isChecked ? this.$parent.trigger('check:all') : this.$parent.trigger('uncheck:all');
+      isChecked
+        ? this.$parent.trigger('check:all')
+        : this.$parent.trigger('uncheck:all');
 
       // In alternate mode, select the first one if you've created yourself a nice empty list.
       if (alternate && modelState === false) {
         // Reset all the data to unchecked
-        this.data.forEach(function(item){
+        this.data.forEach(function (item) {
           item.isChecked = false;
         });
         // Select the first one.
-        $elements.first().each(function(){
+        $elements.first().each(function () {
           $(this).find('input[type=checkbox]').prop('checked', true);
           self._setCheckbox(true, $(this).data('id'));
         });
@@ -588,14 +624,14 @@ SOFTWARE.
      * Handles a click on a single checkbox.
      * @param {Event} event
      */
-    onChangeCheckbox: function(event) {
+    onChangeCheckbox: function (event) {
       var checked = $(event.target).prop('checked');
       var id = $(event.target).parent().parent().data('id');
 
       // If we're in alternate mode, and all the items are checked, we want to
       // uncheck them and single check this one.
       if (this.alternate && this._allChecked() && checked) {
-        this.data.forEach(function(item) {
+        this.data.forEach(function (item) {
           item.isChecked = false;
         });
 
@@ -604,19 +640,20 @@ SOFTWARE.
       // If you're in shit mode and you've unchecked everything except one
       // that you're about to uncheck, you will not believe what happens next!
       else if (this.alternate && this._checkedLength() === 1 && !checked) {
-        this.data.forEach(function(item) {
+        this.data.forEach(function (item) {
           item.isChecked = true;
         });
 
         this._setCheckbox(true, id);
-      }
-      else {
+      } else {
         this._setCheckbox(checked, id);
       }
 
       this._refreshCheckboxAll();
       this.$parent.trigger('checked', checked);
-      checked ? this.$parent.trigger('check:checkbox') : this.$parent.trigger('uncheck:checkbox');
+      checked
+        ? this.$parent.trigger('check:checkbox')
+        : this.$parent.trigger('uncheck:checkbox');
 
       // Notify changes
       this.hasChanges = true;
@@ -625,24 +662,23 @@ SOFTWARE.
     // ----------------------------------
     // External methods
     // ----------------------------------
-    checked: function() {
+    checked: function () {
       return this._getCheckbox(true);
     },
 
-    unchecked: function() {
+    unchecked: function () {
       return this._getCheckbox(false);
     },
 
-    items: function() {
+    items: function () {
       return this._getCheckbox(undefined, true);
     },
 
-    append: function(elements) {
+    append: function (elements) {
       if (!$.isArray(elements)) {
         this.data.push(elements);
       } else {
-        for (var i = 0; i < elements.length; i++)
-          this.data.push(elements[i]);
+        for (var i = 0; i < elements.length; i++) this.data.push(elements[i]);
       }
 
       elements = this._sort(elements);
@@ -653,7 +689,7 @@ SOFTWARE.
       this.hasChanges = true;
     },
 
-    remove: function(ids) {
+    remove: function (ids) {
       if (!$.isArray(ids)) ids = [ids];
       this._isValidArray(ids);
       this._removeElements(ids);
@@ -663,7 +699,7 @@ SOFTWARE.
       this.hasChanges = true;
     },
 
-    reset: function(elements) {
+    reset: function (elements) {
       if (!$.isArray(elements)) {
         this.data = [elements];
       } else {
@@ -674,20 +710,22 @@ SOFTWARE.
 
       // Notify changes
       this.hasChanges = true;
-    }
+    },
   };
 
-
-  $.fn.dropdownCheckbox = function(option, more) {
+  $.fn.dropdownCheckbox = function (option, more) {
     var $this = $(this),
       data = $this.data('dropdownCheckbox'),
       options = typeof option == 'object' && option;
 
-    if (!data) $this.data('dropdownCheckbox', (data = new DropdownCheckbox(this, options)));
+    if (!data)
+      $this.data(
+        'dropdownCheckbox',
+        (data = new DropdownCheckbox(this, options))
+      );
     if (typeof option == 'string') return data[option](more);
     return this;
   };
 
   $.fn.dropdownCheckbox.Constructor = DropdownCheckbox;
-
-}));
+});

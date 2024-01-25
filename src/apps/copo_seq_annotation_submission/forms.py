@@ -66,8 +66,8 @@ class AnnotationFilesForm(forms.Form):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
-                Column('file', css_class='form-group col-md-8 mb-0'),
-                Column('type', css_class='form-group col-md-4 mb-0'),
+                Column('file', css_class='mb-3 col-md-8 mb-0'),
+                Column('type', css_class='mb-3 col-md-4 mb-0'),
                 css_class='form-row'
             )
         )

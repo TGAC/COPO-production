@@ -356,7 +356,7 @@ function build_form_body(data) {
     formCtrl.empty();
   } else {
     formCtrl = $('<form/>', {
-      'data-toggle': 'validator',
+      'data-bs-toggle': 'validator',
     });
   }
 
@@ -394,7 +394,7 @@ function build_form_body(data) {
     } catch (err) {
       console.log(err);
       formCtrl.append(
-        '<div class="form-group copo-form-group"><span class="text-danger">Form Control Error</span> (' +
+        '<div class="mb-3 copo-form-group"><span class="text-danger">Form Control Error</span> (' +
           formElem.label +
           '): Cannot resolve form control!</div>'
       );
@@ -440,7 +440,7 @@ function generate_form_controls(formSchema, formValue) {
     } catch (err) {
       console.log(err);
       layoutDiv.append(
-        '<div class="form-group copo-form-group"><span class="text-danger">Form Control Error</span> (' +
+        '<div class="mb-3 copo-form-group"><span class="text-danger">Form Control Error</span> (' +
           FormElem.label +
           '): Cannot resolve form control!</div>'
       );
@@ -499,7 +499,7 @@ function get_form_title(data) {
 function get_help_ctrl() {
   var helpCtrl = $('<div/>', {
     html: '<span style="padding:6px;">Help tips</span><input class="copo-help-chk" type="checkbox" name="helptips-chk">',
-    class: 'tips-switch-form-div form-group float-end',
+    class: 'tips-switch-form-div mb-3 float-end',
   });
 
   return helpCtrl;
@@ -1077,7 +1077,7 @@ var dispatchFormControl = {
 
       if (workingSchema[i].hidden == 'false') {
         var sp = $('<div/>', {
-          class: 'form-group col-sm-4 col-md-4 col-lg-4',
+          class: 'mb-3 col-sm-4 col-md-4 col-lg-4',
         });
 
         //get ontology ctrl
@@ -1159,7 +1159,7 @@ var dispatchFormControl = {
 
       if (commentSchema[i].hidden == 'false') {
         var sp = $('<div/>', {
-          class: 'form-group col-sm-6 col-md-6 col-lg-6',
+          class: 'mb-3 col-sm-6 col-md-6 col-lg-6',
         });
 
         if (
@@ -2265,7 +2265,7 @@ var dispatchFormControl = {
 
 function create_attachable_component(formElem) {
   var formCtrl = $('<form/>', {
-    'data-toggle': 'validator',
+    'data-bs-toggle': 'validator',
   });
 
   var formBodyDiv = $('<div/>', {
@@ -2278,7 +2278,7 @@ function create_attachable_component(formElem) {
 
   var helpCtrl = $('<div/>', {
     html: '<span style="padding:6px;">Help tips</span><input class="copo-help-chk" type="checkbox" name="helptips-chk-sub">',
-    class: 'tips-switch-form-div form-group float-end',
+    class: 'tips-switch-form-div mb-3 float-end',
   });
 
   var helpDivRow = $('<div/>', {
@@ -2547,7 +2547,7 @@ function form_help_ctrl(tip) {
 function form_div_ctrl() {
   return $('<div/>', {
     style: 'padding-bottom:5px; outline: 0;',
-    class: 'form-group copo-form-group',
+    class: 'mb-3 copo-form-group',
     tabindex: -1,
   });
 }
@@ -2594,7 +2594,7 @@ function form_label_ctrl(formElem) {
       var item = $('<i/>', {
         style: 'margin-left: 5px;',
         class: 'ui grey icon info circle copo-tooltip',
-        'data-html': helpTip,
+        'data-bs-html': helpTip,
       });
       lblCtrl.append(item);
     }
@@ -3415,14 +3415,14 @@ function custom_validate(formObject) {
           valTarget.removeAttr('data-error');
           valTarget.removeAttr('required');
           valTarget.removeClass('has-error');
-          valTarget.closest('.form-group').removeClass('has-error has-danger');
-          valTarget.closest('.form-group').find('.with-errors').remove();
+          valTarget.closest('.mb-3').removeClass('has-error has-danger');
+          valTarget.closest('.mb-3').find('.with-errors').remove();
 
           valSource.removeAttr('data-error');
           valSource.removeAttr('required');
           valSource.removeClass('has-error');
-          valSource.closest('.form-group').removeClass('has-error has-danger');
-          valSource.closest('.form-group').find('.with-errors').remove();
+          valSource.closest('.mb-3').removeClass('has-error has-danger');
+          valSource.closest('.mb-3').find('.with-errors').remove();
         }
 
         if (!oKFlag) {

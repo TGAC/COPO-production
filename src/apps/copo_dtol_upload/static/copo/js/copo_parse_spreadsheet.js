@@ -881,13 +881,13 @@ $(document).on('click', 'body', function (e) {
     $(e.target).data('bs-toggle') !== 'popover' &&
     $(e.target).parents('.popover.show').length === 0
   ) {
-    let popoverTriggerList = [].slice.call(
-      document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverTriggerList = document.querySelectorAll(
+      '[data-bs-toggle="popover"]'
     );
 
-    popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl).hide();
-    });
+    [...popoverTriggerList].map((popoverTriggerEl) =>
+      new bootstrap.Popover(popoverTriggerEl).hide()
+    );
   }
 });
 

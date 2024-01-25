@@ -348,7 +348,7 @@ function refresh_spreadsheet_display() {
         var li =
           '<li class="hot_tab ' +
           active +
-          '"><a data-toggle="tab" href="#' +
+          '"><a data-bs-toggle="tab" href="#' +
           id +
           '">' +
           tag_text +
@@ -513,7 +513,7 @@ function do_my_annotations(event) {
 
         var h4 = $('<h4 class="panel-title"></h4>');
         $(h4).append(
-          '<a role="button" data-toggle="collapse" data-parent="#by_dataset_accordion" href="#collapse_' +
+          '<a role="button" data-bs-toggle="collapse" data-parent="#by_dataset_accordion" href="#collapse_' +
             idx +
             '" aria-expanded="true"' +
             'aria-controls="collapse_' +
