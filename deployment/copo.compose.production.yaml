@@ -55,6 +55,7 @@ services:
       - ENA_V2_SERVICE_SYNC=https://www.ebi.ac.uk/ena/submit/webin-v2/submit
       - ENA_V2_SERVICE_ASYNC=https://www.ebi.ac.uk/ena/submit/webin-v2/submit/queue
       - B2DROP_PERMITS=/copo/b2drop/permits
+      - ENA_V1_SAMPLE_SERVICE=https://www.ebi.ac.uk/ena/submit/drop-box/samples
     depends_on:
       - redis
       - postgres 
@@ -189,7 +190,7 @@ services:
       - copo_public_name_service_api_key
       - copo_mail_password
       - copo_bioimage_path
-      - ecs_secret_key      
+      - ecs_secret_key
   nginx:
     image: copo/copo-nginx:1.25.3.1
     networks:
@@ -203,10 +204,10 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    environment:     
+    environment:
       - copoweb=copo_web
     depends_on:
-      - web    
+      - web
     deploy:
       replicas: 1
       restart_policy:
@@ -228,7 +229,7 @@ services:
   backup:
     image: copo/copo-backup:v20.04_1
     command: >
-      bash -c "printenv >> /etc/environment && cron && sleep infinity"       
+      bash -c "printenv >> /etc/environment && cron && sleep infinity"
     networks:
       - copo-backend-network
     volumes:
@@ -267,7 +268,7 @@ services:
           cpus: "1"
           memory: 1GB
   sample_audit:
-    image: copo/copo-sample-audit:v0.0.7
+    image: copo/copo-sample-audit:v0.0.13
     networks:
       - copo-backend-network
     secrets:
@@ -411,7 +412,7 @@ secrets:
   copo_orcid_secret_key:
     external: true
   copo_orcid_client_id:
-    external: true  
+    external: true
   copo_webin_user:
     external: true
   copo_webin_user_password:
@@ -433,7 +434,7 @@ secrets:
   copo-project.key:
     external: true
   copo_bioimage_path:
-    external: true  
+    external: true
   ecs_secret_key:
     external: true
 volumes:

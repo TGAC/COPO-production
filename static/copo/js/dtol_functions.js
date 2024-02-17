@@ -518,13 +518,16 @@ $(document).ready(function () {
     }
   });
 
+  update_profile_table();
+
+  /*
   var profile_samples = document.getElementById('profile_samples');
   if (
     profile_samples &&
     profile_samples.getElementsByTagName('thead')[0].children.length == 0
   ) {
     $.ajax({
-      url: '/copo/dtol_submission/get_sample_column_names',
+      url: '/copo/dtol_submission/get_sample_column_names/',
       method: 'GET',
       dataType: 'json',
     })
@@ -566,6 +569,9 @@ $(document).ready(function () {
         }
       });
   }
+  */
+
+
   //if (profile_samples) {
   //update_pending_samples_table()
   //}
@@ -700,7 +706,7 @@ function row_select(ev) {
     if (row == undefined) {
       $('#profile_id').val('');
     } else {
-      var profile_id = $(row).find('td').data('profile_id');
+      var profile_id = $(row).attr("id");
       $('#profile_id').val(profile_id);
     }
 
@@ -726,16 +732,14 @@ function row_select(ev) {
         });
         $('#sample_panel').find('.labelling').empty().append(header);
         $('#profile_samples_wrapper').show();
-        sample_table.columns.adjust().draw();
-
+        sample_table.columns.adjust().draw()
         // Enable table buttons when profile has samples in it
         $('.view-images').prop('disabled', false);
         $('.download-permits').prop('disabled', false);
         $('.delete-selected').prop('disabled', false);
         $('.select-none').prop('disabled', false);
         $('.select-all').prop('disabled', false);
-      }
-    });
+      }});
 
     $('#spinner').fadeOut('fast');
   }
@@ -798,35 +802,65 @@ function update_pending_samples_table() {
     .find('a.active')
     .attr('href');
   //console.log(which_profiles)
-  let columnDefs = [];
+  let columnDefs = [
+    { name:"first_manifest_created", data:"first_manifest_date_created", title:"First manifest upload", type:"date",targets: [1],className: 'dt-center text-center',
+      render: function(data, type, row) {
+        if (data != undefined && data != "") {
+          let date = new Date(data.$date).toLocaleDateString(
+            'en-GB',
+            { timeZone: 'UTC' }
+          );
+          return date
+        } else {
+          return ""
+        }
+      }
+    },
+
+    { name:"last_manifest_updated", data:"last_manifest_date_modified", title:"Last manifest upload", type:"date",targets: [2],className: 'dt-center text-center',
+      render: function(data, type, row) {
+        if (data != undefined && data != "") {
+          let date = new Date(data.$date).toLocaleDateString(
+            'en-GB',
+            { timeZone: 'UTC' }
+          );
+          return date
+        } else {
+          return ""
+        }
+      }
+    } 
+  ];
 
   if (which_profiles == 'my_profiles') {
     $('#accept_reject_button').show();
     $('#edit-buttons').show();
-    columnDefs = [
-      {
-        targets: [1, 2],
-        className: 'dt-center text-center',
-      },
-      { targets: [0], className: 'profile_title_header_my_profiles' },
-    ];
+    columnDefs.push(
+      { name:"title", data:"title", title:"Profile Title &emsp;&emsp;", targets: [0], className: 'profile_title_header_my_profiles' });
+    columnDefs.push(  
+      { data:"_id", title:"Samples Link", targets: [3], orderable: false,
+       className: 'dt-center text-center',
+       render: function(data, type, row) {
+         return "<a href='/copo/copo_sample/" +
+         data.$oid +
+         "/view'><i class='fa fa-link' aria-hidden='true'></i></a>"
+       }
+      }
+    );
   } else {
     $('#accept_reject_button').hide();
     $('#edit-buttons').hide();
-
-    columnDefs = [
-      {
-        targets: [1],
-        className: 'dt-center text-center',
-      },
-      { targets: [0], className: 'profile_title_header_all_profiles' },
-    ];
+    columnDefs.push(
+      { name:"title", data:"title", title:"Profile Title", targets: [0], className: 'profile_title_header_all_profiles' }
+    );
   }
+ 
+  /*
   $.ajax({
     url: '/copo/dtol_submission/update_pending_samples_table/',
     method: 'GET',
     dataType: 'json',
-    data: { profiles: which_profiles, group: get_group_id() },
+    data: { profiles: which_profiles, group: get_group_id(), keyword: "" },
   })
     .fail(function (e) {
       console.log(e);
@@ -835,7 +869,7 @@ function update_pending_samples_table() {
       if ($.fn.DataTable.isDataTable('#profile_titles')) {
         $('#profile_titles').DataTable().clear().destroy();
       }
-
+      
       $(data).each(function (d) {
         let date = new Date(data[d].date_created.$date).toLocaleDateString(
           'en-GB',
@@ -861,40 +895,124 @@ function update_pending_samples_table() {
               link +
               '</tr>'
           );
-      });
-
-      $.fn.dataTable.moment('DD/MM/YYYY');
-      $('#profile_titles').DataTable({
-        responsive: true,
-        paging: false,
-        dom: '<"top"f>rt<"bottom"lp><"clear">',
-        order: [[1, 'desc']],
-        columnDefs: columnDefs,
-        initComplete: function () {
-          var api = this.api();
-          if (which_profiles != 'my_profiles') {
-            // Hide Office column
-            api.column(2).visible(false);
-          }
-        },
-      });
-
-      // Add padding to the 'Search' box for the profiles table
-      $('#profile_titles_filter').addClass('pt-3 pb-3');
-
-      $(document).removeData('selected_row');
-      if (data.length) {
-        $('#profile_titles').find('tbody').find('tr:first').click();
-      } else {
-        $('.hot_tab.active').click();
       }
+      );
+      
 
-      // Adjust the width of the table if it is 'All Profiles'
-      if (which_profiles != 'my_profiles') {
-        $('#profile_titles').css('width', '100%');
-      }
     });
-}
+    */
+
+    if ($.fn.DataTable.isDataTable('#profile_titles')) {
+      $('#profile_titles').DataTable().clear().destroy();
+      $('#profile_titles').empty();
+    }
+    
+    $.fn.dataTable.moment('DD/MM/YYYY');
+
+    $.ajax({
+      url: '/copo/dtol_submission/get_sample_column_names/',
+      data: {"group":get_group_id() },
+      method: 'GET',
+      dataType: 'json',
+    })
+      .fail(function (data) {
+        console.log('ERROR: ' + data);
+      })
+      .done(function (data) {
+        if (data.length) {
+          var header = $('<h4/>', {
+            html: 'Samples',
+          });
+          $('#sample_panel').find('.labelling').empty().append(header);
+
+          var rows = [];
+          rows.push({ title: '' });
+
+          let i = 0;
+          while (i < data.length) {
+            if (!excluded_fields.includes(data[i])) {
+              rows.push({ title: data[i], data: data[i] });
+            }
+            i++;
+          }
+          if ($.fn.DataTable.isDataTable('#profile_samples')) {
+            $('#profile_samples').DataTable().clear().destroy();
+            $('#profile_samples').empty();
+          }
+          dt_options['columns'] = rows;
+          dt_options['scrollCollapse'] = true;
+          dt_options['scrollX'] = true;
+          dt_options['scrollY'] = 1000;
+          dt_options['fixedHeader'] = true;
+          sample_table = $('#profile_samples')
+            .DataTable(dt_options)
+            .columns.adjust()
+            .draw();
+        }
+      });
+
+
+
+    profile_table = $('#profile_titles').DataTable({
+      rowId: "_id.$oid",
+      ajax: {
+        url: '/copo/dtol_submission/update_pending_samples_table/',
+        data: function (d) {
+          columnIdx = d.order[0].column
+          orderby = ""
+          if (columnIdx == 0) {
+            orderby = "title"
+          } else if (columnIdx == 1) {
+            orderby = "first_manifest_date_created"
+          } else if (columnIdx == 2) {
+            orderby = "last_manifest_date_modified"
+          }
+          return {
+            profiles: which_profiles, 
+            group: get_group_id(), 
+            search: d.search.value,
+            order: orderby,
+            dir: d.order[0].dir,
+            draw: d.draw
+          };
+        },
+        dataSrc: 'data',
+      },
+      createdRow:  function (row, data, dataIndex) {
+        $(row).addClass('selectable_row')
+      },
+      processing: true,
+      serverSide: true,
+      responsive: true,
+      paging: false,
+      dom: '<"top"f>rt<"bottom"lp><"clear">',
+      order: [[0, 'desc']],
+      columnDefs: columnDefs,
+      search: {
+        return: true,
+      },
+      initComplete: function () {
+        // Add padding to the 'Search' box for the profiles table
+        $('#profile_titles_filter').addClass('pt-3 pb-3');
+        $(document).removeData('selected_row');
+        var api = this.api();
+        if (api.row(0) != undefined) {
+          this.find('tbody').find('tr:first').click();
+        } else {
+          $('.hot_tab.active').click();
+        }
+      },
+      
+    });
+
+
+
+    // Adjust the width of the table if it is 'All Profiles'
+    if (which_profiles != 'my_profiles') {
+      $('#profile_titles').css('width', '100%');
+    }
+
+  }
 
 function handle_accept_reject(el) {
   $('#spinner').fadeIn(fadeSpeed);

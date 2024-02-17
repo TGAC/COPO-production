@@ -35,7 +35,7 @@ Image.MAX_IMAGE_PIXELS = None
 
 l = Logger()
 
-
+'''
 def make_target_sample(sample):
     # need to pop taxon info, and add back into sample_list
     if not "species_list" in sample:
@@ -60,7 +60,7 @@ def make_target_sample(sample):
     sample["species_list"].append(out)
 
     return sample
-
+    '''
 
 def make_species_list(sample):
     # need to pop taxon info, and add back into sample_list
@@ -660,6 +660,17 @@ class DtolSpreadsheet:
             Sample().update_public_name(name)
         profile_id = request.session["profile_id"]
         profile = Profile().get_record(profile_id)
+
+        update_fields = {}
+        now = get_datetime()
+        #update manifest created / updated datetime
+        if profile.get("first_manifest_date_created", ''):
+            update_fields = {"last_manifest_date_modified": now}
+        else:
+            update_fields = {"first_manifest_date_created": now}
+
+        Profile().save_record({}, **update_fields, target_id=profile_id)
+
         title = profile["title"]
         description = profile["description"]
         Email().notify_manifest_pending_approval(uri + 'copo/dtol_submission/accept_reject_sample/', title=title,
@@ -748,10 +759,6 @@ class DtolSpreadsheet:
                 Sample().update_public_name(name)
             
             profile_id = request.session["profile_id"]
-            profile = Profile().get_record(profile_id)
-            title = profile["title"]
-            description = profile["description"]
-
             # Update the associated tol project for each sample in the manifest
             # get associated profile type(s) of manifest
             associated_type_lst = Profile().get_associated_type(
@@ -765,9 +772,17 @@ class DtolSpreadsheet:
                                     associated_type, recorded_sample["_id"])
 
         if need_send_email:
+            profile = Profile().get_record(profile_id)
+            title = profile["title"]
+            description = profile["description"]
             Email().notify_manifest_pending_approval(uri + 'copo/dtol_submission/accept_reject_sample/', title=title,
                                                          description=description, 
                                                          project=self.type.upper(), is_new=False,profile_id=profile_id)
+
+     
+        #update manifest created / updated datetime
+        update_fields = {"last_manifest_date_modified": get_datetime()}
+        Profile().save_record({}, **update_fields, target_id=profile_id)
 
         image_data = request.session.get("image_specimen_match", [])
         for im in image_data:

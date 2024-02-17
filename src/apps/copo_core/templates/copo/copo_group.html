@@ -151,7 +151,7 @@
     <div hidden id="hidden_attrs">
         <!-- hidden attributes  -->
         <input type="hidden" id="nav_component_name" value="group"/>
-
+        <input type="hidden" id="profile_tab_title" value="{{ profile_tab_title }}" />
     </div>
 {% endblock browse_header_block %}
 
@@ -186,7 +186,7 @@
             </div>
             <i data-bs-toggle="modal" data-bs-target="#add_group_modal"
                class="fa fa-plus-square fa-2x group-button plus-color" title="Add a group"></i>
-            <i data-bs-toggle="modal" style="visibility:hidden" id="edit_group_button" class="fa fa-pencil-square-o fa-2x group-button edit-color" title="Edit group"></i>
+            <i data-bs-toggle="modal" style="visibility:hidden" id="edit_group_button" class="fa fa-pencil-square fa-2x group-button edit-color" title="Edit group"></i>
             <i data-bs-toggle="modal" style="visibility:hidden" id="delete_group_button"
                class="fa fa-minus-square fa-2x group-button minus-color" title="Delete group"></i>
             <span class="lead float-end">Selected Group: <span id="selected_group" class="label label-default">Choose Group</span>

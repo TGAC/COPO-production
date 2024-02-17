@@ -139,6 +139,7 @@ body {
     font-weight: bold;
     color: black !important;
     font-size: 14px !important;
+    text-align: left;
 }
 
 .navbar-dark .dropdown-menu{
@@ -156,6 +157,7 @@ body {
     font-weight: bold;
     color: white !important;
     font-size: 14px !important;
+    text-align: left;
 }
 
 #copo-icon {
