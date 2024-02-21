@@ -21,9 +21,9 @@ class S3Connection():
         self.expiration = 60 * 60 * 24
         self.path = '/'
         boto3.set_stream_logger(name='', level=logging.INFO, format_string=None)
-        self.s3_client = boto3.client('s3', endpoint_url=self.ecs_endpoint,  # verify=False,
-                                      config=Config(signature_version='s3v4', connect_timeout=10,
-                                                    retries={"max_attempts": 3}, s3={'addressing_style': "path"}),
+        self.s3_client = boto3.client('s3', endpoint_url=self.ecs_endpoint, verify=False,  
+                                      config=Config(signature_version='s3v4', connect_timeout=60,
+                                                    retries={"max_attempts": 5}, s3={'addressing_style': "path"}),
                                       aws_access_key_id=self.ecs_access_key_id,
                                       aws_secret_access_key=self.ecs_secret_key)
         # self.transport_params = {'client': self.s3_client}
@@ -70,7 +70,7 @@ class S3Connection():
         try:
             response = self.s3_client.generate_presigned_url('put_object', Params={'Bucket': bucket, 'Key': key},
                                                              ExpiresIn=expires_seconds)
-            response = response.replace("http://", "https://")
+            #response = response.replace("http://", "https://")
         except Exception as e:
             Logger().exception(e)
             response = e
