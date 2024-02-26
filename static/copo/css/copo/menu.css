@@ -11,13 +11,13 @@ footer, header, hgroup, menu, nav, section {
     display: block;
 }
 
-body {
-    /*line-height: 1;*/
-}
+/* body {
+    line-height: 1;
+}*/
 
-ol, ul {
-    /*list-style: none;*/
-}
+/*ol, ul {
+    list-style: none;
+} */
 
 blockquote, q {
     quotes: none;
@@ -136,18 +136,18 @@ header nav li.active a, header nav a:active {
     /*color: #243942;*/
 }
 
-.dropdown-menu li > a:hover, .dropdown-menu li > a:focus, .dropdown-submenu:hover > a {
-    /*background: rgba(38, 38, 38, 0.6);*/
-    /*color: #fff;*/
-}
+/*.dropdown-menu li > a:hover, .dropdown-menu li > a:focus, .dropdown-submenu:hover > a {
+    background: rgba(38, 38, 38, 0.6);
+    color: #fff;
+}*/
 
 .glyphicon {
     margin-right: 10px;
 }
 
-header > nav > ul > li > ul > li {
-    /*box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.1), 0 0 3px rgba(0, 0, 0, 0.8);*/
-}
+/*header > nav > ul > li > ul > li {
+    box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.1), 0 0 3px rgba(0, 0, 0, 0.8);
+}*/
 
 header > nav > ul > li > ul > li {
     display: block;
@@ -163,6 +163,7 @@ header > nav > ul > li > ul > li {
 
 .dropdown-menu > li > a {
     margin:0;
+    cursor: pointer;
     /*padding: 0 10px 0 10px;*/
     /*display: inline;*/
     /*color: #269abc;*/
