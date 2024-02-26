@@ -23,6 +23,7 @@
 }
 .btn.dropdown-toggle {
     padding: .92857143em 1.14285714em;
+    border-color: #e9ecef !important;
 }
 
 .btn.dropdown-toggle:hover {

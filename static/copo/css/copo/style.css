@@ -1016,6 +1016,7 @@ th {
     color: black;
     background: transparent;
     height: 50px !important;
+    padding: 10px 15px;
 }
 
 #copo-global-nav.navbar-light .navbar-nav > li > a:hover,
