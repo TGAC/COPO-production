@@ -524,14 +524,25 @@ class Sample(DAComponent):
                 }
              })
 
-    def update_field(self, field, value, oid):
+    def update_field(self, field=None, value=None, oid=None, field_values={}, oids=[]):
+        if not oids:
+            oids = []
+        if oid:
+            oids.append(oid)
+
+        if not field_values:
+            field_values = {}
+        
+        if field:
+            field_values[field] = value
+
         try:
             email = ThreadLocal.get_current_user().email
         except:
             email = "copo@earlham.ac.uk"
 
         # Determine if the update is being done by a user or by the system
-        set_update_data = {field: value, 'date_modified': datetime.now(timezone.utc).replace(microsecond=0), 'time_updated': datetime.now(timezone.utc).replace(
+        set_update_data = {'date_modified': datetime.now(timezone.utc).replace(microsecond=0), 'time_updated': datetime.now(timezone.utc).replace(
             microsecond=0)}
 
         if "copo@earlham.ac.uk" in email:
@@ -540,7 +551,9 @@ class Sample(DAComponent):
             set_update_data['updated_by'] = email
             set_update_data['update_type'] = 'user'
 
-        return self.get_collection_handle().update_one({"_id": ObjectId(oid)}, {"$set": set_update_data})
+        set_update_data.update(field_values)
+
+        return self.get_collection_handle().update_many({"_id": {"$in": [ObjectId(oid) for oid in oids]}}, {"$set": set_update_data})
 
     def remove_field(self, field, oid):
         return self.get_collection_handle().update_one(
@@ -554,6 +567,8 @@ class Sample(DAComponent):
         )
 
     def add_rejected_status(self, status, oid):
+        return self.update_field(field_values={'error': status["msg"],'status': "rejected"}, oid=oid)
+        '''
         return self.get_collection_handle().update_one(
             {
                 "_id": ObjectId(oid)
@@ -563,6 +578,7 @@ class Sample(DAComponent):
               'status': "rejected"}
              }
         )
+        '''
 
     def add_rejected_status_for_tolid(self, specimen_id):
         return self.get_collection_handle().update_many(
@@ -756,16 +772,20 @@ class Sample(DAComponent):
         return out
 
     def mark_rejected(self, sample_id, reason="Sample rejected by curator."):
-        return self.get_collection_handle().update_one({"_id": ObjectId(sample_id)},
-                                                       {"$set": {"status": "rejected", "error": reason}})
+
+        #return self.get_collection_handle().update_one({"_id": ObjectId(sample_id)},
+        #                                               {"$set": {"status": "rejected", "error": reason}})
+        self.update_field(field_values={"status": "rejected", "error": reason}, oid=sample_id)
+
 
     def mark_processing(self, sample_id=str(), sample_ids=[]):
         if not sample_ids:
             sample_ids = list()
         if sample_id:
             sample_ids.append(sample_id)
-        sample_obj_ids = [ObjectId(x) for x in sample_ids]
-        return self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}}, {"$set": {"status": "processing"}})
+        return self.update_field(field="status", value="processing", oids=sample_ids)
+        #sample_obj_ids = [ObjectId(x) for x in sample_ids]
+        #return self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}}, {"$set": {"status": "processing"}})
 
     def mark_pending(self, sample_ids, is_erga=False, is_private=False):
         if is_erga:
@@ -774,8 +794,9 @@ class Sample(DAComponent):
             status = "private"
         else :
             status = "pending"
-        sample_obj_ids = [ObjectId(x) for x in sample_ids]
-        return self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}}, {"$set": {"status": status}})
+        return self.update_field(field="status", value=status, oids=sample_ids)    
+        #sample_obj_ids = [ObjectId(x) for x in sample_ids]
+        #return self.get_collection_handle().update_many({"_id": {"$in": sample_obj_ids}}, {"$set": {"status": status}})
 
     def get_by_manifest_id(self, manifest_id):
         samples = cursor_to_list(
@@ -963,11 +984,17 @@ class Sample(DAComponent):
 
     def update_read_accession(self, sample_accessions):
         for accession in sample_accessions:
+            update_fields = {"biosampleAccession": accession["biosample_accession"],
+                                                               "sraAccession": accession["sample_accession"],
+                                                               "status": "accepted"}
+            self.update_field(field_values=update_fields, oid=accession["sample_id"])
+            '''
             self.get_collection_handle().update_many({"_id": ObjectId(accession["sample_id"])},
                                                      {"$set": {"biosampleAccession": accession["biosample_accession"],
                                                                "sraAccession": accession["sample_accession"],
                                                                "status": "accepted"}})
-
+            '''
+            
     def update_datafile_status(self, datafile_ids, status):
         dt = helpers.get_datetime()
         for id in datafile_ids:
