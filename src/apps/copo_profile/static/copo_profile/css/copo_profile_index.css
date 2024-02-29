@@ -36,6 +36,7 @@
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     background: #fff;
     font-weight: 400;
+    -webkit-text-stroke-width: 0.1px; /* Prevents the error: Request for font "Lato" block at visibility level 2 (requires 3)"*/
     border: 1px solid rgba(34, 36, 38, .15);
     box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
     border-radius: .28571429rem;
