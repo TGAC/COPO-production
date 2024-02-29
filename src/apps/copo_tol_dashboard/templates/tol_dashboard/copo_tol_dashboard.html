@@ -11,7 +11,7 @@
     <link id="pagestyle" rel="stylesheet" href="{% static 'tol_dashboard/css/material-dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'tol_dashboard/css/jquery-jvectormap-2.0.5.css' %}"/>
     <link rel="stylesheet" href="{% static 'tol_dashboard/css/copo_tol_dashboard.css' %}"/>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'copo/jquery/css/jquery-ui-1.13.2.min.css' %}">
 
     <style></style>
 {% endblock stylesheet_block %}
@@ -484,7 +484,7 @@
 {% block js_block %}
     <script src="{% static 'copo/js/chartjs/chart-4.4.1.umd.js' %}"></script>
     <script src="{% static 'copo/datatables/js/moment-2.30.1.js' %}"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="{% static 'copo/jquery/js/jquery-ui-1.13.2.min.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/copo_tol_dashboard.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/tol_inspection.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/tol_inspection_by_gal.js' %}"></script>
