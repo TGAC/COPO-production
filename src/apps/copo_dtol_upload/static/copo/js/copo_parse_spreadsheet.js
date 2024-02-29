@@ -831,6 +831,10 @@ $(document).on(
   'click',
   '.new-samples-spreadsheet-template-erga',
   function (event) {
+    // Display the 'Accept Code of Conduct' modal as an
+    // overlay over the 'Upload Spreadsheet' modal if it is visible
+    $('#sample_spreadsheet_modal').addClass('z-0');
+
     BootstrapDialog.show({
       title: 'Accept Code of Conduct',
       message:
@@ -840,8 +844,8 @@ $(document).on(
         "<a href='https://bit.ly/3zHun36'>ERGA Sample " +
         'Code of Practice</a>.',
       cssClass: 'copo-modal1',
-      closable: true,
       animate: true,
+      closable: false,
       closeByBackdrop: false, // Prevent dialog from closing by clicking on backdrop
       closeByKeyboard: false, // Prevent dialog from closing by pressing ESC key
       type: BootstrapDialog.TYPE_INFO,
@@ -861,6 +865,10 @@ $(document).on(
           cssClass: 'tiny ui basic button',
           action: function (dialogRef) {
             dialogRef.close();
+
+            // Make the 'Upload Spreadsheet' modal fully visible
+            // i.e.remove the overlay properties
+            $('#sample_spreadsheet_modal').removeClass('z-0');
           },
         },
       ],
