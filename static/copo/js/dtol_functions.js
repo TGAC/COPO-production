@@ -1128,6 +1128,12 @@ function handle_accept_reject(el) {
   }
 }
 
+function get_group_id() {
+  if ($('#group_id').length > 0) {
+    return $('#group_id').find(':selected').val();
+  }
+}
+
 function update_profile_table() {
   if ($('#group_id option').length == 1) {
     $('#group_id').hide();
