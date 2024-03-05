@@ -156,6 +156,10 @@ section {
     padding: 3px;
 }
 
+.img-circle {
+    border-radius: 50%;
+}
+
 .organisation {
     margin-top: 10px;
     padding-right: 10px;
