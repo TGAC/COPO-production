@@ -871,13 +871,16 @@ class Submission(DAComponent):
         sort_by = element_dict['sort_by']
         dir = element_dict['dir']
         search = element_dict['search']
+        showAllCOPOAccessions = element_dict['showAllCOPOAccessions']
+        isUserProfileActive = element_dict['isUserProfileActive']
         profile_id = element_dict['profile_id']
         filter_accessions = element_dict['filter_accessions']
         
         filter = dict()
 
-        if profile_id:
-            filter['profile_id'] = profile_id
+        if not showAllCOPOAccessions:
+            if isUserProfileActive and profile_id:
+                filter['profile_id'] = profile_id
 
         filter["accessions"] = {"$exists": True, "$ne": {}}
         projection = {"_id": 1, "accessions": 1, "profile_id": 1}

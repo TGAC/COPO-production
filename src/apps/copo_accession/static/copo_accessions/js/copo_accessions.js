@@ -49,11 +49,8 @@ let dt_options = {
   scrollY: 500,
   select: false,
   initComplete: function () {
-    let api = this.api();
     // Add filter checkbox under  the info panel to the right side of the web page
-    // Get accession types from the 'accession_type' column in the data table
-    let accession_types = api.column(2).data().unique().sort().toArray();
-    get_filter_accession_titles(accession_types);
+    get_filter_accession_titles(this.api());
   },
   createdRow: function (row, data, index) {
     // Add the record ID and accession type to each row
@@ -136,6 +133,7 @@ let dt_options = {
       return {
         isUserProfileActive: isUserProfileActive,
         isOtherAccessionsTabActive: isOtherAccessionsTabActive,
+        showAllCOPOAccessions: $('#showAllCOPOAccessions').val(),
         filter_accessions: filter_accessions,
         draw: d.draw,
         order: d.order,
@@ -239,7 +237,10 @@ function filterRecordsByAccessionType() {
   accessions_table.column(2).search(accession_types, true, false).draw();
 }
 
-function get_filter_accession_titles(accession_types) {
+function get_filter_accession_titles(api) {
+  // Get accession types from the 'accession_type' column in the data table
+  let table_accession_types = api.column(2).data().unique().sort().toArray();
+
   $.ajax({
     url: '/copo/copo_accessions/get_filter_accession_titles',
     method: 'POST',
@@ -247,13 +248,16 @@ function get_filter_accession_titles(accession_types) {
     dataType: 'json',
     data: {
       isOtherAccessionsTabActive: isOtherAccessionsTabActive,
-      accession_types: JSON.stringify(accession_types),
     },
     success: function (data) {
       if (data.length === 0) {
         return false;
       } else {
-        set_filter_checkboxes(data);
+        // Filter out the accession types that are not in the table
+        let filtered_accession_types = data.filter((item) =>
+          table_accession_types.includes(item.value)
+        );
+        set_filter_checkboxes(filtered_accession_types);
       }
     },
     error: function (error) {

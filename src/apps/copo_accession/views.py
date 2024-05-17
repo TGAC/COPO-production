@@ -2,7 +2,7 @@ from bson import json_util
 from common.dal.profile_da import Profile
 from common.dal.sample_da import Sample
 from common.dal.submission_da import Submission
-from common.schema_versions.lookup.dtol_lookups import NON_SAMPLE_ACCESSION_TYPES
+from common.schema_versions.lookup.dtol_lookups import NON_SAMPLE_ACCESSION_TYPES, TOL_PROFILE_TYPES
 from common.utils.helpers import get_group_membership_asString
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -61,6 +61,7 @@ def get_accession_records_column_names(request):
 def generate_accession_records(request):
     isUserProfileActive = d_utils.convertStringToBoolean(request.POST.get('isUserProfileActive',str()))
     isOtherAccessionsTabActive = d_utils.convertStringToBoolean(request.POST.get('isOtherAccessionsTabActive', str()))
+    showAllCOPOAccessions = d_utils.convertStringToBoolean(request.POST.get('showAllCOPOAccessions', str()))
     filter_accessions = json.loads(request.POST.get('filter_accessions', list()))
 
     # Convert items in list to lowercase
@@ -86,23 +87,26 @@ def generate_accession_records(request):
     element_dict['sort_by'] = sort_by
     element_dict['dir'] = dir
     element_dict['search'] = search
+    element_dict['showAllCOPOAccessions'] = showAllCOPOAccessions
+    element_dict['isUserProfileActive'] = isUserProfileActive
     element_dict['profile_id'] = profile_id
     element_dict['filter_accessions'] = filter_accessions
 
     records = None
 
     if isOtherAccessionsTabActive:
-        if isUserProfileActive and profile_id:
-            records = Submission().get_non_sample_accessions(element_dict)
-        else:
-            records = Submission().get_non_sample_accessions(element_dict)          
+        records = Submission().get_non_sample_accessions(element_dict)          
     else:
-        if isUserProfileActive and profile_id:
-            records = Sample().get_sample_accessions(element_dict)
-        else:
-            records = Sample().get_sample_accessions(element_dict)
+        records = Sample().get_sample_accessions(element_dict)
 
     return HttpResponse(json_util.dumps(records))
+
+def get_accession_types(isOtherAccessionsTabActive):
+    tol_project_types = [x.upper() for x in TOL_PROFILE_TYPES]
+
+    accession_types = NON_SAMPLE_ACCESSION_TYPES if isOtherAccessionsTabActive else tol_project_types
+
+    return accession_types
 
 
 def get_filter_accession_titles(request):
@@ -110,9 +114,8 @@ def get_filter_accession_titles(request):
     accession_titles = list()
     isOtherAccessionsTabActive = d_utils.convertStringToBoolean(
         request.POST.get('isOtherAccessionsTabActive', str()))
-    
-    # Parses string array to actual list
-    accession_types = json.loads(request.POST.get('accession_types', list()))
+
+    accession_types = get_accession_types(isOtherAccessionsTabActive)
 
     if isOtherAccessionsTabActive:
         # Reorder the list of accessions types accorsing to the order of 

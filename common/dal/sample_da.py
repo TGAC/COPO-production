@@ -465,16 +465,29 @@ class Sample(DAComponent):
         sort_by = element_dict['sort_by']
         dir = element_dict['dir']
         search = element_dict['search']
+        showAllCOPOAccessions = element_dict['showAllCOPOAccessions']
+        isUserProfileActive = element_dict['isUserProfileActive']
         profile_id = element_dict['profile_id']
         filter_accessions = element_dict['filter_accessions']
 
         filter=dict()
 
-        # Filter based on accession type
-        sample_types = filter_accessions if filter_accessions else TOL_PROFILE_TYPES
+        handler = self.get_collection_handle()
 
-        if profile_id:
-            filter['profile_id'] = profile_id
+        # Filter based on accession type
+        # Get Stand-alone project sample types and TOL project sample types
+        # Get distinct sample types
+        all_sample_types = handler.distinct("sample_type")
+
+        # Remove excluded sample types
+        excluded_sample_types = ['biosample']
+        all_sample_types = [sample_type for sample_type in all_sample_types if sample_type not in excluded_sample_types]
+
+        sample_types = filter_accessions if filter_accessions else all_sample_types
+
+        if not showAllCOPOAccessions:
+            if isUserProfileActive and profile_id:
+                filter['profile_id'] = profile_id
 
         # filter out based on search
         if search:
@@ -489,7 +502,7 @@ class Sample(DAComponent):
         
         total_count = 0
         sort_clause = [[sort_by, dir]]
-        handler = self.get_collection_handle()
+        
 
         records = cursor_to_list_str(handler.find(filter, projection).sort(sort_clause).skip(int(start)).limit(int(length)))
         total_count = handler.count_documents(filter)
@@ -505,7 +518,7 @@ class Sample(DAComponent):
                 row_data = dict()
                 row_data['record_id'] = i.get('_id','')
                 row_data['DT_RowId'] = 'row_' + i.get('_id','')
-                row_data['accession_type'] = i.get('tol_project','')
+                row_data['accession_type'] = 'Standalone' if i.get('sample_type','') == 'isasample' else i.get('tol_project','')
 
                 row_data.update({key: i.get(key,'') for key in i.keys() if key in labels})
                 out.append(row_data)            
