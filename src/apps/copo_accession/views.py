@@ -2,7 +2,7 @@ from bson import json_util
 from common.dal.profile_da import Profile
 from common.dal.sample_da import Sample
 from common.dal.submission_da import Submission
-from common.schema_versions.lookup.dtol_lookups import NON_SAMPLE_ACCESSION_TYPES, TOL_PROFILE_TYPES
+from common.schema_versions.lookup.dtol_lookups import EXCLUDED_SAMPLE_TYPES, NON_SAMPLE_ACCESSION_TYPES, STANDALONE_PROJECT_SAMPLE_TYPE, TOL_PROFILE_TYPES
 from common.utils.helpers import get_group_membership_asString
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -64,8 +64,11 @@ def generate_accession_records(request):
     showAllCOPOAccessions = d_utils.convertStringToBoolean(request.POST.get('showAllCOPOAccessions', str()))
     filter_accessions = json.loads(request.POST.get('filter_accessions', list()))
 
-    # Convert items in list to lowercase
+    # Convert items in the 'filter_accessions' list to lowercase
     filter_accessions = [x.lower() for x in filter_accessions] if filter_accessions else list()
+    
+    # Replace 'standalone' with 'isasample' in the 'filter_accessions' list
+    filter_accessions = ['isasample' if 'standalone' in filter_accessions else accession for accession in filter_accessions]
 
     profile_id = request.session.get('profile_id', str()) if isUserProfileActive else str()
     start = request.POST.get('start', '0')
@@ -102,9 +105,27 @@ def generate_accession_records(request):
     return HttpResponse(json_util.dumps(records))
 
 def get_accession_types(isOtherAccessionsTabActive):
-    tol_project_types = [x.upper() for x in TOL_PROFILE_TYPES]
+    all_sample_types =  Sample().get_distinct_sample_types()
 
-    accession_types = NON_SAMPLE_ACCESSION_TYPES if isOtherAccessionsTabActive else tol_project_types
+    # Remove excluded sample types
+    all_sample_types = [sample_type for sample_type in all_sample_types if sample_type not in EXCLUDED_SAMPLE_TYPES]
+
+    project_types = list()
+    
+    for x in all_sample_types:
+        if x in STANDALONE_PROJECT_SAMPLE_TYPE:
+            x = 'stand-alone'
+            project_types.append(x)
+
+        if x in TOL_PROFILE_TYPES:
+            project_types.append(x)
+
+    # Remove duplicates from the list
+    project_types = list(set(project_types))
+    # Sort the list
+    project_types.sort()
+
+    accession_types = NON_SAMPLE_ACCESSION_TYPES if isOtherAccessionsTabActive else project_types
 
     return accession_types
 
@@ -123,15 +144,17 @@ def get_filter_accession_titles(request):
         accession_titles = [{'title': d_utils.convertStringToTitleCase(
             item), 'value': item} for item in NON_SAMPLE_ACCESSION_TYPES if item in accession_types]
     else:
-        # Other project types
+        # Sample project types including Stand-alone
+        # since samples might exist in Standa-lone projects
         profile_types = list()
 
         for i in accession_types:
             profile_type = Profile().get_collection_handle().find_one({'type': {'$regex': i.upper(), '$options': 'i'}},
                                                                       {'_id': 0, 'type': 1})
             if profile_type:
+                value = i.replace('-','').upper() if i == 'stand-alone' else i.upper()
                 profile_types.append(
-                    {'title':  profile_type.get('type', ''), 'value': i.upper()})
+                    {'title':  profile_type.get('type', ''), 'value': value})
 
         accession_titles = profile_types
 
