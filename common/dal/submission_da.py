@@ -890,9 +890,7 @@ class Submission(DAComponent):
         handler = self.get_collection_handle()
 
         records = cursor_to_list_str(handler.find(
-            filter, projection).sort(sort_clause).skip(int(start)).limit(int(length)), use_underscore_in_id=False)
-        
-        total_count = handler.count_documents(filter)
+            filter, projection).sort(sort_clause), use_underscore_in_id=False)
 
         # Declare labels for 'sample' accession
         sample_accession_labels = ['sample_accession','sample_alias']
@@ -945,6 +943,11 @@ class Submission(DAComponent):
             # Filter based on search query
             if search:
                 out = filter_non_sample_accession_dict_lst(out, search)
+
+        # Slice 'out' which is a list of dictionaries 
+        # based on the values for start and length
+        total_count = len(out)
+        out = out[int(start):int(start) + int(length)]
 
         result = dict()
         result["recordsTotal"] = total_count

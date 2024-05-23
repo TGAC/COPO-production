@@ -49,7 +49,7 @@ let dt_options = {
   scrollY: 500,
   select: false,
   initComplete: function () {
-    // Add filter checkbox under  the info panel to the right side of the web page
+    // Add filter checkbox under the info panel to the right side of the web page
     get_filter_accession_titles(this.api());
   },
   createdRow: function (row, data, index) {
@@ -91,11 +91,18 @@ let dt_options = {
       });
   },
   fnDrawCallback: function () {
-    // Show accessions legend if it was hidden and if the table has data
+    // Show accessions legend and the checkboxes
+    // if the table has data
     if (accessions_table.data().any()) {
+      // Show the filter accessions legend
       $('.accessions-legend').show();
-      $('.accessions-checkboxes').show(); // Show the filter accessions legend
+      $('.accessions-checkboxes').show();
     }
+    // else {
+    // Hide the filter accessions legend and the checkboxes
+    //   $('.accessions-legend').hide();
+    //   $('.accessions-checkboxes').hide();
+    // }
 
     // Add hyperlink to all columns that have accessions
     $('.ena-accession').each(function (i, obj) {
@@ -203,8 +210,10 @@ $(document).ready(function () {
 
   // Hide the accessions' button
   // from the Accessions dashboard web page
-  if (showAllCOPOAccessions) {
+  if ($('#showAllCOPOAccessions').val() === 'True') {
     $('.copo_accessions').hide();
+  } else {
+    $('.copo_accessions').show();
   }
 
   // Load records
@@ -253,11 +262,14 @@ function get_filter_accession_titles(api) {
       if (data.length === 0) {
         return false;
       } else {
-        // Filter out the accession types that are not in the table
-        let filtered_accession_types = data.filter((item) =>
-          table_accession_types.includes(item.value)
-        );
-        set_filter_checkboxes(filtered_accession_types);
+        // Filter the accession types that are not in the table
+        // if the web page is not the Accessions dashboard web page
+        if ($('#showAllCOPOAccessions').val() === 'False') {
+          data = data.filter((item) =>
+            table_accession_types.includes(item.value)
+          );
+        }
+        set_filter_checkboxes(data);
       }
     },
     error: function (error) {
@@ -323,7 +335,7 @@ function set_filter_checkboxes(accession_titles) {
 }
 
 function place_accessions_task_buttons(componentMeta) {
-  //place custom buttons on table
+  // Place custom buttons on the table
   if (!componentMeta.recordActions.length) {
     return;
   }
@@ -378,7 +390,7 @@ function customise_accessions_table(table) {
 
   // Add css to align the buttons to the right
   table_wrapper.find('.dt-buttons').addClass('pull-right');
-  table_wrapper.find('.info-rw').hide(); // Hide showing 'x' of 'x' row
+  //table_wrapper.find('.info-rw').hide(); // Hide showing 'x' of 'x' row
 
   // Insert breakpoints after the toggle button
   if (table_wrapper.find('br').length === 0) {
@@ -422,17 +434,17 @@ function load_accessions_records() {
     method: 'GET',
     dataType: 'json',
   })
-    .fail(function (data) {
-      console.log('Error: ' + data);
+    .fail(function (error) {
+      console.log('Error: ' + error);
     })
     .done(function (data) {
       if (data.length) {
-        // if table instance already exists then, clear, destroy and empty the table
+        // If table instance already exists then, clear, destroy and empty the table
         if ($.fn.DataTable.isDataTable(`#${table_id}`)) {
           $(`#${table_id}`).DataTable().clear().destroy();
           $(`#${table_id}`).empty();
 
-          // Set toggle button on accessions dashboard and
+          // Set toggle button on Accessions dashboard and
           // on the accessions web page for a given profile
           set_toggle_button();
         }
@@ -448,7 +460,7 @@ function load_accessions_records() {
         // Add buttons and other things to the table
         customise_accessions_table(accessions_table);
       } else {
-        // Hide accessions legend if table is empty
+        // Hide accessions legend if the table is empty
         accessions_checkboxes.empty();
 
         // Hide the 'filter accession types' legend
