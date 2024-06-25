@@ -1233,7 +1233,7 @@ DTOL_EXPORT_TO_STS_FIELDS = {
         'ETHICS_PERMITS_FILENAME',
         'SAMPLING_PERMITS_MANDATORY',
         'SAMPLING_PERMITS_DEF',
-        'SAMPLING_PERMITS_FILENAME'
+        'SAMPLING_PERMITS_FILENAME',
         'NAGOYA_PERMITS_MANDATORY',
         'NAGOYA_PERMITS_DEF',
         'NAGOYA_PERMITS_FILENAME',
@@ -1491,7 +1491,7 @@ DTOL_RULES = {
         },
     'ETHICS_PERMITS_FILENAME':
         {
-            "optional_regex": "^.+\.pdf$",
+            "optional_regex": "(^.+\.pdf$)|(^.+\.PDF$)",
             "human_readable": "filename (including '.pdf' extension) if permit is required or NOT_APPLICABLE if permit is not required"
         },
     'LATITUDE_END':
@@ -1544,7 +1544,7 @@ DTOL_RULES = {
         },
     'NAGOYA_PERMITS_FILENAME':
         {
-            "optional_regex": "^.+\.pdf$",
+            "optional_regex": "(^.+\.pdf$)|(^.+\.PDF$)",
             "human_readable": "filename (including '.pdf' extension) if permit is required or NOT_APPLICABLE if permit is not required"
         },
     'ORIGINAL_COLLECTION_DATE':
@@ -1600,7 +1600,7 @@ DTOL_RULES = {
         },
     'SAMPLING_PERMITS_FILENAME':
         {
-            "optional_regex": "^.+\.pdf$",
+            "optional_regex": "(^.+\.pdf$)|(^.+\.PDF$)",
             "human_readable": "filename (including '.pdf' extension) if permit is required or NOT_APPLICABLE if permit is not required"
         },
     'SAMPLING_WATER_BODY_DEPTH':
@@ -1843,6 +1843,10 @@ BLANK_VALS = ['NOT_APPLICABLE', 'NOT_COLLECTED', 'NOT_PROVIDED']
 
 DATE_FIELDS = ["DATE_OF_PRESERVATION"]
 
+EXCLUDED_FIELDS_FOR_GET_BY_FIELD_QUERY = ["_id"]
+
+EXCLUDED_SAMPLE_TYPES = ['biosample']
+
 NA_VALS = ['#N/A', '#N/A N/A', '#NA', '-1.#IND', '-1.#QNAN', '-NaN', '-nan', '1.#IND', '1.#QNAN', '<NA>', 'N/A', 'NULL',
            'NaN', 'n/a', 'nan', 'NaT', 'null', 'NIL', 'nil', 'NA', 'na', 'NAN', 'Nan', 'NA']
 
@@ -1872,6 +1876,8 @@ SLASHES_LIST = ["/", "\\"]
 
 SPECIES_LIST_FIELDS = ["SYMBIONT", "TAXON_ID", "ORDER_OR_GROUP", "FAMILY", "GENUS", "SCIENTIFIC_NAME",
                        "INFRASPECIFIC_EPITHET", "CULTURE_OR_STRAIN", "COMMON_NAME", "TAXON_REMARKS"]
+
+STANDALONE_PROJECT_SAMPLE_TYPE = ["isasample"]
 
 STANDARDS = ["dwc", "ena", "mixs", "tol"]
 
