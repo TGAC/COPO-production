@@ -1,14 +1,15 @@
 /*Component buttons*/
 /*Set the width of the buttons in the Components tab to the same width*/
 /* Left align the text in the buttons */
-.pcomponent-color,
-.pcomponent-button {
+/* .pcomponent-color,
+.pcomponent-button  */
+.ui.menu .ui.dropdown.item .comp .ui.button {
     width: 190px !important;
     text-align: left;
 }
 
 .pcomponent-icon {
-  padding-right: 5px;
+    padding-right: 5px;
 }
 
 .dropdown.item.dropdown-toggle {
@@ -24,6 +25,7 @@
     text-transform: none;
     transition: background .1s ease, box-shadow .1s ease, color .1s ease, -webkit-box-shadow .1s ease;
 }
+
 .btn.dropdown-toggle {
     padding: .92857143em 1.14285714em;
     border-color: #e9ecef !important;
@@ -35,17 +37,17 @@
     border-color: var(--bs-btn-hover-border-color) !important;
 }
 
-.expanding_menu{
+.expanding_menu {
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
     background: #fff;
     font-weight: 400;
-    -webkit-text-stroke-width: 0.1px; /* Prevents the error: Request for font "Lato" block at visibility level 2 (requires 3)"*/
+    -webkit-text-stroke-width: 0.1px;
+    /* Prevents the error: Request for font "Lato" block at visibility level 2 (requires 3)"*/
     border: 1px solid rgba(34, 36, 38, .15);
     box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
     border-radius: .28571429rem;
     min-height: 2.85714286em;
     font-size: 1rem;
-    
 }
 
 .compact.expanding_menu {
@@ -53,24 +55,6 @@
     margin: 0;
     vertical-align: middle;
 }
-
-/* .pcomponent-button{
-    position: relative;
-    top: 0;
-    display: inline-flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    background: 0 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.pcomponent-color{
-    border-radius: 0.285714rem;
-} */
-
 /*end component buttons*/
 
 /* Text/paragraph ellipsis when text is too long */
@@ -126,22 +110,15 @@
 }
 
 /* Popover: Ellipsis */
-.popover-header {
+.popover-title {
     background: #ffffff !important;
     color: black !important;
     border-bottom: none !important;
-    padding: 8px 14px;
-    margin: 0;
 }
 
-.popover-body {
+.popover-content {
     background: #ffffff !important;
     color: black !important;
-    padding: 9px 14px;
-}
-
-.popover-body>div {
-    font-size: 14px;
 }
 
 .ellipsisDiv .popover {
@@ -358,40 +335,10 @@ ul.sequencing_centre_ulTag {
     margin-left: -12px;
 }
 
-/* .dropdown-menu > li > .dropdown-item:not(.filtered) {
-    display: inline-grid !important;
-    grid-template-columns: auto auto;
-} */
 .comp>.item:not(.filtered) {
     display: inline-grid !important;
     grid-template-columns: auto auto;
 }
-
-.dropdown-menu > .item{
-    margin: 0;
-    text-align: left;
-    font-size: 1em !important;
-    padding: .78571429em 1.14285714em !important;
-    background: 0 0 !important;
-    color: rgba(0, 0, 0, .87) !important;
-    text-transform: none !important;
-    font-weight: 400 !important;
-    box-shadow: none !important;
-    transition: none !important;
-}
-
-/* .dropdown-menu>li>.dropdown-item:not(.filtered) {
-    margin: 0;
-    text-align: left;
-    font-size: 1em !important;
-    padding: .78571429em 1.14285714em !important;
-    background: 0 0 !important;
-    color: rgba(0, 0, 0, .87) !important;
-    text-transform: none !important;
-    font-weight: 400 !important;
-    box-shadow: none !important;
-    transition: none !important;
-} */
 
 /* Show more button*/
 #showMoreProfileInfoBtn {
