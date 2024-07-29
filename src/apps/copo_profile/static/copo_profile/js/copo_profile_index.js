@@ -1,5 +1,11 @@
 let contactCOPODialogCount = 1;
 
+function get_profile_type() {
+     return $('#profile_type').find(':selected').val();
+}
+
+
+
 $(document).ready(function () {
   //****************************** Event handlers block *************************//
   const component = 'profile';
@@ -27,7 +33,8 @@ $(document).ready(function () {
 
   // Add new profile button
   $(document).on('click', '.new-component-template', function () {
-    initiate_form_call(component);
+    var args_dict = { profile_type: get_profile_type() };
+    initiate_form_call(component, args_dict);
   });
 
   $(document).on('click', '#accept_reject_shortcut', function () {
@@ -55,10 +62,50 @@ $(document).ready(function () {
     return false;
   }
 
+  initialise_popover()
+
   // Profile records exist
   // Initialise the popover 'View profile options' for each profile record
-  initialise_ellipsisID_popover();
+  /*
+  let popover = $('#ellipsisID[data-toggle="popover"]')
+    .popover({
+      sanitize: false,
+    })
+    .click(function (e) {
+      $(this).popover('toggle');
+      $('#ellipsisID[data-toggle="popover"]').not(this).popover('hide');
+      e.stopPropagation();
+    })
+    .on('show.bs.popover', function (e) {
+      $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
+ 
+      // Set content of the popover
+      const $content = $('<div></div>');
+      const $editButton = $(
+        '<button id="editProfileBtn" class="btn btn-sm btn-success" title="Edit record"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit</button>'
+      );
+      const $deleteButton = $(
+        '<button id="deleteProfileBtn" class="btn btn-sm btn-danger" title="Delete record"><i class="fa fa-trash-can"></i>&nbsp;Delete</button>'
+      );
 
+      $deleteButton.css('margin-left', '15px');
+      $content.append($editButton);
+      $content.append($deleteButton);
+
+      component_def["profile"]["recordActions"].forEach((item) => { 
+        var action = record_action_button_def[item]
+        const $button = $('<button id="'+ action["action"]  + '" class="btn btn-sm btn-primary" title="' + action["title"] + '"><i class="' + action["icon_class"] +' "></i>' +  action["label"] +'</button>');
+        $button.css('margin-top', '10px');
+        $content.append($button)
+      });
+
+      // Apply the content to the popover
+      popover.attr('data-content', $content.html());
+    })
+    //.on('shown.bs.popover', function (e) {
+    //  $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
+    //});
+    */
   $('#sortProfilesBtn')[0].selectedIndex = 0; // Set first option of sort menu
 
   grid_count.text(profiles_visible_length); // Number of profile records visible
@@ -141,7 +188,8 @@ $(document).ready(function () {
 
   $(document).on('click', '#editProfileBtn', function (e) {
     let profile_id = $(e.currentTarget).closest('.ellipsisDiv').attr('id');
-    editProfileRecord(e, profile_id);
+    let profile_type = $(e.currentTarget).closest('.copo-records-panel').attr('profile_type');
+    editProfileRecord(profile_id, profile_type);
   });
 
   $(document).on('click', '#deleteProfileBtn', function (e) {
@@ -188,7 +236,6 @@ $(document).ready(function () {
           }
 
           let content = $(data.content);
-
           appendRecordComponents(content); // Adds 'Actions' and 'Components' buttons
 
           // Appends the html template from the 'copo_profile_record.html' to the 'copo_profiels_table' div
@@ -273,6 +320,52 @@ $(document).ready(function () {
 }); // End document ready
 
 //****************************** Functions block ******************************//
+function initialise_popover() {
+
+  // Profile records exist
+  // Initialise the popover 'View profile options' for each profile record
+ 
+  let popover = $('#ellipsisID[data-toggle="popover"]')
+    .popover({
+      sanitize: false,
+    })
+    .click(function (e) {
+      $(this).popover('toggle');
+      $('#ellipsisID[data-toggle="popover"]').not(this).popover('hide');
+      e.stopPropagation();
+    })
+    .on('show.bs.popover', function (e) {
+      $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
+ 
+      // Set content of the popover
+      const $content = $('<div></div>');
+      const $editButton = $(
+        '<button id="editProfileBtn" class="btn btn-sm btn-success" title="Edit record"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit</button>'
+      );
+      const $deleteButton = $(
+        '<button id="deleteProfileBtn" class="btn btn-sm btn-danger" title="Delete record"><i class="fa fa-trash-can"></i>&nbsp;Delete</button>'
+      );
+
+      $deleteButton.css('margin-left', '15px');
+      $content.append($editButton);
+      $content.append($deleteButton);
+
+      component_def["profile"]["recordActions"].forEach((item) => { 
+        var action = record_action_button_def[item]
+        const $button = $('<button id="'+ item  + '" class="btn btn-sm btn-primary" title="' + action["title"] + '"><i class="' + action["icon_class"] +' "></i>' +  action["label"] +'</button>');
+        $button.css('margin-top', '10px');
+        $content.append($button)
+      });
+
+      // Apply the content to the popover
+      popover.attr('data-content', $content.html());
+    })
+    //.on('shown.bs.popover', function (e) {
+    //  $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
+    //});
+
+}
+
 function appendRecordComponents(grids) {
   // loop through each grid
   grids.each(function () {
@@ -304,7 +397,7 @@ function appendRecordComponents(grids) {
   });
 }
 
-function editProfileRecord(e, profileRecordID) {
+function editProfileRecord(profileRecordID, profileType) {
   const component = 'profile';
   let csrftoken = $.cookie('csrftoken');
 
@@ -319,6 +412,7 @@ function editProfileRecord(e, profileRecordID) {
       task: 'form',
       component: component,
       target_id: profileRecordID,
+      profile_type: profileType,
     },
     success: function (data) {
       json2HtmlForm(data);
@@ -389,6 +483,7 @@ function deleteProfileRecord(e, profileRecordID) {
               }, 1000);
             })
             .fail(function (data_response) {
+              email = $("#email").val();
               const message =
                 "Profile couldn't be removed. Only profiles that have no datafiles or" +
                 ' samples associated can be deleted.';
@@ -400,7 +495,7 @@ function deleteProfileRecord(e, profileRecordID) {
                 '</div>';
               $content += '<p style="margin-top:10px">Please contact ';
               $content +=
-                '<a style="text-decoration: underline;" href="mailto:ei.copo@earlham.ac.uk">ei.copo@earlham.ac.uk</a> ';
+                '<a style="text-decoration: underline;" href="mailto:'+email+'">' + email + '</a> ';
               $content += 'if you would like this profile to be deleted.</p>';
               $content += '</div>';
 
@@ -557,8 +652,8 @@ function update_counts(copoVisualsURL, csrftoken, component) {
 
 function append_component_buttons(componentsUL, record_id, profile_type) {
   //components row
-  const components = get_profile_components();
-  const componentsDIV = $('<li/>', {
+  const components = get_profile_components(profile_type);
+  const componentsDIV = $('<div/>', {
     class: 'item',
   });
   // let componentsUL = $('.comp');
@@ -572,26 +667,23 @@ function append_component_buttons(componentsUL, record_id, profile_type) {
     ) {
       return false;
     }
-
+    /*
     if (
       !item.hasOwnProperty('profile_component') ||
-      (profile_type === 'stand-alone' &&
+      (profile_type === 'genomics' &&
         !item.profile_component.includes('stand-alone')) ||
-      (profile_type !== 'stand-alone' &&
+      (profile_type !== 'genomics' &&
         item.profile_component.includes('stand-alone'))
     ) {
       return false;
     }
+    */
+  
 
-    let component_link = '#';
-
-    try {
-      component_link = $('#' + item.component + '_url')
-        .val()
-        .replace('999', record_id);
-    } catch (err) {
-      console.log(err.message);
-    }
+    let component_link = "#";
+    if (item.url != undefined)
+        component_link = item.url.replace('999', record_id);
+ 
 
     // Create button html
     let pcomponent_name_div = $('<div></div>')
@@ -635,8 +727,17 @@ function filter_action_menu() {
 
     if (shared_t && !t) {
       t = shared_t;
+      //if($(el).attr("profile_type")) $(el).removeAttr("profile_type")
     }
 
+    if (t && !shared_t) {
+      //if($(el).attr("shared_profile_type")) $(el).removeAttr("shared_profile_type")
+    }
+
+    $(el).find("a[profile_component]").hide();
+    $(el).find("a[profile_component="+ t + "]").show();
+
+    /*
     if (t.includes('ERGA')) {
       $(el).find("a[profile_component ='stand-alone']").hide();
       $(el).find("a[profile_component ='dtol']").hide();
@@ -647,6 +748,7 @@ function filter_action_menu() {
       $(el).find("a[profile_component ='erga']").hide();
       $(el).find("a[profile_component ='dtol']").hide();
     }
+    */
     if (s == undefined || s != 'PRIVATE') {
       $(el).find("a[data-action_type ='release_study']").hide();
     }
@@ -676,7 +778,16 @@ function set_profile_grid_heading(grids) {
           if ($(el).attr('shared_profile_type') === '')
             $(el).removeAttr('shared_profile_type'); // Remove 'shared_profile_type' attribute
 
-          if (profile_type.includes('DTOL_ENV')) {
+          acronym = profile_type.toUpperCase();
+          colour = profile_type_def[profile_type.toLowerCase()]["widget_colour"]  //'#fb7d0d'
+          $(el)
+              .find('.panel-heading')
+              .find('.row-title span')
+              .append('<small>('+  acronym  +')</small>');
+            $(el).find('.panel-heading').css('background-color', colour);
+       
+          /*
+          if (profile_type.includes('DTOLENV')) {
             acronym = 'DTOL-ENV';
             colour = '#fb7d0d';
             $(el)
@@ -717,6 +828,7 @@ function set_profile_grid_heading(grids) {
               .append('<small>(Standalone)</small>');
             $(el).find('.card-header').css('background-color', colour);
           }
+          */
         } else {
           acronym = 'Shared';
           colour = '#f26202';
@@ -777,25 +889,71 @@ function initialise_loaded_records(
       .removeClass('grid-card-body-selected');
   });
 
+  /*
   $('#editProfileBtn').click(function (e) {
     let profile_id = $(e.currentTarget).closest('.ellipsisDiv').attr('id');
-    editProfileRecord(e, profile_id);
+    let profile_type = $(e.currentTarget).closest('.copo-records-panel').attr('profile_type');
+    editProfileRecord(profile_id, profile_type);
   });
 
   $('#deleteProfileBtn').click(function (e) {
     let profile_id = $(e.currentTarget).closest('.ellipsisDiv').attr('id');
     deleteProfileRecord(e, profile_id);
   });
-
+  */
   $('#profileOptionsPopoverCloseBtn').click(function () {
-    new bootstrap.Popover.getInstance('#ellipsisID').hide();
+    $('#ellipsisID[data-toggle="popover"]').popover('hide');
   });
 
-  // Initialise the popover 'View profile options' for each profile record
-  initialise_ellipsisID_popover();
-}
+  $('#showMoreProfileInfoCloseBtn').click(function () {
+    $('#showMoreProfileInfoBtn[rel="popover"]').popover('hide');
+  });
 
+
+  // Initialise the popover 'View profile options' for each profile record
+  initialise_popover()
+  /*
+  let popover = $('#ellipsisID[data-toggle="popover"]')
+    .popover({
+      sanitize: false,
+    })
+    .click(function (e) {
+      $(this).popover('toggle');
+      $('#ellipsisID').not(this).popover('hide');
+      e.stopPropagation();
+    })
+    .on('show.bs.popover', function (e) {
+      // Set content of the popover
+      const $content = $('<div></div>');
+      const $editButton = $(
+        '<button id="editProfileBtn" class="btn btn-sm btn-success" title="Edit record"><i class="fa fa-pencil-square-o"></i>&nbsp;Edit</button>'
+      );
+      const $deleteButton = $(
+        '<button id="deleteProfileBtn" class="btn btn-sm btn-danger" title="Delete record"><i class="fa fa-trash-can"></i>&nbsp;Delete</button>'
+      );
+
+      $deleteButton.css('margin-left', '15px');
+      $content.append($editButton);
+      $content.append($deleteButton);
+
+      component_def["profile"]["recordActions"].forEach((item) => { 
+        var action = record_action_button_def[item]
+        const $button = $('<button id="'+ action["action"]  + '" class="btn btn-sm btn-primary" title="' + action["title"] + '"><i class="' + action["icon_class"] +' "></i>' +  action["label"] +'</button>');
+        $button.css('margin-top', '10px');
+        $content.append($button)
+      });
+
+      // Apply the content to the popover
+      popover.attr('data-content', $content.html());
+    })
+    .on('shown.bs.popover', function (e) {
+      $('.row-ellipsis').attr('title', ''); // Hide 'View profile options' title from appearing in the popover on hover
+    });
+    */
+}
+/*
 function contact_COPO_popup_dialog() {
+  email = $("#email").val();
   const message =
     'If you would like to make manifest submissions to an ASG, ERGA or DToL manifest group';
   let $content = '<div>';
@@ -805,7 +963,7 @@ function contact_COPO_popup_dialog() {
     message +
     '</div>';
   $content +=
-    '<p style="margin-top:10px">Please contact <a style="text-decoration: underline;" href="mailto:ei.copo@earlham.ac.uk">ei.copo@earlham.ac.uk</a> in order to be added to the manifest group. We will grant you the permission to select the desired group, create a profile for the group and subsequently upload a manifest to the group.</p>';
+    '<p style="margin-top:10px">Please contact <a style="text-decoration: underline;" href="mailto:' + email + '">' + email + '</a> in order to be added to the manifest group. We will grant you the permission to select the desired group, create a profile for the group and subsequently upload a manifest to the group.</p>';
   $content += '</div>';
 
   const dialog = new BootstrapDialog({
@@ -842,7 +1000,8 @@ function contact_COPO_popup_dialog() {
     dialog.open();
   }
 } //end of contact_COPO_popup_dialog  **************
-
+*/
+/*
 function filter_associatedProfileTypeList_based_on_selectedProfileType(
   profileTypeID
 ) {
@@ -903,7 +1062,8 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
     .getElementById(profileTypeID)
     .addEventListener('change', function () {
       // Perform the following only if selected 'Profile Type' is not "Stand-alone"
-      if (this.value == 'European Reference Genome Atlas (ERGA)') {
+      //if (this.value == 'European Reference Genome Atlas (ERGA)') {
+      if (this.value == 'erga') {
         $('.row:nth-child(4) > .col-sm-12').show(); // Show 'Associated Profile Type(s)' field
         $('.row:nth-child(5) > .col-sm-12').show(); // Show 'Sequencing Centre(s)' field
         $('.row:nth-child(5) > .col-sm-12')
@@ -923,7 +1083,7 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
           // Exclude the selected profile from the associated profile type dropdown menu options
           multi_select_options.select2({
             templateResult: function (option) {
-              let option_value = get_acronym(option.text);
+              let option_value = option.text //get_acronym(option.text);
 
               if (option_value === selected_type) {
                 return null;
@@ -931,7 +1091,7 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
               // Exclude erga associated types from the associated profile type dropdown menu options
               // if "ERGA" is not selected as the profile type
               let erga_associated_types = ['BGE', 'POP_GENOMICS', 'ERGA_PILOT'];
-              if (!selected_type.includes('ERGA')) {
+              if (!selected_type.includes('erga')) {
                 if (
                   erga_associated_types.some((erga_a_type) =>
                     option.text.includes(erga_a_type)
@@ -956,36 +1116,36 @@ function remove_selectedProfileType_from_associatedProfileTypeList(
       }
     });
 }
+*/
+function showMoreProfileInfoPopover(grids) {
+  grids.each(function () {
+    let showMoreProfileInfoBtn = $(this)
+      .closest('.grid')
+      .find('#showMoreProfileInfoBtn[rel="popover"]');
 
-function initialise_showMoreProfileInfoPopover(grids) {
-  const list = [].slice.call(
-    document.querySelectorAll('#showMoreProfileInfoBtn')
-  );
-  list.map((popoverTriggerEl) => {
-    let options = {
-      popperConfig: function (defaultBsPopperConfig) {
-        return { placement: 'right' };
-      },
-      html: true,
-      sanitize: false,
-      trigger: 'click focus',
-      title: function () {
-        let $showMoreProfileInfoCloseBtn =
-          '<i id="showMoreProfileInfoCloseBtn" class="fa fa-times float-end"></i>';
-        return $showMoreProfileInfoCloseBtn;
-      },
-      content: function (e) {
-        // Set content of the popover
-        return $(e)
-          .closest('.grid-card-body')
-          .find('#showMoreProfileInfoContent')
-          .children('.popover-body')
-          .html();
-      },
-    };
-
-    new bootstrap.Popover(popoverTriggerEl, options);
-  });
+    showMoreProfileInfoBtn
+      .popover({
+        html: true,
+        trigger: 'click',
+        sanitize: false,
+        title: function () {
+          let $showMoreProfileInfoCloseBtn =
+            '<i id="showMoreProfileInfoCloseBtn" class="fa fa-times pull-right"></i>';
+          return $showMoreProfileInfoCloseBtn;
+        },
+        content: function (e) {
+          return $(this)
+            .closest('.grid-panel-body')
+            .find('#showMoreProfileInfoContent')
+            .children('.popover-content')
+            .html();
+        },
+      })
+      .click(function (e) {
+        e.preventDefault(); // Prevents one from being automatically redirected to the top of the page
+        $(this).popover('toggle');
+        $('#showMoreProfileInfoBtn[rel="popover"]').not(this).popover('hide');
+        e.stopPropagation();
 
   // Initialise the tooltip for the associated type info icon
   // if the profile has associated types to display

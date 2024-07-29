@@ -28,6 +28,7 @@ from common.utils.helpers import get_datetime, get_not_deleted_flag,map_to_dict
 from .utils import ena_read  
 from io import BytesIO
 from src.apps.copo_core.views import web_page_access_checker
+from src.apps.copo_core.models import ProfileType
 
 l = Logger()
 
@@ -302,7 +303,7 @@ def save_ena_records(request):
         # df["bucket_name"] = username
 
         # create local location
-        Path(join(settings.UPLOAD_PATH, username)).mkdir(parents=True, exist_ok=True)
+        #Path(join(settings.UPLOAD_PATH, username)).mkdir(parents=True, exist_ok=True)
         nserted = None
         f_meta = None
         # check if there are two files or one
@@ -312,7 +313,7 @@ def save_ena_records(request):
             df["ecs_location"] = uid + "_" + username + "/" + f_name
             # df["ecs_location"] = username + "/" + f_name   #temp-solution
             df["file_name"] = f_name
-            file_location = join(settings.UPLOAD_PATH, username, "read", f_name)
+            file_location = join(settings.LOCAL_UPLOAD_PATH, username, "read", f_name)
             df["file_location"] = file_location
             df["name"] = f_name
             df["file_id"] = "NA"
@@ -343,7 +344,7 @@ def save_ena_records(request):
             df["file_name"] = f_name
             df["ecs_location"] = uid + "_" + username + "/" + f_name
             # df["ecs_location"] = username + "/" + f_name   #temp-solution
-            file_location = join(settings.UPLOAD_PATH, username, "read", f_name)
+            file_location = join(settings.LOCAL_UPLOAD_PATH, username, "read", f_name)
             df["file_location"] = file_location
             df["name"] = f_name
             df["file_id"] = "NA"
@@ -372,7 +373,7 @@ def save_ena_records(request):
             df["file_name"] = f_name
             df["ecs_location"] = uid + "_" + username + "/" + f_name
             # df["ecs_location"] = request.user.username + "/" + f_name
-            file_location = join(settings.UPLOAD_PATH, username, "read", f_name)
+            file_location = join(settings.LOCAL_UPLOAD_PATH, username, "read", f_name)
             df["file_location"] = file_location
             df["name"] = f_name
             df["file_id"] = "NA"
@@ -591,6 +592,9 @@ def copo_reads(request, profile_id):
     request.session["profile_id"] = profile_id
     profile = Profile().get_record(profile_id)
     checklists = EnaChecklist().get_sample_checklists_no_fields()
+    profile_type = ProfileType.objects.get(type=profile["type"])
+    if profile_type.is_dtol_profile:
+        checklists = [x for x in checklists if x["primary_id"] == "read"]
     return render(request, 'copo/copo_read.html', {'profile_id': profile_id, 'profile': profile, 'checklists': checklists})
 
 

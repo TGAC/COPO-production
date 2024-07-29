@@ -273,7 +273,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
-                'src.apps.copo_core.copo_user_status_messages.latest_message'
+                'src.apps.copo_core.custom_context_template.latest_message',
+                'src.apps.copo_core.custom_context_template.copo_context'
             ],
             'debug':  DEBUG,
         },
@@ -283,3 +284,4 @@ TEMPLATES = [
 ROOT_URLCONF = 'src.main_config.urls'
 
 UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'uploads')
+LOCAL_UPLOAD_PATH = os.path.join(BASE_DIR, 'local_uploads')

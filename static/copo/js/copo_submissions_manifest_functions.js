@@ -201,14 +201,14 @@ function do_display_manifest_submissions(data) {
       .buttons()
       .nodes()
       .each(function (value) {
-        $(this)
-          .removeClass('btn btn-secondary')
-          .addClass('tiny ui basic button');
+        $(this).removeClass('btn btn-default').addClass('tiny ui basic button');
       });
   }
   /*
     $('#' + tableID + '_wrapper')
         .find(".dataTables_filter")
+        .find('label')
+        .css({ padding: '10px 0' })
         .find("input")
         .removeClass("input-sm")
         .attr("placeholder", "Search submissions")

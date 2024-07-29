@@ -6,7 +6,7 @@ from common.dal.profile_da import Profile
 from common.dal.submission_da import Submission
 from bson import json_util
 from common.utils.helpers import get_group_membership_asString, notify_frontend
-from src.apps.copo_core.models import AssociatedProfileType, SequencingCentre, ViewLock
+from src.apps.copo_core.models import AssociatedProfileType, SequencingCentre, ViewLock, ProfileType
 from src.apps.copo_core.views import web_page_access_checker
 from common.utils.helpers import  get_group_membership_asString, get_current_user
 import json
@@ -70,7 +70,7 @@ def update_pending_samples_table(request):
 
 @web_page_access_checker
 @login_required
-def get_samples_for_profile(request):
+def get_dtol_samples_for_profile(request):
     url = request.build_absolute_uri()
     if not ViewLock().isViewLockedCreate(url=url):
         profile_id = request.GET["profile_id"]
@@ -100,13 +100,13 @@ def get_samples_for_profile(request):
         if direction == "desc":
             dir = -1
             
-        samples = []
+        samples = {}
         if profile_id and profile_id != 'None':
-           profile_type = Profile().get_type(profile_id)
+           profile_type = Profile().get_type(profile_id).lower()
             
            if profile_type:
-              type = ""
-              
+              type = profile_type
+              """              
               match profile_type:
                   case "Aquatic Symbiosis Genomics (ASG)":
                       type = "asg"
@@ -114,9 +114,10 @@ def get_samples_for_profile(request):
                       type = "erga"
                   case "Darwin Tree of Life (DTOL)":
                       type = "dtol"
-                  case "Darwin Tree of Life Environmental Samples (DTOL_ENV)":
-                      type = "dtol_env"
-              if type:
+                  case "Darwin Tree of Life Environmental Samples (DTOLENV)":
+                      type = "dtolenv"
+                """       
+              if ProfileType.objects.get(type=profile_type).is_dtol_profile:   #if it is dtol_type
                  if type == "erga" and not is_sequencing_centre_sample_manager:
                     samples["data"] = []
                  else:
@@ -194,6 +195,9 @@ def add_sample_to_dtol_submission(request):
             any(AssociatedProfileType.objects.filter(is_approval_required=True, name__in = [x.get("value","") for x in associated_profiles]))
 
         if not sub:
+            sub = Submission(profile_id).save_record(
+                                dict(), **{"type": type_sub.lower()})
+            """
             if type_sub == "Aquatic Symbiosis Genomics (ASG)":
                 sub = Submission(profile_id).save_record(
                     dict(), **{"type": "asg"})
@@ -203,6 +207,7 @@ def add_sample_to_dtol_submission(request):
             else:
                 sub = Submission(profile_id).save_record(
                     dict(), **{"type": "dtol"})
+            """        
         sub["dtol_status"] = "pending"
         sub["target_id"] = sub.pop("_id")
 
@@ -210,7 +215,7 @@ def add_sample_to_dtol_submission(request):
         samples = Sample().get_all_records_columns(filter_by=dict(_id={"$in": sample_oids}), projection=dict(status=1))
         processing_sample_ids = []
         pending_sample_ids = []
-        #bge_pending_sample_ids = []
+        bge_pending_sample_ids = []
         associated_project_sample_ids = []
 
         for sample in samples:
@@ -264,6 +269,8 @@ def add_sample_to_dtol_submission(request):
                             processing_sample_ids.append(sample_id)
                         else:
                             lg.error(f"User {current_user} is not an associated project type checker")
+                    case "rejected":
+                        bge_pending_sample_ids.append(sample_id)
                     case _:
                         lg.error(f"Sample {sample_id} has an invalid status {sample['status']} for the current profile type {type_sub} and user {current_user}")
                         
@@ -286,15 +293,14 @@ def add_sample_to_dtol_submission(request):
             uri = request.build_absolute_uri('/')
             #send email to Sangar to notify them of new samples
             Email().notify_manifest_pending_for_sequencing_centre(data=uri + 'copo/dtol_submission/accept_reject_sample/', profile_id=profile_id,  title=profile["title"], description=profile["description"] )
-        
-        """
+
         # BGE pending samples
         if bge_pending_sample_ids:
             Sample().mark_pending(sample_ids=bge_pending_sample_ids, is_erga=True)
             uri = request.build_absolute_uri('/')
             #send email to BGE to notify them of new samples
             Email().notify_manifest_pending_for_bge_checker(data=uri + 'copo/dtol_submission/accept_reject_sample/', profile_id=profile_id,  title=profile["title"], description=profile["description"] )
-        """
+
         # Associated project type samples
         if associated_project_sample_ids:
             Sample().mark_pending(sample_ids=associated_project_sample_ids, is_associated_project_check_required=True)

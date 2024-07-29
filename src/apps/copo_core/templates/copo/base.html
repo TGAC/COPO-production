@@ -92,8 +92,16 @@
     <!--<link rel="stylesheet" media="print" onload="this.media='all'"
         href="{% static 'copo/semantic_ui/css/semantic-ui-dropdown-2.5.0.min.css' %}">
     <link rel="stylesheet" media="print" onload="this.media='all'"
-        href="{% static 'copo/semantic_ui/css/semantic-ui-popup-2.5.0.min.css' %}"> -->
-    
+          href="{% static 'copo/semantic_ui/components/icon.min.css' %}">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+          href="{% static 'copo/semantic_ui/components/dropdown.min.css' %}">
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+          href="{% static 'copo/semantic_ui/components/popup.min.css' %}">
+          
+    <script>
+    {% include 'copo/copo_profile_types.html' %}
+    </script>
+
     <!-- Additional javascripts -->
     {% block js_block %}{% endblock %}
     

@@ -153,7 +153,7 @@ let dt_options = {
   },
 };
 
-$(document).ready(function () {
+$(document).on("document_ready", function() {
   const acceptRejectSampleURL = '/copo/dtol_submission/accept_reject_sample';
   const accessionsDashboardURL = '/copo/copo_accessions/dashboard';
   const tolInspectURL = '/copo/tol_dashboard/tol_inspect';
@@ -375,14 +375,14 @@ function customise_accessions_table(table) {
 
   // Show task buttons on accessions dashboard and
   // on the accessions web page for a given profile
-  place_accessions_task_buttons(componentMeta);
+  place_task_buttons(componentMeta);
 
   let table_wrapper = $(tableID + '_wrapper');
 
   table_wrapper
     .find('.dataTables_filter')
     .find('label')
-    .css({ padding: '20px 0 20px 0', 'margin-top': '10px' })
+    .css({ padding: '10px 0' })
     .find('input')
     .removeClass('input-sm')
     .attr('placeholder', 'Search ' + componentMeta.title)

@@ -267,6 +267,9 @@ $(document).ready(function () {
                 $('#sample_spreadsheet_modal').modal('hide'); // Close 'Upload Spreadsheet' modal
               })
               .fail(function (data) {
+                $('.bootstrap-dialog-message').html(
+                  'font color="red">System error. Please try it again later. If the problem persists, please contact COPO with the screenshot</font>'
+                );
                 console.log(data);
               });
           },
@@ -335,6 +338,9 @@ $(document).ready(function () {
                 $('#sample_spreadsheet_modal').modal('hide'); // Close 'Upload Spreadsheet' modal
               })
               .fail(function (data) {
+                $('.bootstrap-dialog-message').html(
+                  '<font color="red">Sytem error. Please try it again later. If the problem persists, please contact COPO with the screenshot</font>'
+                );
                 console.log(data);
               });
           },
@@ -342,6 +348,22 @@ $(document).ready(function () {
       ],
     });
   });
+
+  // Get element IDs for the close buttons in the 'Upload Spreadsheet' modal
+  // only if the modal is present in the DOM
+  if ($('#sample_spreadsheet_modal').length) {
+    let sample_spreadsheet_close_btn1 = document.getElementById(
+      'sample_spreadsheet_close_btn1'
+    );
+
+    let sample_spreadsheet_close_btn2 = document.getElementById(
+      'sample_spreadsheet_close_btn2'
+    );
+
+    // Add event listeners to the close buttons
+    sample_spreadsheet_close_btn1.addEventListener('click', confirmCloseDialog);
+    sample_spreadsheet_close_btn2.addEventListener('click', confirmCloseDialog);
+  }
 
   var profileId = $('#profile_id').val();
   var wsprotocol = 'ws://';
@@ -560,14 +582,6 @@ $(document).ready(function () {
           $('#images_label').find('input').removeAttr('disabled');
           $('#ss_upload_spinner').fadeOut('fast');
 
-          if (!finishBtnStatus) {
-            $('#finish_button').show();
-          }
-
-          if (!confirmBtnStatus) {
-            $('#confirm_button').show();
-          }
-
           if (!permitBtnStatus) {
             $('#files_label').removeClass('disabled');
             $('#files_label').removeAttr('disabled');
@@ -580,12 +594,14 @@ $(document).ready(function () {
           $('#image_table').find('thead').empty().append(headers);
           $('#image_table').find('tbody').empty();
           var table_row;
+          var failed = false;
           for (r in d.message) {
             row = d.message[r];
             img_tag = '';
             if (row.specimen_id === '') {
               img_tag =
                 'Sample images must be named as {Specimen_ID}-{n}.[jpg|png]';
+              failed = true;
             } else if (row.thumbnail != '') {
               img_tag =
                 "<a target='_blank' href='" +
@@ -607,6 +623,30 @@ $(document).ready(function () {
           $('#image_table').DataTable();
           $('#image_table_nav_tab').click();
           //$("#finish_button").fadeIn()
+
+          if (!failed) {
+            $('#sample_info').fadeOut('50');
+            if (!finishBtnStatus) {
+              $('#finish_button').show();
+            }
+
+            if (!confirmBtnStatus) {
+              $('#confirm_button').show();
+            }
+          } else {
+            if (!$('#sample_info').is(':visible')) {
+              $('#sample_info').fadeIn('50');
+            }
+
+            $('#sample_info')
+              .removeClass(
+                'sample-alert-info sample-alert-success sample-alert-warning'
+              )
+              .addClass('sample-alert-error');
+            $('#sample_info').html(
+              'Sample image upload problem. Please check the Sample Images tab for details.'
+            );
+          }
         } else if (d.action === 'make_permits_table') {
           // make table of permits matched to
           // specimen_ids
@@ -657,7 +697,20 @@ $(document).ready(function () {
           $('#permits_table').DataTable();
           $('#permits_table_nav_tab').click();
           if (d.data.hasOwnProperty('fail_flag') && d.data.fail_flag == true) {
+            if (!$('#sample_info').is(':visible')) {
+              $('#sample_info').fadeIn('50');
+            }
+
+            $('#sample_info')
+              .removeClass(
+                'sample-alert-info sample-alert-success sample-alert-warning'
+              )
+              .addClass('sample-alert-error');
+            $('#sample_info').html(
+              'Sample permit files upload problem. Please check the Sample Permits tab for details.'
+            );
           } else {
+            $('#sample_info').fadeOut('50');
             if (isNew) {
               $('#finish_button').fadeIn();
             } else {
@@ -806,7 +859,7 @@ $(document).ready(function () {
 
 $(document).on(
   'click',
-  '.new-samples-spreadsheet-template, .new-samples-spreadsheet-template-erga',
+  '.new-samples-spreadsheet-template',
   function (event) {
     $('#sample_spreadsheet_modal').modal('show');
 
@@ -829,50 +882,55 @@ $(document).on(
 
 $(document).on(
   'click',
-  '.new-samples-spreadsheet-template-erga',
+  '.new-samples-spreadsheet-template',
   function (event) {
-    // Display the 'Accept Code of Conduct' modal as an
-    // overlay over the 'Upload Spreadsheet' modal if it is visible
-    $('#sample_spreadsheet_modal').addClass('z-0');
+    profile_type = $('#profile_type').val();
+    if (profile_type.toLowerCase() == 'erga') {
 
-    BootstrapDialog.show({
-      title: 'Accept Code of Conduct',
-      message:
-        "By uploading a manifest to Collaborative OPen Omics (COPO), you confirm that you are an European Reference Genome Atlas (ERGA) member and thus adhere to ERGA's " +
-        'code of conduct.' +
-        '\n\nYou further confirm that you read, understood and followed the ' +
-        "<a href='https://bit.ly/3zHun36'>ERGA Sample " +
-        'Code of Practice</a>.',
-      cssClass: 'copo-modal1',
-      animate: true,
-      closable: false,
-      closeByBackdrop: false, // Prevent dialog from closing by clicking on backdrop
-      closeByKeyboard: false, // Prevent dialog from closing by pressing ESC key
-      type: BootstrapDialog.TYPE_INFO,
-      buttons: [
-        {
-          label: 'Cancel',
-          cssClass: 'tiny ui basic' + ' button',
-          id: 'code_cancel',
-          action: function (dialogRef) {
-            $('#sample_spreadsheet_modal').modal('hide');
-            dialogRef.close();
-          },
-        },
-        {
-          label: 'Okay',
-          id: 'code_okay',
-          cssClass: 'tiny ui basic button',
-          action: function (dialogRef) {
-            dialogRef.close();
+      // Display the 'Accept Code of Conduct' modal as an
+      // overlay over the 'Upload Spreadsheet' modal if it is visible
+      $('#sample_spreadsheet_modal').addClass('z-0');
 
-            // Make the 'Upload Spreadsheet' modal fully visible
-            // i.e.remove the overlay properties
-            $('#sample_spreadsheet_modal').removeClass('z-0');
+      BootstrapDialog.show({
+        title: 'Accept Code of Conduct',
+        message:
+          "By uploading a manifest to Collaborative OPen Omics (COPO), you confirm that you are an European Reference Genome Atlas (ERGA) member and thus adhere to ERGA's " +
+          'code of conduct.' +
+          '\n\nYou further confirm that you read, understood and followed the ' +
+          "<a href='https://bit.ly/3zHun36'>ERGA Sample " +
+          'Code of Practice</a>.',
+        cssClass: 'copo-modal1',
+        closable: true,
+        animate: true,
+        closable: false,
+        closeByBackdrop: false, // Prevent dialog from closing by clicking on backdrop
+        closeByKeyboard: false, // Prevent dialog from closing by pressing ESC key
+        type: BootstrapDialog.TYPE_INFO,
+        buttons: [
+          {
+            label: 'Cancel',
+            cssClass: 'tiny ui basic' + ' button',
+            id: 'code_cancel',
+            action: function (dialogRef) {
+              $('#sample_spreadsheet_modal').modal('hide');
+              dialogRef.close();
+            },
           },
-        },
-      ],
-    });
+          {
+            label: 'Okay',
+            id: 'code_okay',
+            cssClass: 'tiny ui basic button',
+            action: function (dialogRef) {
+              dialogRef.close();
+
+              // Make the 'Upload Spreadsheet' modal fully visible
+              // i.e.remove the overlay properties
+              $('#sample_spreadsheet_modal').removeClass('z-0');
+            },
+          },
+        ],
+      });
+    }
   }
 );
 
@@ -926,4 +984,42 @@ function download(filename, text) {
   } else {
     pom.click();
   }
+}
+
+function confirmCloseDialog(el) {
+  el.preventDefault();
+  BootstrapDialog.show({
+    title: 'Confirm Close',
+    message:
+      'Are you sure that you would like to close the modal? ' +
+      'Any upload progress will be lost.',
+    cssClass: 'copo-modal1',
+    closable: false,
+    animate: true,
+    closeByBackdrop: false, // Prevent dialog from closing by clicking on backdrop
+    closeByKeyboard: false, // Prevent dialog from closing by pressing ESC key
+    type: BootstrapDialog.TYPE_WARNING,
+    buttons: [
+      {
+        id: 'cancelCloseBtnID',
+        label: 'No, cancel',
+        cssClass: 'tiny ui basic button',
+        action: function (dialogRef) {
+          dialogRef.close();
+        },
+      },
+      {
+        id: 'yesCloseBtnID',
+        label: 'Yes, close modal',
+        cssClass: 'tiny ui basic button',
+        action: function (dialogRef) {
+          // Close 'Confirm Close' modal
+          dialogRef.close();
+
+          // Close 'Upload Spreadsheet' modal
+          $('#sample_spreadsheet_modal').modal('hide');
+        },
+      },
+    ],
+  });
 }
