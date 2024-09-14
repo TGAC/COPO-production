@@ -4,11 +4,18 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
-!media/assets/manifests/ERGA*
-!media/assets/manifests/DTOL*
-!media/assets/manifests/ASG*
-!media/assets/manifests/BARCODING*
+
+# media folder #
+media/assets/manifests/ERC*
+media/assets/manifests/ERT*
+media/assets/manifests/read*
+media/ena_read_files/
+media/news_images/
+media/sample_images/
+media/sample_permits/
+media/uploads/
+media/ena_assembly_files
+media/ena_tagged_seq_files
 
 
 # Backup files #
@@ -151,3 +158,6 @@ webin-cli.jar
 .DS_Store
 static/.DS_Store
 static/assets/.DS_Store
+
+#ignore logs folder
+logs/*

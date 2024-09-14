@@ -12,8 +12,10 @@ $(document).ready(function () {
 
   setup_autocomplete();
 
-  //set up global navigation components
-  do_page_controls(componentName);
+  //set up global navigation components if component is available
+  if (componentName) {
+    do_page_controls(componentName);
+  }
 
   //global_help_call
   //do_global_help(componentName);
@@ -55,7 +57,6 @@ $(document).ready(function () {
 
   var event = jQuery.Event('document_ready'); //individual compnents can trap and handle this event as they so wish
   $(document).trigger(event);
-  
 });
 
 function setup_collapsible_event() {
@@ -168,9 +169,6 @@ function select2_data_view_event() {
       },
     });
   });
-
-
-
 }
 
 function select2_mouse_event() {
@@ -2622,7 +2620,7 @@ function get_component_meta(componentName) {
   var componentMeta = null;
   //var components = get_profile_components();
 
-  componentMeta = component_def[componentName]
+  componentMeta = component_def[componentName];
   /*
   components.forEach(function (comp) {
     if (comp.component == component) {
@@ -2954,7 +2952,6 @@ function do_page_controls(componentName) {
 } //end of func
 
 function generate_component_control(componentName, profile_type) {
-  
   var component = get_component_meta(componentName);
   var pageHeaders = $('.copo-page-headers'); //page header/icons
   var pageIcons = $('.copo-page-icons'); //profile component icons
@@ -3017,7 +3014,7 @@ function generate_component_control(componentName, profile_type) {
       sidebarPanels
         .find('.accessions-legend')
         .append(sidebarPanels2.find('.accessions-legend').find('.' + item));
-      */  
+      */
     });
 
     sideBar
@@ -3047,10 +3044,10 @@ function generate_component_control(componentName, profile_type) {
   if (component.buttons) {
     component.buttons.forEach(function (item) {
       //button = $('.' + item.split('|')[0]).clone();
-      button_str = title_button_def[item.split('|')[0]].template
-      additional_attr = title_button_def[item.split('|')[0]].additional_attr
+      button_str = title_button_def[item.split('|')[0]].template;
+      additional_attr = title_button_def[item.split('|')[0]].additional_attr;
       button = $(button_str);
-       
+
       if (additional_attr != undefined) {
         attrs = additional_attr.split(',');
         for (var i = 0; i < attrs.length; ++i) {
@@ -3073,7 +3070,7 @@ function generate_component_control(componentName, profile_type) {
   //});
 
   //...and profile component buttons
-  if (profile_type != undefined)  {
+  if (profile_type != undefined) {
     var pcomponentHTML = $('.pcomponents-icons-templates')
       .clone()
       .removeClass('pcomponents-icons-templates');
@@ -3090,10 +3087,10 @@ function generate_component_control(componentName, profile_type) {
     for (var i = 0; i < components.length; ++i) {
       var comp = components[i];
       //if (comp.hasOwnProperty('profile_component')) {
-        if (comp.component == component.component) {
-          continue;
-        }
-        /*
+      if (comp.component == component.component) {
+        continue;
+      }
+      /*
         if (
           component.profile_component.toString() !=
           comp.profile_component.toString()
@@ -3102,13 +3099,13 @@ function generate_component_control(componentName, profile_type) {
         }
         */
 
-        var newAnchor = pcomponentAnchor.clone();
-        pcomponentHTML.append(newAnchor);
+      var newAnchor = pcomponentAnchor.clone();
+      pcomponentHTML.append(newAnchor);
 
-        newAnchor.attr('title', 'Navigate to ' + comp.title);
-        newAnchor.attr('href',  comp.url.replace('999', profile_id));
-        //newAnchor.attr('href', $('#' + comp.component + '_url').val());
-        newAnchor.find('i').addClass(comp.color).addClass(comp.semanticIcon);
+      newAnchor.attr('title', 'Navigate to ' + comp.title);
+      newAnchor.attr('href', comp.url.replace('999', profile_id));
+      //newAnchor.attr('href', $('#' + comp.component + '_url').val());
+      newAnchor.find('i').addClass(comp.color).addClass(comp.semanticIcon);
       //}
     }
   }
@@ -3834,10 +3831,12 @@ function get_card_panel() {
 
 function get_alert_control() {
   let alert = $(
-    '<div class="alert alert-success alert-dismissable fade in copo-alert-message" style="background-image: none; border: none;">\n' +
-      '            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>\n' +
-      '            <span class="webpop-content-div alert-message"></span>\n' +
-      '        </div>'
+    '<div class="alert alert-success alert-dismissible fade in copo-alert-message" style="background-image: none; border: none;" role="alert">\n' +
+      '<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+      '<span aria-hidden="true">&times;</span>\n' +
+      '</button>\n' +
+      '<span class="webpop-content-div alert-message"></span>\n' +
+      '</div>'
   );
 
   return alert.clone();

@@ -1,6 +1,6 @@
 from typing import Any
 from django.core.management.base import BaseCommand
-from src.apps.copo_core.models import ProfileType, Component, RecordActionButton, TitleButton
+from src.apps.copo_core.models import ProfileType, Component, RecordActionButton, TitleButton, AssociatedProfileType
 
 '''
 ProfileType
@@ -61,7 +61,7 @@ TitleButton
   6 | new_terminal_file                  | <button title="Add new file by terminal"             class="big circular ui icon primary button new-terminal-file copo-tooltip">         <i class="icon terminal sign"></i>     </button>                                                               | 
   5 | new_local_file                     | <button title="Add new file by browsing local file system"             class="big circular ui icon primary button new-local-file copo-tooltip">         <i class="icon desktop sign"></i>     </button>                                                 | 
   4 | new_reads_spreadsheet_template     | <button style="display: inline" title="Add Read(s) from Read Spreadsheet"             class="big circular ui icon button new-reads-spreadsheet-template copo-tooltip">         <i class="icon table sign"></i>     </button>                            | 
-  3 | new_samples_spreadsheet_template   | <button   title="Add Sample(s) from Spreadsheet"             class="big circular ui icon button new-samples-spreadsheet-template copo-tooltip">         <i class="icon table sign"></i>     </button>                                                   | 
+  3 | new_samples_spreadsheet_template   | <button   title="Add/Update sample(s) from spreadsheet"             class="big circular ui icon button new-samples-spreadsheet-template copo-tooltip">         <i class="icon table sign"></i>     </button>                                                   | 
   2 | quick_tour_template                | <button title="Quick tour"             class="big circular ui icon orange button takeatour quick-tour-template copo-tooltip">         <i class="icon lightbulb"></i>     </button>                                                                      | 
   1 | new_component_template             | <button title="Add new profile record"             class="big circular ui icon primary button new-component-template copo-tooltip">         <i class="icon add sign"></i>     </button>                                                                 | 
   9 | download_sop                       | <a title="Download Standard Operating Procedure (SOP)"         class="big circular ui icon yellow button download-sop copo-tooltip" target="_blank">         <i class="icon download sign"></i>     </a>                                                | href:#sop_url
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         new_terminal_file = TitleButton().create_title_button(name="new_terminal_file", template="<button title=\"Add new file by terminal\"             class=\"big circular ui icon primary button new-terminal-file copo-tooltip\">         <i class=\"icon terminal sign\"></i>     </button>", additional_attr="")
         new_local_file = TitleButton().create_title_button(name="new_local_file", template="<button title=\"Add new file by browsing local file system\"             class=\"big circular ui icon primary button new-local-file copo-tooltip\">         <i class=\"icon desktop sign\"></i>     </button>", additional_attr="")
         new_reads_spreadsheet_template = TitleButton().create_title_button(name="new_reads_spreadsheet_template", template="<button style=\"display: inline\" title=\"Add Read(s) from Read Spreadsheet\"             class=\"big circular ui icon button new-reads-spreadsheet-template copo-tooltip\">         <i class=\"icon table sign\"></i>     </button>", additional_attr="")
-        new_samples_spreadsheet_template = TitleButton().create_title_button(name="new_samples_spreadsheet_template", template="<button   title=\"Add Sample(s) from Spreadsheet\"             class=\"big circular ui icon button new-samples-spreadsheet-template copo-tooltip\">         <i class=\"icon table sign\"></i>     </button>", additional_attr="")
+        new_samples_spreadsheet_template = TitleButton().create_title_button(name="new_samples_spreadsheet_template", template="<button   title=\"Add/Update sample(s) from spreadsheet\"             class=\"big circular ui icon button new-samples-spreadsheet-template copo-tooltip\">         <i class=\"icon table sign\"></i>     </button>", additional_attr="")
         quick_tour_template = TitleButton().create_title_button(name="quick_tour_template", template="<button title=\"Quick tour\"             class=\"big circular ui icon orange button takeatour quick-tour-template copo-tooltip\">         <i class=\"icon lightbulb\"></i>     </button>", additional_attr="")
         new_component_template = TitleButton().create_title_button(name="new_component_template", template="<button title=\"Add new profile record\"             class=\"big circular ui icon primary button new-component-template copo-tooltip\">         <i class=\"icon add sign\"></i>     </button>", additional_attr="")
         download_sop = TitleButton().create_title_button(name="download_sop", template="<a title=\"Download Standard Operating Procedure (SOP)\"         class=\"big circular ui icon yellow button download-sop copo-tooltip\" target=\"_blank\">         <i class=\"icon download sign\"></i>     </a>", additional_attr="href:#sop_url")
@@ -175,18 +175,37 @@ class Command(BaseCommand):
         ProfileType().remove_all_profile_types()
         self.stdout.write("Adding Profile Types")
 
-        erga = ProfileType().create_profile_type(type="erga",description="European Reference Genome Atlas (ERGA)", widget_colour="#E61A8D", is_dtol_profile=True, is_permission_required=True)
-        asg = ProfileType().create_profile_type(type="asg",description="Aquatic Symbiosis Genomics (ASG)", widget_colour="#5829bb", is_dtol_profile=True, is_permission_required=True)
+        erga = ProfileType().create_profile_type(type="erga",description="European Reference Genome Atlas (ERGA)", widget_colour="#E61A8D", is_dtol_profile=True, is_permission_required=True, post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile", pre_save_action="src.apps.copo_profile.utils.profile_utils.pre_save_erga_profile")
+        asg = ProfileType().create_profile_type(type="asg",description="Aquatic Symbiosis Genomics (ASG)", widget_colour="#5829bb", is_dtol_profile=True, is_permission_required=True, post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile")
         dtolenv = ProfileType().create_profile_type(type="dtolenv",description="Darwin Tree of Life Environmental Samples (DTOLENV)", widget_colour="#fb7d0d", is_dtol_profile=True, is_permission_required=True)
-        dtol = ProfileType().create_profile_type(type="dtol",description="Darwin Tree of Life (DTOL)", widget_colour="#16ab39", is_dtol_profile=True, is_permission_required=True)
+        dtol = ProfileType().create_profile_type(type="dtol",description="Darwin Tree of Life (DTOL)", widget_colour="#16ab39", is_dtol_profile=True, is_permission_required=True, post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile")
         genomics = ProfileType().create_profile_type(type="genomics",description="Genomics", widget_colour="#009c95", is_dtol_profile=False, is_permission_required=False)
 
         erga.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         asg.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         dtolenv.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         dtol.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
-        genomics.components.set([assembly, files, seqannotation, read, sample, accessions])
+        genomics.components.set([assembly, files, seqannotation, read, accessions])
 
+
+        at_asg = AssociatedProfileType.objects.get(name="ASG")
+        at_bge = AssociatedProfileType.objects.get(name="BGE")
+        at_bioblitz = AssociatedProfileType.objects.get(name="BIOBLITZ")  
+        at_cbp = AssociatedProfileType.objects.get(name="CBP") 
+        at_dtol = AssociatedProfileType.objects.get(name="DTOL")
+        at_dtolenv = AssociatedProfileType.objects.get(name="DTOL_ENV")
+        at_erga = AssociatedProfileType.objects.get(name="ERGA") 
+        at_erga_pilot = AssociatedProfileType.objects.get(name="ERGA_PILOT")
+        at_erga_community = AssociatedProfileType.objects.get(name="ERGA_COMMUNITY")
+        at_pop_genomics = AssociatedProfileType.objects.get(name="POP_GENOMICS")                              
+        at_sanger = AssociatedProfileType.objects.get(name="SANGER")  
+
+
+        erga.associated_profile_types.set([at_bge, at_bioblitz, at_cbp, at_erga_pilot, at_erga_community, at_pop_genomics, at_sanger])
+        asg.associated_profile_types.set([at_asg])
+        dtolenv.associated_profile_types.set([at_dtolenv])
+        dtol.associated_profile_types.set([at_dtol])
+        
         self.stdout.write("Profile Types Added")
         records = ProfileType.objects.all()
 

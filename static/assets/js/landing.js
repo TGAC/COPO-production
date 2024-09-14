@@ -1,7 +1,7 @@
 $(document).ready(function () {
-  // $(document).on("click", ".card", function () {
-  //     window.location = "/copo/tol_dashboard/stats#"
-  // })
+  $(document).on('click', '.card', function () {
+    window.location = '/copo/tol_dashboard/stats#';
+  });
 
   // $('.ui.dropdown').dropdown();
   const image = getRandomInt(images.length);
@@ -22,19 +22,14 @@ $(document).ready(function () {
     .fail(function (data) {
       console.log(data);
     });
-  setActiveNavItem(); // Set current web page as active nav bar item in top navbar
-});
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-function setActiveNavItem() {
-  const activePage = window.location.href;
-
+  // Set current web page as active nav bar item in top navbar
   $('.nav li a').filter(function () {
+    const activePage = window.location.href;
     let linkPage = `${this.href}/`;
-    // home page i.e. COPO front page URL will end with '//' so it needs to be ommitted
+
+    // The home page of the website i.e. COPO front page URL will end
+    // with '//' so it needs to be omitted
     linkPage = linkPage.endsWith('//') ? this.href : linkPage;
 
     if (activePage === linkPage) {
@@ -42,4 +37,16 @@ function setActiveNavItem() {
       $(this).parent().append('<span class="sr-only">(current)</span>');
     }
   });
+
+  // Set text colour according to the current theme on the 'Contact' web page
+  let contact_form_label = $('#email_form').find('label');
+  if ($('.gray-theme').is(':visible') && $('#contact-sec').is(':visible')) {
+    contact_form_label.addClass('white-text');
+  } else {
+    contact_form_label.removeClass('white-text');
+  }
+});
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }

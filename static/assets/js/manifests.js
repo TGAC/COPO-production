@@ -10,6 +10,14 @@ $(document).ready(function () {
   );
   //$.fn.datepicker.noConflict(); // Does not conflict with other scripts that also have datepicker defined
 
+  // Set text colour according to the current theme
+  let section_header = $('.secondary-container').find('p');
+  if ($('.gray-theme').is(':visible')) {
+    section_header.addClass('white-text');
+  } else {
+    section_header.removeClass('white-text');
+  }
+
   $(document).data('manifest_type', '');
 
   $(document).on('click', '#downloadBtn', generateManifestTemplate);

@@ -145,30 +145,61 @@ let browser = null;
     {
       const targetPage = page;
       await puppeteer.Locator.race([
-          targetPage.locator('::-p-aria(Select sequencing centre)'),
+          targetPage.locator('::-p-aria(Select sequencing centre)')
       ])
           .setTimeout(timeout)
           .click({
             offset: {
-              x: 78,
-              y: 8.046875,
+              x: 53,
+              y: 9.546875,
             },
           });
   }
-    {
-        const targetPage = page;
-        await puppeteer.Locator.race([
-            targetPage.locator('::-p-aria(' + process.argv[2].toUpperCase() + '[role=\\"treeitem\\"])'),
-            targetPage.locator('::-p-xpath(//*[contains(@id, \\"-' + process.argv[1].toUpperCase() + '\\")])'),
-        ])
-            .setTimeout(timeout)
-            .click({
-              offset: {
-                x: 95,
-                y: 18.546875,
-              },
-            });
-    }
+  {
+      const targetPage = page;
+      await puppeteer.Locator.race([
+          targetPage.locator('::-p-aria(' + process.argv[2].toUpperCase() + '[role=\\"treeitem\\"])'),
+          targetPage.locator('::-p-xpath(//*[@id=\\"select2-copoprofilesequencing_centre-results\\"]/li[text()=\\"' + process.argv[2].toUpperCase() + '\\"])'),
+      ])
+          .setTimeout(timeout)
+          .click({
+            offset: {
+              x: 123.5,
+              y: 11.421875,
+            },
+          });
+  }
+
+  {
+    const targetPage = page;
+    await puppeteer.Locator.race([
+        targetPage.locator('::-p-aria(Select associated type\\(s\\))'),
+        targetPage.locator('div:nth-of-type(4) input'),
+        targetPage.locator(':scope >>> div:nth-of-type(4) input')
+    ])
+        .setTimeout(timeout)
+        .click({
+          offset: {
+            x: 65,
+            y: 9.0390625,
+          },
+        });
+  }
+  {
+      const targetPage = page;
+      await puppeteer.Locator.race([
+          targetPage.locator('::-p-aria(Biodiversity Genomics Europe \\(BGE\\)[role=\\"treeitem\\"])'),
+          targetPage.locator('::-p-xpath(//*[contains(@id=, "-BGE\\"])'),
+      ])
+          .setTimeout(timeout)
+          .click({
+            offset: {
+              x: 142,
+              y: 12.046875,
+            },
+          });
+  }
+
     {
         const targetPage = page;
         const promises = [];
@@ -250,35 +281,7 @@ let browser = null;
             .setTimeout(timeout)
             .fill('It is ERGA '+ process.argv[1].toUpperCase() + ' profile. It is a updated');
     }
-    {
-        const targetPage = page;
-        await puppeteer.Locator.race([
-            targetPage.locator('::-p-aria(Select associated type\\(s\\))'),
-            targetPage.locator('div:nth-of-type(4) input'),
-            targetPage.locator(':scope >>> div:nth-of-type(4) input')
-        ])
-            .setTimeout(timeout)
-            .click({
-              offset: {
-                x: 65,
-                y: 9.0390625,
-              },
-            });
-    }
-    {
-        const targetPage = page;
-        await puppeteer.Locator.race([
-            targetPage.locator('::-p-aria(Biodiversity Genomics Europe \\(BGE\\)[role=\\"treeitem\\"])'),
-            targetPage.locator('::-p-xpath(//*[contains(@id=, "-BGE\\"])'),
-        ])
-            .setTimeout(timeout)
-            .click({
-              offset: {
-                x: 142,
-                y: 12.046875,
-              },
-            });
-    }
+
     {
         const targetPage = page;
         await puppeteer.Locator.race([

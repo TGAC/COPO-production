@@ -26,7 +26,7 @@ from src.apps.copo_assembly_submission.utils.da import Assembly
 from src.apps.copo_seq_annotation_submission.utils.da import SequenceAnnotation
 from common.s3.s3Connection import S3Connection as s3
 from common.lookup.lookup import REPO_NAME_LOOKUP
-from .models import banner_view
+from .models import Banner
 from common.schemas.utils import data_utils
 from common.utils.helpers import get_group_membership_asString
 from src.apps.copo_core.models import ProfileType
@@ -46,7 +46,7 @@ da_dict = dict(
 @login_required
 def index(request):
     print(get_env("MEDIA_ROOT"))
-    banner = banner_view.objects.all()
+    banner = Banner.objects.filter(active=True)
     if len(banner) > 0:
         context = {'user': request.user, "banner": banner[0]}
     else:
@@ -105,7 +105,7 @@ def web_page_access_checker(func):
         current_page_viewerID = request.user.id
 
         if profile_type_def.is_permission_required:
-            if not member_groups or not f"{profile_type}_users" in member_groups or not 'data_managers' in member_groups:
+            if not member_groups or (not f"{profile_type}_users" in member_groups and not 'data_managers' in member_groups):
                 # Deny web page access if the current web page viewer is not a member of the group
                 # associated with the profile (ID) associated with the current web page
                 return handler403(request)
@@ -119,7 +119,7 @@ def web_page_access_checker(func):
                 # Grant web page access if the current web page viewer is a data manager
                 # i.e. a COPO developer/team member
                 # with permission to view the web page
-                # NB: Useful for viewing web pages related to 'Stand-alone' profiles
+                # NB: Useful for viewing web pages related to 'Genomics' profiles
                 if profile_type:
                     request.session['profile_id'] = profile_id
 

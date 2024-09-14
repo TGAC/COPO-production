@@ -21,6 +21,8 @@
     <title>{% block title %}{% endblock %} | COPO</title>
 
     <link rel="stylesheet" href="{% static 'assets/css/base_styles.css' %}">
+    <link href="/static/assets/css/base_banner.css" rel="stylesheet" />
+
     <link rel="stylesheet" media="print" onload="this.media='all'"
           href="{% static 'copo/semantic_ui/css/semantic-ui-2.5.0.min.css' %}">
     <link rel="stylesheet" href="{% static 'copo/bootstrap/css/bootstrap-5.3.2.min.css' %}">
@@ -32,31 +34,32 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap">
     <link rel="shortcut icon" href="{% static 'copo/img/favicon_black.png' %}"/>
     <script src="{% static 'assets/js/landing.js' %}"></script>
+    
     {% block headblock %}
     {% endblock %}
-        <style>
-            .dot-color {
-                color: #eaf0f0
-            }
 
-            .dropdown-menu {
-                padding: 25px;
-                min-width: 200px
-            }
+    <style>
+        .dot-color {
+            color: #eaf0f0
+        }
 
-            .dropdown-item {
-                padding: 5px;
-                color: black
-            }
+        .dropdown-menu {
+            padding: 25px;
+            min-width: 200px
+        }
 
-            .wizard-link {
-                cursor: pointer;
-            }
-        
-        {% block css_block %}
-        {% endblock %}
-</style>
+        .dropdown-item {
+            padding: 5px;
+            color: black
+        }
 
+        .wizard-link {
+            cursor: pointer;
+        }
+    </style>
+    
+    {% block css_block %}
+    {% endblock %}
     
     <script>
         var image_pre = "/static/assets/img/"
@@ -67,10 +70,12 @@
             image_pre + "lavender1_bw.jpg", image_pre + "mist_bw.jpg", image_pre + "otter_bw.jpg"
         ]
         var content_classes = ["gray-theme", "green-theme"]
-        {% block javascript_block %}
-        {% endblock %}
+      
     </script>
     
+    {% block javascript_block %}
+    {% endblock %}
+
 </head>
 <body>
 

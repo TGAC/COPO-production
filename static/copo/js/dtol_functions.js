@@ -51,13 +51,59 @@ var dt_options = {
       .each(function (index, td) {
         if (index > 0) {
           if (td.innerText === 'NA') {
-            $(td).addClass('na_color');
+            $(td).addClass('na_colour');
           } else if (td.innerText === '') {
-            $(td).addClass('empty_color');
+            $(td).addClass('empty_colour');
           }
         }
       });
   },
+  drawCallback: function (settings) {
+    filter = $('#sample_filter').find('.active').find('a').attr('href');
+    if (filter != 'pending') return;
+    var api = this.api();
+    var numCols = api.columns().nodes().length;
+    var associated_profiles_type_approval_for = $(
+      '#associated_profiles_type_approval_for'
+    ).val();
+    const associated_profiles_type_approval_for_arr =
+      associated_profiles_type_approval_for.split(',');
+    for (var i = numCols - 1; i >= 0; i--) {
+      if ($(api.column(i).header()).text() == 'Approval Date') {
+        var error = api
+          .rows()
+          .eq(0)
+          .filter(function (rowIdx) {
+            approval_dates = api.cell(rowIdx, i).data();
+            if (approval_dates != undefined) {
+              for (
+                k = 0;
+                k < associated_profiles_type_approval_for_arr.length;
+                k++
+              ) {
+                for (l = 0; l < approval_dates.length; l++) {
+                  if (
+                    approval_dates[l].startsWith(
+                      associated_profiles_type_approval_for_arr[k].trim() + ' '
+                    )
+                  )
+                    return true;
+                }
+              }
+            }
+            return false;
+          });
+        api
+          .rows(error)
+          .nodes()
+          .to$()
+          .addClass('highlight_user_approved_already');
+        break;
+      }
+    }
+    // console.log(api.rows({ page: 'current' }).data());
+  },
+
   processing: true,
   serverSide: true,
   // Reload DataTable on input change.
@@ -82,7 +128,7 @@ var dt_options = {
 };
 var sample_table;
 
-$(document).on("document_ready", function() {
+$(document).on('document_ready', function () {
   // functions defined here are called from both copo_sample_accept_reject and copo_samples, all provide DTOL
   // functionality
   $(document).data('accepted_warning', false);
@@ -100,7 +146,7 @@ $(document).on("document_ready", function() {
   $('.select-all').prop('disabled', true);
 
   // add field names here which you don't want to appear in the supervisors table
-  excluded_fields = ['profile_id', 'biosample_id', '_id'];
+  //excluded_fields = ['profile_id', 'biosample_id', '_id'];
   searchable_fields = [''];
   // populate profiles panel on left
 
@@ -732,11 +778,6 @@ function row_select(ev) {
   if (sample_table != undefined) {
     let active_tab = $('#sample_filter').find('a.active').attr('href');
 
-    if (active_tab === 'processing' || active_tab === 'accepted') {
-      delete_selected_btn.prop('disabled', true).hide(); // Disable 'Delete selected' button
-      accept_reject_btn.hide(); // Hide 'Accept/Reject' button
-    }
-
     if (row == undefined) {
       $('#profile_id').val('');
     } else {
@@ -747,6 +788,8 @@ function row_select(ev) {
     $('#spinner').show();
 
     sample_table.ajax.reload(function () {
+      let profile_samples_table_wrapper = $('#profile_samples_wrapper');
+
       sample_table.draw();
 
       if (sample_table.data().length == 0) {
@@ -754,36 +797,41 @@ function row_select(ev) {
           html: 'No Samples Found',
         });
         $('#sample_panel').find('.labelling').empty().append(header);
-        $('#profile_samples_wrapper').hide();
+        profile_samples_table_wrapper.hide();
       } else {
         var header = $('<h4/>', {
           html: 'Samples',
         });
         $('#sample_panel').find('.labelling').empty().append(header);
-        $('#profile_samples_wrapper').show();
+
+        // Adjust the padding of the search input
+        profile_samples_table_wrapper
+          .find('.dataTables_filter')
+          .find('label')
+          .css({ padding: '10px 0' })
+          .find('input')
+          .removeClass('input-sm')
+          .attr('placeholder', 'Search samples');
+
+        profile_samples_table_wrapper.show();
         sample_table.columns.adjust().draw();
 
         // Enable table buttons when profile has samples in it
-        view_images_btn.prop('disabled', false).show();
-        download_permits_btn.prop('disabled', false).show();
-        delete_selected_btn.prop('disabled', false).show();
-        select_none_btn.prop('disabled', false).show();
-        select_all_btn.prop('disabled', false).show();
+        if (active_tab != 'processing') {
+          view_images_btn.prop('disabled', false).show();
+          download_permits_btn.prop('disabled', false).show();
+        }
 
-        // Enable and show the 'Accept/Reject' button if the profile has samples
-        // and the active 'ERGA' profile tab is 'Profiles for My Sequencing Centre'
-        let current_group = get_group_id();
-        let which_profiles = $('.profile-filter:visible')
-          .find('.active')
-          .find('a')
-          .attr('href');
-
-        if (current_group === 'erga' && which_profiles != 'my_profiles') {
+        if (active_tab === 'processing' || active_tab === 'accepted') {
+          delete_selected_btn.prop('disabled', true).hide(); // Disable 'Delete selected' button
           accept_reject_btn.find('button').prop('disabled', true);
-          accept_reject_btn.hide();
+          accept_reject_btn.hide(); // Hide 'Accept/Reject' button
         } else {
           accept_reject_btn.find('button').prop('disabled', false);
-          accept_reject_btn.show();
+          accept_reject_btn.show(); // Show 'Accept/Reject' button
+          delete_selected_btn.prop('disabled', false).show();
+          select_none_btn.prop('disabled', false).show();
+          select_all_btn.prop('disabled', false).show();
         }
       }
     });
@@ -844,7 +892,7 @@ function delay(fn, ms) {
 
 function update_pending_samples_table() {
   // get profiles with samples needing looked at and populate left hand column
-  //check whether we are getting my profiles or all profiles
+  //check whether we are getting profiles
   var which_profiles = $('.profile-filter:visible')
     .find('a.active')
     .attr('href');
@@ -853,7 +901,7 @@ function update_pending_samples_table() {
     {
       name: 'first_manifest_created',
       data: 'first_manifest_date_created',
-      title: 'First manifest upload',
+      title: 'First Manifest Upload',
       type: 'date',
       targets: [1],
       className: 'dt-center text-center',
@@ -864,7 +912,7 @@ function update_pending_samples_table() {
           });
           return date;
         } else {
-          return '';
+          return data;
         }
       },
     },
@@ -872,7 +920,7 @@ function update_pending_samples_table() {
     {
       name: 'last_manifest_updated',
       data: 'last_manifest_date_modified',
-      title: 'Last manifest upload',
+      title: 'Last Manifest Upload',
       type: 'date',
       targets: [2],
       className: 'dt-center text-center',
@@ -895,7 +943,7 @@ function update_pending_samples_table() {
     columnDefs.push({
       name: 'title',
       data: 'title',
-      title: 'Profile Title &emsp;&emsp;',
+      title: 'Profile Title&emsp;&emsp;',
       targets: [0],
       className: 'profile_title_header_my_profiles',
     });
@@ -995,16 +1043,9 @@ function update_pending_samples_table() {
         });
         $('#sample_panel').find('.labelling').empty().append(header);
 
-        var rows = [];
-        rows.push({ title: '' });
+        var rows = data;
+        rows.unshift({ title: '' });
 
-        let i = 0;
-        while (i < data.length) {
-          if (!excluded_fields.includes(data[i])) {
-            rows.push({ title: data[i], data: data[i] });
-          }
-          i++;
-        }
         if ($.fn.DataTable.isDataTable('#profile_samples')) {
           $('#profile_samples').DataTable().clear().destroy();
           $('#profile_samples').empty();
@@ -1014,10 +1055,10 @@ function update_pending_samples_table() {
         dt_options['scrollX'] = true;
         dt_options['scrollY'] = 1000;
         dt_options['fixedHeader'] = true;
-        sample_table = $('#profile_samples')
-          .DataTable(dt_options)
-          //.columns.adjust()
-          //.draw();
+        sample_table = $('#profile_samples').DataTable(dt_options);
+        //.columns.adjust()
+        //.draw();
+        profile_table.ajax.reload();
       }
     });
 
@@ -1053,40 +1094,54 @@ function update_pending_samples_table() {
     serverSide: true,
     responsive: true,
     paging: false,
+    deferLoading: 0,
     dom: '<"top"f>rt<"bottom"lp><"clear">',
     order: [[0, 'desc']],
     columnDefs: columnDefs,
     search: {
       return: true,
     },
-    initComplete: function () {
+    drawCallback: function () {
       $(document).removeData('selected_row');
       var api = this.api();
 
-      if (api.row(0) != undefined) {
+      if (api.data().count() > 0) {
         this.find('tbody').find('tr:first').click();
+
+        // Allow the full title of the profile to be
+        // displayed on mouseover/hover i.e. on
+        // to the first column of the profile table
+        api.rows().every(function () {
+          let data = this.data();
+          let row = this.node();
+          $(row).find('td').first().attr('title', data.title);
+        });
+      } else {
+        var header = $('<h4/>', {
+          html: 'No Samples Found',
+        });
+        $('#sample_panel').find('.labelling').empty().append(header);
+        $('#profile_samples_wrapper').hide();
       }
-      // Allow the full title of the profile to be
-      // displayed on mouseover/hover i.e. on
-      // to the first column of the profile table
-      api.rows().every(function () {
-        let data = this.data();
-        let row = this.node();
-        $(row).find('td').first().attr('title', data.title);
-      });
     },
   });
 
-  // Adjust the width of the table if it is 'All Profiles'
-  if (which_profiles != 'my_profiles') {
-    $('#profile_titles').css('width', '100%');
-  }
+  // Adjust the width of the table
+  $('#profile_titles').css('width', '100%');
+
+  // Adjust the width and padding of the search input
+  let profile_titles_table_wrapper = $('#profile_titles_wrapper');
+
+  profile_titles_table_wrapper
+    .find('.dataTables_filter')
+    .find('label')
+    .css({ padding: '10px 0' })
+    .find('input')
+    .removeClass('input-sm')
+    .attr('placeholder', 'Search profiles');
 }
 
 function handle_accept_reject(el) {
-  $('#spinner').fadeIn(fadeSpeed);
-  $('#accept_reject_button').find('button').prop('disabled', true);
-
   var checked = $('.form-check-input:checked').closest('tr');
 
   var button = $(el.currentTarget);
@@ -1101,11 +1156,21 @@ function handle_accept_reject(el) {
     sample_ids.push($(checked[it]).attr('id'));
   });
 
+  if (sample_ids.length == 0) {
+    alert('Please select samples to ' + action);
+    $('#spinner').fadeOut(fadeSpeed);
+    return;
+  }
+
+  $('#spinner').fadeIn(fadeSpeed);
+  $('#accept_reject_button').find('button').prop('disabled', true);
+
   $(checked).each(function (idx, row) {
     $(row).fadeOut(fadeSpeed);
     $(row).remove();
   });
-
+  var profile_id = $('#profile_id').val();
+  var csrftoken = $.cookie('csrftoken');
   if (action == 'reject') {
     // mark sample object as rejected
     $.ajax({
@@ -1117,13 +1182,14 @@ function handle_accept_reject(el) {
       $('#spinner').fadeOut(fadeSpeed);
     });
   } else if (action == 'accept') {
+    is_skip = false;
     if ($(document).data('accepted_warning')) {
-      // create or update dtol submission record
-      var profile_id = $('#profile_id').val();
       $('#sub_spinner').fadeIn(fadeSpeed);
       $.ajax({
         url: '/copo/dtol_submission/add_sample_to_dtol_submission/',
-        method: 'GET',
+        method: 'POST',
+        type: 'POST',
+        headers: { 'X-CSRFToken': csrftoken },
         data: {
           sample_ids: JSON.stringify(sample_ids),
           profile_id: profile_id,
@@ -1161,18 +1227,19 @@ function handle_accept_reject(el) {
               dialogRef.close();
               $(document).data('accepted_warning', true);
               // create or update dtol submission record
-              var profile_id = $('#profile_id').val();
-              $('#spinner').fadeIn(fadeSpeed);
+              $('#sub_spinner').fadeIn(fadeSpeed);
               $.ajax({
                 url: '/copo/dtol_submission/add_sample_to_dtol_submission/',
-                method: 'GET',
+                method: 'POST',
+                type: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
                 data: {
                   sample_ids: JSON.stringify(sample_ids),
                   profile_id: profile_id,
                 },
               }).done(function () {
                 $('#profile_titles').find('.selected').click();
-                // $('#spinner').fadeOut(fadeSpeed);
+                $('#spinner').fadeOut(fadeSpeed);
               });
             },
           },

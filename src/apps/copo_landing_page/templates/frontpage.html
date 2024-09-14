@@ -3,38 +3,25 @@
 
 {% block title %}Collaborative OPen Omics{% endblock %}
 
-{% block javascript_block %}
-
-
-
-{% endblock %}
-
-
 {% block css_block %}
-
-
-
+<link rel="stylesheet" href="{% static '/copo_news/css/copo_news.css' %}">
 {% endblock %}
 
+{% block javascript_block %}
+<script src="{% static '/copo_news/js/copo_news.js' %}"></script>
+{% endblock %}
 
 {% block baseblock %}
-
     <div class="container-fluid">
-        {% if banner and banner.active %}
 
-            <div class="warning_banner">
-
-                <h1>{{ banner.header_txt }}</h1>
-                <p style="color:red">{{ banner.body_txt }}</p>
+        <section id="statistics-section">
+            <!-- include navbar html -->
+            <div class="pull-right">
+                {% include "nav_dropdown.html" %}
             </div>
-
-        {% endif %}
-
-        <!-- include navbar html -->
-        {% include "nav_dropdown.html" %}
-
-        <br><br>
-        <section>  
+            
+            <br><br><br><br><br>
+            
             <!--<div id="copo-icon">
                <img src="{% static 'assets/img/COPO-logo-full-CMYK-black.png' %}" alt="copo_black image">
             </div>
@@ -58,55 +45,17 @@
             </div>
         </section>
 
-        <section class="row mt-5">
-            <!-- main content block -->
-            {% block content %}
-            {% endblock %}
-            <div class="col-3"></div>
-            <div id="contact-sec" class="col-6">
-                <div>
-                    <h2 id="contact-title" class="big_button">Contact Us</h2>
-                </div>
-                <div style="padding-top: 10px;">
-                    <form id="email_form" action="mailto:{{copo_email}}?subject=I'm interested in COPO!"
-                          method="post"
-                          enctype="text/plain">
-                        <div class="row">
-                            <div class="col">
-                                <input type="text" class="form-control" required="required"
-                                    placeholder="Name">                    
-                            </div>
-                            <div class="col">
-                                <input type="text" class="form-control" required="required" placeholder="Email address">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="mb-3 mt-3">
-                                    <textarea name="message" id="message" required="required" class="form-control" rows="3"
-                                        placeholder="Message" style="min-height: 63px !important;"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <button id="email_submit" type="submit" class="btn btn-secondary" style="font-weight: bold;">Submit
-                                        Request
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    
-                </div>
-                <div class="col-md-3"></div>
-            </div>
-            <div class="col-3"></div>
+        <section id="news-section">
+            {% include 'copo/news_sublist.html' with newsList=newsList %}    
         </section>
     </div>
     <!-- </br></br></br></br></br> -->
-    <footer id="footer" class="for-full-back">
+    <footer id="footer" class="for-full-back footer-frontpage">
         <div class="pull-right">
             <a href="https://www.earlham.ac.uk/">
-                <img class="img-responsive" src="{% static 'assets/img/ei.png' %}" width="250" height="105" alt="Earlham Institute logo" style="padding: 15px 50px 15px 0;"/>
+                <img class="img-responsive" src="{% static 'assets/img/ei.png' %}" width="200" height="200" alt="Earlham Institute logo"/>
             </a>
         </div>
     </footer>
 {% endblock %}
+

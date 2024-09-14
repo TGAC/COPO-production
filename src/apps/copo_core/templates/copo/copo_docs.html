@@ -130,7 +130,13 @@
         <button type='button' class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
             <span class="navbar-toggler-icon"></span>
         </button>
-
+        <!-- Banner -->
+        {% if banner %}
+            <div class="global-warning-banner" title="{{banner.body}}">
+                <h1>{{ banner.header }}</h1>
+            </div>
+        {% endif %}
+        
         <ul class="nav navbar-nav justify-content-end collapse navbar-collapse">
 
         </ul>

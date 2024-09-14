@@ -33,10 +33,8 @@
     <link rel="stylesheet" media="print" onload="this.media='all'"
         href="{% static 'copo/css/copo/pretty-checkbox.min.css' %}">
     <link rel="stylesheet" media="print" onload="this.media='all'"
-        href="{% static 'copo/select2-405/css/select2.min.css' %}">
-    
-    <!-- <link rel="shortcut icon" href="{% static 'copo/img/favicon_black.png' %}" /> -->
-    
+          href="{% static 'copo/select2-405/css/select2.min.css' %}">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" media="print" onload="this.media='all'"
         href="{% static 'copo/css/fontawesome/fontawesome-6.5.1.min.css' %}">
@@ -96,8 +94,11 @@
     <link rel="stylesheet" media="print" onload="this.media='all'"
           href="{% static 'copo/semantic_ui/components/dropdown.min.css' %}">
     <link rel="stylesheet" media="print" onload="this.media='all'"
-          href="{% static 'copo/semantic_ui/components/popup.min.css' %}">
-          
+          href="{% static 'copo/semantic_ui/components/popup.min.css' %}">-->
+
+    <!-- Banner css -->
+    <link href="/static/assets/css/base_banner.css" rel="stylesheet" />
+
     <script>
     {% include 'copo/copo_profile_types.html' %}
     </script>
@@ -235,7 +236,6 @@
             opacity: 0.9;
         }
     </style>
-
 </head>
 
 <body>
@@ -260,14 +260,24 @@
 </div>
 
 <nav id="copo-global-nav" class="navbar navbar-expand-lg bg-light navbar-light border-bottom border-black fixed-top" role="navigation">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'copo_profile_index:index' %}">
-            <img class="icon-margin-top" style="height: 45px; margin-left: 0; margin-top: -8px;"
-                    src="{% static 'assets/img/COPO-logo-full-CMYK-black.png' %}"/>
-        </a>
-        <button type='button' class="navbar-toggler" data-bs-toggle="collapse" data-target=".navbar-collapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <div class="container-fluid {% if banner %}display-flex{% else %}display-block{% endif %}">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'copo_profile_index:index' %} {% else %}/{% endif %}">
+                <img class="{% if banner %}margin-top-neg-12{% else %}margin-top-neg-8{% endif %}" style="height: 45px; margin-left: 12px;"
+                     src="{% static 'assets/img/COPO-logo-full-CMYK-black.png' %}"
+                     alt="COPO logo">
+            </a>
+            <button type='button' class="navbar-toggler" data-bs-toggle="collapse" data-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <!-- Banner -->
+        {% if banner %}
+            <div class="global-warning-banner" title="{{banner.body}}">
+                <h1>{{ banner.header }}</h1>
+            </div>
+        {% endif %}
 
         <ul class="nav navbar-nav justify-content-end collapse navbar-collapse">
             <li class="nav-item" title="Notifications" role="presentation">
@@ -306,8 +316,15 @@
                             </div>
                         </a>
                     </li>
+                    <li>
+                        <a class="dropdown-item" href="/api" target="_parent" role="menuitem" tabindex="-1">
+                            <div class="custom-nav-items">
+                                <i class="fa fa-plug" aria-hidden="true"></i>
+                                <span class="icon_text">API Endpoints</span>
+                            </div>
+                        </a>
+                    </li>
                 </ul>
-                
             </li>
             <li class="nav-item" style="margin-left: 15px;" title="Documentation">
                 <a id="copo-documentation" href="https://copo-docs.readthedocs.io/en/latest/" target="_blank">
@@ -316,8 +333,15 @@
                     </span>
                 </a>
             </li>
+            <li class="nav-item" style="margin-left: 15px;" title="News" role="presentation">
+                <a class="nav-link" href="/news" target="_parent">
+                    <span data-copo-tour-id="news_button">
+                        <i class="fa fa-newspaper" aria-hidden="true"></i>
+                    </span>
+                </a>
+            </li>
             <li class="nav-item" style="margin-left: 15px;" title="Contact COPO" role="presentation">
-                <a class="nav-link" href="/#contact-sec" target="_blank">
+                <a class="nav-link" href="/contact" target="_parent">
                     <span data-copo-tour-id="contact_button">
                             <i class="fa fa-envelope" aria-hidden="true"></i>
                     </span>

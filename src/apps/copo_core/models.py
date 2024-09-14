@@ -16,6 +16,13 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserDetails(models.Model):
+    # This allows the model to be pluralised
+    # as 'UserDetails' instead of 'UserDetailss'
+    # in the Django admin interface
+    # since Django classes should be singular
+    class Meta:
+        verbose_name_plural = 'UserDetails'
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     orcid_id = models.TextField(max_length=40, blank=True)
     repo_manager = ArrayField(
@@ -35,6 +42,9 @@ class UserDetails(models.Model):
         null=True)
     # class Meta:
     # app_label = 'django.contrib.auth'
+
+    def __str__(self):
+        return self.user.username
 
 
 @receiver(post_save, sender=User)
@@ -83,10 +93,10 @@ class StatusMessage(models.Model):
         get_latest_by = 'created'
 
 
-class banner_view(models.Model):
-    header_txt = models.TextField(max_length=100, blank=False, default="")
-    body_txt = models.TextField(max_length=2000, blank=False, default="")
-    active = models.BooleanField()
+class Banner(models.Model):
+    header = models.TextField(max_length=78, blank=False, default="")
+    body = models.TextField(max_length=2000, blank=True, default="")
+    active = models.BooleanField(default=False)
 
 
 class ViewLock(models.Model):
@@ -185,14 +195,18 @@ class AssociatedProfileType(models.Model):
     name = models.CharField(max_length=100)
     label = models.CharField(max_length=100)
     is_approval_required = models.BooleanField(default=False)
+    is_acceptance_email_notification_required = models.BooleanField(default=False)
+    acceptance_email_body = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
-    def create_associated_profile_type(self, name, label, is_approval_required=False ):
+    def create_associated_profile_type(self, name, label, is_approval_required=False, is_acceptance_email_notification_required=False, acceptance_email_body=""):
         self.name = name
         self.label = label
         self.is_approval_required = is_approval_required
+        self.is_acceptance_email_notification_required = is_acceptance_email_notification_required
+        self.acceptance_email_body = acceptance_email_body
         self.save()
         return self
 
@@ -353,26 +367,32 @@ class Component(models.Model):
         return Component.objects.all()
     
 
+#db.Profiles.updateMany({"associated_type.value":"BGE"},{"$set":{"associated_type.$":"BGE"}})
 class ProfileType(models.Model):
     class Meta:
         ordering = ['description']
         
+    associated_profile_types = models.ManyToManyField(AssociatedProfileType, blank=True)
     components = models.ManyToManyField(Component, blank=True)
     type = models.CharField(max_length=20, unique=True)
     description = models.CharField(max_length=100)
     widget_colour = models.CharField(max_length=200, blank=True, null=True)
     is_dtol_profile = models.BooleanField(default=False)
     is_permission_required = models.BooleanField(default=True)
+    post_save_action = models.CharField(max_length=100, blank=True, null=True)
+    pre_save_action = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.type + " : " + self.description
 
-    def create_profile_type(self, type, description, widget_colour, is_dtol_profile, is_permission_required):
+    def create_profile_type(self, type, description, widget_colour, is_dtol_profile, is_permission_required, post_save_action=None, pre_save_action=None):
         self.type = type
         self.description = description
         self.widget_colour = widget_colour
         self.is_dtol_profile = is_dtol_profile
         self.is_permission_required = is_permission_required
+        self.post_save_action = post_save_action
+        self.pre_save_action = pre_save_action
         self.save()
         return self
 
