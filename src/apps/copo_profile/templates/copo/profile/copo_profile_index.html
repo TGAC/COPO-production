@@ -30,6 +30,8 @@
                id="seqannotation_url"/>
         <input type="hidden" value="{% url 'copo_assembly_submission:copo_assembly' profile_id='999' %}" name="assembly_url"
                id="assembly_url"/>
+        <input type="hidden" value="{% url 'copo_image_submission:copo_images' profile_id='999' %}" name="image_url"
+                id="image_url" />
         <input type="hidden" value="{% url 'copo_read_submission:copo_reads' profile_id='999' %}" name="read_url"
                id="read_url"/>
         <input type="hidden" value="{% url 'copo_file:copo_files' profile_id='999' %}" name="files_url"

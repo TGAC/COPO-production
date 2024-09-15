@@ -1,0 +1,28 @@
+[
+  {
+    "colour": "",
+    "control": "text",
+    "control_meta": {},
+    "default_value": "",
+    "deprecated": false,
+    "dwc": "",
+    "excel_col": "",
+    "help_tip": "",
+    "hidden": "false",
+    "id": "copo.cellgen.A",
+    "label": "A",
+    "manifest_version": [],
+    "order": 1,
+    "ref": "",
+    "required": "true",
+    "show_in_form": true,
+    "show_in_table": true,
+    "specifications": [
+      "spat"
+    ],
+    "type": "string",
+    "versions": [
+      "A"
+    ]
+  }
+]

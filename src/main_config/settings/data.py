@@ -110,4 +110,7 @@ ENA_CHECKLIST_URL  = [
     "https://www.ebi.ac.uk/ena/submit/report/checklists/xml/*?type=sample"
 ]
 
+COPO_CHECKLIST_URL = [
+]
+
 SANGER_SEQUENCING_CENTRE = "SANGER"

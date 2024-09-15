@@ -78,6 +78,7 @@ PROJECT_APPS = [
     'src.apps.copo_landing_page',
     'src.apps.copo_read_submission',
     'src.apps.copo_assembly_submission',
+    'src.apps.copo_image_submission',
     'src.apps.copo_seq_annotation_submission',
     'src.apps.copo_barcoding_submission',
     'src.apps.copo_file',

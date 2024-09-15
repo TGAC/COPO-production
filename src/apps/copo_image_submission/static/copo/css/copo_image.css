@@ -1,0 +1,11 @@
+.highlight_accession {
+    background-color: #d9e8d9 !important;
+}
+
+.highlight_no_accession {
+    background-color: #FFD700 !important;
+}
+
+.highlight_error_file_processing_status {
+    background-color: #f88080 !important;
+}

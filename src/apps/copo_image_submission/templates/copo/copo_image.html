@@ -1,0 +1,85 @@
+{% extends 'copo/base_2col.html' %}
+
+{% load static %}
+{% load web_tags %}
+{% load html_tags %}
+
+{% block stylesheet_block %}
+    <link rel="stylesheet" href="{% static 'copo_image_submission/css/copo_image.css' %}">
+{% endblock %}
+
+{% block title %}Image{% endblock %}
+{% block title_block %}Image{% endblock %}
+
+{% block tagline_block %}
+{% endblock %}
+
+{% block browse_header_block %}
+    {% csrf_token %}
+    <div hidden id="hidden_attrs">
+        <!-- hidden attributes  -->
+        <input type="hidden" id="profile_title" value="{{ profile.title }}"/>
+        <input type="hidden" id="profile_type" value="{{ profile.type }}" />
+        <input type="hidden" id="profile_id" value="{{ profile_id }}" />
+        <input type="hidden" id="nav_component_name" value="image"/>
+    </div>
+
+{% endblock %}
+
+{% block page_tile %}
+    {% include "component_navbar.html" %}
+{% endblock page_tile %}
+
+
+{% block content %}
+    <!-- getting started section -->
+    <div class="row">
+        <div class="col-sm-5 col-md-5 col-lg-5 col-xs-offset-0 page-welcome-message"
+             style="display: none;">
+            <div class="copo-webui-popover">
+                <div class="webui-popover-inner">
+                    <h3 class="copo-webui-popover-title">Image - Getting started</h3>
+                    <div class="copo-webui-popover-content">
+                        <div class="webpop-content-div">
+                            The image page provides a platform for uploading images.
+                            <br/><br/>
+                            <div>To add images, click the
+                                <button class="circular tiny ui icon primary button">
+                                    <i class="icon add sign"></i>
+                                </button>
+                                icon.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- publication_table -->
+    <div id="component_table_loader" class="col-sm-5 col-md-5 col-lg-5 col-xs-offset-5"
+         data-copo-tour-id="image_table"></div> <!-- div used by the quick tour agent -->
+    <div class="table-parent-div">
+        <table id="image_table" class="ui celled table hover copo-noborders-table"
+               cellspacing="0" width="100%">
+        </table>
+    </div>
+
+{% endblock %}
+
+{% block help_section %}
+{% endblock %}
+
+
+{% block component_info %}
+    <div style="display:none; margin-top: 30px; " id="image_info" class="alert alert-info"
+        role="alert">
+    </div>
+{% endblock %}
+
+{% block js_block %}
+    <script src="{% static 'copo/js/generic_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/generic_handlers_ext2.js' %}"></script>
+    <script src="{% static 'copo/js/copo_form_handlers.js' %}"></script>
+    <script src="{% static 'copo/js/copo_image.js' %}"></script>
+{% endblock %}

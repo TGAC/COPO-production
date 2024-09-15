@@ -87,7 +87,14 @@ app.conf.beat_schedule = {
         'task': 'src.apps.copo_assembly_submission.tasks.process_assembly_submission',
         'schedule': timedelta(seconds=10)
     },    
-
+    'update_image_submission_pending': {
+        'task': 'src.apps.copo_image_submission.tasks.update_image_submission_pending',
+        'schedule': timedelta(seconds=10)
+    },     
+    'process_image_submission': {
+        'task': 'src.apps.copo_image_submission.tasks.process_image_submission',
+        'schedule': timedelta(seconds=10)
+    },   
     'process_seq_annotation_submission': {
         'task': 'src.apps.copo_seq_annotation_submission.tasks.process_seq_annotation_submission',
         'schedule': timedelta(seconds=10)

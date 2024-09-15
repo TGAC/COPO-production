@@ -182,6 +182,11 @@ def get_sample_type_options():
         data = helpers.json_to_pytype(data)
     return data
 
+def get_cellgen_type_options():
+    data = lookup.DROP_DOWNS_SOURCE.get("cellgen_type_options", str())
+    if isinstance(data, str) and data:  # it's only a path, resolve to get actual data
+        data = helpers.json_to_pytype(data)
+    return data
 
 def get_repository_options():
     data = lookup.DROP_DOWNS_SOURCE.get("repository_options", str())

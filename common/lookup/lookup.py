@@ -970,4 +970,5 @@ DROP_DOWNS_SOURCE = dict(
     repository_options=os.path.join(_drop_downs_pth, 'metadata_template_types.json'),
     repository_types_list=os.path.join(_drop_downs_pth, 'repository_types.json'),
     sample_type_options=os.path.join(_drop_downs_pth, 'sample_types.json'),
+    cellgen_type_options=os.path.join(_drop_downs_pth, 'cellgen_types.json'),
 )

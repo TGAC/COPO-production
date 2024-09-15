@@ -1,0 +1,255 @@
+{
+  "title": "Cellgen schema mappings",
+  "description": "Mappings of attribute in the cellgen schema to a UI configuration source.",
+  "configuration": {
+    "type": "json",
+    "provider": "isa",
+    "ref": "cellgen_schema"
+  },
+  "properties": [
+    {
+      "$ref": "isa_mappings/additional_attributes/spat_attributes.json"
+    },
+    {
+      "$ref": "isa_mappings/additional_attributes/scrnaseq_attributes.json"
+    },
+    {
+      "colour": "",
+      "control": "select",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "true",
+      "id": "copo.cellgen.sample_type",
+      "label": "Cellgen Type",
+      "option_values": {
+        "callback": {
+          "parameter": "",
+          "function": "get_cellgen_type_options"
+        }
+      },
+      "order": null,
+      "ref": "",
+      "required": "true",
+      "show_as_attribute": true,
+      "show_in_form": false,
+      "show_in_table": false,
+      "type": "string",
+      "versions": [
+        "cellgen_type"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "pending",
+      "deprecated": false,
+      "dwc": "",
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "false",
+      "id": "copo.cellgen.status",
+      "label": "Status",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "string",
+      "versions": [
+        "status"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "dwc": "",
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "false",
+      "id": "copo.cellgen.submissionAccession",
+      "label": "Submission Accession",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "string",
+      "versions": [
+        "submissionAccession"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "na",
+      "deprecated": false,
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "true",
+      "id": "copo.cellgen.manifest_id",
+      "label": "Manifest Identifier",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "string",
+      "versions": [
+        "manifest_id"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "dwc": "",
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "true",
+      "id": "copo.cellgen.manifest_version",
+      "label": "Manifest Version",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "string",
+      "versions": [
+        "manifest_version"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "true",
+      "id": "copo.cellgen.profile_id",
+      "label": "Profile Identifier",
+      "order": null,
+      "ref": "",
+      "required": "true",
+      "show_in_form": false,
+      "show_in_table": false,
+      "type": "string",
+      "versions": [
+        "profile_id"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "dwc": "",
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "false",
+      "id": "copo.cellgen.project",
+      "label": "Project",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "string",
+      "versions": [
+        "project"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "text",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "dwc": "",
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "false",
+      "id": "copo.cellgen.associated_project",
+      "label": "Associated Project",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "string",
+      "versions": [
+        "associated_project"
+      ]
+    },
+    {
+      "colour": "",
+      "control": "copo_approval",
+      "control_meta": {},
+      "default_value": "",
+      "deprecated": false,
+      "dwc": "",
+      "excel_col": "",
+      "help_tip": "",
+      "hidden": "false",
+      "id": "copo.cellgen.approval",
+      "label": "Approval Date",
+      "order": null,
+      "ref": "",
+      "required": "false",
+      "show_in_form": false,
+      "show_in_table": true,
+      "type": "dict",
+      "versions": [
+        "approval"
+      ]
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "date_modified"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Date Modified",
+      "show_in_form": false,
+      "id": "copo.cellgen.date_modified",
+      "type": "string",
+      "show_in_table": false,
+      "control": "date-picker"
+    },
+    {
+      "help_tip": "",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "error"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "true",
+      "label": "Error",
+      "show_in_form": false,
+      "id": "copo.cellgen.error",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    }    
+  ]
+}

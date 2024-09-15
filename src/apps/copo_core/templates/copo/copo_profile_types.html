@@ -114,6 +114,29 @@ const component_def = {
       visibleColumns: 3, //no of columns to be displayed, if tabular data is required. remaining columns will be displayed in a sub-table
       url: "{% url 'copo_accession:copo_accessions' profile_id='999' %}",
     },
+    image:
+    {
+      component: 'image',
+      title: 'Images',
+      iconClass: 'fa fa-image',
+      semanticIcon: 'image', //semantic UI equivalence of fontawesome icon
+      buttons: [
+      'copo_accessions',
+      'accept_reject_samples'
+      ],
+      sidebarPanels: ['copo-sidebar-info'],
+      colorClass: 'image_color',
+      color: 'pink',
+      tableID: 'image_table',
+      recordActions: [
+        'add_record_all',
+        'edit_record_single',
+        'delete_record_multi',
+        'submit_image_multi',
+      ],
+      visibleColumns: 3,
+      url: "{% url 'copo_image_submission:copo_images' profile_id='999' %}",
+    },
     assembly:
     {
       component: 'assembly',

@@ -94,6 +94,7 @@ class Command(BaseCommand):
         submit_read_multi = RecordActionButton().create_record_action_button(name="submit_read_multi", title="Submit Read", label="Submit", type="multi", error_message="Please select one or more record to submit", icon_class="fa fa-info-circle", action="submit_read", icon_colour="teal")
         submit_annotation_multi = RecordActionButton().create_record_action_button(name="submit_annotation_multi", title="Submit Annotation", label="Submit", type="multi", error_message="Please select one or more record to submit", icon_class="fa fa-info-circle", action="submit_annotation", icon_colour="teal")
         submit_assembly_multi = RecordActionButton().create_record_action_button(name="submit_assembly_multi", title="Submit Assembly", label="Submit", type="multi", error_message="Please select one or more record to submit", icon_class="fa fa-info-circle", action="submit_assembly", icon_colour="teal")
+        submit_image_multi = RecordActionButton().create_record_action_button(name="submit_image_multi", title="Submit Images", label="Submit", type="multi", error_message="Please select one or more records to submit", icon_class="fa fa-info-circle", action="submit_image", icon_colour="teal")
         delete_record_multi = RecordActionButton().create_record_action_button(name="delete_record_multi", title="Delete records", label="Delete", type="multi", error_message="Please select one or more records to delete", icon_class="fa fa-trash-can", action="validate_and_delete", icon_colour="red")
         releasestudy = RecordActionButton().create_record_action_button(name="releasestudy", title="Release Study", label="Release Study", type="single", error_message="", icon_class="fa fa-globe", action="release_study", icon_colour="blue")
         self.stdout.write("Record Action Button Added")
@@ -134,6 +135,7 @@ class Command(BaseCommand):
         self.stdout.write("Adding Component ")
 
         assembly = Component().create_component(name="assembly", title="Assembly", widget_icon="puzzle piece", widget_colour="violet", widget_icon_class="fa fa-puzzle-piece", table_id="assembly_table", reverse_url="copo_assembly_submission:copo_assembly", subtitle="")
+        images = Component().create_component(name="image", title="Images", widget_icon="image", widget_colour="brown", widget_icon_class="fa fa-image", table_id="image_table", reverse_url="copo_image_submission:copo_images", subtitle="")
         taggedseq = Component().create_component(name="taggedseq", title="Barcoding Manifests", widget_icon="barcode", widget_colour="red", widget_icon_class="fa fa-barcode", table_id="tagged_seq_table", reverse_url="copo_barcoding_submission:copo_taggedseq", subtitle="#component_subtitle")
         files = Component().create_component(name="files", title="Files", widget_icon="file", widget_colour="blue", widget_icon_class="fa fa-file", table_id="files_table", reverse_url="copo_file:copo_files", subtitle="")
         seqannotation = Component().create_component(name="seqannotation", title="Sequence Annotations", widget_icon="tag", widget_colour="yellow", widget_icon_class="fa fa-tag", table_id="seqannotation_table", reverse_url="copo_seq_annotation_submission:copo_seq_annotation", subtitle="")
@@ -144,6 +146,9 @@ class Command(BaseCommand):
 
         assembly.recordaction_buttons.set([add_record_all, edit_record_single, delete_record_multi, submit_assembly_multi])
         assembly.title_buttons.set([new_component_template])
+
+        images.recordaction_buttons.set([add_record_all, edit_record_single, delete_record_multi, submit_image_multi])
+        images.title_buttons.set([new_component_template])
 
         taggedseq.recordaction_buttons.set([add_record_all, edit_record_single, delete_record_multi, submit_tagged_seq_multi])
         taggedseq.title_buttons.set([new_taggedseq_spreadsheet_template, download_blank_manifest_template])
@@ -180,13 +185,16 @@ class Command(BaseCommand):
         dtolenv = ProfileType().create_profile_type(type="dtolenv",description="Darwin Tree of Life Environmental Samples (DTOLENV)", widget_colour="#fb7d0d", is_dtol_profile=True, is_permission_required=True)
         dtol = ProfileType().create_profile_type(type="dtol",description="Darwin Tree of Life (DTOL)", widget_colour="#16ab39", is_dtol_profile=True, is_permission_required=True, post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile")
         genomics = ProfileType().create_profile_type(type="genomics",description="Genomics", widget_colour="#009c95", is_dtol_profile=False, is_permission_required=False)
+        scrnaseq = ProfileType().create_profile_type(type="scrnaseq",description="Single-cell RNA sequencing (scRNA-seq)", widget_colour="#fa011f", is_dtol_profile=False, is_permission_required=False)
+        spat = ProfileType().create_profile_type(type="spat",description="Spatial Transcriptomics (ST)", widget_colour="#3d01fa", is_dtol_profile=False, is_permission_required=False)
 
         erga.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         asg.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         dtolenv.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         dtol.components.set([assembly, taggedseq, files, seqannotation, read, sample, accessions])
         genomics.components.set([assembly, files, seqannotation, read, accessions])
-
+        scrnaseq.components.set([files, read, accessions])
+        spat.components.set([images, files, read, accessions])
 
         at_asg = AssociatedProfileType.objects.get(name="ASG")
         at_bge = AssociatedProfileType.objects.get(name="BGE")
@@ -194,17 +202,19 @@ class Command(BaseCommand):
         at_cbp = AssociatedProfileType.objects.get(name="CBP") 
         at_dtol = AssociatedProfileType.objects.get(name="DTOL")
         at_dtolenv = AssociatedProfileType.objects.get(name="DTOL_ENV")
-        at_erga = AssociatedProfileType.objects.get(name="ERGA") 
         at_erga_pilot = AssociatedProfileType.objects.get(name="ERGA_PILOT")
         at_erga_community = AssociatedProfileType.objects.get(name="ERGA_COMMUNITY")
         at_pop_genomics = AssociatedProfileType.objects.get(name="POP_GENOMICS")                              
-        at_sanger = AssociatedProfileType.objects.get(name="SANGER")  
-
+        at_sanger = AssociatedProfileType.objects.get(name="SANGER")
+        at_scrnaseq = AssociatedProfileType.objects.get(name="SC_RNASEQ") 
+        at_spat = AssociatedProfileType.objects.get(name="SPAT") 
 
         erga.associated_profile_types.set([at_bge, at_bioblitz, at_cbp, at_erga_pilot, at_erga_community, at_pop_genomics, at_sanger])
         asg.associated_profile_types.set([at_asg])
         dtolenv.associated_profile_types.set([at_dtolenv])
         dtol.associated_profile_types.set([at_dtol])
+        scrnaseq.associated_profile_types.set([at_scrnaseq])
+        spat.associated_profile_types.set([at_spat])
         
         self.stdout.write("Profile Types Added")
         records = ProfileType.objects.all()

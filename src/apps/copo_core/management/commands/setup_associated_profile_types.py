@@ -61,8 +61,14 @@ class Command(BaseCommand):
 
         AssociatedProfileType().create_associated_profile_type(name="SANGER",
                                                              label="Sanger Institute Approval Needed (SANGER)",
-                                                             is_approval_required=True)        
-
+                                                             is_approval_required=True)    
+            
+        AssociatedProfileType().create_associated_profile_type(name="SC_RNASEQ",
+                                                             label="Single-cell RNA sequencing (scRNA-seq)")
+        
+        AssociatedProfileType().create_associated_profile_type(name="SPAT",
+                                                             label="Spatial Transcriptomics (ST)")    
+        
         self.stdout.write("Associated Profile Types Added")
         records = AssociatedProfileType.objects.all()
 
