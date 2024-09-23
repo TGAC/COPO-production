@@ -40,22 +40,25 @@
                             Download
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ 'ASG'|get_blank_manifest_url  }}">
+                            <li>
+                                <a class="dropdown-item" href="{{ 'ASG'|get_blank_manifest_url  }}">
                                 Blank template
                                 </a>
                             </li>
                             <li role="separator">
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a id="asg_prefilled_template_option" class="dropdown-item wizard-link" href="javascript:"
-                                   onclick="showWizardBasedOnManifestType('asg')"
-                                   aria-hidden="true">Prefilled template
+                            <li>
+                                <a id="asg_prefilled_template_option" class="dropdown-item wizard-link" href="javascript:"
+                                   onclick="showWizardBasedOnManifestType('asg')">
+                                   Prefilled template
                                 </a>
                             </li>
                             <li role="separator">
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{{ 'ASG'|get_sop_url  }}">
+                            <li>
+                                <a class="dropdown-item" href="{{ 'ASG'|get_sop_url  }}">
                                     Standard Operating Procedure (SOP)
                                 </a>
                             </li>
@@ -75,22 +78,25 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{  'DTOL'|get_blank_manifest_url  }}">
+                            <li>
+                                <a class="dropdown-item" href="{{  'DTOL'|get_blank_manifest_url  }}">
                                 Blank template
                                 </a>
                             </li>
                             <li role="separator">
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a id="dtol_prefilled_template_option" class="dropdown-item wizard-link" href="javascript:"
-                                   onclick="showWizardBasedOnManifestType('dtol')"
-                                   aria-hidden="true">Prefilled template
+                            <li>
+                                <a id="dtol_prefilled_template_option" class="dropdown-item wizard-link" href="javascript:"
+                                   onclick="showWizardBasedOnManifestType('dtol')">
+                                   Prefilled template
                                 </a>
                             </li>
                             <li role="separator">
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{{ 'DTOL'|get_sop_url  }}">
+                            <li>
+                                <a class="dropdown-item" href="{{ 'DTOL'|get_sop_url  }}">
                                     Standard Operating Procedure (SOP)
                                 </a>
                             </li>
@@ -114,14 +120,18 @@
                             <li role="separator">
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a id="erga_prefilled_template_option" class="dropdown-item wizard-link" href="javascript:"
-                                   onclick="showWizardBasedOnManifestType('erga')"
-                                   aria-hidden="true">Prefilled template</a></li>
+                            <li>
+                                <a id="erga_prefilled_template_option" class="dropdown-item wizard-link" href="javascript:"
+                                   onclick="showWizardBasedOnManifestType('erga')">
+                                   Prefilled template</a></li>
                             <li role="separator">
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{{ 'ERGA'|get_sop_url  }}">
-                                    Standard Operating Procedure (SOP)</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ 'ERGA'|get_sop_url  }}">
+                                    Standard Operating Procedure (SOP)
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </td>
@@ -259,7 +269,10 @@
 
                                 <div class="well">
                                     <label>Are there common values for these fields?&nbsp;
-                                        <i id="info" class="fa fa-info-circle" aria-hidden="true"></i>
+                                        <i id="info" class="fa fa-info-circle" aria-hidden="true"
+                                           aria-label="Information about common values"
+                                           role="tooltip">
+                                        </i>
 
                                     </label>
                                     <br>
