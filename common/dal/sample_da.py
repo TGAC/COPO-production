@@ -1253,3 +1253,16 @@ class Sample(DAComponent):
         self.get_collection_handle().update_many(
             {"sample_type": {"$in": TOL_PROFILE_TYPES},
                 "status": "sending", "date_modified": {"$lt": datetime.now(timezone.utc).replace(microsecond=0) - timedelta(seconds=refresh_threshold)}},{"$set": update_data})
+        
+    def get_custom_sample_fields(self):
+        schema = self.get_component_schema()
+
+        # Get COPO defined field names
+        # i.e. field names that are camel case or lowercase
+        copo_defined_fields = [x['id'].split('.')[-1] for x in schema if x['is_custom']]
+
+        # Get unique fields
+        copo_defined_fields = list(set(copo_defined_fields))
+        copo_defined_fields.sort()
+
+        return copo_defined_fields

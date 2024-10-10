@@ -11,8 +11,8 @@ from django.http import HttpResponse
 import json
 import jsonpath_rw_ext as jp
 from bson.errors import InvalidId
-from src.apps.api.utils import get_return_template, extract_to_template, finish_request
-from src.apps.api.views.mapping import get_standard_data
+from src.apps.api.utils import generate_csv_response, generate_wrapper_response, get_return_template, get_sensitive_fields, extract_to_template, finish_request
+from src.apps.api.views.mapping import get_mapped_fields_for_project
 from common.dal.copo_da import APIValidationReport
 from common.dal.sample_da import Sample, Source
 from common.dal.submission_da import Submission
@@ -30,6 +30,7 @@ import pickle
 from src.apps.copo_dtol_upload.utils.Dtol_Spreadsheet import DtolSpreadsheet
 from src.apps.copo_dtol_upload.utils.da import ValidationQueue
 from io import BytesIO
+import bson.json_util as jsonb
 import common.schemas.utils.data_utils as d_utils
 
 def get(request, id):
@@ -78,6 +79,7 @@ def format_date(input_date):
 def filter_for_API(sample_list, add_all_fields=False):
     # add field(s) here which should be time formatted
     time_fields = ["time_created", "time_updated"]
+    sensitive_fields = get_sensitive_fields(component='sample')
     profile_type = None
     if len(sample_list) > 0:
         profile_type = sample_list[0].get("tol_project", "dtol").lower()
@@ -144,7 +146,7 @@ def filter_for_API(sample_list, add_all_fields=False):
             if k in export:
                 if k in time_fields:
                     s_out[k] = format_date(v)
-                elif k in lookup.GDPR_SENSITIVE_FIELDS:
+                elif k in sensitive_fields:
                     # GDPR sensitive fields should be excluded
                     pass
                 else:
@@ -164,7 +166,7 @@ def filter_for_API(sample_list, add_all_fields=False):
                     if k not in s_out.keys():
                         if k in defaults_list.keys():
                             s_out[k] = defaults_list[k]
-                        elif k in lookup.GDPR_SENSITIVE_FIELDS:
+                        elif k in sensitive_fields:
                             # GDPR sensitive fields should be excluded
                             pass
                         else:
@@ -172,7 +174,7 @@ def filter_for_API(sample_list, add_all_fields=False):
                 out.append(s_out)
             else:
                 # Exclude GDPR sensitive fields before appending 's_out'
-                filtered_s_out = {key: value for key, value in s_out.items() if key not in lookup.GDPR_SENSITIVE_FIELDS}
+                filtered_s_out = {key: value for key, value in s_out.items() if key not in sensitive_fields}
 
                 out.append(filtered_s_out)
 
@@ -313,7 +315,7 @@ def get_updatable_fields_by_project(request, project):
             out.append({project.upper(): lookup.DTOL_NO_COMPLIANCE_FIELDS[project]})
     return finish_request(out)
 
-def get_fields_based_on_standards(project_type, standard_list, s, manifest_version=str()):
+def get_fields_based_on_standard(project_type, standard, s, manifest_version=str()):
     # Get current manifest version for a given project type if manifest_version is not provided
     manifest_version = manifest_version if manifest_version else settings.MANIFEST_VERSION.get(project_type.upper(), str())
     
@@ -322,36 +324,24 @@ def get_fields_based_on_standards(project_type, standard_list, s, manifest_versi
     
     # Filter list for field names that only begin with an uppercase letter
     fields = list(filter(lambda x: x[0].isupper() == True, fields))
-        
-    data = dict()
-    data['status'] = 'OK'
-    data['project_type'] = project_type.upper()
-    data['manifest_version'] = manifest_version
 
-    if any(x in standard_list for x in lookup.STANDARDS) and standard_list != ['tol']:
-        fields = get_standard_data(standard_list=standard_list, manifest_type=project_type.lower(), queryByManifestType=True)
+    if standard in lookup.STANDARDS and standard != 'tol':
+        fields = get_mapped_fields_for_project(standard=standard, project=project_type.lower())
 
     if isinstance(fields, dict):
-        data['status'] = fields.get('status','')
-        data['number_found'] = fields.get('number_found','')
-        data['data'] = fields.get('data','')
-    else:
-        data['number_found'] = len(fields)
-        data['data'] = fields
+        fields = fields.get('data','')
 
-    return data
+    return fields
 
 def get_fields_by_manifest_version(request):
     standard = request.GET.get('standard', 'tol')
-
-    # Split the 'standard' string into a list
-    standard_list = d_utils.convertStringToList(standard)
-
     project_type = request.GET.get('project', str())
     manifest_version = request.GET.get('manifest_version', str())
+    return_type = request.GET.get('return_type', 'json').lower()
+
     s = json_to_pytype(WIZARD_FILES['sample_details'], compatibility_mode=False)
-    out = list()
-    status = 200
+    error = None
+    template = list()
 
     if project_type and manifest_version:
         # Project type is provided; manifest version is provided
@@ -364,37 +354,27 @@ def get_fields_by_manifest_version(request):
         
         if manifest_version in manifest_versions:
             # Get fields based on standard
-            data = get_fields_based_on_standards(project_type, standard_list, s, manifest_version)
+            template = get_fields_based_on_standard(project_type, standard, s, manifest_version)
         else:
-            status = 400
-            error_message = f'No fields exist for the manifest version, {manifest_version}. Available manifest versions are {d_utils.join_list_with_and_as_last_entry(manifest_versions)}.'
-            data = dict()
-            data['status'] = { 'error': status, 'error_details': error_message}
-            data['fields'] = list()
-
-        out.append(data)
+            error= f'No fields exist for the manifest version, {manifest_version}. Available manifest versions are {d_utils.join_list_with_and_as_last_entry(manifest_versions)}.'
 
     elif project_type and not manifest_version:
         # Project type is provided; no manifest version is provided
         # Get fields based on standard
-        data = get_fields_based_on_standards(project_type, standard_list, s)
-        out.append(data)
+        template = get_fields_based_on_standard(project_type, standard, s)
 
-    elif not project_type and manifest_version:
-        # No project type is provided; manifest version is provided
-        for type in lookup.TOL_PROFILE_TYPES:
-            # Return fields, if there are fields that match the given manifest version for a particular project type 
-            # Get fields based on standard
-            data = get_fields_based_on_standards(type, standard_list, s, manifest_version)
-            out.append(data)
     else:
-        # No project type is provided; no manifest version is provided
-        for type in lookup.TOL_PROFILE_TYPES:
-            # Get fields based on standard
-            data = get_fields_based_on_standards(type, standard_list, s)
-            out.append(data)
+        error = f'Please provide a project and/or manifest version'
 
-    return  HttpResponse(status=status, content=json.dumps(out, indent=2))
+    if return_type == 'json':
+        output = generate_wrapper_response(error=error, num_found=len(template), template=template)
+        output = jsonb.dumps([output])
+
+        return  HttpResponse(output, content_type='application/json')
+    elif return_type == 'csv':
+        return generate_csv_response(standard, template)
+    else:
+        return HttpResponse(status=400, content='Invalid return type provided. Please provide either "json" or "csv".')
 
 def get_project_samples_by_associated_project_type(request, values):
     associated_profile_types_List = values.split(",")
