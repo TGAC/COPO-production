@@ -5,7 +5,6 @@ import json
 import pandas as pd
 from uuid import uuid4
 from bson import ObjectId
-from common.dal.mongo_util import cursor_to_list
 from django.urls import reverse
 from django.contrib.auth.models import User
 from common.lookup.lookup import HTML_TAGS
@@ -14,17 +13,13 @@ import common.schemas.utils.data_utils as d_utils
 from common.schema_versions.lookup.dtol_lookups import TOL_PROFILE_TYPES_FULL
 from .copo_lookup_service import COPOLookup
 from common.dal.copo_base_da import DataSchemas
-from src.apps.copo_core.models import SequencingCentre
 from common.dal.copo_da import DAComponent,  DataFile, Description
 from common.dal.profile_da import Profile, ProfileInfo
 from common.dal.submission_da import Submission
 # from hurry.filesize import size as hurrysize
-from django_tools.middlewares import ThreadLocal
 from common.utils.logger import Logger
 from common.utils import helpers
 from django.conf import settings
-from common.s3.s3Connection import S3Connection as s3
-import numpy as np
 import datetime
 
 # dictionary of components table id, gotten from the UI
@@ -72,7 +67,7 @@ def get_providers_orcid_first():
     return [{"id":o.id, "name":o.name} for o in result]
 '''
 
-
+"""
 def get_element_by_id(field_id):
     elem = {}
     out_list = get_fields_list(field_id)
@@ -82,7 +77,7 @@ def get_element_by_id(field_id):
             elem = f
             break
     return elem
-
+"""
 
 def trim_parameter_value_label(label):
     if "Parameter Value" in label:
@@ -357,7 +352,7 @@ def generate_table_columns(da_object=None):
                             title='', width="1%",
                             defaultContent='<span title="Annotate datafile" style="cursor: '
                                            'pointer;" class="copo-tooltip">'
-                                           '<i class="ui icon violet write" aria-hidden="true"></i></span>')
+                                           '<i class="ui icon violet write"></i></span>')
         columns.append(special_dict)
 
     return columns
@@ -505,11 +500,6 @@ def generate_table_records(profile_id=str(), da_object=None, record_id=str(), ad
                                                 projection=dict(projection), filter_by=filter_by)
 
     if len(records):
-        # Uppercase the value of the 'tol_project' field for each sample record
-        if da_object.component == 'sample':
-            for record in records:
-                record['tol_project'] = record.get('tol_project', '').upper()
-        
         df = pd.DataFrame(records)
         if  "_id" in additional_columns:
             df = df.merge(additional_columns, on='_id', how="left")
@@ -1446,7 +1436,8 @@ def get_resolver(data, elem):
     func_map["copo-duration"] = resolve_copo_duration_data
     func_map["copo-datafile-id"] = resolve_copo_datafile_id_data
     func_map["copo_approval"] = resolve_copo_approval_data    
-    func_map["user_id"] = resolve_user_data    
+    func_map["user_id"] = resolve_user_data 
+    func_map["upper_text"] = resolve_upper_text_data 
 
 
     control = elem.get("control", "text").lower()
@@ -1726,8 +1717,7 @@ def resolve_select_data(data, elem):
 
 
 def resolve_ontology_term_data(data, elem):
-    schema = DataSchemas("COPO").get_ui_template().get(
-        "copo").get("ontology_annotation").get("fields")
+    schema =DataSchemas.get_ui_template_node('COPO','ontology_annotation') 
 
     resolved_data = list()
 
@@ -1766,8 +1756,10 @@ def resolve_datepicker_data(data, elem):
         resolved_value = data
     return resolved_value
 
-def resolve_copo_approval_data(data, elem):
-    schema = d_utils.get_copo_schema("approval")
+def resolve_copo_approval_data(data, elem, approval_schema=None):
+    schema = approval_schema
+    if not schema:
+       schema = d_utils.get_copo_schema("approval")
 
     resolved_data = list()
     for f in schema:
@@ -1822,6 +1814,9 @@ def resolve_default_data(data):
     else:
         return str(data)
 
+def resolve_upper_text_data(data, elem):
+    return data.upper() if data else ""
+
 # @register.filter("generate_copo_profiles_counts")
 def generate_copo_profiles_counts(profiles=list()):
     data_set = list()
@@ -1838,18 +1833,18 @@ def lookup_info(val):
         return lkup.UI_INFO[val]
     return ""
 
-
+"""
 def get_fields_list(field_id):
     key_split = field_id.split(".")
 
-    new_dict = DataSchemas(field_id.split(".")[0].upper()).get_ui_template()
+    new_dict = DataSchemas.get_ui_template(field_id.split(".")[0].upper())
 
     for kp in key_split[:-1]:
         if kp in new_dict:
             new_dict = new_dict[kp]
 
     return new_dict["fields"]
-
+"""
 
 # @register.filter("id_to_class")
 def id_to_class(val):

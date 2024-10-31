@@ -1,9 +1,10 @@
 __author__ = 'felix.shaw@tgac.ac.uk - 20/01/2016'
 
 from common.lookup.lookup import API_RETURN_TEMPLATES
-from common.schema_versions.lookup.dtol_lookups import GDPR_SENSITIVE_FIELDS, STANDARDS, STANDARDS_MAPPING_FILE_PATH
+from common.schemas.utils.data_utils import get_export_fields
 from django.http import HttpResponse
 from django_tools.middlewares import ThreadLocal
+from .views.mapping import get_mapped_result
 
 import bson.json_util as jsonb
 import json
@@ -218,6 +219,7 @@ def generate_rocrate_response(samples):
             list(_dict.items())[:pos] + list(obj.items()) + list(_dict.items())[pos:])}
 
         for x in samples:
+            sample_type = x.get("tol_project", "")
             sample_item = {
                 "@id": f"https://copo-project.org/api/sample/copo_id/{x['copo_id']}", "@type": "BioSample"}
             keys_lst = list(x.keys())
@@ -262,8 +264,8 @@ def generate_rocrate_response(samples):
                             # sample_item[pp[0].lower()].append({"@id": collector["@id"]})
                             x[field].append({"@id": collector["@id"]})
 
-            # GDPR sensitive fields should be excluded
-            filtered_x = {key: value for key, value in x.items() if key not in GDPR_SENSITIVE_FIELDS}
+            export_fields = get_export_fields(component='sample', project=sample_type)
+            filtered_x = {key: value for key, value in x.items() if key in export_fields}
 
             # Update sample_item with the filtered item
             sample_item.update(filtered_x)
@@ -273,51 +275,40 @@ def generate_rocrate_response(samples):
         # result_list.append(rocrate_json)
     return rocrate_json
 
-def get_standard_mapping(standard_list, template):    
-    with open(STANDARDS_MAPPING_FILE_PATH) as f:
-        standards_data = json.load(f)
-        standards_data = standards_data[0]
+def generate_csv_response(standard, template):
+    sanitised_standard = standard.replace(' ', '_').replace('/', '-')
 
-        output_list = list()
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename={sanitised_standard}_export.csv'
 
-        for d in template:
-            output_dict = dict()
-            lst_dict = dict()
-            inner_dict = dict()
-            
-            copo_id = d.get('copo_id', str())       
-            
-            for key, value in d.items():
-                outer_dict = dict()
-                tol_column_dict = dict()
-                tol_column_dict[key] = dict()
+    df = pd.DataFrame(template)
+    df.to_csv(response, index=False)
 
-                for standard in standard_list:
-                    inner_dict = dict()
+    return response
 
-                    if key in standards_data.keys():
-                        inner_dict[standard] = {'key': key, 'value': value} if standard == "tol" else {'key':  standards_data.get(key, str()).get(standard, str()).get('field', str()), 'value': value}
-                    else:
-                        inner_dict[standard] = {'key': key, 'value': value} if standard == "tol" else {'key': str(), 'value': value}
-                    
-                    # Set value to an empty string if key is unknown in the 'inner_dict'
-                    if inner_dict[standard]['key'] == '':
-                        inner_dict[standard]['value'] = str()
+def generate_wrapper_response(error=None, num_found=None, template=None):
+    wrapper = get_return_template('WRAPPER')
 
-                    # Merge dictionaries
-                    tol_column_dict[key] |= inner_dict
+    if error is None:
+        if num_found == None:
+            wrapper['number_found'] = 0
+            if template == None:
+                wrapper['number_found'] = 0
+            if type(template) == type(list()):
+                wrapper['number_found'] = len(template)
+            # else:
+            #     wrapper['number_found'] = 1
+        else:
+            wrapper['number_found'] = num_found
+        wrapper['data'] = template
+        wrapper['status'] = 'OK'
+    else:
+        wrapper['status'] = 'Error'
+        wrapper['error_details'] = error
+        wrapper['number_found'] = None
+        wrapper['data'] = None
 
-                    # Merge dictionaries that reference the same TOL column name
-                    lst_dict |= tol_column_dict
-
-            outer_dict[copo_id] = lst_dict
-            
-            # Merge dictionaries that reference the same 'copo_id'
-            output_dict |= outer_dict
-
-            output_list.append(output_dict)
-
-    return output_list #standard_json
+    return wrapper
 
 def finish_request(template=None, error=None, num_found=None, return_http_response=True):
     """
@@ -327,17 +318,8 @@ def finish_request(template=None, error=None, num_found=None, return_http_respon
     :return: the complete API return
     """
     request = ThreadLocal.get_current_request()
-    return_type = request.GET.get('return_type', "json").lower()
-
-    standard = request.GET.get('standard', "tol")
-
-    # Split the 'standard' string into a list
-    standard_list = standard.split(',')
-    standard_list = list(map(lambda x: x.strip().lower(), standard_list))
-
-    # Remove any empty elements in the list e.g.
-    # where 2 or more commas have been typed in error
-    standard_list[:] = [x for x in standard_list if x]
+    return_type = request.GET.get('return_type', 'json').lower()
+    standard = request.GET.get('standard', 'tol').lower()
 
     '''
     if is_csv == 'True' or is_csv == 'true' or is_csv == '1' or is_csv == 1 :
@@ -345,44 +327,18 @@ def finish_request(template=None, error=None, num_found=None, return_http_respon
     else:
         is_csv = False
     '''
-    wrapper = get_return_template('WRAPPER')
-
-    # Set template with standard data if standard is one of the 
-    # standards - dwc, ena or mixs identified in the STANDARDS list
-    if any(x in standard_list for x in STANDARDS) and standard_list != ["tol"] and return_http_response:
-        template = get_standard_mapping(standard_list, template)
-
-    if error is None:
-        if num_found == None:
-            if template == None:
-                wrapper["number_found"] = 0
-            if type(template) == type(list()):
-                wrapper['number_found'] = len(template)
-            else:
-                wrapper['number_found'] = 1
-        else:
-            wrapper['number_found'] = num_found
-        wrapper['data'] = template
-        wrapper['status'] = "OK"
-    else:
-        wrapper['status']['error'] = True
-        wrapper['status']['error_detail'] = error
-        wrapper['number_found'] = None
-        wrapper['data'] = None
+    
+    # Set template with data based on the standard if there is no error and template exists
+    if not error and template:
+        template = template if standard == 'tol' else get_mapped_result(standard=standard, template=template, project=str())
+    
+    wrapper = generate_wrapper_response(error, num_found, template)
 
     output = jsonb.dumps(wrapper)
     
     if return_http_response:
-        if return_type == "csv" and standard_list == ["tol"]:
-            # Create the HttpResponse object with the appropriate CSV header
-            # only if the standard is TOL
-            response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=export.csv'
-            df = pd.DataFrame(template)
-            df.to_csv(response, index=False)
-            return response
-        elif return_type == "csv" and standard_list != ["tol"]:
-            return HttpResponse(content="Not Implemented")
+        if return_type == 'csv':
+            return generate_csv_response(standard, template)
         elif return_type == "rocrate":
             df = pd.DataFrame(template)
             manifest_ids = df['manifest_id'].unique() if 'manifest_id' in df.columns else []
@@ -392,6 +348,5 @@ def finish_request(template=None, error=None, num_found=None, return_http_respon
             return HttpResponse(content="Not Implemented")
         else:
             return HttpResponse(output, content_type="application/json")
-
     else:
         return output

@@ -9,28 +9,23 @@ from bson.errors import InvalidId
 from django.conf import settings
 from django.http import HttpResponse
 import json
-import jsonpath_rw_ext as jp
 from bson.errors import InvalidId
-from src.apps.api.utils import get_return_template, extract_to_template, finish_request
-from src.apps.api.views.mapping import get_standard_data
+from src.apps.api.utils import generate_csv_response, generate_wrapper_response, get_return_template, extract_to_template, finish_request
+from src.apps.api.views.mapping import get_mapped_field_by_standard
 from common.dal.copo_da import APIValidationReport
 from common.dal.sample_da import Sample, Source
 from common.dal.submission_da import Submission
 from common.dal.profile_da import Profile
-from itertools import chain
-from common.utils.helpers import json_to_pytype
 from common.schema_versions.lookup import dtol_lookups as lookup
-from common.lookup.lookup import API_ERRORS, WIZARD_FILES
 from common.lookup.lookup import API_ERRORS
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework import authentication, permissions
 from common.utils.logger import Logger
-import pickle
 from src.apps.copo_dtol_upload.utils.Dtol_Spreadsheet import DtolSpreadsheet
 from src.apps.copo_dtol_upload.utils.da import ValidationQueue
 from io import BytesIO
+import bson.json_util as jsonb
+import common.schemas.utils.data_utils as d_utils
 
 def get(request, id):
     """
@@ -71,8 +66,20 @@ def get(request, id):
 
 
 def format_date(input_date):
-    # format of date fields exported to STS
-    return input_date.replace(tzinfo=datetime.timezone.utc).isoformat()
+    try:
+        # Check if 'input_date' is an empty string
+        if input_date == '':
+            return ''
+
+        # Convert input_date from string to datetime if it's not already
+        if isinstance(input_date, str):
+            input_date = datetime.datetime.fromisoformat(input_date)
+
+        # Format of date fields exported to STS
+        return input_date.replace(tzinfo=datetime.timezone.utc).isoformat()
+    except Exception as e:
+        Logger().exception(f'An error occurred while formatting the date: {e}')
+        return None
 
 
 def filter_for_API(sample_list, add_all_fields=False):
@@ -83,7 +90,7 @@ def filter_for_API(sample_list, add_all_fields=False):
         profile_type = sample_list[0].get("tol_project", "dtol").lower()
     if not profile_type:
         profile_type = "dtol"
-    export = lookup.DTOL_EXPORT_TO_STS_FIELDS[profile_type]
+    export = d_utils.get_export_fields(component='sample', project=profile_type)
     out = list()
     rights_to_lookup = list()
     notices = dict()
@@ -144,9 +151,6 @@ def filter_for_API(sample_list, add_all_fields=False):
             if k in export:
                 if k in time_fields:
                     s_out[k] = format_date(v)
-                elif k in lookup.GDPR_SENSITIVE_FIELDS:
-                    # GDPR sensitive fields should be excluded
-                    pass
                 else:
                     s_out[k] = v
             if k == "changelog":
@@ -164,18 +168,12 @@ def filter_for_API(sample_list, add_all_fields=False):
                     if k not in s_out.keys():
                         if k in defaults_list.keys():
                             s_out[k] = defaults_list[k]
-                        elif k in lookup.GDPR_SENSITIVE_FIELDS:
-                            # GDPR sensitive fields should be excluded
-                            pass
                         else:
                             s_out[k] = ""
                 out.append(s_out)
             else:
-                # Exclude GDPR sensitive fields before appending 's_out'
-                filtered_s_out = {key: value for key, value in s_out.items() if key not in lookup.GDPR_SENSITIVE_FIELDS}
-
+                filtered_s_out = {key: value for key, value in s_out.items() if key in export}
                 out.append(filtered_s_out)
-
     return out
 
 
@@ -314,123 +312,40 @@ def get_updatable_fields_by_project(request, project):
     return finish_request(out)
 
 def get_fields_by_manifest_version(request):
-    standard = request.GET.get('standard', ["tol"])
-    project_type = request.GET.get('project', str())
+    return_type = request.GET.get('return_type', 'json').lower()
+    standard = request.GET.get('standard', 'tol').lower()
+    project = request.GET.get('project', str())
     manifest_version = request.GET.get('manifest_version', str())
-    s = json_to_pytype(WIZARD_FILES["sample_details"], compatibility_mode=False)
-    out = list()
-    status = 200
 
+    manifest_versions = Sample().get_available_manifest_versions(project)
+    template = None
 
-    if project_type and manifest_version:
-        # Project type is provided; manifest version is provided
-        data = dict()
-        
-        data['project_type'] = project_type
-        data['manifest_version'] = manifest_version
-
-        # Get all manifest versions for a given project
-        manifest_versions = jp.match(f'$.properties[?(@.specifications[*] == {project_type.lower()})].manifest_version', s)
-        
-        # Get unique manifest versions from a nested list of manifest versions
-        # Sort the list of manifest versions
-        manifest_versions = sorted(list(set(chain(*manifest_versions)))) 
-        
-        if manifest_version in manifest_versions:
-            fields = jp.match(
-                '$.properties[?(@.specifications[*] == "' + project_type.lower() + '"& @.manifest_version[*]=="' + manifest_version + '")].versions[0]',
-                s)
-
-            # Filter list for field names that only begin with an uppercase letter
-            fields = list(filter(lambda x: x[0].isupper() == True, fields))
-
-            # Get fields based on standard
-            if standard in lookup.STANDARDS:
-                fields = get_standard_data(standard=standard, manifest_type=project_type.lower(), queryByManifestType=True)
-
-            data['number_of_fields'] = len(fields)
-            data['fields'] = fields
-        else:
-            status = 400
-            error_message = f'No fields exist for the manifest version, {manifest_version}. Available manifest versions are {manifest_versions}.'
-            data['status'] = { "error": '400', "error_details": error_message}
-
-        out.append(data)
-
-    elif project_type and not manifest_version:
-        # Project type is provided; no manifest version is provided
-        data = dict()
-        # Get current manifest version for a given project type
-        version = settings.MANIFEST_VERSION.get(project_type, str())
-
-        fields = jp.match('$.properties[?(@.specifications[*] == "' + project_type.lower() + '"& @.manifest_version[*]=="' + version + '")].versions[0]',s)
-        
-        # Filter list for field names that only begin with an uppercase letter
-        fields = list(filter(lambda x: x[0].isupper() == True, fields))
-
+    if manifest_version in manifest_versions:
         # Get fields based on standard
-        if standard in lookup.STANDARDS:
-            fields = get_standard_data(standard=standard, manifest_type=type.lower(), queryByManifestType=True)
-
-        data['project_type'] = project_type
-        data['manifest_version'] = version
-        data['number_of_fields'] = len(fields)
-        data['fields'] = fields
-        
-        out.append(data)
-
-    elif not project_type and manifest_version:
-        # No project type is provided; manifest version is provided
-        for type in lookup.TOL_PROFILE_TYPES:
-            fields = jp.match(
-                '$.properties[?(@.specifications[*] == "' + type + '"& @.manifest_version[*]=="' + manifest_version + '")].versions[0]',
-                s)
-
-            # Return fields, if there are fields that match the given manifest version for a particular project type 
-            if fields:
-                data = dict()
-
-                # Filter list for field names that only begin with an uppercase letter
-                fields = list(filter(lambda x: x[0].isupper() == True, fields))
-
-                data['project_type'] = type.upper()
-                data['manifest_version'] = manifest_version
-                data['number_of_fields'] = len(fields)
-                data['fields'] = fields
-
-                out.append(data)
+        mapped_field_dict = get_mapped_field_by_standard(standard=standard, project=project, manifest_version=manifest_version)
+        template = list(mapped_field_dict.values())    
     else:
-        # No project type is provided; no manifest version is provided
-        for type in lookup.TOL_PROFILE_TYPES:
-            data = dict()
+        # Show error if manifest version does not exist
+        error= f'No fields exist for the manifest version, {manifest_version}. Available manifest versions are {d_utils.join_list_with_and_as_last_entry(manifest_versions)}.'
+        return HttpResponse(status=400, content=error)
+   
+    if return_type not in ['json', 'csv']:
+         # Show error if return type is not 'json' or 'csv'
+        error = 'Invalid return type provided. Please provide either "json" or "csv".'
+        return HttpResponse(status=400, content=error)
+    
+    if  return_type == 'csv':
+        return generate_csv_response(standard, template)
+    
+    # Generate JSON response
+    output = generate_wrapper_response(template=template)
+    output = jsonb.dumps([output])
 
-            # Get current manifest version for each project type
-            version = settings.MANIFEST_VERSION.get(type.upper(), str())
-            
-            # Get all fields for each manifest version for that project type
-            fields = jp.match('$.properties[?(@.specifications[*] == "' + type + '"& @.manifest_version[*]=="' + version + '")].versions[0]',s)
-            
-            # Filter list for field names that only begin with an uppercase letter
-            fields = list(filter(lambda x: x[0].isupper() == True, fields))
-
-                        # Get fields based on standard
-            if standard in lookup.STANDARDS:
-                fields = get_standard_data(standard=standard, manifest_type=type.lower(), queryByManifestType=True)
-
-            data['project_type'] = type.upper()
-            data['manifest_version'] = version
-            data['number_of_fields'] = len(fields)
-            data['fields'] = fields
-            
-            out.append(data)
-
-    return  HttpResponse(status=status, content=json.dumps(out, indent=2))
+    return  HttpResponse(output, content_type='application/json')
 
 def get_project_samples_by_associated_project_type(request, values):
-    associated_profile_types_List = values.split(",")
+    associated_profile_types_List = d_utils.convertStringToList(values) # Convert string to list of lowercase strings
     associated_profile_types_List = list(map(lambda x: x.strip().upper(), associated_profile_types_List))
-    # remove any empty elements in the list (e.g. where 2 or more commas (i.e. ,) have been typed in error
-    associated_profile_types_List[:] = [x for x in associated_profile_types_List if x]
     samples = Sample().get_project_samples_by_associated_project_type(associated_profile_types_List)
     out = list()
     if samples:

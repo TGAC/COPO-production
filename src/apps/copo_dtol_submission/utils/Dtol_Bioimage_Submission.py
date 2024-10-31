@@ -29,7 +29,7 @@ BIOIMAGE_SENT = {"asg_specimen" : f"{BIOIMAGE_PATH}/ASG",
                  "copo_specimen" : f"{BIOIMAGE_PATH}/COPO"}
 
 ASPERA_PATH = get_env("ASPERA_PATH")  #"/root/.aspera/cli"
-BIOIMAGE_ASPERA_CMD = f"{ASPERA_PATH}/bin/ascp -P33001 -l100M --move-after-transfer  {BIOIMAGE_ARCHIVE} -i {ASPERA_PATH}/etc/asperaweb_id_dsa.openssh -d {' '.join(BIOIMAGE_SENT.values())} {BIOIMAGE_SERVER}:{BIOIMAGE_UPLOAD_PATH}"
+BIOIMAGE_ASPERA_CMD = f"{ASPERA_PATH}/bin/ascp -P33001 -l50M --move-after-transfer  {BIOIMAGE_ARCHIVE} -i {ASPERA_PATH}/etc/asperaweb_id_dsa.openssh -d {' '.join(BIOIMAGE_SENT.values())} {BIOIMAGE_SERVER}:{BIOIMAGE_UPLOAD_PATH}"
 
 
 def housekeeping_bioimage_archive():
@@ -47,9 +47,10 @@ def process_bioimage_pending_submission():
     # submit images
     submissions = Submission().get_bioimage_pending_submission()
     specimen_ids = []
-    sub_ids = []
     now = get_datetime()
-    lastSubImageDt = {}
+    complete_sub_ids = []
+    pending_sub_ids = []
+
     #imagePath = Path(settings.MEDIA_ROOT) / "sample_images"
     #sentPath = imagePath / "sent"
 
@@ -63,7 +64,10 @@ def process_bioimage_pending_submission():
         notify_frontend(data={"profile_id": sub["profile_id"]}, msg="Bioimage is being submitted", action="info",
                         html_id="dtol_sample_info")
         specimen_ids.extend(sub["dtol_specimen"])
-        sub_ids.append(sub["_id"])
+        if len(sub["dtol_samples"])==0: 
+          complete_sub_ids.append(sub["_id"])
+        else:
+          pending_sub_ids.append(sub["_id"])
 
     sources = Source().get_sourcemap_by_specimens(specimen_ids)
     for specimenId in specimen_ids:
@@ -121,6 +125,11 @@ def process_bioimage_pending_submission():
         notify_frontend(data={"profile_id": sub["profile_id"]}, msg="<br>Bioimage was not submitted", action="info",
                         html_id="dtol_sample_info")
 
+    
+    #to handle the case of approving the submission in batch
     Submission().get_collection_handle().update_many(
-        {"_id" : {"$in": sub_ids}}, {"$set": {"dtol_specimen": [], "dtol_status":"complete", "date_modified": now}}
+        {"_id" : {"$in": complete_sub_ids}}, {"$set": {"dtol_specimen": [], "dtol_status":"complete", "date_modified": now}}
+    )
+    Submission().get_collection_handle().update_many(
+        {"_id" : {"$in": pending_sub_ids}}, {"$set": {"dtol_specimen": [], "dtol_status":"pending", "date_modified": now}}
     )

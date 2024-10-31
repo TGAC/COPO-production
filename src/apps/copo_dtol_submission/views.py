@@ -23,7 +23,7 @@ lg = settings.LOGGER
 @login_required
 def copo_sample_accept_reject(request):
     sample_manager_groups = list()
-    associated_profiles_type_approval_for = [assoicated_profile_type.name for assoicated_profile_type in AssociatedProfileType.objects.filter(is_approval_required=True, users=get_current_user())]
+    associated_profiles_type_approval_for = [associated_profile_type.name for associated_profile_type in AssociatedProfileType.objects.filter(is_approval_required=True, users=get_current_user())]
  
     user_groups = get_group_membership_asString()
     for group in user_groups:
@@ -107,10 +107,6 @@ def get_dtol_samples_for_profile(request):
                  else:
                     samples = Sample().get_dtol_from_profile_id(
                         profile_id, filter, draw, start, length, sort_by, dir, search, type, is_associated_project_type_checker, is_sequencing_centre_checker)
-                     
-                    # Uppercase the value of the 'tol_project' field for each sample record
-                    for sample in samples['data']:
-                        sample['tol_project'] = sample.get('tol_project', '').upper()
 
         out = encode(samples, unpicklable=False)
         return HttpResponse(out, content_type='application/json')
@@ -143,7 +139,7 @@ def add_sample_to_dtol_submission(request):
     #is_bge_checker =  "bge_checkers" in group
     current_user = get_current_user()
     is_sample_manager = True #assume user is a sample manager as it has been checked in the decorator
-    assoicated_profiles_type_require_approval = AssociatedProfileType.objects.filter(is_approval_required=True,  name__in =  associated_profiles)
+    associated_profiles_type_require_approval = AssociatedProfileType.objects.filter(is_approval_required=True,  name__in =  associated_profiles)
     associated_profiles_type_approval_for = AssociatedProfileType.objects.filter(is_approval_required=True,  users=current_user,  name__in = associated_profiles)
 
 
@@ -155,8 +151,11 @@ def add_sample_to_dtol_submission(request):
  
         if not sub:
             sub = Submission(profile_id).save_record(
-                                dict(), **{"type": type_sub.lower()})     
-        sub["dtol_status"] = "pending"
+                                dict(), **{"type": type_sub.lower()})          
+            sub["dtol_status"] = "pending"
+        elif sub["dtol_status"] == "complete":
+            sub["dtol_status"] = "pending"
+
         sub["target_id"] = sub.pop("_id")
 
         sample_oids = [ObjectId(id) for id in sample_ids]
@@ -175,7 +174,7 @@ def add_sample_to_dtol_submission(request):
             match sample["status"]:
                 case "pending":
                     all_approved = True
-                    for associated_profile in assoicated_profiles_type_require_approval:
+                    for associated_profile in associated_profiles_type_require_approval:
                         if associated_profile in associated_profiles_type_approval_for:
                             update_approval[f"approval.{associated_profile.name}"] = {"user_id": user.pk, "date": now} 
                             update_approval_for_samples.append(sample["_id"])

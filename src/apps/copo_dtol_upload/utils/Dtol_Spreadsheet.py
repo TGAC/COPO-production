@@ -28,8 +28,9 @@ from common.schema_versions.lookup import dtol_lookups as lookup
 from common.utils.logger import Logger
 from PIL import Image
 import numpy as np
-from src.apps.copo_core.models import AssociatedProfileType
+from PIL import ImageFile
 
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 Image.MAX_IMAGE_PIXELS = None
 
@@ -562,10 +563,9 @@ class DtolSpreadsheet:
 
         # Iterate the list of permit filenames and create a mapping
         for permit_filename in permit_filename_lst:
-            if permit_filename.endswith(".pdf"):
+            if permit_filename.lower().endswith(".pdf"):
                 current_date = get_datetime().strftime('%Y%m%d')
-                new_permit_filename = permit_filename.replace(
-                    '.pdf', "_" + str(current_date) + ".pdf")
+                new_permit_filename = permit_filename[:-4] + "_" + str(current_date) + ".pdf"
                 permit_filename_mapping[permit_filename] = new_permit_filename
 
         sample_data["_id"] = ""

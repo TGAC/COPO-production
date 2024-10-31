@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.messages import constants as messages
 from datetime import timedelta
 from common.utils import helpers as resolve_env
+
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -29,6 +30,8 @@ LOGIN_URL = '/accounts/auth/'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if str(resolve_env.get_env('DEBUG')).lower() == 'true' else False
 
+protocol = resolve_env.get_env('http_protocol')
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = protocol.lower() if protocol else 'https'
 
 # ALLOWED_HOSTS = [ gethostname(), gethostbyname(gethostname()), ]
 ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.0', '.copo-project.org', '.copo-new.cyverseuk.org',
@@ -133,6 +136,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_tools.middlewares.ThreadLocal.ThreadLocalMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
@@ -288,6 +292,7 @@ ROOT_URLCONF = 'src.main_config.urls'
 
 UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'uploads')
 LOCAL_UPLOAD_PATH = os.path.join(BASE_DIR, 'local_uploads')
+STANDARDS_MAP_FILE_PATH = os.path.join(SCHEMA_VERSIONS_DIR, 'isa_mappings', 'standards_map.json')
 
 # Tinymce configuration
 TINYMCE_JS_URL = os.path.join(STATIC_URL, 'copo', 'tinymce','tinymce.min.js')
