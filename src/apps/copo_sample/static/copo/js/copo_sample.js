@@ -2339,7 +2339,7 @@ $(document).on('document_ready', function () {
             }
         });
     }
-    */
+    
   function delete_incomplete_description(elem, description_token) {
     $.ajax({
       url: wizardURL,
@@ -2359,7 +2359,7 @@ $(document).on('document_ready', function () {
       },
     });
   }
-
+  */
   function trigger_csv_upload() {
     //function handles upload of description csv file
 

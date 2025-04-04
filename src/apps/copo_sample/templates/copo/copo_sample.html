@@ -81,13 +81,12 @@
     </div>
 
     <!-- sample wizard section -->
-    <div id="wizard_toggle" class="collapse" style="margin-bottom: 20px;">
+    <!--div id="wizard_toggle" class="collapse" style="margin-bottom: 20px;">
         <div class="panel panel-primary">
             <div class="panel-heading">Sample Description</div>
             <div class="panel-body">
                 <div class="fuelux" style="margin-bottom: 5px;">
                     <div class="row action-rw">
-                        <!-- Discard description button -->
                         <div id="remove_act" class=" tiny ui basic red button"
                              data-toggle="tooltip"
                              title="Discard description"
@@ -95,7 +94,6 @@
                             <span style="padding-left: 3px;">Discard description</span>
                         </div>
 
-                        <!-- save for later description button -->
                         <div id="reload_act" class=" tiny ui basic secondary button"
                              data-toggle="tooltip"
                              title="Save description for later"
@@ -138,7 +136,6 @@
                                            value="intro" type="hidden">
                                 </form>
 
-                                <!-- description wizard getting started section -->
                                 <div class="webpop-content-div">
                                     <h4>Getting started...</h4>
                                     The following tips are provided to help you navigate the wizard:
@@ -201,7 +198,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div-->
 
     <!-- sample table section -->
     <div style="margin-top: 15px;">
@@ -287,6 +284,6 @@
     <script src="{% static 'copo/js/filesaver.js' %}"></script>
     <script src="{% static 'copo/js/jszip-utils.min.js' %}"></script>
     <script src="{% static 'copo/js/jszip.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>
+    <script src="{% static 'copo/moment/js/moment.min.js' %}"></script>
+    <script src="{% static 'copo/datatables/js/datetime-moment.js' %}"></script>
 {% endblock %}

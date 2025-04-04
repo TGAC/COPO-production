@@ -481,14 +481,14 @@
 {% block help_section %}{% endblock %}
 
 {% block js_block %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.0/chart.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="{% static 'copo/chart_js/4.2.0/js/chart.umd.js' %}"></script>
+    <script src="{% static 'copo/moment/js/moment.min.js' %}"></script>
+    <script src="{% static 'copo/jquery-ui/1.13.2/js/jquery-ui.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/copo_tol_dashboard.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/tol_inspection.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/tol_inspection_by_gal.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/jquery-jvectormap-2.05.min.js' %}"></script>
     <script src="{% static 'tol_dashboard/js/jquery-jvectormap-world-mill.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.11.5/sorting/datetime-moment.js"></script>
+    <script src="{% static 'copo/moment/js/moment.min.js' %}"></script>
+    <script src="{% static 'copo/datatables/js/datetime-moment.js' %}"></script>
 {% endblock js_block %}
