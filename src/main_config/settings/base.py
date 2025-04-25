@@ -149,6 +149,9 @@ MIDDLEWARE = [
     'src.apps.copo_core.middlewares.LocksMiddleware.LocksMiddleware',
     'src.apps.copo_core.middlewares.LogUncaughtExceptions.LogUncaughtExceptions',
     'allow_cidr.middleware.AllowCIDRMiddleware',
+    'django_brotli.middleware.BrotliMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -206,6 +209,7 @@ STATIC_URL = '/static/'
 
 # print(STATICFILES_DIRS)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, resolve_env.get_env('MEDIA_PATH'))
 MEDIA_URL = '/media/'
@@ -221,7 +225,9 @@ SOP_FILE_NAME = "{0}_MANIFEST_SOP{1}.pdf"
 SOP_DOWNLOAD_URL = "/static/assets/sops/" + SOP_FILE_NAME
 
 ELASTIC_SEARCH_URL = 'http://localhost:9200/ontologies/plant_ontology/_search'
-BIA_IMAGE_URL_PREFIX = 'https://ftp.ebi.ac.uk/biostudies/fire/S-BIAD/012/S-BIAD1012/Files/'
+BIA_IMAGE_URL_PREFIX = (
+    'https://ftp.ebi.ac.uk/biostudies/fire/S-BIAD/012/S-BIAD1012/Files/'
+)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 48 * 60 * 60  #

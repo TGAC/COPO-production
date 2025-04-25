@@ -46,6 +46,7 @@ Django==5.1.1
 django-allauth==64.2.1
 django-allow-cidr==0.7.1
 django-appconf==1.0.6
+django-brotli==0.3.0
 django-tinymce==4.1.0
 django-compression-middleware==0.5.0
 django-compressor==4.5.1
@@ -204,6 +205,7 @@ vine==5.0.0
 wcwidth==0.2.6
 #webencodings==0.5.1
 #widgetsnbextension==3.5.1
+whitenoise==6.9.0
 #wrapt==1.10.10
 xlrd==2.0.1
 xmljson==0.2.1
