@@ -19,6 +19,7 @@ urlpatterns = [
     path('copo/copo_seq_annotation/', include('src.apps.copo_seq_annotation_submission.urls', namespace='copo_seq_annotation_submission')),
     path('copo/copo_taggedseq/', include('src.apps.copo_barcoding_submission.urls', namespace='copo_barcoding_submission')),
     path('copo/copo_files/', include('src.apps.copo_file.urls', namespace='copo_file')),
+    path('copo/copo_images/', include('src.apps.copo_image_submission.urls', namespace='copo_image_submission')),
     path('copo/auth/', include('src.apps.copo_login.urls', namespace='copo_login')),
     re_path(r'^copo/', include('src.apps.copo_profile.urls', namespace='copo_profile_index')),
     path('copo/copo_profile/', include('src.apps.copo_profile.urls', namespace='copo_profile')),
