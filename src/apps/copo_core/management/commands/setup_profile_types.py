@@ -17,7 +17,7 @@ ProfileType
   4 | asg      | Aquatic Symbiosis Genomics (ASG)                    | #5829bb       | t               | t
   3 | dtolenv  | Darwin Tree of Life Environmental Samples (DTOLENV) | #fb7d0d       | t               | t
   2 | dtol     | Darwin Tree of Life (DTOL)                          | #16ab39       | t               | t
-  1 | general | Stand-alone                                         | #009c95       | f               | f
+  1 | genomics | Stand-alone                                         | #009c95       | f               | f
   6 | test     | Test New Profile                                    | violet        | f               | t
 
 '''
@@ -551,9 +551,9 @@ class Command(BaseCommand):
             is_permission_required=True,
             post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile",
         )
-        general = ProfileType().create_profile_type(
-            type="general",
-            description="General",
+        genomics = ProfileType().create_profile_type(
+            type="genomics",
+            description="Genomics",
             widget_colour="#009c95",
             is_dtol_profile=False,
             is_permission_required=False,
@@ -571,7 +571,7 @@ class Command(BaseCommand):
         dtol.components.set(
             [assembly, taggedseq, files, seqannotation, read, sample, accessions]
         )
-        general.components.set(
+        genomics.components.set(
             [assembly, files, seqannotation, read, accessions, images]
         )
 
