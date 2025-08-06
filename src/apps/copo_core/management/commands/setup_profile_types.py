@@ -125,22 +125,12 @@ class Command(BaseCommand):
         )
         download_singlecell_manifest_single = RecordActionButton().create_record_action_button(
             name="download_singlecell_manifest_single",
-            title="Download Single Cell Manifest",
-            label="Download single cell manifest",
+            title="Download manifest",
+            label="Download manifest",
             type="single",
             error_message="Please select one of studies in the manifest to download",
             icon_class="fa fa-download",
             action="download-singlecell-manifest",
-            icon_colour="blue",
-        )
-        download_image_manifest_single = RecordActionButton().create_record_action_button(
-            name="download_image_manifest_single",
-            title="Download Image Manifest",
-            label="Download image manifest",
-            type="single",
-            error_message="Please select one of studies in the manifest to download",
-            icon_class="fa fa-download",
-            action="download-image-manifest",
             icon_colour="blue",
         )
         add_local_all = RecordActionButton().create_record_action_button(
@@ -271,16 +261,6 @@ class Command(BaseCommand):
             error_message="Please select one or more records to delete",
             icon_class="fa fa-trash-can",
             action="delete_singlecell",
-            icon_colour="red",
-        )
-        delete_images_multi = RecordActionButton().create_record_action_button(
-            name="delete_images_multi",
-            title="Delete records",
-            label="Delete",
-            type="multi",
-            error_message="Please select one or more records to delete",
-            icon_class="fa fa-trash-can",
-            action="delete_images",
             icon_colour="red",
         )
         submit_singlecell_single_ena = RecordActionButton().create_record_action_button(
@@ -418,12 +398,7 @@ class Command(BaseCommand):
         )
         new_singlecell_spreadsheet_template = TitleButton().create_title_button(
             name="new_singlecell_spreadsheet_template",
-            template="<button style=\"display: inline\" title=\"Add study from Single Cell Spreadsheet\"             class=\"big circular ui icon button new-singlecell-spreadsheet-template copo-tooltip\">         <i class=\"icon table sign\"></i>     </button>",
-            additional_attr="",
-        )
-        new_image_spreadsheet_template = TitleButton().create_title_button(
-            name="new_image_spreadsheet_template",
-            template="<button style=\"display: inline\" title=\"Add study from Image Spreadsheet\"             class=\"big circular ui icon button new-singlecell-spreadsheet-template copo-tooltip\">         <i class=\"icon table sign\"></i>     </button>",
+            template="<button style=\"display: inline\" title=\"Add study from Spreadsheet\"             class=\"big circular ui icon button new-singlecell-spreadsheet-template copo-tooltip\">         <i class=\"icon table sign\"></i>     </button>",
             additional_attr="",
         )
         new_samples_spreadsheet_template = TitleButton().create_title_button(
@@ -525,6 +500,20 @@ class Command(BaseCommand):
             subtitle="#component_subtitle",
             schema_name="COPO_SINGLE_CELL",
         )
+
+        images = Component().create_component(
+            name="images",
+            title="Images",
+            widget_icon="image",
+            widget_colour="grey",
+            widget_icon_class="fa fa-image",
+            table_id="singlecell_table",
+            reverse_url="copo_single_cell_submission:copo_singlecell",
+            subtitle="#component_subtitle",
+            schema_name="COPO_IMAGES",
+            base_component="singlecell",
+        )
+
         sample = Component().create_component(
             name="sample",
             title="Samples",
@@ -565,18 +554,7 @@ class Command(BaseCommand):
             reverse_url="copo_sample:copo_general_samples",
             subtitle="#component_subtitle",
         )
-        images = Component().create_component(
-            name="images",
-            title="Images",
-            widget_icon="images",
-            widget_colour="grey",
-            widget_icon_class="fa fa-images",
-            table_id="singlecell_table",
-            reverse_url="copo_single_cell_submission:copo_singlecell",
-            subtitle="#component_subtitle",
-            schema_name="COPO_IMAGES",
-            base_component="singlecell",
-        )
+
 
         assembly.recordaction_buttons.set(
             [
@@ -639,10 +617,10 @@ class Command(BaseCommand):
         )
 
         images.recordaction_buttons.set(
-            [delete_images_multi, download_image_manifest_single]
+            [delete_singlecell_multi, download_singlecell_manifest_single]
         )
         images.title_buttons.set(
-            [new_image_spreadsheet_template, download_blank_manifest_template]
+            [new_singlecell_spreadsheet_template, download_blank_manifest_template]
         )
 
         sample.recordaction_buttons.set(
