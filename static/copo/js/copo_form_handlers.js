@@ -2986,7 +2986,7 @@ function get_general_ontologyselect_span(ontologySpan, formElem) {
     formElem.option_values.sort(function (a, b) {
       return a.label.localeCompare(b.label);
     });
-    
+
     option_values = formElem.option_values;
   }
 

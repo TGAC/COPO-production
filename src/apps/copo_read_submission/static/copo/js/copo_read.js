@@ -75,7 +75,8 @@ $(document).on('document_ready', function () {
   if (window.location.protocol === 'https:') {
     wsprotocol = 'wss://';
   }
-  var wsurl = wsprotocol + window.location.host + '/ws/read_status/' + profile_id;
+  var wsurl =
+    wsprotocol + window.location.host + '/ws/read_status/' + profile_id;
 
   s3socket = new WebSocket(wsurl);
 
@@ -169,8 +170,8 @@ $(document).on('document_ready', function () {
       $(element).html(d.message);
       var args_dict = {};
       args_dict['sample_checklist_id'] = get_checklist_id();
-      args_dict['profile_id'] = profile_id,
-      load_records(componentMeta, args_dict, columnDefs); // call to load component records
+      (args_dict['profile_id'] = profile_id),
+        load_records(componentMeta, args_dict, columnDefs); // call to load component records
     } else if (d.action === 'file_processing_status') {
       $(element).html(d.message);
       table = $('#read_table').DataTable();
@@ -224,8 +225,8 @@ $(document).on('document_ready', function () {
     'href',
     $('#blank_manifest_url_' + get_checklist_id()).val()
   );
-  args_dict['profile_id'] = $('#profile_id').val(),
-  load_records(componentMeta, args_dict, columnDefs); // call to load component records
+  (args_dict['profile_id'] = $('#profile_id').val()),
+    load_records(componentMeta, args_dict, columnDefs); // call to load component records
 
   //register_resolvers_event(); //register event for publication resolvers
 

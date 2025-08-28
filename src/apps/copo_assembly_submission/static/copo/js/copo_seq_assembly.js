@@ -34,7 +34,8 @@ $(document).ready(function () {
   if (window.location.protocol === 'https:') {
     wsprotocol = 'wss://';
   }
-  var wsurl = wsprotocol + window.location.host + '/ws/assembly_status/' + profile_id;
+  var wsurl =
+    wsprotocol + window.location.host + '/ws/assembly_status/' + profile_id;
 
   s3socket = new WebSocket(wsurl);
 

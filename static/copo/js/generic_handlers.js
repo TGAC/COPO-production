@@ -2931,7 +2931,205 @@ function do_page_controls(componentName) {
   }
   */
   generate_component_control(componentName, profile_type);
+  initialiseComponentDropdownMenu();
 } //end of func
+
+function groupComponentsByGroupName(components) {
+  const grouped = {};
+
+  components.forEach((component) => {
+    // Treat null, undefined, empty string or string "None" as empty.
+    // Parent components would typically have a "None" group name.
+    const group =
+      !component.groupName || component.groupName === 'None'
+        ? ''
+        : component.groupName.trim().toLowerCase();
+    if (!grouped[group]) {
+      grouped[group] = [];
+    }
+    // Avoid duplicates by skipping components
+    // with the same name and title
+    if (
+      !grouped[group].some(
+        (item) =>
+          item.component === component.component &&
+          item.title === component.title
+      )
+    ) {
+      grouped[group].push(component);
+    }
+  });
+
+  return grouped;
+}
+
+function createComponentAnchor(item, profileId, isIconOnly = false) {
+  const $templateAnchor = isIconOnly
+    ? $('a.pcomponent-icon-template').clone()
+    : $('a.pcomponent-button-template').clone();
+
+  $templateAnchor.attr('title', function (_, oldTitle) {
+    return (oldTitle || '') + ` ${item.title}`;
+  });
+  $templateAnchor.attr(
+    'href',
+    item.url ? item.url.replace('999', profileId) : '#'
+  );
+
+  const $icon = $templateAnchor.find('i');
+
+  if (!isIconOnly) {
+    const $button = $templateAnchor.find('.pcomponent-button');
+    $button.addClass(item.color);
+    $button.find('.pcomponent-icon').addClass(item.iconClass);
+    $button.find('.pcomponent-name').text(item.title);
+    $icon.addClass(item.iconClass);
+    $templateAnchor.removeClass('pcomponent-button-template');
+  } else {
+    $icon.addClass(`${item.color} ${item.semanticIcon}`);
+    $templateAnchor.removeClass('pcomponent-icon-template');
+  }
+
+  return $templateAnchor;
+}
+
+function createDropdownWrapper1(
+  groupName,
+  childrenItems,
+  profileId,
+  isIconOnly
+) {
+  // Find the dropdown menu wrapper that
+  // matches the parent component group name
+  // NB: It must exist in the 'components_template.html'.
+  const $wrapper = isIconOnly
+    ? $('.profile-dropdown-wrapper.pcomponent-dropdown-icon-template')
+        .filter(function () {
+          const parentComponentName = $(this)
+            .contents()
+            .filter(function () {
+              return this.nodeType === 3 && this.nodeValue.trim();
+            })
+            .text()
+            .trim()
+            .toLowerCase();
+
+          return parentComponentName === groupName.toLowerCase();
+        })
+        .clone()
+    : $('.profile-dropdown-wrapper.pcomponent-dropdown-button-template')
+        .filter(function () {
+          const parentComponentName = $(this)
+            .find('.pcomponent-button')
+            .contents()
+            .filter(function () {
+              return this.nodeType === 3 && this.nodeValue.trim(); // Retain only text nodes
+            })
+            .text()
+            .replace(/\s+/g, ' ') // Normalise whitespaces/newlines
+            .trim()
+            .toLowerCase();
+
+          return parentComponentName === groupName.toLowerCase();
+        })
+        .clone();
+
+  if (!$wrapper.length) {
+    console.error(`Component dropdown wrapper not found for ${groupName}`);
+    return;
+  }
+
+  const $menu = $wrapper.find(
+    `.profile-dropdown-menu${isIconOnly ? '.icon-only' : ''}`
+  );
+  const $container = $('<div/>');
+
+  if (isIconOnly) {
+    // Component icon dropdown menu
+    $wrapper.removeClass('pcomponent-dropdown-icon-template');
+  } else {
+    // Component button dropdown menu
+    $container.addClass('item');
+    $wrapper.removeClass('pcomponent-dropdown-button-template');
+  }
+
+  childrenItems.forEach((item) => {
+    const childAnchor = createComponentAnchor(item, profileId, isIconOnly);
+    isIconOnly ? $menu.append(childAnchor) : $container.append(childAnchor);
+  });
+
+  $menu.append($container);
+  $wrapper.append($menu);
+
+  return $wrapper;
+}
+
+function createDropdownWrapper(
+  groupName,
+  childrenItems,
+  profileId,
+  isIconOnly
+) {
+  const templateDiv = isIconOnly
+    ? '.profile-dropdown-wrapper.pcomponent-dropdown-icon-template'
+    : '.profile-dropdown-wrapper.pcomponent-dropdown-button-template';
+
+  // Normalise group name for comparison
+  const targetParentComponentName = String(groupName).trim().toLowerCase();
+
+  // Find dropdown wrapper based on template type
+  const $wrapper = $(templateDiv)
+    .filter(function () {
+      const parentComponentName = isIconOnly
+        ? // Component icon only
+          $(this).find('.pcomponent-icon-name').clone().text()
+        : // Component button only
+          $(this)
+            .find('.pcomponent-button')
+            .clone()
+            .children()
+            .remove()
+            .end()
+            .text();
+
+      return (
+        parentComponentName.replace(/\s+/g, ' ').trim().toLowerCase() ===
+        targetParentComponentName
+      );
+    })
+    .clone();
+
+  if (!$wrapper.length) {
+    console.error(`Component dropdown wrapper not found for ${groupName}`);
+    return;
+  }
+
+  // Remove template-specific classes
+  $wrapper.removeClass(
+    isIconOnly
+      ? 'pcomponent-dropdown-icon-template'
+      : 'pcomponent-dropdown-button-template'
+  );
+
+  if (isIconOnly) $wrapper.find('.pcomponent-icon-name').remove();
+  
+  const $menu = $wrapper.find(
+    `.profile-dropdown-menu${isIconOnly ? '.icon-only' : ''}`
+  );
+
+  // Add inner container to component button only
+  const $container = !isIconOnly ? $('<div/>').addClass('item') : null;
+
+  // Build child components/subcomponents
+  childrenItems.forEach((item) => {
+    const childAnchor = createComponentAnchor(item, profileId, isIconOnly);
+    ($container || $menu).append(childAnchor);
+  });
+
+  if ($container) $menu.append($container);
+
+  return $wrapper;
+}
 
 function generate_component_control(componentName, profile_type) {
   var component = get_component_meta(componentName);
@@ -3066,32 +3264,43 @@ function generate_component_control(componentName, profile_type) {
 
     var components = get_profile_components(profile_type);
 
-    for (var i = 0; i < components.length; ++i) {
-      var comp = components[i];
-      //if (comp.hasOwnProperty('profile_component')) {
-      if (comp.component == component.component && comp.title == component.title) {
-        continue;
+    // Sort components by title in ascending order
+    components.sort((a, b) => a.title.localeCompare(b.title));
+
+    // Group components by 'group' field value
+    const grouped = groupComponentsByGroupName(components);
+
+    Object.entries(grouped).forEach(([groupName, groupItems]) => {
+     
+      // Render as dropdown if group is non-empty and has more
+      // than one subcomponent
+      const isDropdownMenu = groupName && groupItems.length > 1;
+
+      if (isDropdownMenu) {
+        // Components with subcomponents i.e. dropdown menus
+        const dropdown = createDropdownWrapper(
+          groupName,
+          groupItems,
+          profile_id,
+          true,
+          pcomponentAnchor
+        );
+        pcomponentHTML.append(dropdown);
+      } else {
+        // Single/Standalone components
+        groupItems
+          .filter((i) => i.isAssignable && !i.isParent)
+          .forEach((j) => {
+            const anchor = createComponentAnchor(
+              j,
+              profile_id,
+              true,
+              pcomponentAnchor
+            );
+            pcomponentHTML.append(anchor);
+          });
       }
-      /*
-        if (
-          component.profile_component.toString() !=
-          comp.profile_component.toString()
-        ) {
-          continue;
-        }
-        */
-
-      var newAnchor = pcomponentAnchor.clone();
-      pcomponentHTML.append(newAnchor);
-
-      newAnchor.attr('title', 'Navigate to ' + comp.title);
-      component_link = comp.url.replace('999', profile_id)
-      newAnchor.attr('href', component_link);
-
-      //newAnchor.attr('href', $('#' + comp.component + '_url').val());
-      newAnchor.find('i').addClass(comp.color).addClass(comp.semanticIcon);
-      //}
-    }
+    });
   }
 
   //refresh components...
@@ -3871,4 +4080,32 @@ function get_collapsible_panel() {
   );
 
   return panel.clone();
+}
+
+function initialiseComponentDropdownMenu() {
+  $('.profile-dropdown-wrapper').click(function (e) {
+    e.stopPropagation(); // Prevent bubbling to document
+    const $menu = $(this).find('.profile-dropdown-menu');
+
+    // Hide other dropdown menus
+    $('.profile-dropdown-menu')
+      .not($menu)
+      .hide()
+      .removeClass('visible')
+      .addClass('hidden');
+
+    // Toggle dropdown menu
+    if ($menu.hasClass('visible')) {
+      $menu.removeClass('visible').addClass('hidden');
+    } else {
+      $menu.removeClass('hidden').addClass('visible');
+    }
+  });
+
+  // Hide on outside click
+  $(document).on('click', function () {
+    $('.profile-dropdown-menu.visible')
+      .removeClass('visible')
+      .addClass('hidden');
+  });
 }

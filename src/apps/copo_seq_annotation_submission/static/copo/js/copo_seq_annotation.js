@@ -357,7 +357,7 @@ $(document).ready(function () {
                     });
 
                     $el = $('.modal-dialog').find('#id_experiment');
-                    let experiment = []
+                    let experiment = [];
                     $el.find(':selected').each(function () {
                       experiment.push($(this).val());
                     });
@@ -422,7 +422,8 @@ $(document).ready(function () {
       url = '/copo/copo_seq_annotation/' + profile_id;
       handle_add_n_edit(url);
     } else if (task == 'edit') {
-      url = '/copo/copo_seq_annotation/' + profile_id + '/' + records[0].record_id;
+      url =
+        '/copo/copo_seq_annotation/' + profile_id + '/' + records[0].record_id;
       handle_add_n_edit(url);
     } else {
       form_generic_task(component, task, records);
