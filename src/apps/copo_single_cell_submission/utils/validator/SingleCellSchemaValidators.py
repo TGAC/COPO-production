@@ -25,7 +25,7 @@ class MandatoryValuesValidator(Validator):
                     self.flag = False
                 else:
                     null_rows=[]
-                    null_rows.extend(self.data[self.data[key].isnull()].index.tolist())
+                    #null_rows.extend(self.data[self.data[key].isnull()].index.tolist())
                     null_rows.extend(self.data[self.data[key] == ""].index.tolist())
                     null_rows.extend(self.data[self.data[key].isna()].index.tolist())
                     for row in null_rows:

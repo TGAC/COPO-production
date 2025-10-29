@@ -8,6 +8,7 @@ from .utils.copo_single_cell import generate_singlecell_record
 from .utils.da import SinglecellSchemas, Singlecell, ADDITIONAL_COLUMNS_PREFIX_DEFAULT_VALUE
 from common.utils.helpers import get_datetime, notify_singlecell_status, get_not_deleted_flag, get_deleted_flag
 from .utils.SingleCellSchemasHandler import SinglecellschemasSpreadsheet, SingleCellSchemasHandler
+from src.apps.ei_edp.utils.EDPSchemasHandler import EDPSchemasHandler, EDPSchemasSpreadsheet
 from common.s3.s3Connection import S3Connection as s3
 from common.utils.logger import Logger
 import pandas as pd
@@ -50,7 +51,11 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
             required_validators.append(element)
     '''
 
-    singlecell = SinglecellschemasSpreadsheet(file=file, profile_id=profile_id, schema_name=schema_name,  checklist_id=checklist_id, component="singlecell", validators=required_validators)
+    if schema_name == "EI_EDP":
+        singlecell = EDPSchemasSpreadsheet(file=file, profile_id=profile_id, schema_name=schema_name, checklist_id=checklist_id, component="singlecell", validators=required_validators)
+    else:
+        singlecell = SinglecellschemasSpreadsheet(file=file, profile_id=profile_id, schema_name=schema_name,  checklist_id=checklist_id, component="singlecell", validators=required_validators)
+    
     s3obj = s3()
     if name.endswith("xlsx") or name.endswith("xls"):
         fmt = 'xls'
@@ -116,10 +121,10 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
                                         msg=msg, action="warning", html_id="singlecell_info")
                         #return HttpResponse(status=400, content=msg)
                     
-            if not is_warning:
-                notify_singlecell_status(data={"profile_id": profile_id},
-                                msg='Spreadsheet is valid. Please click <b>Finish</b> to complete the upload.', action="success",
-                                html_id="singlecell_info")
+                if not is_warning:
+                    notify_singlecell_status(data={"profile_id": profile_id},
+                                    msg='Spreadsheet is valid. Please click <b>Finish</b> to complete the upload.', action="success",
+                                    html_id="singlecell_info")
             
             notify_singlecell_status(data={"profile_id": profile_id}, msg="", action="close", html_id="upload_controls", checklist_id=checklist_id)
             notify_singlecell_status(data={"profile_id": profile_id}, msg="", action="make_valid", html_id="singlecell_info", checklist_id=checklist_id)
@@ -450,12 +455,20 @@ def download_init_blank_manifest(request, schema_name, profile_id,  checklist_id
         sample_dict = {}
         for field in sample_schema:
             sample_dict[field["term_name"]] = sample.get(field["term_name"], "")
-        sample_dict[identifier] = sample.get("name", "")
+        if schema_name == "EI_EDP":
+            sample_dict["submitter_sample_reference"] = sample.get("name", "") 
+        else:
+            sample_dict[identifier] = sample.get("name", "") 
         sample_component.append(sample_dict)
 
     singlecell =  {"components":{"sample": sample_component}}
     bytesstring = BytesIO()
-    SingleCellSchemasHandler().write_manifest(singlecell_schema=schemas, checklist_id=checklist_id, singlecell=singlecell, file_path=bytesstring)
+
+    if schema_name == "EI_EDP":
+        EDPSchemasHandler().write_manifest(profile_id=profile_id, singlecell_schema=schemas, checklist_id=checklist_id, singlecell=singlecell, file_path=bytesstring)
+    else:    
+        SingleCellSchemasHandler().write_manifest(singlecell_schema=schemas, checklist_id=checklist_id, singlecell=singlecell, file_path=bytesstring)
+    
     response = HttpResponse(bytesstring.getvalue(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response['Content-Disposition'] = f"attachment; filename={schema_name.lower()}_manifest_{checklist_id}.xlsx"
     return response

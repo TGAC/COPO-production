@@ -575,7 +575,7 @@ function deleteProfileRecord(profileRecordId) {
                 status: 'success',
               };
 
-              doCrudActionFeedback(actionFeedback);
+              do_crud_action_feedback(actionFeedback);
 
               // Remove the deleted profile record from the web page
               document

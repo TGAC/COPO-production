@@ -1,4 +1,3 @@
-from lxml import etree as ET
 from .da import SinglecellSchemas
 from common.utils.logger import Logger
 import pandas as pd
@@ -13,8 +12,6 @@ from common.schema_versions.lookup import dtol_lookups as lookup
 from .validator import SingleCellSchemaValidators as required_validators
 from .validator import SingleCellOverallValidators as overall_validators
 from common.validators.validator import Validator
-from openpyxl.utils import get_column_letter
-from common.dal.profile_da import Profile
 import re
 import collections
 import numpy as np
@@ -22,6 +19,12 @@ import json
 from io import BytesIO
 from pyld import jsonld
 from django.urls import reverse
+from openpyxl import load_workbook
+from openpyxl.styles import Font, NamedStyle,PatternFill, Alignment, Border, Side
+from openpyxl.comments import Comment
+from openpyxl.worksheet.protection import SheetProtection
+from openpyxl.worksheet.datavalidation import DataValidation 
+from common.dal.profile_da import Profile
 
 l = Logger()
 
@@ -46,13 +49,14 @@ class SingleCellSchemasHandler:
         return xls
 
     def _parseSchemas(self, schema_name, xls):
+
         enums_df = pd.read_excel(xls, "allowed_values", dtype=str)
         components_df = pd.read_excel(xls, "components", index_col="key")
-        standards_df = pd.read_excel(xls, "standards", index_col="key")
-        technology_df = pd.read_excel(xls, "technologies", index_col="key")
-        term_mapping_df = pd.read_excel(xls, "term_mapping", index_col="copo_name")
-        checklist_df = pd.read_excel(xls, "checklists", index_col="key")
-        schemas_df = pd.read_excel(xls, "data")
+        standards_df = pd.read_excel(xls, "standards", index_col="key") if "standards" in xls.sheet_names else pd.DataFrame()
+        technology_df = pd.read_excel(xls, "technologies", index_col="key") if "technologies" in xls.sheet_names else pd.DataFrame()
+        term_mapping_df = pd.read_excel(xls, "term_mapping", index_col="copo_name") if "term_mapping" in xls.sheet_names else pd.DataFrame()
+        checklist_df = pd.read_excel(xls, "checklists", index_col="key") 
+        schemas_df = pd.read_excel(xls, "data")  
 
         enums_dict = {}
         for c in enums_df.columns:
@@ -126,6 +130,7 @@ class SingleCellSchemasHandler:
             for c, component_schema_df in checklist_schema_df.groupby(
                 ["component_name"]
             ):
+                l.log(f"Processing identifier for component: {c} checklist: {checklist_id}")
                 identifier_df = component_schema_df.loc[
                     component_schema_df['identifier'], 'term_name'
                 ]
@@ -604,18 +609,22 @@ class SingleCellSchemasHandler:
 
     def updateSchemas(self):
         for name, url in settings.SINGLE_CELL_SCHEMAS_URL.items():
-            version = settings.MANIFEST_VERSION.get(name, str())
-            # url = f"singlecell_schema_main_v{version}.xlsx"
-            xls = self._loadSchemas(url)
-            singlecell_schema = self._parseSchemas(name, xls)
-            singlecell_schema["version"] = version
-            SinglecellSchemas().get_collection_handle().find_one_and_update(
-                {"name": singlecell_schema["name"]},
-                {"$set": singlecell_schema},
-                upsert=True,
-            )
-            self.write_manifest(singlecell_schema)
-            self.generate_jsonld(singlecell_schema, None)
+            try:
+                version = settings.MANIFEST_VERSION.get(name, str())
+                # url = f"singlecell_schema_main_v{version}.xlsx"
+                xls = self._loadSchemas(url)
+                singlecell_schema = self._parseSchemas(name, xls)
+                singlecell_schema["version"] = version
+                SinglecellSchemas().get_collection_handle().find_one_and_update(
+                    {"name": singlecell_schema["name"]},
+                    {"$set": singlecell_schema},
+                    upsert=True,
+                )
+                self.write_manifest(singlecell_schema)
+                self.generate_jsonld(singlecell_schema, None)
+            except Exception as e:
+                l.error(f"{name} Failed to update single cell schemas: {str(e)}")
+                l.exception(e)
 
     def generate_jsonld(self, singlecell_schema, checklist_id=None):
         """
@@ -693,6 +702,167 @@ class SingleCellSchemasHandler:
                 with open(file_path, "w") as outfile:
                     outfile.write(json.dumps(compacted))
 
+"""
+class EDPSchemasHandler(SingleCellSchemasHandler):
+    def write_manifest(self, profile_id, singlecell_schema, checklist_id=None, singlecell=None, file_path=None, format="xlsx", request=None):
+        schema_name = singlecell_schema["name"]
+        schemas = singlecell_schema["schemas"]
+        checklists = singlecell_schema["checklists"]
+        # component_names = singlecell_schema["components"]
+
+        profile = Profile().get_record(profile_id)
+        if not profile:
+            raise Exception(f"Profile {profile_id} not found")
+
+        # Cell formats
+        unlocked_format = {'locked': False, 'text_wrap': True, "valign": "top"}
+
+        alignment = Alignment(wrap_text=True, vertical="center", horizontal="center")
+        font = Font(bold=True)
+        bolder = Border(left=Side(style='medium'), right=Side(style='medium'), top=Side(style='medium'), bottom=Side(style='medium'))
+        mandatory_style = NamedStyle(name="mandatory_style")
+        mandatory_style.font = font
+        mandatory_style.fill = PatternFill(fgColor="A6C875", fill_type = "solid")
+        mandatory_style.alignment = alignment
+        mandatory_style.border = bolder
+        optional_style = NamedStyle(name="optional_style")
+        optional_style.font = font
+        optional_style.fill = PatternFill(fgColor="90D5FF", fill_type = "solid")
+        optional_style.alignment = alignment
+        optional_style.border = bolder
+        protected_style = NamedStyle(name="protected_style")
+        protected_style.font = font
+        protected_style.fill = PatternFill(fgColor="D3D3D3", fill_type = "solid")
+        protected_style.alignment = alignment
+        protected_style.border = bolder
+
+        desc_eg_format = {'text_wrap': True, 'italic': True, 'font_color': '#808080'}
+
+        separator_format = {
+            'bold': True,
+            'align': 'left',
+            'valign': 'vcenter',
+            'bg_color': '#B5EAAA',
+        }
+
+        version = settings.MANIFEST_VERSION.get(schema_name, str())
+        if version:
+            version = "_v" + version
+
+        workbook = load_workbook(settings.SINGLE_CELL_SCHEMAS_TEMPLATE_URL["EI_EDP"])
+        worksheet_sample = workbook["Sample Manifest"]
+        worksheet_sample["F5"] = profile.get("jira_ticket_number", "")
+        worksheet_index = workbook["Index Information"]
+
+        for checklist in checklists.keys():
+            if checklist_id and checklist_id != checklist:
+                continue
+
+            schema_checklist = checklist
+            if not checklist_id or file_path is None:
+                file_path = os.path.join(
+                    settings.MANIFEST_PATH,
+                    settings.MANIFEST_FILE_NAME.format(
+                        schema_name + "_" + checklist, version
+                    ),
+                )
+            for component_name, schema in schemas.items():
+                if component_name == "study":
+                    continue
+
+                component_schema_df = pd.DataFrame.from_records(schema)
+                component_schema_df = component_schema_df.drop(
+                    component_schema_df[
+                        pd.isna(component_schema_df[schema_checklist])
+                    ].index
+                )
+
+                if component_schema_df.empty:
+                    continue
+
+                component_schema_df.fillna("", inplace=True)
+                component_schema_df["choice"] = component_schema_df[
+                    component_schema_df["term_type"].isin(["enum", "suggested_enum"])
+                ]["term_name"].apply(
+                    lambda x: singlecell_schema.get("enums", []).get(x, [])
+                )
+
+                title_row = 1
+                if component_name == "sample":
+                    worksheet = workbook["Sample Manifest"]
+                    title_row = 28
+                elif component_name == "index":
+                    worksheet = workbook["Index Information"]
+                    title_row = 1                        
+                column_index = 0
+                for _, field in component_schema_df.iterrows():
+                    column_index += 1
+                    name = field["term_label"]
+                    cell = worksheet.cell(row=title_row, column=column_index)
+                    cell.value = name
+                    description = field.get("term_description", name)
+                    if description:
+                        comment = Comment(field.get("term_description", name), "COPO")
+                        cell.comment = comment
+                    if field[checklist] == "M":    
+                        cell.style = mandatory_style                                            
+                    elif field[checklist] == "O":
+                        cell.style = optional_style
+                    if field["term_manifest_behavior"] == "protected":
+                        cell.style = protected_style
+                        if title_row > 1:
+                            cell_highlight = worksheet.cell(row=title_row-1, column=column_index)
+                            cell_highlight.fill = protected_style.fill
+
+                    elif field["term_manifest_behavior"] == "hidden":
+                        worksheet.column_dimensions[get_column_letter(column_index)].hidden = True
+
+                    type = field.get("term_type", "string")
+                    if type in ["enum", "suggested_enum"]:
+                        # Create a data-validation object with list validation
+                        options = field["choice"]
+                        if len(options) > 0:
+                            dv = DataValidation(
+                                type="list",
+                                formula1='"' + ",".join(options) + '"',
+                                allow_blank=True,
+                                #prompt = description if description else "",
+                            )
+                            # Add the data-validation object to the worksheet
+                            cell_start_end = '%s%d:%s%d' % (
+                                get_column_letter(column_index),
+                                title_row + 1,
+                                get_column_letter(column_index),
+                                1000,
+                            )
+                            worksheet.add_data_validation(dv)
+                            dv.add(cell_start_end)
+                    elif type == "string":
+                        length = field["term_length"]
+                        if length and int(length) > 0:
+                            cell_start_end = '%s%d:%s%d' % (
+                                get_column_letter(column_index),
+                                title_row + 1,
+                                get_column_letter(column_index),
+                                1000,
+                            )
+                            dv = DataValidation(
+                                type="textLength",
+                                operator="lessThanOrEqual",
+                                formula1=str(length),
+                                allow_blank=True,
+                                prompt="Please input the value with length less than or equal to " + str(length),
+                                #TBC stop on error
+
+                            )
+                            # Add the data-validation object to the worksheet
+                            worksheet.add_data_validation(dv)
+                            dv.add(cell_start_end)
+                        
+
+        workbook.save(file_path)
+"""
+
 
 class SinglecellschemasSpreadsheet:
     def __init__(
@@ -741,6 +911,38 @@ class SinglecellschemasSpreadsheet:
                 and not element.__name__ == "Validator"
             ):
                 self.overall_validators.append(element)
+
+        singlecell = (
+            SinglecellSchemas()
+            .get_collection_handle()
+            .find_one({"name": self.schema_name}, {"schemas": 1, "enums": 1})
+        )
+        self.schemas = singlecell["schemas"]
+
+        if self.schemas:
+            for component in list(self.schemas.keys()):
+                component_schema_df = pd.DataFrame.from_records(
+                    self.schemas[component]
+                )
+                component_schema_df = component_schema_df.drop(
+                    component_schema_df[
+                        pd.isna(component_schema_df[self.checklist_id])
+                    ].index
+                )
+                if component_schema_df.empty:
+                    self.schemas.pop(component, None)
+                    continue
+                component_schema_df.fillna("", inplace=True)
+                component_schema_df["choice"] = component_schema_df[
+                    component_schema_df["term_type"] == "enum"
+                ]["term_name"].apply(lambda x: singlecell["enums"].get(x, []))
+                component_schema_df["mandatory"] = component_schema_df[
+                    self.checklist_id
+                ]
+                component_schema_df.set_index(keys="term_name", inplace=True)
+
+                self.schemas[component] = component_schema_df.to_dict("index")
+
 
     def get_filenames_from_manifest(self):
         # return list(self.data["File name"])
@@ -864,7 +1066,7 @@ class SinglecellschemasSpreadsheet:
                 # schema_name = profile.get("schema_name", "COPO_SINGLE_CELL")
 
                 for key, df in self.data.items():
-                    # df = df.iloc[3:]  # remove the first 3 rows
+                    df = df.iloc[3:]  # remove the first 3 rows
                     df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
                     df = df.apply(lambda x: x.astype("string"))
                     df = df.apply(lambda x: x.str.strip())
@@ -874,14 +1076,16 @@ class SinglecellschemasSpreadsheet:
                     df.fillna("", inplace=True)
                     self.data[key] = df
 
+                """
                 singlecell = (
                     SinglecellSchemas()
                     .get_collection_handle()
                     .find_one({"name": self.schema_name}, {"schemas": 1, "enums": 1})
                 )
                 self.schemas = singlecell["schemas"]
-
+                """
                 if self.schemas:
+                    """
                     for component in list(self.schemas.keys()):
                         component_schema_df = pd.DataFrame.from_records(
                             self.schemas[component]
@@ -904,7 +1108,7 @@ class SinglecellschemasSpreadsheet:
                         component_schema_df.set_index(keys="term_name", inplace=True)
 
                         self.schemas[component] = component_schema_df.to_dict("index")
-
+                    """
                     for component, df in self.data.items():
                         if not component in self.schemas.keys():
                             raise Exception("Invalid worksheet: " + component)
@@ -920,9 +1124,9 @@ class SinglecellschemasSpreadsheet:
                         self.new_data[component].rename(
                             columns=new_column_name, inplace=True
                         )
-                        self.new_data[component] = self.new_data[component].iloc[
-                            3:
-                        ]  # remove the first 3 rows
+                        #self.new_data[component] = self.new_data[component].iloc[
+                        #    3:
+                        #]  # remove the first 3 rows
 
             except Exception as e:
                 # if error notify via web socket
@@ -1032,7 +1236,7 @@ class SinglecellschemasSpreadsheet:
         singlecell_data = {}
 
         for component, df in self.data.items():
-            df = df.iloc[3:]  # remove the first 3 rows
+            #df = df.iloc[3:]  # remove the first 3 rows
             singlecell_data[component] = []
             headers = list()
             for col in list(df.columns):

@@ -11,6 +11,7 @@ from common.utils import helpers
 from common.utils.helpers import get_class
 from common.utils.logger import Logger
 from .copo_base_da import DAComponent, handle_dict
+from src.apps.copo_core.models import ProfileType
 
 
 logger = Logger()
@@ -160,7 +161,6 @@ class Profile(DAComponent):
         new_record = False
         profile_type = auto_fields.get("copo.profile.type", "")
 
-        from src.apps.copo_core.models import ProfileType
 
         rec = {"status": "success", "message": ""}
 
@@ -385,7 +385,22 @@ class Profile(DAComponent):
         for da in ["submission", "sample", "datafile"]:
             if handle_dict[da].count_documents(condition) > 0:
                 return False
+        rec = self.get_record(profile_id)
         self.get_collection_handle().delete_one({"_id": ObjectId(profile_id)})
+
+        profile_type_def = ProfileType.objects.filter(type=rec["type"]).first()
+
+        if profile_type_def:
+            post_action = profile_type_def.post_delete_action
+            if post_action:
+                index = post_action.rfind(".")
+                provider = post_action[0:index]
+                method = post_action[index + 1 :]
+                result = getattr(get_class(provider), method)(rec)
+                if result:
+                    rec["status"] = result.get("status", "success")
+                    rec["message"] = result.get("message", "")
+
         return True
 
     def validate_record(self, auto_fields=dict(), validation_result=dict(), **kwargs):

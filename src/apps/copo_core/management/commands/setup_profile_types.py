@@ -562,6 +562,18 @@ class Command(BaseCommand):
             base_component="singlecell",
         )
 
+        lims_integration = Component().create_component(
+            name="lims_integration",
+            title="LIMS Integration",
+            widget_icon="dna",
+            widget_colour="grey",
+            widget_icon_class="fa fa-dna",
+            table_id="singlecell_table",
+            reverse_url="copo_single_cell_submission:copo_singlecell",
+            subtitle="#component_subtitle",
+            schema_name="EI_EDP",
+            base_component="singlecell",
+        )
 
         sample = Component().create_component(
             name="sample",
@@ -687,6 +699,10 @@ class Command(BaseCommand):
             [new_singlecell_spreadsheet_template, download_blank_manifest_template]
         )
 
+        lims_integration.title_buttons.set(
+            [new_singlecell_spreadsheet_template, download_blank_manifest_template]
+        )
+
         images_rembi.recordaction_buttons.set(
             [delete_singlecell_multi, download_singlecell_manifest_single]
         )
@@ -784,6 +800,16 @@ class Command(BaseCommand):
             is_permission_required=False,
         )
 
+        edp = ProfileType().create_profile_type(
+            type="ei_edp",
+            description="EDP",
+            widget_colour="#FF0000",
+            is_dtol_profile=False,
+            is_permission_required=False,
+            post_save_action="src.apps.ei_edp.utils.edp_utils.post_save_edp_profile",
+            post_delete_action="src.apps.ei_edp.utils.edp_utils.post_delete_edp_profile",
+        )
+
         erga.components.set(
             [assembly, taggedseq, files, seqannotation, read, sample, accessions]
         )
@@ -818,6 +844,15 @@ class Command(BaseCommand):
             ]
         )
 
+        edp.components.set(
+            [
+                files,
+                general_sample,
+                reads_schema,
+                lims_integration,
+                accessions_schema,
+            ]
+        )
         at_asg = AssociatedProfileType.objects.get(name="ASG")
         at_bge = AssociatedProfileType.objects.get(name="BGE")
         at_bioblitz = AssociatedProfileType.objects.get(name="BIOBLITZ")

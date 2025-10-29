@@ -342,28 +342,171 @@
       "regex": "^[A-Z][A-Z0-9]{2,11}(,[A-Z][A-Z0-9]{2,11})*$"
     },
     {
-      "help_tip": "Please input a test field",
+      "help_tip": "Please input sample type",
       "required": "true",
       "default_value": "",
       "control_meta": {},
       "versions": [
-        "test"
+        "ei_edp"
       ],
       "specifications": [
-        "test"
+        "ei_edp"
       ],
       "ref": "",
       "deprecated": false,
       "hidden": "false",
-      "label": "TEST",
+      "label": "Sample type",
       "show_in_form": true,
-      "id": "copo.profile.test",
+      "id": "copo.profile.sample_type",
       "type": "string",
       "show_in_table": true,
-      "control": "text",
-      "regex": "^[A-Z][A-Z0-9]{2,11}(,[A-Z][A-Z0-9]{2,11})*$"
-    }
-  ],
+      "control": "select",
+      "option_values":{
+        "callback": {
+          "parameter": {},
+          "function": "get_sapio_sample_type_options",
+          "provider": "src.apps.ei_edp.utils.edp_utils"
+       }
+      }
+    },
+    {
+      "help_tip": "Please input number of samples",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "ei_edp"
+      ],
+      "specifications": [
+        "ei_edp"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Number of samples",
+      "show_in_form": true,
+      "id": "copo.profile.no_of_samples",
+      "type": "integer",
+      "show_in_table": true,
+      "control": "text"
+    },
+   {
+      "help_tip": "Please input JIRA ticket number",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "ei_edp"
+      ],
+      "specifications": [
+        "ei_edp"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "JIRA ticket number",
+      "show_in_form": true,
+      "id": "copo.profile.jira_ticket_number",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "Please input budget user",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "ei_edp"
+      ],
+      "specifications": [
+        "ei_edp"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Budget user",
+      "show_in_form": true,
+      "id": "copo.profile.budget_user",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "Please select tube or plate",
+      "required": "true",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "ei_edp"
+      ],
+      "specifications": [
+        "ei_edp"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Budget user",
+      "show_in_form": true,
+      "id": "copo.profile.tube_or_plate",
+      "type": "string",
+      "show_in_table": true,
+      "control": "select",
+      "option_values":[
+        {
+          "value": "tube",
+          "label": "Tube"
+        },
+        {
+          "value": "plate",
+          "label": "Plate"
+        }    
+      ]
+    },
+    {
+      "help_tip": "Please input plates",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "ei_edp"
+      ],
+      "specifications": [
+        "ei_edp"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Linked to plates",
+      "show_in_form": true,
+      "id": "copo.profile.plates",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+    },
+    {
+      "help_tip": "",
+      "required": "false",
+      "default_value": "",
+      "control_meta": {},
+      "versions": [
+        "ei_edp"
+      ],
+      "specifications": [
+        "ei_edp"
+      ],
+      "ref": "",
+      "deprecated": false,
+      "hidden": "false",
+      "label": "Sapio Project ID",
+      "show_in_form": false,
+      "id": "copo.profile.sapio_project_id",
+      "type": "string",
+      "show_in_table": true,
+      "control": "text"
+  }
+  ] ,
+ 
   "description": "Attributes for COPO Profile schema.",
   "title": "Profile mappings"
 }

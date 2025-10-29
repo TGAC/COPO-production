@@ -215,3 +215,4 @@ tzdata==2022.7
 geopy==2.3.0
 titlecase==2.4.1
 PyLD==2.0.4
+sapiopylib==2025.10.7.295

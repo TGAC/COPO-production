@@ -106,6 +106,7 @@ MANIFEST_VERSION = {
     "COPO_IMAGE_REMBI": "0.1",
     "COPO_IMAGE_STX_FISH": "0.1",
     "COPO_READ": "0.1",
+    "EI_EDP": "0.1",
 }
 
 BARCODING_CHECKLIST = ["ERT000002", "ERT000020"]
@@ -130,10 +131,15 @@ SINGLE_CELL_SCHEMAS_URL = {
     #"COPO_IMAGE_REMBI": f"rembi_image_schema_main_v{MANIFEST_VERSION['COPO_IMAGE_REMBI']}.xlsx",
     #"COPO_IMAGE_STX_FISH": f"stx_fish_image_schema_main_v{MANIFEST_VERSION['COPO_IMAGE_STX_FISH']}.xlsx",
     #"COPO_READ" : f"reads_schema_main_v{MANIFEST_VERSION['COPO_READ']}.xlsx"
-    "COPO_SINGLE_CELL": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/single_cell/singlecell_schema_main_v{MANIFEST_VERSION['COPO_SINGLE_CELL']}.xlsx",
-    "COPO_IMAGE_REMBI": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/images/rembi_image_schema_main_v{MANIFEST_VERSION['COPO_IMAGE_REMBI']}.xlsx",
-    "COPO_IMAGE_STX_FISH": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/images/stx_fish_image_schema_main_v{MANIFEST_VERSION['COPO_IMAGE_STX_FISH']}.xlsx",
-    "COPO_READ": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/reads/reads_schema_main_v{MANIFEST_VERSION['COPO_READ']}.xlsx",
+    #"COPO_SINGLE_CELL": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/single_cell/singlecell_schema_main_v{MANIFEST_VERSION['COPO_SINGLE_CELL']}.xlsx",
+    #"COPO_IMAGE_REMBI": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/images/rembi_image_schema_main_v{MANIFEST_VERSION['COPO_IMAGE_REMBI']}.xlsx",
+    #"COPO_IMAGE_STX_FISH": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/images/stx_fish_image_schema_main_v{MANIFEST_VERSION['COPO_IMAGE_STX_FISH']}.xlsx",
+    #"COPO_READ": f"https://github.com/TGAC/COPO-schemas/raw/refs/heads/main/reads/reads_schema_main_v{MANIFEST_VERSION['COPO_READ']}.xlsx",
+    "EI_EDP" : f"edp_schema_main_v{MANIFEST_VERSION['EI_EDP']}.xlsx"
+}
+
+SINGLE_CELL_SCHEMAS_TEMPLATE_URL = {
+    "EI_EDP" : f"edp_schema_template_v{MANIFEST_VERSION['EI_EDP']}.xlsx"
 }
 
 IMAGE_FILE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp']

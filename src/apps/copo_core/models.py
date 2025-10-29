@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import JSONField
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django_tools.middlewares.ThreadLocal import get_current_user
 from django.conf import settings
@@ -448,6 +448,7 @@ class ProfileType(models.Model):
     is_permission_required = models.BooleanField(default=True)
     post_save_action = models.CharField(max_length=100, blank=True, null=True)
     pre_save_action = models.CharField(max_length=100, blank=True, null=True)
+    post_delete_action = models.CharField(max_length=100, blank=True, null=True)
     is_deprecated = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
@@ -462,6 +463,7 @@ class ProfileType(models.Model):
         is_permission_required,
         post_save_action=None,
         pre_save_action=None,
+        post_delete_action=None,
         is_deprecated=False,
     ):
         self.type = type
@@ -471,6 +473,7 @@ class ProfileType(models.Model):
         self.is_permission_required = is_permission_required
         self.post_save_action = post_save_action
         self.pre_save_action = pre_save_action
+        self.post_delete_action = post_delete_action
         self.is_deprecated = is_deprecated
         self.save()
         return self
@@ -483,8 +486,8 @@ class ProfileType(models.Model):
         return ProfileType.objects.all()
 
 
-@receiver(post_save, sender=SequencingCentre)
-@receiver(post_save, sender=AssociatedProfileType)
-@receiver(post_save, sender=ProfileType)
+@receiver([post_save, post_delete], sender=SequencingCentre)
+@receiver([post_save, post_delete], sender=AssociatedProfileType)
+@receiver([post_save,post_delete], sender=ProfileType)
 def refresh_schema(sender, instance, **kwargs):
     DataSchemas.refresh()
