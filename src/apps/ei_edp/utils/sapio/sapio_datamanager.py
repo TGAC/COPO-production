@@ -8,7 +8,7 @@ from sapiopylib.rest.PicklistService import PicklistManager
 class Sapio():
     sapio_user = SapioUser(url="https://earlham-ded-gold-lims.exemplareln.com/webservice/api",
                     guid=None, account_name="sapio",
-                    username="EI_API_User", password="getTHE$header44")
+                    username="test", password="test")
     dataRecordManager: DataRecordManager = DataMgmtServer.get_data_record_manager(sapio_user)
 
     # Used to store and commit changes made to record models, also holds other managers
