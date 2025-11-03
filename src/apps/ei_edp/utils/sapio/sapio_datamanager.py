@@ -4,11 +4,15 @@ from sapiopylib.rest.DataRecordManagerService import DataRecordManager
 from sapiopylib.rest.utils.recordmodel.RecordModelManager import RecordModelManager, RecordModelInstanceManager, \
     RecordModelRelationshipManager
 from sapiopylib.rest.PicklistService import PicklistManager
+from common.utils.helpers import  get_not_deleted_flag, get_env
 
+SAPIO_USERNAME = get_env("SAPIO_USERNAME")  
+SAPIO_PASSWORD = get_env("SAPIO_PASSWORD")
+SAPIO_API_URL = get_env("SAPIO_API_URL")
 class Sapio():
-    sapio_user = SapioUser(url="https://earlham-ded-gold-lims.exemplareln.com/webservice/api",
+    sapio_user = SapioUser(url=SAPIO_API_URL,
                     guid=None, account_name="sapio",
-                    username="test", password="test")
+                    username=SAPIO_USERNAME, password=SAPIO_PASSWORD)
     dataRecordManager: DataRecordManager = DataMgmtServer.get_data_record_manager(sapio_user)
 
     # Used to store and commit changes made to record models, also holds other managers
