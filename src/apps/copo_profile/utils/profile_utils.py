@@ -3,7 +3,7 @@ from common.dal.submission_da import Submission
 from src.apps.copo_read_submission.utils.ena_read_submission import EnaReads
 from common.dal.sample_da import Sample
 
-def pre_save_erga_profile(auto_fields):
+def pre_save_erga_profile(auto_fields,**kwargs):
     associated_profiles = auto_fields.get("copo.profile.associated_type", [])
     sequence_centres = auto_fields.get("copo.profile.sequencing_centre", [])
     sequence_centre_need_approval = SequencingCentre.objects.filter(is_approval_required=True, name__in=sequence_centres)

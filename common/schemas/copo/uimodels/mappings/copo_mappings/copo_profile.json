@@ -433,7 +433,7 @@
       "control": "text"
     },
     {
-      "help_tip": "Please select tube or plate",
+      "help_tip": "Please select container type",
       "required": "true",
       "default_value": "",
       "control_meta": {},
@@ -446,9 +446,9 @@
       "ref": "",
       "deprecated": false,
       "hidden": "false",
-      "label": "Budget user",
+      "label": "Container type",
       "show_in_form": true,
-      "id": "copo.profile.tube_or_plate",
+      "id": "copo.profile.container_type",
       "type": "string",
       "show_in_table": true,
       "control": "select",
@@ -464,7 +464,7 @@
       ]
     },
     {
-      "help_tip": "Please input plates",
+      "help_tip": "Please input plates, leave blank if samples are in tubes or create new plate(s) in Sapio. If multiple, separate with a comma",
       "required": "false",
       "default_value": "",
       "control_meta": {},
@@ -477,9 +477,9 @@
       "ref": "",
       "deprecated": false,
       "hidden": "false",
-      "label": "Linked to plates",
+      "label": "Linked to Sapio Plate ID(s)",
       "show_in_form": true,
-      "id": "copo.profile.plates",
+      "id": "copo.profile.sapio_plate_ids",
       "type": "string",
       "show_in_table": true,
       "control": "text"

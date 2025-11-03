@@ -21,3 +21,4 @@ class Sapio():
     relationship_man: RecordModelRelationshipManager = rec_man.relationship_manager 
 
     picklistManager: PicklistManager = DataMgmtServer.get_picklist_manager(sapio_user)   
+    relationship_man = rec_man.relationship_manager

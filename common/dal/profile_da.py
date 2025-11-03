@@ -180,7 +180,7 @@ class Profile(DAComponent):
                 index = pre_action.rfind(".")
                 provider = pre_action[0:index]
                 method = pre_action[index + 1 :]
-                result = getattr(get_class(provider), method)(auto_fields)
+                result = getattr(get_class(provider), method)(auto_fields, **kwargs)
                 if result:
                     rec["status"] = result.get("status", "success")
                     rec["message"] = result.get("message", "")
@@ -189,21 +189,20 @@ class Profile(DAComponent):
             schema = self.get_component_schema(profile_type=type)
             rec = super(Profile, self).save_record(auto_fields, schema=schema, **kwargs)
 
-        if profile_type_def:
-            post_action = profile_type_def.post_save_action
-            if post_action:
-                index = post_action.rfind(".")
-                provider = post_action[0:index]
-                method = post_action[index + 1 :]
-                result = getattr(get_class(provider), method)(rec)
-                if result:
-                    rec["status"] = result.get("status", "success")
-                    rec["message"] = result.get("message", "")
+            if profile_type_def:
+                post_action = profile_type_def.post_save_action
+                if post_action:
+                    index = post_action.rfind(".")
+                    provider = post_action[0:index]
+                    method = post_action[index + 1 :]
+                    result = getattr(get_class(provider), method)(rec)
+                    if result:
+                        rec["status"] = result.get("status", "success")
+                        rec["message"] = result.get("message", "")
 
-            # trigger after save actions
-            if not kwargs.get("target_id", str()):
-                Person(profile_id=str(rec["_id"])).create_sra_person()
-
+                # trigger after save actions
+                if not kwargs.get("target_id", str()):
+                    Person(profile_id=str(rec["_id"])).create_sra_person()            
         return rec
 
     def add_dataverse_details(self, profile_id, dataverse):

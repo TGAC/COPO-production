@@ -806,6 +806,7 @@ class Command(BaseCommand):
             widget_colour="#FF0000",
             is_dtol_profile=False,
             is_permission_required=False,
+            pre_save_action="src.apps.ei_edp.utils.edp_utils.pre_save_edp_profile",
             post_save_action="src.apps.ei_edp.utils.edp_utils.post_save_edp_profile",
             post_delete_action="src.apps.ei_edp.utils.edp_utils.post_delete_edp_profile",
         )
