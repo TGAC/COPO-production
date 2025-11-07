@@ -153,6 +153,8 @@ services:
       - ecs_secret_key
       - ecs_access_key
       - copo_zenodo_token
+      - sapio_username
+      - sapio_password
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000"]
       interval: 2m
@@ -260,7 +262,9 @@ services:
       - copo_bioimage_password
       - ecs_secret_key
       - ecs_access_key    
-      - copo_zenodo_token  
+      - copo_zenodo_token 
+      - sapio_username
+      - sapio_password 
   nginx:
     image: copo/copo-nginx-minio:v1.25.3.3
     networks:
