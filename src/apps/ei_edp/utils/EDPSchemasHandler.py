@@ -11,9 +11,10 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from common.dal.profile_da import Profile
 from src.apps.copo_single_cell_submission.utils.SingleCellSchemasHandler import SingleCellSchemasHandler, SinglecellschemasSpreadsheet
 from .sapio.sapio_datamanager  import Sapio
-from common.utils.helpers import notify_singlecell_status, get_datetime
-from common.schema_versions.lookup import dtol_lookups as lookup
-
+from sapiopylib.rest.utils.recordmodel.PyRecordModel import PyRecordModel
+from typing import List
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.utils import quote_sheetname
 
 class EDPSchemasHandler(SingleCellSchemasHandler):
     def write_manifest(self, profile_id, singlecell_schema, checklist_id=None, singlecell=None, file_path=None, format="xlsx", request=None):
@@ -25,6 +26,22 @@ class EDPSchemasHandler(SingleCellSchemasHandler):
         profile = Profile().get_record(profile_id)
         if not profile:
             raise Exception(f"Profile {profile_id} not found")
+
+        sapio_project_id = profile.get("sapio_project_id", None)
+        samples_under_project : List[PyRecordModel] = []
+        if sapio_project_id:
+            project_records = Sapio().dataRecordManager.query_data_records(data_type_name="Project", 
+                                                    data_field_name="C_ProjectIdentifier", 
+                                                    value_list=[sapio_project_id]).result_list
+            if not project_records or len(project_records) ==0:
+                return {"status": "error", "message": f"Sapio Project {profile['sapio_project_id']} not found."}                
+            project_record = project_records[0]
+            project: PyRecordModel = Sapio().inst_man.add_existing_record(project_record)  
+            Sapio().relationship_man.load_children([project], 'Sample')
+            samples_under_project: List[PyRecordModel] = project.get_children_of_type('Sample')
+            #populate the singlecell data with sapio data
+            
+
 
         # Cell formats
         alignment = Alignment(wrap_text=True, vertical="center", horizontal="center")
@@ -64,8 +81,6 @@ class EDPSchemasHandler(SingleCellSchemasHandler):
         worksheet_helper = workbook["How to complete the Manifest"]
 
 
-        
-
         for checklist in checklists.keys():
             if checklist_id and checklist_id != checklist:
                 continue
@@ -80,7 +95,7 @@ class EDPSchemasHandler(SingleCellSchemasHandler):
                 )
 
             worksheet_helper_current_row = 4
-
+            submitter_sample_reference=[]
             for component_name, schema in schemas.items():
 
                 component_data_df = pd.DataFrame()
@@ -116,7 +131,16 @@ class EDPSchemasHandler(SingleCellSchemasHandler):
 
                 worksheet_helper_current_row += 1
 
+                sapio_column_map = {}
                 for _, field in component_schema_df.iterrows():
+
+                    sapio_name = field["sapio_name"]
+                    if sapio_name:
+                        sapio_object =  sapio_name.split(":")[0]
+                        sapio_field =  sapio_name.split(":")[1]
+                        if sapio_object.lower() == "sample":
+                            sapio_column_map[field["term_name"]] = sapio_field
+
                     if field["term_manifest_behavior"] == "protected":
                         continue
 
@@ -140,6 +164,21 @@ class EDPSchemasHandler(SingleCellSchemasHandler):
                     
                     worksheet_helper_current_row += 1
 
+                if component_name=="sample" and samples_under_project:
+                    records_list = []
+                    for sample in samples_under_project:
+                        record_dict={}
+                        for term_name, sapio_field in sapio_column_map.items():
+                            record_dict[term_name] = sample.get_field_value(sapio_field)
+                        records_list.append(record_dict)
+                    sapio_component_data_df = pd.DataFrame.from_records(records_list) 
+                    
+                    worksheet_sample = workbook.create_sheet("sample_metadata")
+                    sample_metadata_columns = ["submitter_sample_reference", "taxon_id", "scientific_name","biosampleAccession"]
+                    for r in dataframe_to_rows(component_data_df[sample_metadata_columns], index=False, header=True):
+                        worksheet_sample.append(r)
+                    submitter_sample_reference = component_data_df["submitter_sample_reference"].tolist()
+                    component_data_df = sapio_component_data_df
 
                 if component_name == "study":
                     continue
@@ -178,10 +217,15 @@ class EDPSchemasHandler(SingleCellSchemasHandler):
                     worksheet.column_dimensions[get_column_letter(column_index)].width = 17.83
 
                     type = field.get("term_type", "string")
-                    if type in ["enum", "suggested_enum"]:
+                    if type in ["enum", "suggested_enum"] or field["term_name"]=="submitter_sample_reference":
                         # Create a data-validation object with list validation
-                        options = field["choice"]
-                        if len(options) > 0:
+                        if field["term_name"]=="submitter_sample_reference":
+                            options = submitter_sample_reference
+                            #formula1 = "{0}!$A$2:$A$100".format(quote_sheetname("sample_metadata"))
+                        else:
+                            options = field["choice"]   
+
+                        if options:
                             dv = DataValidation(
                                 type="list",
                                 formula1='"' + ",".join(options) + '"',
@@ -269,7 +313,7 @@ class EDPSchemasSpreadsheet(SinglecellschemasSpreadsheet):
             self.new_data["study"] = study_df
 
             for sheetname in workbook.sheetnames:
-                if sheetname == "How to complete the Manifest":
+                if sheetname in ["How to complete the Manifest","sample metadata"]:
                     continue
                 if sheetname not in self.schemas:
                     notify_singlecell_status(

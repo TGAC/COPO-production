@@ -77,6 +77,9 @@ services:
       - http_protocol=http
       - ZENODOURL=https://zenodo.org/api
       - ZENODOTOKEN=${ZENODOTOKEN}    
+      - SAPIO_USERNAME=${SAPIO_USERNAME}
+      - SAPIO_PASSWORD=${SAPIO_PASSWORD}
+      - SAPIO_API_URL=${SAPIO_API_URL}
     depends_on:
       - copo_redis
       - copo_postgres

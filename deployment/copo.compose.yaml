@@ -106,6 +106,9 @@ services:
       - ENA_V1_SAMPLE_SERVICE=https://wwwdev.ebi.ac.uk/ena/submit/drop-box/samples
       - ZENODOURL=https://zenodo.org/api
       - ZENODOTOKEN_FILE=/run/secrets/copo_zenodo_token
+      - SAPIO_USERNAME_FILE=/run/secrets/sapio_username
+      - SAPIO_PASSWORD_FILE=/run/secrets/sapio_password
+      - SAPIO_API_URL=https://earlham-ded-gold-lims.exemplareln.com/webservice/api
     depends_on:
       - redis
       - postgres
@@ -215,6 +218,9 @@ services:
       - B2DROP_PERMITS=/copo/b2drop/permits
       - ZENODOURL=https://zenodo.org/api
       - ZENODOTOKEN_FILE=/run/secrets/copo_zenodo_token
+      - SAPIO_USERNAME_FILE=/run/secrets/sapio_username
+      - SAPIO_PASSWORD_FILE=/run/secrets/sapio_password
+      - SAPIO_API_URL=https://earlham-ded-gold-lims.exemplareln.com/webservice/api
     depends_on:
       - redis
       - postgres
@@ -543,6 +549,10 @@ secrets:
   minio_secret_key:
     external: true
   copo_zenodo_token:
+    external: true
+  sapio_username:
+    external: true
+  sapio_password:
     external: true
 volumes:
   web-data:
