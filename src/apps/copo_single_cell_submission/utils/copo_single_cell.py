@@ -61,7 +61,7 @@ def _query_ena_file_processing_status(accession_no):
         except Exception as e:
             l.exception(e)
         return result
-    
+
 def generate_singlecell_record(profile_id, checklist_id=str(), study_id=str(), schema_name=str()):
     """Build the complete data structure for the single-cell UI DataTable.
 
@@ -608,8 +608,8 @@ def query_submit_result(profile_id, study_id,schema_name, repository="ena"):
         case _:
             # Any other status (pending, downloading, uploading, sending) means still in progress
             return dict(status='error', message="Submission is in progress, please try again later!")  
-        
-        
+
+
 def submit_singlecell(profile_id, study_id, schema_name="", repository="ena", credential_source="user"):
     """Initiate a single-cell submission to a repository (ENA or Zenodo).
 
@@ -667,7 +667,9 @@ def submit_singlecell(profile_id, study_id, schema_name="", repository="ena", cr
     # Guard against submitting when there's nothing to submit or submission is already running
     match final_status:
         case "accepted" | "published":
-            return dict(status='error', message="There is no pending change for submission!")
+            return dict(
+                status='error', message="There is no pending change for submission!"
+            )
         case "processing":
             return dict(status='error', message="Submission is in progress, please wait until it is completed!")
 
@@ -1048,7 +1050,6 @@ def make_snapshot(profile_id, target_ids, target_id, checklist_id, study_id):
         binary_file.write(bytesstring.getvalue())
     """
     return {"status":"error", "message": "Not Implemented yet."}
- 
 
 
 def get_snapshot_file(profile_id, study_id, snapshot_version):
