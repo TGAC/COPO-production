@@ -9,6 +9,7 @@ from .utils.da import SinglecellSchemas, Singlecell, ADDITIONAL_COLUMNS_PREFIX_D
 from common.utils.helpers import get_datetime, notify_singlecell_status, get_not_deleted_flag, get_deleted_flag
 from .utils.SingleCellSchemasHandler import SinglecellschemasSpreadsheet, SingleCellSchemasHandler
 from common.s3.s3Connection import S3Connection as s3
+from common.s3.checksum import verify_s3_checksums
 from common.utils.logger import Logger
 import pandas as pd
 from pymongo import ReturnDocument
@@ -98,10 +99,75 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
                     if s3obj.check_for_s3_bucket(bucket_name):
                         # get filenames from manifest
                         # check for files
-                        result,msg = s3obj.check_s3_bucket_for_files(bucket_name=bucket_name, file_list=s3_checking_file_names)
-                        if not result:
-                            notify_singlecell_status(data={"profile_id": profile_id},
-                                msg=msg, action="warning", html_id="singlecell_info")
+                        file_etags, _ = s3obj.check_s3_bucket_for_files(
+                            bucket_name=bucket_name,
+                            file_list=s3_checking_file_names,
+                            just_return_etags=True,
+                        )
+
+                        # Non-dict errors might be returned from the
+                        # `check_s3_bucket_for_files` function.
+                        # These errors might relate to bucket missing
+                        # or authentication issues so ensure that `file_etags
+                        # is a dictionary
+                        if not isinstance(file_etags, dict):
+                            file_etags = {}
+
+                        # Data files that have been uploaded before manifest
+                        # was first uploaded for validation are checked at this point
+                        mismatched, pending = verify_s3_checksums(
+                            bucket_name,
+                            {f: file_name_map[f] for f in s3_checking_file_names},
+                            file_etags,
+                        )
+                        
+                        if mismatched:
+                            mismatched_html = [f'<strong>{x}</strong>' for x in mismatched]
+                            msg = (
+                                f'Checksum mismatch for files: {join_with_and(mismatched_html)}.<br>'
+                                'Please correct the data file checksum in the manifest then, re-upload it.'
+                            )
+                            notify_singlecell_status(
+                                data={"profile_id": profile_id},
+                                msg=msg,
+                                action="error",
+                                html_id="singlecell_info",
+                            )
+                            return HttpResponse(status=400, content=msg)
+
+                        # Data files that are not uploaded as yet or are still being hashed,
+                        # will be checked at manifest submission time.
+                        # Show warnings to the user if necessary indicating this.
+                        warnings = []
+                        missing_files = [
+                            f for f in s3_checking_file_names if f not in file_etags
+                        ]
+                        
+                        if missing_files:
+                            missing_files_html = [
+                                f'<strong>{x}</strong>' for x in missing_files
+                            ]
+                            warnings.append(
+                                f"Data files missing: {join_with_and(missing_files_html)}.<br><br>"
+                                "To upload them, use the <strong>Data files</strong> button "
+                                "for the relevant profile on the <strong>Work profiles</strong> page or "
+                                "click the <i class='material-symbols-outlined icon pcomponent-material-icon blue no-click'>folder_open</i> "
+                                "file icon in the top navigation bar. "
+                            )
+                            
+                        if pending:
+                            pending_html = [f'<strong>{x}</strong>' for x in pending]
+                            warnings.append(
+                                f'Data file checksums are still being calculated for: {join_with_and(pending_html)}. '
+                            )
+                            
+                        if warnings:
+                            notify_singlecell_status(
+                                data={"profile_id": profile_id},
+                                msg="<br>".join(warnings),
+                                action="warning",
+                                html_id="singlecell_info",
+                            )
                             is_warning = True
                             # error message has been sent to frontend by check_s3_bucket_for_files so return so prevent ena.collect() from running
                             #return HttpResponse(status=400, content=msg)

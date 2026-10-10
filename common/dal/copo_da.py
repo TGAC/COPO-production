@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 import copy
 import re
@@ -1394,6 +1394,83 @@ class DataFile(DAComponent):
         self.get_collection_handle().update_one(
             {"_id": file_oid}, {"$set": {"file_hash": file_hash}}
         )
+
+
+class DataFileChecksum(DAComponent):
+    '''
+    The MD5 file checksum of bytes that are stored in S3 are keyed by a  
+    bucket, key and etag. The `etag` identifies a datafile upload so, 
+    re-uploading a data file invalidates the previously stored MD5checksum.
+    
+    Unlike `file_hash`, which holds the data file checksum that a user 
+    provides in a manifest, the `etag` is what was actually computed 
+    from the object itself.
+    
+    Status: 'pending' (hash was requested), 'done' or 'failed'.
+    '''
+    # A pending file hash older than 24 hours is assumed as lost 
+    # (e.g. this can happen after a worker restart)
+    STALE_PENDING_HOURS = 24
+
+    def __init__(self, profile_id=None, subcomponent=None):
+        super(DataFileChecksum, self).__init__(
+            profile_id=profile_id, component='datafileChecksum', subcomponent=subcomponent
+        )
+
+    def get_md5_map(self, bucket, etags):
+        # return {key: md5} for keys whose current etag has a computed md5
+        if not etags:
+            return dict()
+        docs = self.get_collection_handle().find(
+            {'bucket': bucket, 'key': {'$in': list(etags.keys())}, 'status': 'done'},
+            {'key': 1, 'etag': 1, 'md5': 1},
+        )
+        return {doc['key']: doc['md5'] for doc in docs if etags.get(doc['key']) == doc['etag']}
+
+    def claim(self, bucket, key, etag):
+        '''
+        Mark the object as pending so that only one hash task will run for it.
+        Return `True` if the hash task should be started i.e. the object
+        has never been hashed since a previous attempt failed or became stale.
+        '''
+        now = helpers.get_datetime()
+        result = self.get_collection_handle().update_one(
+            {'bucket': bucket, 'key': key, 'etag': etag},
+            {'$setOnInsert': {'status': 'pending', 'date_modified': now}},
+            upsert=True,
+        )
+        if result.upserted_id:
+            return True
+        stale = now - timedelta(hours=self.STALE_PENDING_HOURS)
+        result = self.get_collection_handle().update_one(
+            {'bucket': bucket, 'key': key, 'etag': etag,
+             '$or': [{'status': 'failed'}, {'status': 'pending', 'date_modified': {'$lt': stale}}]},
+            {'$set': {'status': 'pending', 'date_modified': now}},
+        )
+        return result.modified_count > 0
+
+    def set_md5(self, bucket, key, etag, md5):
+        self.get_collection_handle().update_one(
+            {'bucket': bucket, 'key': key, 'etag': etag},
+            {'$set': {'md5': md5, 'status': 'done', 'date_modified': helpers.get_datetime()}},
+            upsert=True,
+        )
+        # Drop hashes of earlier data file uploads that have the same key
+        self.get_collection_handle().delete_many(
+            {'bucket': bucket, 'key': key, 'etag': {'$ne': etag}}
+        )
+
+    def set_failed(self, bucket, key, etag):
+        self.get_collection_handle().update_one(
+            {'bucket': bucket, 'key': key, 'etag': etag},
+            {'$set': {'status': 'failed', 'date_modified': helpers.get_datetime()}},
+        )
+
+    def remove(self, bucket, keys, etag=None):
+        query = {'bucket': bucket, 'key': {'$in': list(keys)}}
+        if etag:
+            query['etag'] = etag
+        self.get_collection_handle().delete_many(query)
 
 
 class EnaChecklist(DAComponent):

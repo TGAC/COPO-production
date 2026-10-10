@@ -8,7 +8,7 @@ from common.utils.helpers import notify_read_status
 from common.utils.logger import Logger
 from boto3.s3.transfer import TransferConfig
 import logging
-from common.dal.copo_da import EnaFileTransfer
+from common.dal.copo_da import EnaFileTransfer, DataFileChecksum
 from common.utils.helpers import get_env
 from src.apps.copo_file.utils.CopoFiles import delete_image_thumbnail
 
@@ -288,6 +288,7 @@ class S3Connection():
             if not enaFile or get_transfer_status(enaFile) >= TransferStatus.DOWNLOADED_TO_LOCAL:
                 status = True          
                 self.s3_client.delete_object(Bucket=bucket_name, Key=key)
+                DataFileChecksum().remove(bucket_name, [key])
 
                 # Clean up thumbnail images from disk for image file types
                 delete_image_thumbnail(key, self.profile_id)
