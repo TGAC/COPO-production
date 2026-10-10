@@ -681,6 +681,7 @@ function upload_spreadsheet(file) {
         BootstrapDialog.show({
           title: 'Error',
           message: 'Error ' + data.status + ': ' + data.responseText,
+          type: BootstrapDialog.TYPE_DANGER
         });
       }
       */
@@ -715,7 +716,8 @@ function save_singlecell_data() {
       if (responseText != '') {
         BootstrapDialog.show({
           title: 'Error',
-          message: 'Error ' + data.status + ': ' + data.responseText,
+          message: data.responseText, // 'Error ' + data.status + ': ' + data.responseText,
+          type: BootstrapDialog.TYPE_DANGER,
         });
       }
     })
