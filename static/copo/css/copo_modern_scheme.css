@@ -1512,6 +1512,9 @@ a, button, .btn { transition: color .15s, background .15s, border-color .15s !im
 [data-theme="dark"] table.dataTable tbody tr.highlight_no_accession.even {
   background: #3d3216 !important;
 }
+[data-theme="dark"] table.dataTable tbody tr.highlight_rejected,
+[data-theme="dark"] table.dataTable tbody tr.highlight_rejected.odd,
+[data-theme="dark"] table.dataTable tbody tr.highlight_rejected.even,
 [data-theme="dark"] table.dataTable tbody tr.highlight_error_file_processing_status,
 [data-theme="dark"] table.dataTable tbody tr.highlight_error_file_processing_status.odd,
 [data-theme="dark"] table.dataTable tbody tr.highlight_error_file_processing_status.even {
@@ -1525,6 +1528,8 @@ a, button, .btn { transition: color .15s, background .15s, border-color .15s !im
 [data-theme="dark"] table.dataTable tbody tr.highlight_no_accession:hover td {
   background: #4c3f1b !important;
 }
+[data-theme="dark"] table.dataTable tbody tr.highlight_rejected:hover,
+[data-theme="dark"] table.dataTable tbody tr.highlight_rejected:hover td,
 [data-theme="dark"] table.dataTable tbody tr.highlight_error_file_processing_status:hover,
 [data-theme="dark"] table.dataTable tbody tr.highlight_error_file_processing_status:hover td {
   background: #4c2626 !important;
