@@ -240,6 +240,7 @@ body {
 
 /* Icon colour overrides — Material Symbols (colour class on the element itself) */
 #componentIcon.material-symbols-outlined.blue,
+.icon.pcomponent-material-icon.blue,
 .copo-page-icons .icon.item .pcomponent-material-icon.blue   { color: var(--co-biodata)  !important; }
 
 #componentIcon.material-symbols-outlined.olive,
