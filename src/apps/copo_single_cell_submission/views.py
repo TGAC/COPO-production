@@ -4,6 +4,8 @@ from common.dal.sample_da import Sample
 from common.dal.submission_da import Submission
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+
+from common.schemas.utils.data_utils import join_with_and, render_html_list
 from .utils.copo_single_cell import generate_singlecell_record
 from .utils.da import SinglecellSchemas, Singlecell, ADDITIONAL_COLUMNS_PREFIX_DEFAULT_VALUE
 from common.utils.helpers import get_datetime, notify_singlecell_status, get_not_deleted_flag, get_deleted_flag
@@ -414,9 +416,17 @@ def save_singlecell_records(request, profile_id, schema_name):
     
     duplicated_files = [datafile for datafile in datafiles if datafile.get("study_id","") != study_id] 
     if duplicated_files:
-        return HttpResponse(status=400, content="The following files are already associated with another study: " + ", ".join( [ datafile["file_name"] + " : " + datafile.get("study_id","READ") for datafile in duplicated_files]))
-    
-    datafile_map = {datafile["file_location"]: datafile for datafile in datafiles}  
+        duplicated_files_html = [
+            f"{datafile["file_name"]}: <strong>{datafile.get("study_id", "READ")}</strong>"
+            for datafile in duplicated_files
+        ]
+        return HttpResponse(
+            status=400,
+            content="The following data files are already associated with a different study:<br>"
+            f'{render_html_list(duplicated_files_html)}',
+        )
+
+    datafile_map = {datafile["file_location"]: datafile for datafile in datafiles}
 
     changed_datafile_list = [] 
     changed_datafile_image_list = []

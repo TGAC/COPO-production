@@ -503,6 +503,86 @@ if (!document.documentElement._activityLogThemeWatcher) {
   document.documentElement._activityLogThemeWatcher = obs;
 }
 
+// Alert messages include a formatting markup like <br>, <strong>
+// and Semantic UI icons
+// (e.g. <i class='material-symbols-outlined icon pcomponent-material-icon blue no-click'>folder_open</i>)
+// to render them as HTML.
+//
+// The allowed list, `_ALERT_ALLOWED_TAGS` below, facilitates this. Any other
+// elements like script or style-like ones, are dropped with their
+// content so that they are unwrapped to their text only.
+// Attributes like 'class', 'title' and 'href' are okay.
+//
+const _ALERT_ALLOWED_TAGS = new Set([
+  'A',
+  'B',
+  'BR',
+  'CODE',
+  'DIV',
+  'EM',
+  'I',
+  'LI',
+  'OL',
+  'P',
+  'SPAN',
+  'STRONG',
+  'U',
+  'UL',
+]);
+const _ALERT_DROPPED_TAGS = new Set([
+  'SCRIPT',
+  'STYLE',
+  'IFRAME',
+  'OBJECT',
+  'EMBED',
+  'TEMPLATE',
+  'NOSCRIPT',
+  'SVG',
+  'MATH',
+]);
+const _ALERT_SAFE_HREF = /^(https?:|mailto:|\/|#)/i;
+
+function _sanitiseAlertNodes(srcParent, destParent) {
+  srcParent.childNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      destParent.appendChild(document.createTextNode(node.nodeValue));
+      return;
+    }
+    if (
+      node.nodeType !== Node.ELEMENT_NODE ||
+      _ALERT_DROPPED_TAGS.has(node.tagName)
+    )
+      return;
+
+    if (!_ALERT_ALLOWED_TAGS.has(node.tagName)) {
+      _sanitiseAlertNodes(node, destParent); // Unwrap to keep the children only
+      return;
+    }
+    const el = document.createElement(node.tagName.toLowerCase());
+    ['class', 'title'].forEach((attr) => {
+      if (node.hasAttribute(attr))
+        el.setAttribute(attr, node.getAttribute(attr));
+    });
+    if (node.tagName === 'A') {
+      const href = (node.getAttribute('href') || '').trim();
+      if (_ALERT_SAFE_HREF.test(href)) {
+        el.setAttribute('href', href);
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener noreferrer');
+      }
+    }
+    _sanitiseAlertNodes(node, el);
+    destParent.appendChild(el);
+  });
+}
+
+function _alertMessageToFragment(message) {
+  const parsed = new DOMParser().parseFromString(String(message), 'text/html');
+  const fragment = document.createDocumentFragment();
+  _sanitiseAlertNodes(parsed.body, fragment);
+  return fragment;
+}
+
 function displayAlert(alertType, alertMessage, opts) {
   // alertType:  'success', 'warning', 'info', 'danger'/'error', 'progress'
   // opts.lineId: if provided, update that log line in place (used for progress bars)
@@ -543,7 +623,10 @@ function displayAlert(alertType, alertMessage, opts) {
   $line.attr('data-alert-type', alertType || '');
   // setProperty('important') so per-line colour beats dark-theme's .panel-body !important rule.
   _setImp($line[0], 'color', palette[alertType] || palette.fg);
-  $line.text(new Date().toLocaleTimeString() + ' ' + String(alertMessage).replace(/<[^>]+>/g, ''));
+  $line
+    .empty()
+    .append(document.createTextNode(new Date().toLocaleTimeString() + ' '))
+    .append(_alertMessageToFragment(alertMessage));
   $log.scrollTop($log[0].scrollHeight);
 
   // Toggle sidebar visibility to show it since content was added
