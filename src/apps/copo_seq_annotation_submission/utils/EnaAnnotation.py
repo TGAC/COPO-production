@@ -84,7 +84,8 @@ def validate_annotation(form_data,formset, profile_id, seq_annotation_id=None):
             "No data files were found in COPO.<br>"
             "To upload them, use the <strong>Data files</strong> button "
             "for the relevant profile on the <strong>Work profiles</strong> page or "
-            "access the <i class='ui icon blue file'></i> file icon in the top navigation bar."
+            "click the <i class='material-symbols-outlined icon pcomponent-material-icon blue no-click'>folder_open</i> "
+            "file icon in the top navigation bar."
         )
         notify_annotation_status(
             data={"profile_id": profile_id},

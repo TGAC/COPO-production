@@ -199,6 +199,17 @@ body {
   box-shadow: var(--co-shadow-hover) !important;
 }
 
+.material-symbols-outlined.icon.pcomponent-material-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle;
+  width: auto !important;
+  margin: 0 !important;
+  text-decoration: none !important;
+  transition: all .15s !important;
+}
+
 /* Icon colour overrides — Semantic UI icons */
 .copo-page-icons .icon.item i.blue   { color: var(--co-biodata)  !important; }
 .copo-page-icons .icon.item i.olive  { color: #7a9a1e !important; }
