@@ -353,7 +353,7 @@ function upload_files(files) {
         $('#uploadModal').modal('hide');
         result_dict = {};
         result_dict['status'] = 'success';
-        result_dict['message'] = 'File(s) have been uploaded!';
+        result_dict['message'] = 'Files have been uploaded';
         do_crud_action_feedback(result_dict);
         globalDataBuffer = data;
         // If the response includes updated table data, trigger a full table redraw.
