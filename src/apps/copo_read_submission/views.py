@@ -9,6 +9,8 @@ from common.dal.sample_da import Sample, Source
 from common.utils import helpers
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from common.s3.s3Connection import S3Connection as s3
+from common.s3.checksum import verify_s3_checksums
+from common.schemas.utils.data_utils import join_with_and
 from pymongo import ReturnDocument
 import common.ena_utils.FileTransferUtils as tx
 from django.conf import settings
@@ -87,6 +89,8 @@ def parse_ena_spreadsheet(request):
     if ena.loadManifest(fmt):
         l.log("Dtol manifest loaded")
         if ena.validate():
+            is_warning = False
+            
             l.log("About to collect Dtol manifest")
             # check s3 for bucket and files files
             bucket_name = profile_id
@@ -102,6 +106,41 @@ def parse_ena_spreadsheet(request):
                 if not result:
                     # error message has been sent to frontend by check_s3_bucket_for_files so return so prevent ena.collect() from running
                     return HttpResponseBadRequest()
+
+                # The data file checksums provided in the manifest must
+                # match the checksums of the uploaded data files
+                mismatched, pending = verify_s3_checksums(
+                    bucket_name, ena.get_file_checksums_from_manifest(), result
+                )
+
+                if mismatched:
+                    mismatched_html = [f'<strong>{x}</strong>' for x in mismatched]
+                    msg = (
+                        f'Checksum mismatch for files: {join_with_and(mismatched_html)}.<br>'
+                        'Please correct the data file checksum in the manifest then, re-upload it.'
+                    )
+                    ghlper.notify_read_status(
+                        data={"profile_id": profile_id},
+                        msg=msg,
+                        action="error",
+                        html_id="sample_info",
+                    )
+                    return HttpResponseBadRequest()
+
+                # Data files that are still being hashed
+                # will be checked at submission time
+                if pending:
+                    pending_html = [f'<strong>{x}</strong>' for x in pending]
+                    is_warning = True
+                    ghlper.notify_read_status(
+                        data={"profile_id": profile_id},
+                        msg=(
+                            f'Data file checksums are still being calculated for: {join_with_and(pending_html)}. '
+                            'Their file checksums will be verified at submission time.'
+                        ),
+                        action="warning",
+                        html_id="sample_info",
+                    )
             else:
                 # bucket is missing, therefore create bucket and notify user to upload files
                 # msg = 's3 bucket not found, creating it'
@@ -127,12 +166,15 @@ def parse_ena_spreadsheet(request):
                     html_id="sample_info",
                 )
                 return HttpResponseBadRequest()
-            ghlper.notify_read_status(
-                data={"profile_id": profile_id},
-                msg='Spreadsheet is valid. Please click <b>Finish</b> to complete the upload.',
-                action="success",
-                html_id="sample_info",
-            )
+            
+            if not is_warning:
+                ghlper.notify_read_status(
+                    data={"profile_id": profile_id},
+                    msg='Spreadsheet is valid. Please click <b>Finish</b> to complete the upload.',
+                    action="success",
+                    html_id="sample_info",
+                )
+                
             ena.collect()
             return HttpResponse()
         return HttpResponseBadRequest()
