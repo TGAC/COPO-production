@@ -1,18 +1,22 @@
-from django.contrib.auth.models import Group
-
-from common.utils.logger import Logger
-from common.dal.profile_da import Profile
-from src.apps.copo_single_cell_submission.utils.da import Singlecell, SinglecellSchemas
-from src.apps.copo_core.models import User
-from common.dal.copo_da import CopoGroup
-from common.utils import helpers
 import uuid
+
+from django.contrib.auth.models import Group
+from sapiopylib.rest.utils.recordmodel.PyRecordModel import PyRecordModel
+
+from common.dal.copo_da import CopoGroup
+from common.dal.profile_da import Profile
+from common.utils import helpers
+from common.utils.logger import Logger
+from src.apps.copo_core.models import User
+from src.apps.copo_single_cell_submission.utils.da import Singlecell, SinglecellSchemas
+
 from .email import Email
 from .lims import get_lims_adapter
 
 # Separator used when a profile owner enters multiple customer emails in a single field
 CUSTOMER_EMAIL_SPLITTER = ";"
 EDP_PROJECT_STUDY_FIELDS = ['customer_email', 'sample_return', 'health_safety']
+
 
 l = Logger()
 
@@ -304,3 +308,4 @@ def join_shared_edp_profile(profile, token):
             "status": "error",
             "message": f"Customer with email '{user.email}' is not authorised to join the profile.",
         }
+        

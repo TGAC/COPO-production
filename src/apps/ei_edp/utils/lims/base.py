@@ -27,7 +27,7 @@ Design rules that keep the interface LIMS-neutral:
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 class LIMSUnavailable(Exception):

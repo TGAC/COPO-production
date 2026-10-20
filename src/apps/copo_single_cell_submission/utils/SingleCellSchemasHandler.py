@@ -172,7 +172,6 @@ class SingleCellSchemasHandler:
         singlecell_dict["date_modified"] = get_datetime()
 
         return singlecell_dict
-        profile_id=None,
 
     def write_manifest(
         self,
@@ -510,7 +509,7 @@ class SingleCellSchemasHandler:
                     if "data_values" in writer.sheets:
                         writer.sheets["data_values"].protect()
                         writer.sheets["data_values"].hide()
-                    #write a secret worksheet to keep the checklist id
+                    # write a secret worksheet to keep the checklist id
                     secret_sheet = writer.book.add_worksheet(f"checklist_{checklist_id}")
                     secret_sheet.protect()
                     secret_sheet.hide()

@@ -29,6 +29,7 @@ user_token = get_env('WEBIN_USER').split("@")[0]  # Extract username portion bef
 session = requests.Session()
 session.auth = (user_token, pass_word)
 
+
 def _query_ena_file_processing_status(accession_no):
     """Query the ENA reporting API for the archive/release status of files
     associated with a given run accession number.
@@ -118,7 +119,7 @@ def generate_singlecell_record(profile_id, checklist_id=str(), study_id=str(), s
     # Re-query with schema_name to get all studies under this schema (may span multiple study_ids)
     if schema_name:
         studies = Singlecell(profile_id=profile_id).get_all_records_columns(filter_by={"schema_name": schema_name, "checklist_id": checklist_id}, projection={"study_id": 1, "components.study":1})
-    
+
     if not studies:
         return dict(dataSet=data_set, columns=columns, submission_repository=submission_repository, components=list(columns.keys()))
 
@@ -176,7 +177,6 @@ def generate_singlecell_record(profile_id, checklist_id=str(), study_id=str(), s
             columns[component_name].extend([dict(data=item["term_name"],  title=item["term_label"], defaultContent='',
                                                     render = "render_thumbnail_image_column_function" if item["term_type"] == "file" else None
                                                   ) for item in component_schema])
-
 
             column_keys[component_name] = ([item["term_name"] for item in component_schema])
 
@@ -273,7 +273,6 @@ def generate_singlecell_record(profile_id, checklist_id=str(), study_id=str(), s
 
             data_set[component_name] = component_data_df.to_dict(orient="records")
 
-
         # Apply the aggregated child-component statuses to the study row.
         # The study's status per repository becomes the worst of its own status and its children's.
         study_component = data_set["study"][0]
@@ -283,7 +282,6 @@ def generate_singlecell_record(profile_id, checklist_id=str(), study_id=str(), s
 
             # Append any child-component errors to the study's error field
             study_component[f"error_{repository}"] = study_component[f"error_{repository}"] + " " + "<br/>".join(submission_error) if submission_error else ""
-
 
     return_dict = dict(dataSet=data_set,
                        columns=columns,

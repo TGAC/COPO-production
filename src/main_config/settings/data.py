@@ -1,11 +1,14 @@
 # settings for services e.g. postgres, mongo, redis, irods...
 
-# from django.conf import settings
-from . import base
-from pymongo import MongoClient
-from common.utils.helpers import get_env
-import sys
 import os
+import sys
+from urllib.parse import urlsplit
+
+from pymongo import MongoClient
+
+from common.utils.helpers import get_env
+
+from . import base
 
 # this value tells COPO whether we are in Development or Production environment
 ENVIRONMENT_TYPE = get_env('ENVIRONMENT_TYPE')

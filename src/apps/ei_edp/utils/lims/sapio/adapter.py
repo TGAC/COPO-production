@@ -13,16 +13,17 @@ convention used to map COPO terms to Sapio fields.
 """
 
 import math
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import pandas as pd
-
-from common.utils.logger import Logger
+from django.conf import settings
 from sapiopylib.rest.User import SapioServerException
 from sapiopylib.rest.utils.recordmodel.PyRecordModel import PyRecordModel
 
-from .datamanager import Sapio
+from common.utils.logger import Logger
+
 from ..base import LIMSAdapter, LIMSUnavailable
+from .datamanager import Sapio
 
 l = Logger()
 

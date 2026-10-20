@@ -1,45 +1,37 @@
+from io import BytesIO
+from os.path import join
+
+import pandas as pd
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.urls import reverse
+from pymongo import ReturnDocument
+
+import common.ena_utils.FileTransferUtils as tx
+from common.dal.copo_da import DataFile
+from common.dal.mongo_util import cursor_to_list
 from common.dal.profile_da import Profile
 from common.dal.sample_da import Sample
 from common.dal.submission_da import Submission
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-
-from common.schemas.utils.data_utils import join_with_and, render_html_list
-from .utils.copo_single_cell import generate_singlecell_record
-from .utils.da import (
-    SinglecellSchemas,
-    Singlecell,
-    ADDITIONAL_COLUMNS_PREFIX_DEFAULT_VALUE,
-)
-from common.utils.helpers import (
-    get_datetime,
-    notify_singlecell_status,
-    get_not_deleted_flag,
-    get_deleted_flag,
-)
-from .utils.SingleCellSchemasHandler import (
-    SinglecellschemasSpreadsheet,
-    SingleCellSchemasHandler,
-)
-from src.apps.ei_edp.utils.EDPSchemasHandler import (
-    EDPSchemasHandler,
-    EDPSchemasSpreadsheet,
-)
-from common.s3.s3Connection import S3Connection as s3
 from common.s3.checksum import verify_s3_checksums
+from common.s3.s3Connection import S3Connection as s3
+from common.schemas.utils.data_utils import join_with_and, render_html_list
+from common.utils.helpers import (get_datetime, get_deleted_flag,
+                                  get_not_deleted_flag,
+                                  notify_singlecell_status)
 from common.utils.logger import Logger
-import pandas as pd
-from pymongo import ReturnDocument
-from io import BytesIO
-from django.conf import settings
-from os.path import join
-from common.dal.copo_da import DataFile
-import common.ena_utils.FileTransferUtils as tx
-from common.dal.mongo_util import cursor_to_list
-import common.ena_utils.FileTransferUtils as tx
 from src.apps.copo_core.views import web_page_access_checker
-from django.urls import reverse
+from src.apps.ei_edp.utils.EDPSchemasHandler import (EDPSchemasHandler,
+                                                     EDPSchemasSpreadsheet)
+
+from .utils.copo_single_cell import generate_singlecell_record
+from .utils.da import (ADDITIONAL_COLUMNS_PREFIX_DEFAULT_VALUE, Singlecell,
+                       SinglecellSchemas)
+from .utils.single_cell_utils import SchemaClassType, get_schema_class
+from .utils.SingleCellSchemasHandler import (SingleCellSchemasHandler,
+                                             SinglecellschemasSpreadsheet)
 
 l = Logger()
 
@@ -164,9 +156,11 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
                             {f: file_name_map[f] for f in s3_checking_file_names},
                             file_etags,
                         )
-                        
+
                         if mismatched:
-                            mismatched_html = [f'<strong>{x}</strong>' for x in mismatched]
+                            mismatched_html = [
+                                f'<strong>{x}</strong>' for x in mismatched
+                            ]
                             msg = (
                                 f'Checksum mismatch for files: {join_with_and(mismatched_html)}.<br>'
                                 'Please correct the data file checksum in the manifest then, re-upload it.'
@@ -186,7 +180,7 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
                         missing_files = [
                             f for f in s3_checking_file_names if f not in file_etags
                         ]
-                        
+
                         if missing_files:
                             missing_files_html = [
                                 f'<strong>{x}</strong>' for x in missing_files
@@ -198,13 +192,13 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
                                 "click the <i class='material-symbols-outlined icon pcomponent-material-icon blue no-click'>folder_open</i> "
                                 "file icon in the top navigation bar. "
                             )
-                            
+
                         if pending:
                             pending_html = [f'<strong>{x}</strong>' for x in pending]
                             warnings.append(
                                 f'Data file checksums are still being calculated for: {join_with_and(pending_html)}. '
                             )
-                            
+
                         if warnings:
                             notify_singlecell_status(
                                 data={"profile_id": profile_id},
@@ -734,18 +728,32 @@ def copo_singlecell(request, schema_name, profile_id, ui_component):
 
     checklists = []
     if singlecell_checklists:
-        #filter only checklists available for this profile
-        schema = SinglecellSchemas().get_collection_handle().find_one({"name": schema_name}, {"checklists_filter":1})
-        checklists_filter = schema.get("checklists_filter",[])
+        # filter only checklists available for this profile
+        schema = (
+            SinglecellSchemas()
+            .get_collection_handle()
+            .find_one({"name": schema_name}, {"checklists_filter": 1})
+        )
+        checklists_filter = schema.get("checklists_filter", [])
         if checklists_filter:
             checklists_filter_df = pd.DataFrame.from_records(checklists_filter)
             columns = checklists_filter_df.columns
             for col in columns:
                 if col != "key":
-                    checklists_filter_df = checklists_filter_df[(pd.isna(checklists_filter_df[col])) | (checklists_filter_df[col].astype(str).str.upper() == str(profile.get(col,"")).upper())]
-            singlecell_checklists_df = pd.DataFrame.from_dict(singlecell_checklists, orient="index")
+                    checklists_filter_df = checklists_filter_df[
+                        (pd.isna(checklists_filter_df[col]))
+                        | (
+                            checklists_filter_df[col].astype(str).str.upper()
+                            == str(profile.get(col, "")).upper()
+                        )
+                    ]
+            singlecell_checklists_df = pd.DataFrame.from_dict(
+                singlecell_checklists, orient="index"
+            )
             singlecell_checklists_df.reset_index(inplace=True)
-            checklists_filter_df = checklists_filter_df.merge(singlecell_checklists_df, left_on="key", right_on="index", how="inner")
+            checklists_filter_df = checklists_filter_df.merge(
+                singlecell_checklists_df, left_on="key", right_on="index", how="inner"
+            )
             checklists_filter_df.set_index("key", inplace=True)
             singlecell_checklists = checklists_filter_df.to_dict(orient="index")
 
@@ -809,7 +817,6 @@ def download_manifest(request, schema_name, profile_id, study_id, format="xlsx")
 @login_required
 @web_page_access_checker
 def download_init_blank_manifest(request, schema_name, profile_id, checklist_id):
-
     schemas = (
         SinglecellSchemas().get_collection_handle().find_one({"name": schema_name})
     )
