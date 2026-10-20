@@ -826,24 +826,26 @@ def download_init_blank_manifest(request, schema_name, profile_id, checklist_id)
         }
     )
 
-    identifier_map = SinglecellSchemas().get_identifier_map(schemas=schema)
-    identifier = identifier_map.get("sample", "")
+    # Get the schema handler class and sample field key based on the schema name
+    schema_handler = get_schema_class(schema_name, SchemaClassType.HANDLER)
+    sample_name_field = schema_handler.get_sample_name_field(schema_name)
 
     sample_component = []
     for sample in samples:
-        sample_dict = {}
-        for field in sample_schema:
-            sample_dict[field["term_name"]] = sample.get(field["term_name"], "")
-        if schema_name == "EI_EDP":
-            sample_dict["submitter_sample_reference"] = sample.get("name", "") 
-        else:
-            sample_dict[identifier] = sample.get("name", "") 
+        sample_dict = {
+            field['term_name']: sample.get(field['term_name'], '')
+            for field in sample_schema
+        }
+        sample_dict[sample_name_field] = sample.get('name', '')
         sample_component.append(sample_dict)
 
     singlecell = {"components": {"sample": sample_component}}
     bytesstring = BytesIO()
-    SingleCellSchemasHandler().write_manifest(
+
+    # Generate the manifest using the appropriate schema handler
+    schema_handler().write_manifest(
         singlecell_schema=schemas,
+        profile_id=profile_id,
         checklist_id=checklist_id,
         singlecell=singlecell,
         file_path=bytesstring,

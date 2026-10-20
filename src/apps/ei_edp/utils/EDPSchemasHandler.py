@@ -27,10 +27,12 @@ from openpyxl.worksheet.formula import ArrayFormula
 
 
 class EDPSchemasHandler(SingleCellSchemasHandler):
+    sample_name_field = 'submitter_sample_reference'
+
     def write_manifest(
         self,
-        profile_id,
         singlecell_schema,
+        profile_id=None,
         checklist_id=None,
         singlecell=None,
         file_path=None,

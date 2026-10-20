@@ -27,6 +27,10 @@ class SingleCellSchemasHandler:
     # def __init__(self):
     # self.headers = {'Accept': 'application/xsls' }
 
+    # This is the field that the sample's name will be written to in a blank manifest.
+    # 'None' means use the 'sample' component's identifier field from the schema
+    sample_name_field = None
+
     def _validate_regrex(self, regex):
         if pd.isna(regex):
             return True
@@ -168,10 +172,12 @@ class SingleCellSchemasHandler:
         singlecell_dict["date_modified"] = get_datetime()
 
         return singlecell_dict
+        profile_id=None,
 
     def write_manifest(
         self,
         singlecell_schema,
+        profile_id=None,
         checklist_id=None,
         singlecell=None,
         file_path=None,
@@ -705,6 +711,14 @@ class SingleCellSchemasHandler:
 
                 with open(file_path, "w") as output_file:
                     output_file.write(json.dumps(compacted))
+
+    def get_sample_name_field(self, schema_name):
+        if self.sample_name_field:
+            return self.sample_name_field
+        
+        identifier_map = SinglecellSchemas().get_identifier_map(schemas=schema_name)
+        identifier = identifier_map.get('sample', '')
+        return identifier
 
 
 class SinglecellschemasSpreadsheet:
