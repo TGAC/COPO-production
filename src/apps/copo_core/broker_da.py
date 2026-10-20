@@ -671,7 +671,10 @@ class BrokerDA:
         report_metadata["status"] = result.get("status", "success")
         report_metadata["message"] = result.get("message", "success")
         self.context["action_feedback"] = report_metadata       
-        if result.get("status","success") == "success":
+        
+        # Refresh on both 'success' and 'warning' messages so that 
+        # the 'Status' and 'Error' columns redraw
+        if result.get("status","success") in ("success", "warning"):
             self.context["table_data"] = copo_single_cell.generate_singlecell_record(profile_id=self.profile_id,checklist_id=checklist_id, study_id=study_id)
             self.context["component"] = "singlecell"
         return self.context        

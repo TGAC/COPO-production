@@ -145,14 +145,14 @@ class SapioAdapter(LIMSAdapter):
             department_records[0]
         )
         Sapio().relationship_man.load_children([department], 'Project')
-        
+
         # Skip if the project is already linked to the department in Sapio
         if any(
             child.record_id == project.record_id
             for child in department.get_children_of_type('Project')
         ):
             return
-    
+
         department.add_child(project)
 
     def sync_project(self, profile: Dict[str, Any]) -> Dict[str, Any]:
@@ -220,7 +220,7 @@ class SapioAdapter(LIMSAdapter):
                     .result_list
                 )
                 if not project_records or len(project_records) == 0:
-                    raise Exception(f"Failed to Find Sapio Project {project_id}")
+                    raise Exception(f"Failed to find project '{project_id}' in Sapio")
                 project_record = project_records[0]
                 project_record.set_field_value("ProjectName", project_name)
                 project_record.set_field_value(
@@ -335,7 +335,7 @@ class SapioAdapter(LIMSAdapter):
                         break
                 if diff > 0:
                     raise Exception(
-                        f"Sapio Project {project_id} has customer samples associated. Cannot decrease the no. of samples."
+                        f"The number of samples cannot be decreased because customer samples are already associated with project '{project_id}'."
                     )
 
                 project.remove_children(samples_to_remove)
@@ -607,7 +607,20 @@ class SapioAdapter(LIMSAdapter):
 
     def submit_manifest(
         self, project_id: str, schemas: Dict[str, Any], components: Dict[str, Any]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
+        try:
+            return self._submit_manifest(project_id, schemas, components)
+        except Exception as error:
+            l.exception(error)
+            return {
+                'status': 'error',
+                'message': f'Failed to submit manifest and attach its data to project {project_id} in Sapio: '
+                + _describe_error(error),
+            }
+
+    def _submit_manifest(
+        self, project_id: str, schemas: Dict[str, Any], components: Dict[str, Any]
+    ) -> Dict[str, Any]:
         project_records = (
             Sapio()
             .dataRecordManager.query_data_records(
@@ -669,6 +682,10 @@ class SapioAdapter(LIMSAdapter):
         project_sapio_mapping = sapio_object_dict.get("Project", {})
         sample_sapio_mapping = sapio_object_dict.get("Sample", {})
 
+        # Flag manifest sample IDs in COPO that have no matching samples
+        # in Sapio so that they can be reported to the user
+        skipped_samples = []
+
         for component_name, component_schema in schemas.items():
             component_schema_df = pd.DataFrame.from_records(component_schema)
             component_data_df = pd.DataFrame.from_records(
@@ -709,6 +726,8 @@ class SapioAdapter(LIMSAdapter):
                         l.error(
                             f"Sample with Sample ID {sapio_sample_id} not found in Sapio Project {project_id}. Skipping..."
                         )
+                        skipped_samples.append(str(sapio_sample_id))
+
                         continue
                     for column in component_data_df.columns:
                         sapio_field = sample_sapio_mapping.get(column, "")
@@ -717,7 +736,19 @@ class SapioAdapter(LIMSAdapter):
 
         Sapio().rec_man.store_and_commit()
 
+        if skipped_samples:
+            return {
+                'status': 'warning',
+                'message': f'EDP data was submitted to Sapio Project {project_id} but the '
+                f'following sample IDs were not found in the project and were skipped: '
+                f'{', '.join(skipped_samples)}',
+                'record_id': project.record_id,
+                'skipped_samples': skipped_samples,
+            }
+
         return {
             "status": "success",
             "message": f"EDP data submitted to Sapio Project {project_id} successfully.",
+            "record_id": project.record_id,
+            "skipped_samples": [],
         }

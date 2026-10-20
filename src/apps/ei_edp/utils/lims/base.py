@@ -151,8 +151,12 @@ class LIMSAdapter(ABC):
         COPO term to its LIMS field and applies study fields to the project and
         sample fields to the matching samples.
 
-        Return `{"status": "success", "message": ...}` or
-        `{"status": "error", "message": ...}`.
+        Return `{"status": "success" | "warning" | "error", "message": ...}`.
+        The `record_id` (which is the LIMS record's identifier
+        of the project is stored as the submission accession) and
+        the `skipped_samples` (which is a list of manifest sample IDs 
+        with no matching LIMS sample; a non-empty list means "warning") 
+        are included for successful and warning messages.
         """
         raise NotImplementedError
 

@@ -240,7 +240,32 @@ def submit_edp_to_sapio(profile_id, study_id):
 
     # The COPO term → LIMS field mapping and the write itself are the adapter's
     # responsibility; here study_id is the LIMS project identifier.
-    return get_lims_adapter().submit_manifest(study_id, schemas, singlecell_components)
+    result = get_lims_adapter().submit_manifest(
+        study_id, schemas, singlecell_components
+    )
+
+    # Record the outcome of a record submission in the
+    # `Status`, `Accession` or `Error` columns
+    # As regards Sapio, its submission accession is Sapio's
+    # record ID of the project
+    status = result.get('status', 'error')
+    status_column_value = {
+        'status': 'accepted' if status == 'success' else 'rejected',
+        'error': '' if status == 'success' else result.get('message', ''),
+    }
+    if status != 'error':
+        record_id = result.get('record_id', '')
+        status_column_value['accession'] = str(record_id) if record_id else ''
+
+    Singlecell().update_component_status(
+        id=singlecell['_id'],
+        component='study',
+        identifier='study_id',
+        identifier_value=study_id,
+        repository='sapio',
+        status_column_value=status_column_value,
+    )
+    return result
 
 
 def join_shared_edp_profile(profile, token):
