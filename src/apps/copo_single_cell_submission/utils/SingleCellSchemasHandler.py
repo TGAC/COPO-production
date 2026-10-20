@@ -711,13 +711,12 @@ class SingleCellSchemasHandler:
                 with open(file_path, "w") as output_file:
                     output_file.write(json.dumps(compacted))
 
-    def get_sample_name_field(self, schema_name):
+    def get_sample_name_field(self, schema):
         if self.sample_name_field:
             return self.sample_name_field
         
-        identifier_map = SinglecellSchemas().get_identifier_map(schemas=schema_name)
-        identifier = identifier_map.get('sample', '')
-        return identifier
+        identifier_map = SinglecellSchemas().get_identifier_map(schemas=schema)
+        return identifier_map.get('sample', '')
 
 
 class SinglecellschemasSpreadsheet:

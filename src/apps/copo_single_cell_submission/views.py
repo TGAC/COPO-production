@@ -23,8 +23,6 @@ from common.utils.helpers import (get_datetime, get_deleted_flag,
                                   notify_singlecell_status)
 from common.utils.logger import Logger
 from src.apps.copo_core.views import web_page_access_checker
-from src.apps.ei_edp.utils.EDPSchemasHandler import (EDPSchemasHandler,
-                                                     EDPSchemasSpreadsheet)
 
 from .utils.copo_single_cell import generate_singlecell_record
 from .utils.da import (ADDITIONAL_COLUMNS_PREFIX_DEFAULT_VALUE, Singlecell,
@@ -64,8 +62,8 @@ def parse_singlecell_spreadsheet(request, profile_id, schema_name):
         if inspect.isclass(element) and issubclass(element, Validator) and not element.__name__ == "Validator":
             required_validators.append(element)
     '''
-
-    singlecell = SinglecellschemasSpreadsheet(
+    spreadsheet_class = get_schema_class(schema_name, SchemaClassType.SPREADSHEET)
+    singlecell = spreadsheet_class(
         file=file,
         profile_id=profile_id,
         schema_name=schema_name,
@@ -834,8 +832,8 @@ def download_init_blank_manifest(request, schema_name, profile_id, checklist_id)
     )
 
     # Get the schema handler class and sample field key based on the schema name
-    schema_handler = get_schema_class(schema_name, SchemaClassType.HANDLER)
-    sample_name_field = schema_handler.get_sample_name_field(schema_name)
+    schema_handler = get_schema_class(schema_name, SchemaClassType.HANDLER)()
+    sample_name_field = schema_handler.get_sample_name_field(schema)
 
     sample_component = []
     for sample in samples:
@@ -850,7 +848,7 @@ def download_init_blank_manifest(request, schema_name, profile_id, checklist_id)
     bytesstring = BytesIO()
 
     # Generate the manifest using the appropriate schema handler
-    schema_handler().write_manifest(
+    schema_handler.write_manifest(
         singlecell_schema=schemas,
         profile_id=profile_id,
         checklist_id=checklist_id,
