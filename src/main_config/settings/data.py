@@ -102,6 +102,11 @@ ECS_ACCESS_KEY_ID = get_env('ECS_ACCESS_KEY_ID')
 ECS_SECRET_KEY = get_env('ECS_SECRET_KEY')
 ECS_ENDPOINT = get_env('ECS_ENDPOINT')
 
+# Settings for Sapio
+SAPIO_API_URL = get_env('SAPIO_API_URL')
+SAPIO_WEB_URL = f'{urlsplit(SAPIO_API_URL) .scheme}://{urlsplit(SAPIO_API_URL) .netloc}'
+SAPIO_PROJECT_DEPARTMENT = 'Technical Genomics'
+
 # Settings for ENA
 ENA_URL_HOSTNAME = get_env('ENA_URL_HOSTNAME') or 'www.ebi.ac.uk'
 

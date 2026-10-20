@@ -121,6 +121,39 @@ class SapioAdapter(LIMSAdapter):
 
         return {"status": "success"}
 
+    def _attach_project_to_department(self, project: PyRecordModel):
+        # 'VeloxDepartment' is Sapio's built-in department data type.
+        # The 'Projects' folder in Sapio's UI navigator is how it groups
+        # a department's children of type 'Project'.
+        department_records = (
+            Sapio()
+            .dataRecordManager.query_data_records(
+                data_type_name='VeloxDepartment',
+                data_field_name='DataRecordName',
+                value_list=[settings.SAPIO_PROJECT_DEPARTMENT],
+            )
+            .result_list
+        )
+
+        if not department_records:
+            msg = f"The department '{settings.SAPIO_PROJECT_DEPARTMENT}' is not found in Sapio."
+            l.error(msg)
+            return {'status': 'error', 'project_id': '', 'message': msg}
+
+        department: PyRecordModel = Sapio().inst_man.add_existing_record(
+            department_records[0]
+        )
+        Sapio().relationship_man.load_children([department], 'Project')
+        
+        # Skip if the project is already linked to the department in Sapio
+        if any(
+            child.record_id == project.record_id
+            for child in department.get_children_of_type('Project')
+        ):
+            return
+    
+        department.add_child(project)
+
     def sync_project(self, profile: Dict[str, Any]) -> Dict[str, Any]:
         # The project id we are working with; may be minted below on first save.
         # Returned in all paths (including partial failure) so the caller can
@@ -172,6 +205,8 @@ class SapioAdapter(LIMSAdapter):
                 )
                 directory.add_child(project)
 
+                # Attach profile created in COPO to its project department in Sapio
+                self._attach_project_to_department(project)
             else:
                 # Existing profile — look up the project by its Sapio identifier and update fields
                 project_records = (
@@ -198,6 +233,10 @@ class SapioAdapter(LIMSAdapter):
                         "C_BudgetHolder", profile["budget_user"]
                     )
                 Sapio().dataRecordManager.commit_data_records([project_record])
+
+                # Attach existing profile that was created in COPO to its project
+                # department in Sapio if the link is missing
+                self._attach_project_to_department(project)
 
             # Load all samples and plates currently linked to this project
             project: PyRecordModel = Sapio().inst_man.add_existing_record(
