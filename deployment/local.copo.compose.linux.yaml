@@ -150,7 +150,7 @@ services:
       - SAPIO_USERNAME=${vault_sapio_username}
       - SAPIO_PASSWORD=${vault_sapio_password}
       - SAPIO_API_TOKEN=${vault_sapio_api_token}
-      - SAPIO_API_URL=https://earlham-gold-lims-stag.exemplareln.com/webservice/api
+      - SAPIO_API_URL=${vault_sapio_api_url}
     depends_on:
       - copo_redis
       - copo_postgres

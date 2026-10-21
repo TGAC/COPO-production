@@ -33,8 +33,8 @@ from typing import Any, Dict, List, Optional
 class LIMSUnavailable(Exception):
     """Raised when a LIMS operation cannot complete because of a backend error.
 
-    Carries a user-facing summary — which LIMS, what it was doing, and the
-    underlying error — so callers (e.g. the EDP form build) can fail cleanly
+    Carries a user-facing summary - which LIMS, what it was doing, and the
+    underlying error - so callers (e.g. the EDP form build) can fail cleanly
     with an informative message instead of a blank 503 or a partially-built
     form missing its LIMS-sourced fields.
     """
@@ -68,7 +68,7 @@ class LIMSAdapter(ABC):
         raise NotImplementedError
 
     # ------------------------------------------------------------------ #
-    # Project lifecycle — called from the EDP profile save/delete hooks
+    # Project lifecycle - called from the EDP profile save/delete hooks
     # ------------------------------------------------------------------ #
     @abstractmethod
     def validate_profile_change(
@@ -116,7 +116,7 @@ class LIMSAdapter(ABC):
         raise NotImplementedError
 
     # ------------------------------------------------------------------ #
-    # Manifest — generation (read) and ingestion (write)
+    # Manifest - generation (read) and ingestion (write)
     # ------------------------------------------------------------------ #
     @abstractmethod
     def get_project_samples(
@@ -154,8 +154,8 @@ class LIMSAdapter(ABC):
         Return `{"status": "success" | "warning" | "error", "message": ...}`.
         The `record_id` (which is the LIMS record's identifier
         of the project is stored as the submission accession) and
-        the `skipped_samples` (which is a list of manifest sample IDs 
-        with no matching LIMS sample; a non-empty list means "warning") 
+        the `skipped_samples` (which is a list of manifest sample IDs
+        with no matching LIMS sample; a non-empty list means "warning")
         are included for successful and warning messages.
         """
         raise NotImplementedError

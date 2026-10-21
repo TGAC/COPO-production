@@ -1,4 +1,4 @@
-# LIMS Adapter — Decoupling the EDP Flow from Sapio
+# LIMS Adapter - Decoupling the EDP Flow from Sapio
 
 ## Context
 
@@ -24,11 +24,11 @@ until another adapter is selected.
 ## 1. Why
 
 - **Sapio was hardwired.** ~330 lines of `sapiopylib` code sat inline in the EDP
-  utils, so the flow could not run — or be tested — without a live Sapio stack.
+  utils, so the flow could not run - or be tested - without a live Sapio stack.
 - **The concept note promises "system-agnostic via pluggable adapters."** This
   is the seam that delivers it for the LIMS side.
 - **The seams were already roughly right.** All Sapio usage was contained within
-  `ei_edp/utils/`, with no leakage into the rest of COPO — an "extract an
+  `ei_edp/utils/`, with no leakage into the rest of COPO - an "extract an
   adapter" situation, not an "untangle a mess" one.
 
 ---
@@ -39,22 +39,22 @@ until another adapter is selected.
 set of operations the EDP flow actually performs against a LIMS. Each maps
 directly to a place the old inline Sapio code lived:
 
-| Method | Replaces (old inline Sapio in…) | Purpose |
-|--------|--------------------------------|---------|
-| `get_sample_type_options()` | `get_sapio_sample_type_options` | Choices for the profile form's sample-type dropdown |
-| `validate_profile_change(profile, requested_sample_count)` | `pre_save_edp_profile` | Guard a sample-count change that would delete committed samples |
-| `sync_project(profile)` | `post_save_edp_profile` (Sapio block) | Create-or-update the project + reconcile samples (& plates) |
-| `delete_project(project_id)` | `post_delete_edp_profile` | Delete the project and dependents |
-| `get_project_samples(project_id, schemas)` | `write_manifest` (sample read) | Existing samples, keyed by COPO `term_name`, to pre-fill a manifest |
-| `get_project_metadata(project_id)` | `write_manifest` (L8/L9 reads) | Study-level header values (`health_and_safety`, `sample_return`) |
-| `submit_manifest(project_id, schemas, components)` | `submit_edp_to_sapio` | Write an ingested manifest's values back into the LIMS |
+| Method                                                     | Replaces (old inline Sapio in…)       | Purpose                                                             |
+| ---------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------- |
+| `get_sample_type_options()`                                | `get_sapio_sample_type_options`       | Choices for the profile form's sample-type dropdown                 |
+| `validate_profile_change(profile, requested_sample_count)` | `pre_save_edp_profile`                | Guard a sample-count change that would delete committed samples     |
+| `sync_project(profile)`                                    | `post_save_edp_profile` (Sapio block) | Create-or-update the project + reconcile samples (& plates)         |
+| `delete_project(project_id)`                               | `post_delete_edp_profile`             | Delete the project and dependents                                   |
+| `get_project_samples(project_id, schemas)`                 | `write_manifest` (sample read)        | Existing samples, keyed by COPO `term_name`, to pre-fill a manifest |
+| `get_project_metadata(project_id)`                         | `write_manifest` (L8/L9 reads)        | Study-level header values (`health_and_safety`, `sample_return`)    |
+| `submit_manifest(project_id, schemas, components)`         | `submit_edp_to_sapio`                 | Write an ingested manifest's values back into the LIMS              |
 
 ### Design rules that keep the interface LIMS-neutral
 
 1. **Inputs and outputs speak COPO's language, never the LIMS's.** Methods take
    the COPO `profile` dict and single-cell `schemas`, and return records keyed
-   by COPO `term_name`. All translation to LIMS field names — e.g. Sapio's
-   `sapio_name` schema column (`"Object:Field"`) — lives *inside* the adapter.
+   by COPO `term_name`. All translation to LIMS field names - e.g. Sapio's
+   `sapio_name` schema column (`"Object:Field"`) - lives *inside* the adapter.
 2. **Status-returning methods use the house `{"status": ..., "message": ...}`
    convention**, so they drop straight into the existing profile-hook call
    sites.
@@ -71,7 +71,7 @@ directly to a place the old inline Sapio code lived:
 src/apps/ei_edp/utils/lims/
 ├── __init__.py        # get_lims_adapter() resolver + exports   (vendor-neutral)
 ├── base.py            # LIMSAdapter ABC, NullLIMSAdapter          (vendor-neutral)
-└── sapio/             # the Sapio plugin — self-contained
+└── sapio/             # the Sapio plugin - self-contained
     ├── __init__.py    # exposes SapioAdapter
     ├── adapter.py     # SapioAdapter: all sapiopylib business logic
     └── datamanager.py # Sapio client (auth/transport): the `Sapio` connection class
@@ -79,10 +79,10 @@ src/apps/ei_edp/utils/lims/
 
 The directory encodes the architecture: the **top level is the contract every
 LIMS shares**; each **subfolder is one vendor's implementation**. A second LIMS
-is a sibling folder (`lims/benchling/…`) plus a one-line settings change — no
+is a sibling folder (`lims/benchling/…`) plus a one-line settings change - no
 edits to neutral code.
 
-Within `sapio/`, `datamanager.py` (the connection/transport layer — reads
+Within `sapio/`, `datamanager.py` (the connection/transport layer - reads
 `SAPIO_*` env vars, builds a `SapioUser`, exposes the `sapiopylib` managers) is
 deliberately kept separate from `adapter.py` (the business operations). The
 adapter depends on the client; swapping auth or mocking for tests touches only
@@ -93,7 +93,7 @@ the client.
 ## 4. How the adapter is selected
 
 `get_lims_adapter()` (in `lims/__init__.py`) returns the adapter named by the
-`LIMS_ADAPTER` Django setting — a dotted path to a `LIMSAdapter` subclass —
+`LIMS_ADAPTER` Django setting - a dotted path to a `LIMSAdapter` subclass -
 defaulting to the no-op `NullLIMSAdapter` when unset. The instance is cached for
 the process lifetime.
 
@@ -103,7 +103,7 @@ LIMS_ADAPTER = "src.apps.ei_edp.utils.lims.sapio.adapter.SapioAdapter"
 ```
 
 - **Sapio (default):** `...lims.sapio.adapter.SapioAdapter`
-- **No LIMS / tests:** `...lims.base.NullLIMSAdapter` — every operation succeeds
+- **No LIMS / tests:** `...lims.base.NullLIMSAdapter` - every operation succeeds
   and reads return empty, so the EDP flow runs end to end without any external
   system.
 - **Custom:** any importable `LIMSAdapter` subclass.
@@ -112,20 +112,20 @@ LIMS_ADAPTER = "src.apps.ei_edp.utils.lims.sapio.adapter.SapioAdapter"
 
 ## 5. Where it's wired in
 
-The five external call sites were **not** changed — they still call the same
+The five external call sites were **not** changed - they still call the same
 `edp_utils` functions, which are now thin delegators to `get_lims_adapter()`:
 
-| Caller | Function | Delegates to |
-|--------|----------|--------------|
-| `copo_core/management/commands/setup_profile_types.py` (profile hooks) | `pre_save_edp_profile` | `validate_profile_change` |
-| " | `post_save_edp_profile` | `sync_project` (+ COPO group/email sharing stays local) |
-| " | `post_delete_edp_profile` | `delete_project` |
-| `copo_core/broker_da.py` | `submit_edp_to_sapio` | `submit_manifest` |
-| `ei_edp/utils/EDPSchemasHandler.py` | `write_manifest` | `get_project_samples`, `get_project_metadata` |
+| Caller                                                                 | Function                  | Delegates to                                            |
+| ---------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------- |
+| `copo_core/management/commands/setup_profile_types.py` (profile hooks) | `pre_save_edp_profile`    | `validate_profile_change`                               |
+| "                                                                      | `post_save_edp_profile`   | `sync_project` (+ COPO group/email sharing stays local) |
+| "                                                                      | `post_delete_edp_profile` | `delete_project`                                        |
+| `copo_core/broker_da.py`                                               | `submit_edp_to_sapio`     | `submit_manifest`                                       |
+| `ei_edp/utils/EDPSchemasHandler.py`                                    | `write_manifest`          | `get_project_samples`, `get_project_metadata`           |
 
 Note that `post_save_edp_profile` keeps its COPO-native work (customer-email
 group sharing, invite tokens, persisting the returned `project_id` to the
-profile) — only the LIMS project/sample sync moved into the adapter.
+profile) - only the LIMS project/sample sync moved into the adapter.
 
 ---
 
@@ -163,7 +163,7 @@ with no-ops and empty reads.
 - **The `sapio_name` schema column still exists** in the single-cell schemas.
   It is read only inside `SapioAdapter`. Moving that mapping out of the schema
   and into each adapter (so the schema is fully LIMS-neutral) is a deliberate
-  *future* step, not done here — don't gold-plate before a second LIMS exists.
+  *future* step, not done here - don't gold-plate before a second LIMS exists.
 - **Profile fields** (`sapio_project_id`, `sample_type`, `container_type`,
   `library_type`, `budget_user`) remain Sapio-flavoured on the COPO profile.
   Generalising these to neutral names + an adapter-declared blob is a separate
@@ -190,5 +190,5 @@ with no-ops and empty reads.
 
 **No automated tests exist for this flow yet** (consistent with the platform-wide
 gap noted in `DECOUPLING_ANALYSIS.md` §7). A characterization test running the
-profile hooks against `NullLIMSAdapter` — no external stack required — is the
+profile hooks against `NullLIMSAdapter` - no external stack required - is the
 cheapest first net and is now possible *because* of this decoupling.

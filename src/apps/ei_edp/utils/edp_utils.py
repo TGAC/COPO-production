@@ -75,12 +75,12 @@ def post_save_edp_profile(profile):
 
     This function does two things:
 
-    1. COPO profile sharing — if the profile has a `customer_emails` field,
+    1. COPO profile sharing - if the profile has a `customer_emails` field,
        ensures each email address is added to the COPO group for this profile.
        Users that already exist in COPO get an email notification immediately;
        users that don't have a COPO account yet get a token-based invite link.
 
-    2. Sapio project sync — creates a new Sapio Project record (and a matching
+    2. Sapio project sync - creates a new Sapio Project record (and a matching
        set of Sample records) when a profile is first saved, or updates the
        existing project and reconciles sample counts on subsequent saves.
        Samples are assigned to 96-well plates; new plates are created
@@ -293,7 +293,7 @@ def join_shared_edp_profile(profile, token):
         return {"status": "error", "message": f"Profile owner cannot join the profile."}
 
     if user.email == '' or user.email is None:
-        # New user with no email — resolve their address from the invite token
+        # New user with no email - resolve their address from the invite token
         email = profile.get("customer_emails_tokens", {}).get(token, "")
         if not email:
             return {
@@ -333,4 +333,3 @@ def join_shared_edp_profile(profile, token):
             "status": "error",
             "message": f"Customer with email '{user.email}' is not authorised to join the profile.",
         }
-        

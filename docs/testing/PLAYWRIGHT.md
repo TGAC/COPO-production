@@ -143,14 +143,36 @@ each action down somewhat (roughly 20-30%, per Playwright's own guidance) —
 negligible for a single short test, more noticeable across a whole suite run
 repeatedly. This is why tracing is opt-in rather than always-on.
 
-## Tests marked `external` (real ENA/Zenodo calls)
+## Tests marked `external` (real ENA/Zenodo/Sapio calls)
 
-Some tests make real network calls to third-party services — ENA's dev
-sandbox (`wwwdev.ebi.ac.uk`, safe, EBI's own intended test environment) and
-production Zenodo (`zenodo.org` — there is no Zenodo sandbox anywhere in
-this repo). These are marked `@pytest.mark.external` and are **excluded by
+Some tests make real network calls to services outside the local stack —
+ENA's dev sandbox (`wwwdev.ebi.ac.uk`, safe, EBI's own intended test
+environment), production Zenodo (`zenodo.org` — there is no Zenodo sandbox
+anywhere in this repo) and the Sapio LIMS test instance that `copo_web` is
+configured with. These are marked `@pytest.mark.external` and are **excluded by
 default**: a bare `run_playwright_tests.sh` run always passes
 `-m "not external"`.
+
+Tests that need ENA's dev sandbox **skip** (with the HTTP status in the
+reason) when its taxonomy lookup is down, instead of timing out on a disabled
+button. Tests that need Sapio **fail** if it can't be queried, since that's a
+local setup problem rather than a third-party outage.
+
+The EDP tests (`test_create_and_delete_edp_profile`,
+`test_edp_manifest_submission_to_sapio`) create a real project in Sapio for
+every run, read it back to check what landed, and delete it again. A run that is interrupted leaves its project
+behind until the next run of the same test, which deletes leftovers by
+profile title (deleting an EDP profile deletes its Sapio project).
+
+In essence, the Playwright tests under the EDP profile workflow perform the following steps in sequence:
+
+1. Creating an EDP profile which then creates its Sapio project
+2. Submitting the FAANG sample (using the manifest located at `test/testfiles/COPO_FAANG_manifest_success1.xlsx`) to ENA and getting back a real biosample accession
+3. Downloading a pre-filled LIMS manifest, with C4 (`budget_user`), C5 (`sapio_project_id`) and F5 (`jira_ticket_number`) matching the profile;
+4. Filling in the answers then, validating and saving the LIMS manifest
+5. Submitting to Sapio returning success
+6. Reading the project back from Sapio where every mapped manifest field is matched
+7. Deleting the profile in COPO after which the project will also be deleted from Sapio
 
 To opt in and run them too, pass `-e` as the first argument:
 

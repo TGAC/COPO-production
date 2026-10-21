@@ -132,12 +132,12 @@ services:
       - ENA_V1_SAMPLE_SERVICE=https://wwwdev.ebi.ac.uk/ena/submit/drop-box/samples
       - ZENODOURL=https://zenodo.org/api
       - ZENODOTOKEN_FILE=/run/secrets/copo_zenodo_token
-      - ENA_BROWSER_SERVICE=https://www.ebi.ac.uk/ena/browser/api
+      - ENA_BROWSER_SERVICE=https://wwwdev.ebi.ac.uk/ena/browser/api
       - SAPIO_USE_API_USER=true
-      - SAPIO_USERNAME_FILE=/run/secrets/sapio_username
-      - SAPIO_PASSWORD_FILE=/run/secrets/sapio_password
-      - SAPIO_API_TOKEN_FILE=/run/secrets/sapio_api_token
-      - SAPIO_API_URL=https://earlham-gold-lims-stag.exemplareln.com/webservice/api
+      - SAPIO_USERNAME=/run/secrets/sapio_username
+      - SAPIO_PASSWORD=/run/secrets/sapio_password
+      - SAPIO_API_TOKEN=/run/secrets/sapio_api_token
+      - SAPIO_API_URL=/run/secrets/sapio_api_url
     depends_on:
       - redis
       - postgres
@@ -185,6 +185,8 @@ services:
       - copo_zenodo_token
       - sapio_username
       - sapio_password
+      - sapio_api_token
+      - sapio_api_url
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8000']
       interval: 2m
@@ -257,9 +259,9 @@ services:
       - ZENODOTOKEN_FILE=/run/secrets/copo_zenodo_token
       - ENA_BROWSER_SERVICE=https://wwwdev.ebi.ac.uk/ena/browser/api
       - SAPIO_USERNAME=/run/secrets/sapio_username
-      - SAPIO_PASSWORD_FILE=/run/secrets/sapio_password
-      - SAPIO_API_TOKEN_FILE=/run/secrets/sapio_api_token
-      - SAPIO_API_URL=https://earlham-gold-lims-stag.exemplareln.com/webservice/api
+      - SAPIO_PASSWORD=/run/secrets/sapio_password
+      - SAPIO_API_TOKEN=/run/secrets/sapio_api_token
+      - SAPIO_API_URL=/run/secrets/sapio_api_url
     depends_on:
       - redis
       - postgres
@@ -303,6 +305,8 @@ services:
       - copo_zenodo_token
       - sapio_username
       - sapio_password
+      - sapio_api_token
+      - sapio_api_url
   nginx:
     image: copo/copo-nginx-minio:v1.30.2
     networks:

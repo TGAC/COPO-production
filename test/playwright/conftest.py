@@ -1,6 +1,11 @@
+import os
+import subprocess
+
 import pytest
+import requests
 
 from test.playwright.config.settings import BASE_URL, TEST_USER_PASSWORD, TEST_USER_USERNAME
+from test.playwright.e2e.helpers import run_django_shell
 
 # pytest-playwright provides `browser` and `context` fixtures out of the box.
 # We override `context` here so every test's browser context starts already
@@ -60,3 +65,43 @@ def context(new_context, storage_state):
     # --video, not the CLI flags alone. Its own fixture teardown closes the
     # context and saves the trace; nothing further to do here.
     return new_context(storage_state=storage_state)
+
+
+@pytest.fixture(scope="session")
+def ena_dev_sandbox():
+    # Sample manifest validation looks every taxon up on ENA_URL_HOSTNAME
+    # (ENA's dev sandbox locally), and sample submission goes there too. When
+    # that host is down -- seen 2026-10-20, every /ena/taxonomy and
+    # /ena/browser path returned an nginx 404 -- a dependent test can only
+    # time out on a disabled "Finish" button, which reads like a COPO bug.
+    # Skip with the real reason instead.
+    host = os.environ.get("ENA_URL_HOSTNAME") or "www.ebi.ac.uk"
+    url = f"https://{host}/ena/taxonomy/rest/tax-id/9606"
+    try:
+        status = requests.get(url, timeout=30).status_code
+    except requests.RequestException as error:
+        pytest.skip(f"ENA unreachable ({url}): {error}")
+    if status != 200:
+        pytest.skip(f"ENA taxonomy lookup is down ({url} returned HTTP {status})")
+    return host
+
+
+@pytest.fixture(scope="session")
+def sapio_test_instance():
+    # Unlike ENA above, a missing or unreachable Sapio is a setup problem in
+    # the local stack rather than a third-party outage, so fail rather than
+    # skip.
+    if not os.environ.get("SAPIO_API_URL"):
+        pytest.fail(
+            "SAPIO_API_URL is not set in the Playwright container. Run the suite via "
+            "test/playwright/scripts/run_playwright_tests.sh with copo_web running."
+        )
+    try:
+        run_django_shell(
+            "from src.apps.ei_edp.utils.lims.sapio.datamanager import Sapio\n"
+            "Sapio().dataRecordManager.query_data_records("
+            "data_type_name='Project', data_field_name='C_ProjectIdentifier', value_list=['PLAYWRIGHT_PROBE'])\n"
+        )
+    except subprocess.CalledProcessError as error:
+        pytest.fail(f"Could not query Sapio at {os.environ['SAPIO_API_URL']}: {error.stderr[-2000:]}")
+    return os.environ["SAPIO_API_URL"]

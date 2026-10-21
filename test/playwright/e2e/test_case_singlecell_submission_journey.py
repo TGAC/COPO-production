@@ -1,19 +1,26 @@
 import os
 import re
-import subprocess
-import sys
 import time
 
 import openpyxl
 import pytest
 from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError, expect
 
-from test.playwright.e2e.helpers import create_biodata_profile, dismiss_tour_if_present, upload_manifest
+from test.playwright.e2e.helpers import (
+    create_biodata_profile,
+    delete_profile_by_title as _delete_profile_by_title,
+    dismiss_tour_if_present,
+    poll_sample_accession as _poll_sample_accession,
+    run_django_shell as _run_django_shell,
+    upload_manifest,
+)
 
 TITLE = "Submission Journey Manifest Validation"
 DESCRIPTION = "A description that is at least twenty characters long."
 
-TESTFILES_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "testfiles"))
+TESTFILES_DIR = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "testfiles")
+)
 SAMPLE_MANIFEST = os.path.join(TESTFILES_DIR, "COPO_FAANG_manifest_success1.xlsx")
 SINGLECELL_MANIFEST = os.path.join(
     TESTFILES_DIR, "copo_single_cell_manifest_version_faang_sc_rnaseq_success1.xlsx"
@@ -54,7 +61,7 @@ FAANG_SINGLECELL_CHECKLIST = "version_faang_sc_rnaseq"
 # field). The single-cell manifest's own sample sheet describes a different
 # species by default (Arenicola marina / 6344) -- the two fixtures were
 # authored independently and were never meant to describe the same animal.
-# When test_full_submission_and_publish_journey patches in the real
+# When test_singlecell_submission_and_publish_journey patches in the real
 # accession from that submission, it must patch these to match too, or the
 # single-cell manifest ends up claiming a real Homo sapiens accession is
 # Arenicola marina.
@@ -65,80 +72,6 @@ SAMPLE_MANIFEST_TAXON_ID = 9606
 # inspecting the fixture directly, matches sample!A5 too (both driven by
 # the same array formula reading from the study sheet).
 SINGLECELL_STUDY_ID = "STUDY004"
-
-
-def _run_django_shell(code):
-    result = subprocess.run(
-        [sys.executable, "manage.py", "shell", "-c", code],
-        cwd="/copo",
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return result.stdout
-
-
-def _delete_profile_by_title(title):
-    # Profile.validate_and_delete() is a hard delete that deliberately
-    # *refuses* to delete (returns False, no exception) if any sample,
-    # submission, or datafile document still references the profile --
-    # exactly the state every test in this file leaves behind (a saved
-    # sample, and for the full journey a real ENA submission too). That's
-    # sensible production behaviour (don't orphan tracked submission data),
-    # but test cleanup needs to actually clear the profile, so clear the
-    # referencing collections first via the same handle_dict the DAL itself
-    # uses, then let validate_and_delete's guard pass cleanly.
-    #
-    # enaFileTransfer matters here too, even though validate_and_delete()
-    # doesn't check it: EnaFileTransfer.get_pending_transfers() only claims
-    # ONE pending record globally (across every profile) per 10s beat tick
-    # (a deliberate throttle -- common/dal/copo_da.py), in unspecified Mongo
-    # order. Confirmed live: leaving 4 leftover pending records per aborted
-    # run meant later runs' real file transfers queued behind a growing
-    # backlog of dead ones and took minutes longer than they should have.
-    _run_django_shell(
-        "from common.dal.profile_da import Profile\n"
-        "from common.dal.copo_base_da import handle_dict\n"
-        f"profile_ids = [str(r['_id']) for r in Profile().get_all_records() if r.get('title') == {title!r}]\n"
-        "for pid in profile_ids:\n"
-        "    for collection in ('sample', 'submission', 'datafile', 'singlecell', 'enaFileTransfer'):\n"
-        "        handle_dict[collection].delete_many({'profile_id': pid})\n"
-        "    Profile().validate_and_delete(pid)\n"
-    )
-
-
-def _poll_sample_accession(profile_id, timeout=1200, interval=10):
-    # process_pending_sample_submission (Celery beat, every 10s) is what
-    # actually calls real ENA -- there's no websocket/event this test can
-    # wait on directly, so poll the DB the same way the table's own redraw
-    # does under the hood. Real EBI latency is unknown up front, hence the
-    # generous timeout rather than trusting a short default.
-    # manage.py shell -c prints an import banner (+ blank separator line)
-    # before running this code, and a bare .strip().splitlines()[-N:] on the
-    # combined stdout is fragile: printing the final field as an empty
-    # string (the common case for "error") makes its trailing blank line
-    # get silently swallowed by strip(), shifting every field left by one.
-    # A single delimited marker line sidesteps that entirely.
-    code = (
-        "from common.dal.sample_da import Sample\n"
-        f"samples = Sample(profile_id={profile_id!r}).execute_query({{'profile_id': {profile_id!r}}})\n"
-        "s = samples[0] if samples else {}\n"
-        "print('POLL_RESULT:' + '|'.join([s.get('status', ''), s.get('biosampleAccession', ''), s.get('error', '')]))\n"
-    )
-    deadline = time.time() + timeout
-    status = ""
-    while time.time() < deadline:
-        marker_line = next(
-            (line for line in _run_django_shell(code).splitlines() if line.startswith("POLL_RESULT:")),
-            "POLL_RESULT:||",
-        )
-        status, accession, error = marker_line[len("POLL_RESULT:"):].split("|")
-        if status == "accepted" and accession:
-            return accession
-        if status == "rejected" or error:
-            raise AssertionError(f"Sample submission to ENA failed: status={status!r} error={error!r}")
-        time.sleep(interval)
-    raise AssertionError(f"Timed out waiting for a real BioSample accession (last status={status!r})")
 
 
 def _poll_singlecell_study_accession(profile_id, study_id, timeout=1200, interval=10):
@@ -170,21 +103,31 @@ def _poll_singlecell_study_accession(profile_id, study_id, timeout=1200, interva
     status = ""
     while time.time() < deadline:
         marker_line = next(
-            (line for line in _run_django_shell(code).splitlines() if line.startswith("POLL_RESULT:")),
+            (
+                line
+                for line in _run_django_shell(code).splitlines()
+                if line.startswith("POLL_RESULT:")
+            ),
             "POLL_RESULT:||",
         )
-        status, accession, error = marker_line[len("POLL_RESULT:"):].split("|")
+        status, accession, error = marker_line[len("POLL_RESULT:") :].split("|")
         if status == "accepted" and accession:
             return accession
         if status == "rejected" or error:
-            raise AssertionError(f"Single-cell study submission to ENA failed: status={status!r} error={error!r}")
+            raise AssertionError(
+                f"Single-cell study submission to ENA failed: status={status!r} error={error!r}"
+            )
         time.sleep(interval)
-    raise AssertionError(f"Timed out waiting for a real single-cell study accession (last status={status!r})")
+    raise AssertionError(
+        f"Timed out waiting for a real single-cell study accession (last status={status!r})"
+    )
 
 
-def test_sample_manifest_validation_and_singlecell_rejects_stale_accession(page: Page):
+def test_sample_manifest_validation_and_singlecell_rejects_stale_accession(
+    page: Page, ena_dev_sandbox
+):
     # Entirely local/synchronous — no real ENA or Zenodo submissions. See
-    # test_full_submission_and_publish_journey (marked "external") for the
+    # test_singlecell_submission_and_publish_journey (marked "external") for the
     # real submission flow this manifest data feeds into.
     #
     # create_biodata_profile()'s own success check only confirms *a*
@@ -221,7 +164,7 @@ def test_sample_manifest_validation_and_singlecell_rejects_stale_accession(page:
     # dev sandbox database every 24 hours, so *any* hardcoded accession goes
     # stale within a day regardless of how recently the fixture was created.
     # A real, currently-valid accession can only come from an actual ENA
-    # submission — that's test_full_submission_and_publish_journey's job, not
+    # submission — that's test_singlecell_submission_and_publish_journey's job, not
     # this local/fast test's. So what's actually correct to assert here isn't
     # "validation succeeds" (it structurally can't, deterministically, with a
     # static fixture) but "validation correctly rejects a stale accession" —
@@ -259,7 +202,9 @@ def test_sample_manifest_validation_and_singlecell_rejects_stale_accession(page:
 
 
 @pytest.mark.external
-def test_full_submission_and_publish_journey(page: Page, tmp_path):
+def test_singlecell_submission_and_publish_journey(
+    page: Page, tmp_path, ena_dev_sandbox
+):
     # The real journey: profile -> sample manifest -> real "Submit to ENA"
     # against EBI's own dev sandbox -> wait for a real BioSample accession
     # -> patch that accession into the single-cell manifest (openpyxl,
@@ -319,7 +264,9 @@ def test_full_submission_and_publish_journey(page: Page, tmp_path):
     # offering COPO's default. If it doesn't appear (credentials already
     # valid), the submission just proceeds -- handle both paths.
     try:
-        page.locator("#repo_cred_modal .cred-modal-default").wait_for(state="visible", timeout=5000)
+        page.locator("#repo_cred_modal .cred-modal-default").wait_for(
+            state="visible", timeout=5000
+        )
     except PlaywrightTimeoutError:
         pass
     else:
@@ -391,7 +338,9 @@ def test_full_submission_and_publish_journey(page: Page, tmp_path):
     # remote dev MinIO (measured directly server-side, not a hang -- see
     # project_demo_minio_distributed_fragility memory), so the default 60s
     # wasn't enough to cover all 4 files uploading sequentially in one request.
-    expect(page.locator("#page_alert_panel")).to_contain_text("Files have been uploaded", timeout=300000)
+    expect(page.locator("#page_alert_panel")).to_contain_text(
+        "Files have been uploaded", timeout=300000
+    )
 
     page.goto(f"/copo/copo_single_cell/view/{profile_id}/COPO_SINGLE_CELL/singlecell")
     page.wait_for_load_state("networkidle")
@@ -432,13 +381,17 @@ def test_full_submission_and_publish_journey(page: Page, tmp_path):
     )
 
     with page.expect_response(lambda r: "copo_forms" in r.url, timeout=30000) as ri:
-        page.click('.copo-dt[data-action="submit_singlecell_ena"][data-table="singlecell_table_study"]')
+        page.click(
+            '.copo-dt[data-action="submit_singlecell_ena"][data-table="singlecell_table_study"]'
+        )
 
         # Same credentials-popup gate as the sample submission -- the real
         # copo_forms POST only fires once credentials are resolved, so this
         # has to happen inside the expect_response block.
         try:
-            page.locator("#repo_cred_modal .cred-modal-default").wait_for(state="visible", timeout=5000)
+            page.locator("#repo_cred_modal .cred-modal-default").wait_for(
+                state="visible", timeout=5000
+            )
         except PlaywrightTimeoutError:
             pass
         else:
@@ -449,11 +402,13 @@ def test_full_submission_and_publish_journey(page: Page, tmp_path):
             dismiss_tour_if_present(page)
             page.click("#repo_cred_modal .cred-modal-default")
     resp = ri.value
-    assert resp.status == 200, f"submit_singlecell_ena request failed: {resp.status} {resp.text()[:500]}"
+    assert (
+        resp.status == 200
+    ), f"submit_singlecell_ena request failed: {resp.status} {resp.text()[:500]}"
     body = resp.json()
-    assert body.get("action_feedback", {}).get("status") == "success", (
-        f"submit_singlecell_ena rejected: {body.get('action_feedback')}"
-    )
+    assert (
+        body.get("action_feedback", {}).get("status") == "success"
+    ), f"submit_singlecell_ena rejected: {body.get('action_feedback')}"
 
     # The completion notification (not just the earlier "Submission has been
     # scheduled" queuing one) only exists because of a matching app fix in
@@ -464,10 +419,15 @@ def test_full_submission_and_publish_journey(page: Page, tmp_path):
     # and a real PRJ* project accession -- this is the actual "the test
     # isn't done until the UI says so" signal, not just a DB poll.
     expect(
-        page.locator('#submission-activity-log div[data-alert-type="success"]', has_text="accepted by ENA")
+        page.locator(
+            '#submission-activity-log div[data-alert-type="success"]',
+            has_text="accepted by ENA",
+        )
     ).to_contain_text(re.compile(r"PRJ\w+"), timeout=1200000)
 
-    accession = _poll_singlecell_study_accession(profile_id, SINGLECELL_STUDY_ID, timeout=30)
+    accession = _poll_singlecell_study_accession(
+        profile_id, SINGLECELL_STUDY_ID, timeout=30
+    )
     assert accession and accession.startswith("PRJ")
 
     _delete_profile_by_title(title)

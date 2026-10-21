@@ -19,7 +19,8 @@
 #   test/playwright/scripts/run_playwright_tests.sh                     # whole suite
 #   test/playwright/scripts/run_playwright_tests.sh -t test/playwright/e2e/test_case_login.py
 #   test/playwright/scripts/run_playwright_tests.sh test/playwright/e2e/test_case_login.py --tracing=on -v
-#   test/playwright/scripts/run_playwright_tests.sh -e test/playwright/e2e/test_case_submission_journey.py::test_full_submission_and_publish_journey
+#   test/playwright/scripts/run_playwright_tests.sh -e test/playwright/e2e/test_case_singlecell_submission_journey.py::test_singlecell_submission_and_publish_journey
+#   test/playwright/scripts/run_playwright_tests.sh -e test/playwright/e2e/test_case_edp_lims_submission_workflow.py::test_edp_manifest_submission_to_sapio
 #
 # -t records a trace (expands to --tracing=on -v). -e includes tests marked
 # "external" (real calls to ENA's dev sandbox / production Zenodo) — these

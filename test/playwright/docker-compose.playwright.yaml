@@ -67,6 +67,11 @@ services:
       - POSTGRES_PASSWORD=password
       - COPO_TEST_USER_PASSWORD=${vault_copo_test_user_password}
       - PROJECT_TEAM_EMAIL=ei.copo-dev@earlham.ac.uk
+      - SAPIO_USE_API_USER=true
+      - SAPIO_USERNAME=${vault_sapio_username}
+      - SAPIO_PASSWORD=${vault_sapio_password}
+      - SAPIO_API_TOKEN=${vault_sapio_api_token}
+      - SAPIO_API_URL=${vault_sapio_api_url}
     depends_on:
       - copo_web
     volumes:
