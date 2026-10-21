@@ -134,10 +134,10 @@ services:
       - ZENODOTOKEN_FILE=/run/secrets/copo_zenodo_token
       - ENA_BROWSER_SERVICE=https://wwwdev.ebi.ac.uk/ena/browser/api
       - SAPIO_USE_API_USER=true
-      - SAPIO_USERNAME=/run/secrets/sapio_username
-      - SAPIO_PASSWORD=/run/secrets/sapio_password
-      - SAPIO_API_TOKEN=/run/secrets/sapio_api_token
-      - SAPIO_API_URL=/run/secrets/sapio_api_url
+      - SAPIO_USERNAME_FILE=/run/secrets/sapio_username
+      - SAPIO_PASSWORD_FILE=/run/secrets/sapio_password
+      - SAPIO_API_TOKEN_FILE=/run/secrets/sapio_api_token
+      - SAPIO_API_URL_FILE=/run/secrets/sapio_api_url
     depends_on:
       - redis
       - postgres
@@ -258,10 +258,10 @@ services:
       - ZENODOURL=https://zenodo.org/api
       - ZENODOTOKEN_FILE=/run/secrets/copo_zenodo_token
       - ENA_BROWSER_SERVICE=https://wwwdev.ebi.ac.uk/ena/browser/api
-      - SAPIO_USERNAME=/run/secrets/sapio_username
-      - SAPIO_PASSWORD=/run/secrets/sapio_password
-      - SAPIO_API_TOKEN=/run/secrets/sapio_api_token
-      - SAPIO_API_URL=/run/secrets/sapio_api_url
+      - SAPIO_USERNAME_FILE=/run/secrets/sapio_username
+      - SAPIO_PASSWORD_FILE=/run/secrets/sapio_password
+      - SAPIO_API_TOKEN_FILE=/run/secrets/sapio_api_token
+      - SAPIO_API_URL_FILE=/run/secrets/sapio_api_url
     depends_on:
       - redis
       - postgres
@@ -604,6 +604,10 @@ secrets:
   sapio_username:
     external: true
   sapio_password:
+    external: true
+  sapio_api_token:
+    external: true
+  sapio_api_url:
     external: true
 volumes:
   web-data:
