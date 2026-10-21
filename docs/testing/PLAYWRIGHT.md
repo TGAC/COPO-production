@@ -195,6 +195,19 @@ directly, no extra software needed. This only works while a run is actually
 in progress; the container (and its VNC server) is torn down the moment the
 test finishes.
 
+Install TigerVNC Viewer:
+
+```bash
+brew install --cask tigervnc-viewer
+```
+
+To view a test live:
+
+```bash
+test/playwright/scripts/run_playwright_tests.sh --headed
+```
+
+
 ## Viewing a trace after the fact
 
 `-t` (or `--tracing=on` directly) records a full scrubbable timeline
