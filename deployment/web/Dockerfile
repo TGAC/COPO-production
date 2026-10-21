@@ -31,7 +31,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Create virtual environment
-RUN python -m venv /opt/venv
+RUN python -m venv /opt/venv && /opt/venv/bin/pip install --upgrade pip
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY ./requirements/ /tmp/requirements/
