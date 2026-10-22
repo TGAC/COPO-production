@@ -10,7 +10,7 @@
 #
 ## Build main containers and playwright test container images
 # $ docker build . -f 'deployment/web/Dockerfile_local_mac' -t local_copo_web:v1.0.0
-# $ docker build . -f 'deployment/web/Dockerfile_playwright' -t playwright:v1.62.1
+# $ docker build . -f 'deployment/web/Dockerfile_playwright' -t playwright:v1.64.1
 #
 #
 ## Step #2 - Start the containers
@@ -23,6 +23,10 @@
 #   (use --env-file so Compose parses .env: it strips the quotes that protect
 #    values containing special characters, e.g. a WEBIN password with '&'.
 #    `export $(cat .env)` leaves those quotes inside the value and breaks them.)
+#
+## Note: To stop then start containers, run
+# $ docker compose -f local.copo.compose.mac.yaml down
+# $ docker compose --env-file .env -f local.copo.compose.mac.yaml up -d
 #
 #
 ## Step #3  - Run Django management commands in the terminal
@@ -94,6 +98,8 @@ services:
       - WEBIN_USER_PASSWORD=${vault_copo_webin_user_password}
       - CREDENTIAL_ENCRYPTION_KEY=${vault_copo_credential_encryption_key}
       - ENA_SERVICE=https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/
+      - ENA_WEBIN_AUTH_URL=https://wwwdev.ebi.ac.uk/ena/submit/webin/auth/token?ttl=1
+      - ENA_URL_HOSTNAME=wwwdev.ebi.ac.uk
       - MONGO_USER=copo_user
       - MONGO_USER_PASSWORD=password
       - MONGO_DB=copo_mongo
