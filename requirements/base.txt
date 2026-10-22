@@ -195,7 +195,7 @@ tornado==6.5.10
 #traitlets==4.3.3
 Twisted==26.4.0
 txaio==26.6.1
-typed-ast==1.5.5
+# typed-ast==1.5.5
 #typing==3.6.2
 ua-parser==1.0.2
 urllib3==2.8.0
