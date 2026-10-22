@@ -87,7 +87,7 @@ services:
   copo_web:
     image: local_copo_web:v1.0.0 # Replace with your local image name
     command: >
-      sleep infinity
+      bash -c "pip install -q --use-deprecated=legacy-resolver -r /copo/requirements/dev.txt && sleep infinity"
     ports:
       - '8000:8000'
     environment:
@@ -146,7 +146,7 @@ services:
       - http_protocol=http
       - ZENODOURL=https://zenodo.org/api
       - ZENODOTOKEN=${vault_zenodo_api_token}
-      - ENA_BROWSER_SERVICE=https://www.ebi.ac.uk/ena/browser/api
+      - ENA_BROWSER_SERVICE=https://www.ebi.ac.uk/ena/browser/api # Has to be production ENA browser API endpoint
       - SAPIO_USE_API_USER=true
       - SAPIO_USERNAME=${vault_sapio_username}
       - SAPIO_PASSWORD=${vault_sapio_password}
