@@ -141,6 +141,22 @@ class EnaSubmissionHelper:
 
         return self.write_xml_file(output_location, xml_object=root, file_name="submission_edit.xml")
 
+    def get_release_submission_xml(self, output_location, submission_xml_path=str()):
+        '''
+        This function creates and returns a submission xml path with an additional
+        RELEASE action, so that the objects added in a submission are made public
+        immediately instead of being held private for the default 2 years.
+        '''
+        self.logging_info('Creating submission xml for public release....')
+
+        parser = etree.XMLParser(remove_blank_text=True)
+        root = etree.parse(submission_xml_path, parser).getroot()
+        actions = root.find('ACTIONS')
+        action = etree.SubElement(actions, 'ACTION')
+        etree.SubElement(action, 'RELEASE')
+
+        return self.write_xml_file(output_location, xml_object=root, file_name='submission_release.xml')
+
     def write_xml_file(self, output_location=str(), xml_object=None, file_name=str()):
             """
             function writes xml to the specified location or to a default one
@@ -352,6 +368,17 @@ class EnaSubmissionHelper:
 
         if not samples:
             return dict(status=True, value='')
+
+        # Samples submitted under EDP profiles to ENA must be made public as 
+        # soon as they are submitted. This prevents them from remaining 
+        # private in ENA for the default 2 years as there is no 
+        # 'Publish study' or 'release' feature.
+        profile_types_for_automatic_sample_release = ['ei_edp']
+        if self.profile and self.profile.get('type', str()) in profile_types_for_automatic_sample_release:
+            result = self.get_release_submission_xml(output_location, submission_xml_path)
+            if result['status'] is False:
+                return result
+            submission_xml_path = result['value']
 
         # Build a set of aliases already registered with ENA for this submission
         # (stored in SubmissionCollection.accessions.sample). This covers the
