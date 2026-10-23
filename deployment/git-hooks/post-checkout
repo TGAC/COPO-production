@@ -33,15 +33,29 @@ branch_flag="$3"   # 1 = branch checkout, 0 = file checkout
 # Allow an explicit opt-out.
 [ -n "$COPO_SKIP_SETUP" ] && exit 0
 
-# Paths whose changes mean the database needs re-seeding.
+# Paths whose changes mean the database needs updating.
+# They relate to tables (i.e. migrations) or the 
+# definitions that seed into them.
 watch_paths=(
+  "src/apps/*/migrations/*"
   "common/schemas"
   "src/apps/*/management/commands/setup_schemas.py"
   "src/apps/*/management/commands/setup_profile_types.py"
   "src/apps/*/management/commands/setup_groups.py"
 )
+
 # Paths whose changes mean the Python packages need (re)installing.
 requirements_paths=("requirements")
+
+# Run the `manage.py` commands in order to keep the database in sync with the code.
+# Run the migrations first to create the required tables then, `setup_schemas`
+# which loads the data that profile types and components depend on.
+setup_commands=(
+  "migrate --noinput"
+  "setup_schemas"
+  "setup_profile_types"
+  "setup_groups"
+)
 
 # Did any of the given paths listed in the 'watch_paths' list change between 
 # commits or switched branches? If git can't compare (shallow clone, etc.), we err on 
@@ -50,11 +64,11 @@ changed() {
   ! git diff --quiet "$prev_head" "$new_head" -- "$@" 2>/dev/null
 }
 
-schemas_changed=0
+setup_changed=0
 requirements_changed=0
-changed "${watch_paths[@]}" && schemas_changed=1
+changed "${watch_paths[@]}" && setup_changed=1
 changed "${requirements_paths[@]}" && requirements_changed=1
-[ "$schemas_changed" = "0" ] && [ "$requirements_changed" = "0" ] && exit 0
+[ "$setup_changed" = "0" ] && [ "$requirements_changed" = "0" ] && exit 0
 
 # Find the running web container (override with COPO_WEB_CONTAINER).
 container="${COPO_WEB_CONTAINER:-$(docker ps --format '{{.Names}}' 2>/dev/null | grep -E 'copo_web|copo-web' | head -1)}"
@@ -65,16 +79,16 @@ if [ -z "$container" ]; then
   if [ "$requirements_changed" = "1" ]; then
     echo "[copo]   docker exec -w /copo <web-container> pip install --use-deprecated=legacy-resolver -r requirements/dev.txt"
   fi
-  if [ "$schemas_changed" = "1" ]; then
-    echo "[copo]   docker exec -w /copo <web-container> python manage.py setup_schemas"
-    echo "[copo]   docker exec -w /copo <web-container> python manage.py setup_profile_types"
-    echo "[copo]   docker exec -w /copo <web-container> python manage.py setup_groups"
+  if [ "$setup_changed" = "1" ]; then
+    for command in "${setup_commands[@]}"; do
+      echo "[copo]   docker exec -w /copo <web-container> python manage.py $command"
+    done
   fi
   exit 0
 fi
 
-# Check whether Python requirements were changed first so that the setup 
-# commands below run against the right packages.
+# Install Python requirements so that the setup commands 
+# below run against the correct packages.
 if [ "$requirements_changed" = "1" ]; then
   echo "[copo] Requirements changed — installing them in '$container'..."
   docker exec -w /copo "$container" pip install -q --use-deprecated=legacy-resolver -r requirements/dev.txt \
@@ -82,15 +96,19 @@ if [ "$requirements_changed" = "1" ]; then
     || echo "[copo] Install failed — run 'pip install -r requirements/dev.txt' in the container manually."
 fi
 
-if [ "$schemas_changed" = "1" ]; then
-  echo "[copo] Branch definitions changed — re-seeding the database in '$container'..."
-  # 'setup_schemas' runs first because the profile types and components 
-  # depend on the data that it loads
-  docker exec -w /copo "$container" python manage.py setup_schemas \
-    && docker exec -w /copo "$container" python manage.py setup_profile_types \
-    && docker exec -w /copo "$container" python manage.py setup_groups \
-    && echo "[copo] Database re-synced to $(git rev-parse --abbrev-ref HEAD)." \
-    || echo "[copo] Re-seed failed — run setup_schemas / setup_profile_types / setup_groups manually."
+if [ "$setup_changed" = "1" ]; then
+  echo "[copo] Branch definitions changed - updating the database in '$container'..."
+  for command in "${setup_commands[@]}"; do
+    echo "[copo]   python manage.py $command"
+    # `$command` is unquoted so that the 'migrate --noinput' latter
+    # part of the command splits into the command and its option correctly.
+    if ! docker exec -w /copo "$container" python manage.py $command; then
+      echo "[copo] '$command' failed — run the remaining commands manually:"
+      echo "[copo]   ${setup_commands[*]}"
+      exit 0
+    fi
+  done
+  echo "[copo] Database re-synced to $(git rev-parse --abbrev-ref HEAD)."
 fi
 
 exit 0
