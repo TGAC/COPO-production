@@ -4,6 +4,7 @@ from bson import ObjectId
 from datetime import datetime
 from common.dal.mongo_util import cursor_to_list
 from collections import defaultdict
+from src.apps.copo_core.models import ProfileType
 from . import generic_helper as ghlper
 from .run_filetype import ena_run_filetype
 from common.dal.profile_da import Profile
@@ -369,12 +370,15 @@ class EnaSubmissionHelper:
         if not samples:
             return dict(status=True, value='')
 
-        # Samples submitted under EDP profiles to ENA must be made public as 
-        # soon as they are submitted. This prevents them from remaining 
-        # private in ENA for the default 2 years as there is no 
-        # 'Publish study' or 'release' feature.
-        profile_types_for_automatic_sample_release = ['ei_edp']
-        if self.profile and self.profile.get('type', str()) in profile_types_for_automatic_sample_release:
+        # Check if the profile requires samples to be automatically 
+        # released to ENA after users submit them with no review or publish step
+        profile_type = self.profile.get('type', str())
+        auto_release_samples_on_submission = (
+            ProfileType.objects.get(type=profile_type).is_sample_released_on_submission
+            if profile_type
+            else False
+        )
+        if self.profile and auto_release_samples_on_submission:
             result = self.get_release_submission_xml(output_location, submission_xml_path)
             if result['status'] is False:
                 return result

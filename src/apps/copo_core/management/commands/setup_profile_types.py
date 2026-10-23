@@ -935,6 +935,7 @@ class Command(BaseCommand):
             widget_colour="#e25098",
             is_dtol_profile=True,
             is_permission_required=True,
+            is_sample_released_on_submission=False,
             post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile",
             pre_save_action="src.apps.copo_profile.utils.profile_utils.pre_save_erga_profile",
             tour_id="profile_title publish_profile",
@@ -945,6 +946,7 @@ class Command(BaseCommand):
             widget_colour="#8060d0",
             is_dtol_profile=True,
             is_permission_required=True,
+            is_sample_released_on_submission=False,
             post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile",
             tour_id="profile_title publish_profile",
         )
@@ -954,6 +956,7 @@ class Command(BaseCommand):
             widget_colour="#f0a44a",
             is_dtol_profile=True,
             is_permission_required=True,
+            is_sample_released_on_submission=False,
             tour_id="profile_title publish_profile",
         )
         dtol = ProfileType().create_profile_type(
@@ -962,6 +965,7 @@ class Command(BaseCommand):
             widget_colour="#4cc86c",
             is_dtol_profile=True,
             is_permission_required=True,
+            is_sample_released_on_submission=False,
             post_save_action="src.apps.copo_profile.utils.profile_utils.post_save_dtol_profile",
             tour_id="profile_title publish_profile",
         )
@@ -971,7 +975,9 @@ class Command(BaseCommand):
             widget_colour="#4db8a8",
             is_dtol_profile=False,
             is_permission_required=False,
-            is_deprecated=True,        )
+            is_sample_released_on_submission=False,
+            is_deprecated=True
+        )
 
         biodata = ProfileType().create_profile_type(
             type="biodata",
@@ -979,6 +985,7 @@ class Command(BaseCommand):
             widget_colour="#5cbce8",
             is_dtol_profile=False,
             is_permission_required=False,
+            is_sample_released_on_submission=False,
             tour_id="profile_title",
         )
 
@@ -988,6 +995,7 @@ class Command(BaseCommand):
             widget_colour="#FF0000",
             is_dtol_profile=False,
             is_permission_required=True,
+            is_sample_released_on_submission=True, # Samples are automatically released upon submission for EDP profiles
             pre_save_action="src.apps.ei_edp.utils.edp_utils.pre_save_edp_profile",
             post_save_action="src.apps.ei_edp.utils.edp_utils.post_save_edp_profile",
             post_delete_action="src.apps.ei_edp.utils.edp_utils.post_delete_edp_profile",

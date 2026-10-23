@@ -170,7 +170,7 @@ class Banner(models.Model):
         if self.active and self.expires_at and self.expires_at <= timezone.now():
             self.active = False
             self.save(update_fields=['active'])
-            
+
 
 class ViewLock(models.Model):
     url = models.URLField(max_length=2000)
@@ -535,6 +535,13 @@ class ProfileType(models.Model):
     widget_colour = models.CharField(max_length=200, blank=True, null=True)
     is_dtol_profile = models.BooleanField(default=False)
     is_permission_required = models.BooleanField(default=True)
+    is_sample_released_on_submission = models.BooleanField(
+        default=False,
+        help_text=(
+            'Automatically release samples and make them public immediately '
+            'after submission, without requiring a review or a separate publish step.'
+        ),
+    )
     post_save_action = models.CharField(max_length=100, blank=True, null=True)
     pre_save_action = models.CharField(max_length=100, blank=True, null=True)
     post_delete_action = models.CharField(max_length=100, blank=True, null=True)
@@ -556,6 +563,7 @@ class ProfileType(models.Model):
         widget_colour,
         is_dtol_profile,
         is_permission_required,
+        is_sample_released_on_submission=False,
         post_save_action=None,
         pre_save_action=None,
         post_delete_action=None,
@@ -567,6 +575,7 @@ class ProfileType(models.Model):
         self.widget_colour = widget_colour
         self.is_dtol_profile = is_dtol_profile
         self.is_permission_required = is_permission_required
+        self.is_sample_released_on_submission = is_sample_released_on_submission
         self.post_save_action = post_save_action
         self.pre_save_action = pre_save_action
         self.post_delete_action = post_delete_action
