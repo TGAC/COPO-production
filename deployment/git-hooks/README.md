@@ -21,9 +21,19 @@ checked-out code:
 - If anything under `requirements/` differs between the branch the developer
   left and the one that was switched to, it runs 
   `pip install -r requirements/dev.txt` in the container.
-- If the schema, profile type or Django group definitions differ, it re-runs the
-  Django commands - `setup_schemas`, `setup_profile_types` and `setup_groups`
-  respectively which resyncs both MongoDB and PostgreSQL databases.
+
+- If migrations, schemas or the setup commands differ, the commands 
+  listed in `setup_commands` are executed in the order that they are 
+  listed to update both MongoDB and PostgreSQL databases
+
+  Commands that are re-run:
+  
+  ```bash
+  python manage.py migrate --noinput
+  python manage.py setup_schemas
+  python manage.py setup_profile_types
+  python manage.py setup_groups
+  ```
 
 COPO feeds these definitions into the database once and then serves them from
 there, so switching between branches that differ
